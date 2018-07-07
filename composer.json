@@ -1,0 +1,33 @@
+{
+    "name": "ttek/tk-base",
+    "type": "library",
+    "description": "Base site library for the Tk lib",
+    "keywords":  [
+        "tk",
+        "tropotek",
+        "base"
+    ],
+    "time": "2018-06-26",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors":  [
+        {
+            "name": "Michael Mifsud",
+            "email": "info@tropotek.com.au",
+            "homepage": "http://www.tropotek.com/"
+        }
+    ],
+    "autoload":  {
+        "psr-0":  {
+            "Tk\\": ""
+        }
+    },
+    "require":  {
+        "ttek/tk-framework": "~2.0"
+    },
+    "extra":  {
+        "branch-alias":  {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
