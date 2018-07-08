@@ -2,7 +2,6 @@
 namespace Bs\Controller\User;
 
 use Tk\Request;
-use App\Controller\Iface;
 
 /**
  * Class Index
@@ -11,7 +10,7 @@ use App\Controller\Iface;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class Index extends Iface
+class Index extends \Bs\Controller\Iface
 {
 
     /**

@@ -51,8 +51,9 @@ class PluginManager extends \Bs\Controller\AdminManagerIface
         $this->form->execute();
 
 
+        // TODO: We also need to handle the events associated with them
+        //$actionsCell = $this->getActionsCell();
 
-        $actionsCell = $this->getActionsCell();
 
 
 
@@ -62,8 +63,12 @@ class PluginManager extends \Bs\Controller\AdminManagerIface
 
         $this->table->addCell(new \Tk\Table\Cell\Text('icon'))->setLabel('')
             ->setOnCellHtml(function ($cell, $obj, $html) {
-                vd($obj);
-
+                // ToDO
+                $pluginName = \App\Config::getInstance()->getPluginFactory()->cleanPluginName($obj->name);
+                if (is_file(\Tk\Config::getInstance()->getPluginPath().'/'.$pluginName.'/icon.png')) {
+                    $url =  \Tk\Config::getInstance()->getPluginUrl() . '/' . $pluginName . '/icon.png';
+                    $html = sprintf('<img class="media-object" src="%s" var="icon" style="width: 20px;" choice="icon"/>', $url);
+;                }
                 return $html;
             });;
         $this->table->addCell(new ActionsCell('actions'));
@@ -195,59 +200,6 @@ HTML;
     }
 
 }
-
-class IconCell extends \Tk\Table\Cell\Text
-{
-
-    /**
-     * OwnerCell constructor.
-     *
-     * @param string $property
-     * @param null $label
-     */
-    public function __construct($property, $label = null)
-    {
-        parent::__construct($property, $label);
-        $this->setOrderProperty('');
-    }
-
-    /**
-     * @param \StdClass $info
-     * @param int|null $rowIdx The current row being rendered (0-n) If null no rowIdx available.
-     * @return string|\Dom\Template
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Plugin\Exception
-     */
-    public function getCellHtml($info, $rowIdx = null)
-    {
-        $template = $this->__makeTemplate();
-
-        $pluginName = \App\Config::getInstance()->getPluginFactory()->cleanPluginName($info->name);
-
-        if (is_file(\Tk\Config::getInstance()->getPluginPath().'/'.$pluginName.'/icon.png')) {
-            $template->setAttr('icon', 'src', \Tk\Config::getInstance()->getPluginUrl() . '/' . $pluginName . '/icon.png');
-            $template->setChoice('icon');
-        }
-
-        return $template;
-    }
-
-    /**
-     * makeTemplate
-     *
-     * @return \Dom\Template
-     */
-    public function __makeTemplate()
-    {
-        $html = <<<HTML
-<div>
-  <img class="media-object" src="#" var="icon" style="width: 20px;" choice="icon"/>
-</div>
-HTML;
-        return \Dom\Loader::load($html);
-    }
-}
-
 
 
 class ActionsCell extends \Tk\Table\Cell\Text

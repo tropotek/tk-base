@@ -45,7 +45,7 @@ $routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html'
 
 // Dev pages
 $routes->add('dev-events', new \Tk\Routing\Route('/admin/dev/events.html', 'Bs\Controller\Admin\Dev\Events::doDefault', $params));
-$routes->add('dev-form', new \Tk\Routing\Route('/admin/dev/form.html', 'Bs\Controller\Admin\Dev\Form::doDefault', $params));
+
 
 // User Pages
 $params = array('role' => \Bs\Db\User::ROLE_USER);

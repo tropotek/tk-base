@@ -34,7 +34,6 @@ class AuthHandler implements Subscriber
         $user = null;                       // public user
 
         if ($auth->getIdentity()) {         // Check if user is logged in
-            vd($auth->getIdentity());
             $user = \Bs\Db\UserMap::create()->findByUsername($auth->getIdentity());
             $config->setUser($user);
         }
