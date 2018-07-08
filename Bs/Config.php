@@ -9,6 +9,64 @@ namespace Bs;
 class Config extends \Tk\Config
 {
 
+    /**
+     * init the default params.
+     *
+     * @param string $sitePath
+     * @param string $siteUrl
+     */
+    protected function init($sitePath = '', $siteUrl = '')
+    {
+        parent::init($sitePath, $siteUrl);
+        $this->set('system.lib.base.path', $this['system.vendor.path'] . '/ttek/tk-base');
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getLibBaseUrl()
+    {
+        return $this->getSiteUrl() . rtrim($this->get('system.lib.base.path'), '/');
+    }
+
+    /**
+     * @return string
+     */
+    public function getLibBasePath()
+    {
+        return $this->getSitePath() . rtrim($this->get('system.lib.base.path'), '/');
+    }
+
+
+    /**
+     * getPluginFactory
+     *
+     * @return \Tk\Plugin\Factory
+     * @throws \Tk\Db\Exception
+     * @throws \Tk\Plugin\Exception
+     */
+    public function getPluginFactory()
+    {
+        if (!$this->get('plugin.factory')) {
+            $this->set('plugin.factory', \Tk\Plugin\Factory::getInstance($this->getDb(), $this->getPluginPath(), $this->getEventDispatcher()));
+        }
+        return $this->get('plugin.factory');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdminActionPanel()
+    {
+        if (!$this->get('admin.action.panel')) {
+            $obj = \Tk\Ui\Admin\ActionPanel::create('Actions', 'fa fa-cogs');
+            $obj->add(\Tk\Ui\Button::create('Back', 'javascript: window.history.back();', 'fa fa-arrow-left'))
+                ->addCss('btn-default btn-once back');
+            $this->set('admin.action.panel', $obj);
+        }
+        return $this->get('admin.action.panel');
+    }
 
     /**
      * A factory method to create an instances of an Auth adapters
@@ -51,17 +109,19 @@ class Config extends \Tk\Config
      * hashPassword
      *
      * @param $pwd
-     * @param \App\Db\User $user (optional)
+     * @param \Bs\Db\User $user (optional)
      * @return string
+     * @throws \Tk\Exception
      */
     public function hashPassword($pwd, $user = null)
     {
         $salt = '';
         if ($user && false) {    // TODO: Use salted password
-            if (method_exists($user, 'getHash'))
+            if (method_exists($user, 'getHash')) {
                 $salt = $user->getHash();
-            else if ($user->hash)
+            } else if ($user->hash) {
                 $salt = $user->hash;
+            }
         }
         return $this->hash($pwd, $salt);
     }
@@ -111,11 +171,11 @@ class Config extends \Tk\Config
      * @param string $name
      * @param bool $active
      * @return \Bs\Db\User
-     * @throws \Tk\Db\Exception
+     * @throws \Tk\Exception
      */
     public function createNewUser($username, $email, $password = '', $name = '', $active = true)
     {
-        $user = new \App\Db\User();
+        $user = new \Bs\Db\User();
         $user->username = $username;
         $user->name = $name;
         $user->email = $email;
@@ -125,6 +185,39 @@ class Config extends \Tk\Config
         $user->save();
 
         return $user;
+    }
+
+    /**
+     * getAuth
+     *
+     * @return \Tk\Auth
+     * @throws \Tk\Db\Exception
+     */
+    public function getAuth()
+    {
+        if (!$this->get('auth')) {
+            $obj = new \Tk\Auth(new \Tk\Auth\Storage\SessionStorage($this->getSession()));
+            $this->set('auth', $obj);
+        }
+        return $this->get('auth');
+    }
+
+    /**
+     * @return Db\User
+     */
+    public function getUser()
+    {
+        return $this->get('user');
+    }
+
+    /**
+     * @param Db\User $user
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        $this->set('user', $user);
+        return $this;
     }
 
 
@@ -199,13 +292,13 @@ class Config extends \Tk\Config
     /**
      * getFrontController
      *
-     * @return \App\FrontController
+     * @return \Bs\FrontController
      * @throws \Tk\Exception
      */
     public function getFrontController()
     {
         if (!$this->get('front.controller')) {
-            $obj = new \App\FrontController($this->getEventDispatcher(), $this->getResolver());
+            $obj = new \Bs\FrontController($this->getEventDispatcher(), $this->getResolver());
             $this->set('front.controller', $obj);
         }
         return parent::get('front.controller');
@@ -343,21 +436,6 @@ class Config extends \Tk\Config
     }
 
     /**
-     * getAuth
-     *
-     * @return \Tk\Auth
-     * @throws \Tk\Db\Exception
-     */
-    public function getAuth()
-    {
-        if (!$this->get('auth')) {
-            $obj = new \Tk\Auth(new \Tk\Auth\Storage\SessionStorage($this->getSession()));
-            $this->set('auth', $obj);
-        }
-        return $this->get('auth');
-    }
-
-    /**
      * getEmailGateway
      *
      * @return \Tk\Mail\Gateway
@@ -370,21 +448,6 @@ class Config extends \Tk\Config
             $this->set('email.gateway', $gateway);
         }
         return $this->get('email.gateway');
-    }
-
-    /**
-     * getPluginFactory
-     *
-     * @return \Tk\Plugin\Factory
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Plugin\Exception
-     */
-    public function getPluginFactory()
-    {
-        if (!$this->get('plugin.factory')) {
-            $this->set('plugin.factory', \Tk\Plugin\Factory::getInstance($this->getDb(), $this->getPluginPath(), $this->getEventDispatcher()));
-        }
-        return $this->get('plugin.factory');
     }
 
     /**
@@ -406,24 +469,6 @@ class Config extends \Tk\Config
     }
 
 
-    /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->get('user');
-    }
-
-    /**
-     * @param Db\User $user
-     * @return $this
-     */
-    public function setUser($user)
-    {
-        $this->set('user', $user);
-        return $this;
-    }
-
 
 
     //  -----------------------  Create methods  -----------------------
@@ -435,7 +480,7 @@ class Config extends \Tk\Config
      */
     public function createPage($controller)
     {
-        $page = new \App\Page();
+        $page = new \Bs\Page();
         $page->setController($controller);
         if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
             $controller->setPageTitle($controller->getDefaultTitle());

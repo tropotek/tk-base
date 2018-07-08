@@ -67,6 +67,7 @@ class UserMap extends Mapper
      */
     public function findByUsername($username)
     {
+        vd($username);
         $result = $this->select('username = ' . $this->getDb()->quote($username) );
         return $result->current();
     }

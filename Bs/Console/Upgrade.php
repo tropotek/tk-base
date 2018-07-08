@@ -31,7 +31,7 @@ class Upgrade extends Iface
     {
         parent::execute($input, $output);
 
-        $config = \App\Config::getInstance();
+        $config = $this->getConfig();
         if ($config->isDebug()) {
             $this->writeError('Error: Only run this command in a live environment.');
             return;

@@ -11,11 +11,11 @@ class Iface extends \Tk\Console\Console
 {
 
     /**
-     * @return \App\Config
+     * @return \Bs\Config
      */
     public function getConfig()
     {
-        return \App\Config::getInstance();
+        return \Bs\Config::getInstance();
     }
 
 }

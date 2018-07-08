@@ -36,7 +36,7 @@ class Mirror extends Iface
         parent::execute($input, $output);
 
         // required vars
-        $config = \App\Config::getInstance();
+        $config = $this->getConfig();
         if (!$config->isDebug()) {
             $this->writeError('Error: Only run this command in a debug environment.');
             return;

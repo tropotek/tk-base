@@ -32,7 +32,7 @@ class Debug extends Iface
     {
         parent::execute($input, $output);
 
-        $config = \App\Config::getInstance();
+        $config = \Bs\Config::getInstance();
         $db = $config->getDb();
 
         if (!$config->isDebug()) {

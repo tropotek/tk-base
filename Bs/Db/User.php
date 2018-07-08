@@ -87,16 +87,16 @@ class User extends Model implements \Tk\ValidInterface
     {
         $this->modified = new \DateTime();
         $this->created = new \DateTime();
-        $this->ip = \App\Config::getInstance()->getRequest()->getIp();
+        $this->ip = \Bs\Config::getInstance()->getRequest()->getIp();
     }
 
     /**
-     * @throws \Tk\Db\Exception
+     * @throws \Tk\Exception
      */
     public function save()
     {
         if (!$this->hash) {
-            $this->hash = $this->generateHash();
+            $this->hash = $this->getHash();
         }
         parent::save();
     }
@@ -120,14 +120,29 @@ class User extends Model implements \Tk\ValidInterface
      *
      * @param string $pwd
      * @return User
+     * @throws \Tk\Exception
      */
     public function setNewPassword($pwd = '')
     {
         if (!$pwd) {
             $pwd = \Tk\Config::createPassword(10);
         }
-        $this->password = \App\Config::getInstance()->hashPassword($pwd, $this);
+        $this->password = \Bs\Config::getInstance()->hashPassword($pwd, $this);
         return $this;
+    }
+
+    /**
+     * Get the user hash or generate one if needed
+     *
+     * @return string
+     * @throws \Tk\Exception
+     */
+    public function getHash()
+    {
+        if (!$this->hash) {
+            $this->hash = $this->generateHash();
+        }
+        return $this->hash;
     }
 
     /**
@@ -168,7 +183,7 @@ class User extends Model implements \Tk\ValidInterface
      */
     public function isAdmin()
     {
-        return $this->hasRole(\App\Db\User::ROLE_ADMIN);
+        return $this->hasRole(self::ROLE_ADMIN);
     }
 
     /**
@@ -177,7 +192,7 @@ class User extends Model implements \Tk\ValidInterface
      */
     public function isUser()
     {
-        return $this->hasRole(\App\Db\User::ROLE_USER);
+        return $this->hasRole(self::ROLE_USER);
     }
 
 
