@@ -13,7 +13,7 @@ use Tk\Event\GetResponseEvent;
 class CrumbsHandler implements Subscriber
 {
     /**
-     * do any auth init setup
+     * Init the crumbs for this app
      *
      * @param GetResponseEvent $event
      */
@@ -21,14 +21,14 @@ class CrumbsHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         $user = $config->getUser();
-        if ($user) {
-            \Tk\Ui\Crumbs::$SID = 'crumbs.manager.'.$user->role;
-            \Tk\Ui\Crumbs::$homeTitle = 'Dashboard';
-            \Tk\Ui\Crumbs::$homeUrl = $user->getHomeUrl();
-        }
-        // Create New Instance
-        \Tk\Ui\Crumbs::getInstance();
 
+        $homeTitle = '';
+        $homeUrl = '';
+        if ($user) {
+            $homeTitle = 'Dashboard';
+            $homeUrl = $user->getHomeUrl();
+        }
+        $config->getCrumbs($homeTitle, $homeUrl);
     }
 
     /**

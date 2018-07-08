@@ -461,11 +461,21 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return \Tk\Ui\Crumbs
+     * @param string $homeTitle
+     * @param string $homeUrl
+     * @return \Tk\Crumbs
      */
-    public function getCrumbs()
+    public function getCrumbs($homeTitle=null, $homeUrl=null)
     {
-        return \Tk\Ui\Crumbs::getInstance();
+        if (!$this->get('crumbs')) {
+            if ($homeTitle)
+                \Tk\Crumbs::$homeTitle = $homeTitle;
+            if ($homeUrl)
+                \Tk\Crumbs::$homeUrl = $homeUrl;
+            $obj = \Tk\Crumbs::getInstance();
+            $this->set('crumbs', $obj);
+        }
+        return $this->get('crumbs');
     }
 
 
