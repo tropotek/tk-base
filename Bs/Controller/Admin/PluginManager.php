@@ -173,7 +173,7 @@ class PluginManager extends \Bs\Controller\AdminManagerIface
     <div class="col-md-8 col-sm-12">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h4 class="panel-title"><i class="glyphicon glyphicon-compressed"></i> Available Plugins</h4>
+          <h4 class="panel-title"><i class="fa fa-plug"></i> Available Plugins</h4>
         </div>
         <div class="panel-body">
           <div class="pluginList" var="PluginList"></div>
@@ -184,7 +184,7 @@ class PluginManager extends \Bs\Controller\AdminManagerIface
     <div class="col-md-4 col-sm-12">
       <div class="panel panel-default" id="uploadForm">
         <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-log-out"></span> Upload Plugin</h3>
+          <h3 class="panel-title"><span class="fa fa-sign-out"></span> Upload Plugin</h3>
         </div>
         <div class="panel-body">
           <p>Select A zip/tgz plugin package to upload.</p>
@@ -313,15 +313,20 @@ CSS;
     {
         $html = <<<HTML
 <div class="text-right">
-<a href="#" class="btn btn-success btn-xs noblock act" choice="inactive" var="act" title="Activate Plugin"><i class="glyphicon glyphicon-log-in"></i></a>
-<a href="#" class="btn btn-danger btn-xs noblock del" choice="inactive" var="del" title="Delete Plugin Files"><i class="glyphicon glyphicon-trash"></i></a>
-<a href="#" class="btn btn-primary btn-xs noblock setup" choice="active" var="setup" title="Configure Plugin"><i class="glyphicon glyphicon-cog"></i></a>
-<a href="#" class="btn btn-danger btn-xs noblock deact" choice="active" var="deact" title="Deactivate Plugin"><i class="glyphicon glyphicon-off"></i></a>
+<a href="#" class="btn btn-success btn-xs noblock act" choice="inactive" var="act" title="Activate Plugin"><i class="fa fa-sign-in"></i></a>
+<a href="#" class="btn btn-danger btn-xs noblock del" choice="inactive" var="del" title="Delete Plugin Files"><i class="fa fa-trash-o"></i></a>
+<a href="#" class="btn btn-primary btn-xs noblock setup" choice="active" var="setup" title="Configure Plugin"><i class="fa fa-cog"></i></a>
+<a href="#" class="btn btn-danger btn-xs noblock deact" choice="active" var="deact" title="Deactivate Plugin"><i class="fa fa-power-off"></i></a>
 </div>
 HTML;
         return \Dom\Loader::load($html);
     }
 
+    /**
+     * @param Request $request
+     * @throws \Tk\Db\Exception
+     * @throws \Tk\Plugin\Exception
+     */
     protected function doActivatePlugin(Request $request)
     {
         $pluginFactory = \App\Config::getInstance()->getPluginFactory();
@@ -355,6 +360,11 @@ HTML;
         \Tk\Uri::create()->reset()->redirect();
     }
 
+    /**
+     * @param Request $request
+     * @throws \Tk\Db\Exception
+     * @throws \Tk\Plugin\Exception
+     */
     protected function doDeletePlugin(Request $request)
     {
         $pluginName = strip_tags(trim($request->get('del')));

@@ -9,6 +9,7 @@ namespace Bs;
 class Page extends \Tk\Controller\Page
 {
 
+
     /**
      * Set the page heading, should be set from main controller
      *

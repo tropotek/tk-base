@@ -129,7 +129,7 @@ class Settings extends \Bs\Controller\AdminIface
 
   <div class="panel panel-default">
     <div class="panel-heading">
-      <i class="glyphicon glyphicon-cog"></i> Site Settings
+      <i class="fa fa-cog"></i> Site Settings
     </div>
     <div class="panel-body">
       <div var="form"></div>
