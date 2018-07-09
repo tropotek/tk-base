@@ -47,7 +47,7 @@ class FrontController extends \Tk\Kernel\HttpKernel
 
         // TODO: Maybe we no longer need the cli check, have a look
         if (!$config->isCli()) {
-            $matcher = new \Tk\Routing\UrlMatcher($config->get('site.routes'));
+            $matcher = new \Tk\Routing\UrlMatcher($config->getRouteCollection());
             $dispatcher->addSubscriber(new \Tk\Listener\RouteListener($matcher));
             $dispatcher->addSubscriber(new \Tk\Listener\PageHandler($dispatcher));
             $dispatcher->addSubscriber(new \Tk\Listener\ResponseHandler($config->getDomModifier()));
