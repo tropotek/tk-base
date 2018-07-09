@@ -155,6 +155,45 @@ var project_core = function () {
       console.warn('tinymce plugin not available.');
       return;
     }
+
+
+    /**
+     * private elFinder callback function
+     * @returns {boolean}
+     * @private
+     */
+    var _elFinderPickerCallback = function (callback, value, meta) {
+      tinymce.activeEditor.windowManager.open({
+        file: config.templateUrl + '/app/js/elFinder/elfinder.html', // use an absolute path!
+        title: 'File Manager',
+        width: 900,
+        height: 350,
+        resizable: false,
+        config: config
+      }, {
+        oninsert: function (file, fm) {
+          var url, reg, info;
+          // URL normalization
+          url = fm.convAbsUrl(file.url);
+          // Make file info
+          info = file.name;
+          // Provide file and text for the link dialog
+          if (meta.filetype === 'file') {
+            callback(url, {text: info, title: info});
+          }
+          // Provide image and alt text for the image dialog
+          if (meta.filetype === 'image') {
+            callback(url, {alt: info});
+          }
+          // Provide alternative source and posted for the media dialog
+          if (meta.filetype === 'media') {
+            callback(url);
+          }
+        }
+      });
+      return false;
+    };
+
     var mceOpts = {
       theme: 'modern',
       plugins: [
@@ -195,44 +234,6 @@ var project_core = function () {
       }
       el.tinymce(opts);
     });
-  };
-
-
-  /**
-   * private elFinder callback function
-   * @returns {boolean}
-   * @private
-   */
-  var _elFinderPickerCallback = function () {
-    tinymce.activeEditor.windowManager.open({
-      file: config.templateUrl + '/app/js/elFinder/elfinder.html', // use an absolute path!
-      title: 'File Manager',
-      width: 900,
-      height: 350,
-      resizable: false,
-      config: config
-    }, {
-      oninsert: function (file, fm) {
-        var url, reg, info;
-        // URL normalization
-        url = fm.convAbsUrl(file.url);
-        // Make file info
-        info = file.name;
-        // Provide file and text for the link dialog
-        if (meta.filetype === 'file') {
-          callback(url, {text: info, title: info});
-        }
-        // Provide image and alt text for the image dialog
-        if (meta.filetype === 'image') {
-          callback(url, {alt: info});
-        }
-        // Provide alternative source and posted for the media dialog
-        if (meta.filetype === 'media') {
-          callback(url);
-        }
-      }
-    });
-    return false;
   };
 
 
