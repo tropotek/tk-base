@@ -6,30 +6,6 @@ use Monolog\Logger;
 
 
 /**
- * Class Bootstrap
- *
- * This should be called to setup the App lib environment
- *
- * ~~~php
- *     \Bs\Bootstrap::execute();
- * ~~~
- *
- * I am using the composer.json file to auto execute this file using the following entry:
- *
- * ~~~json
- *   "autoload":  {
- *     "psr-0":  {
- *       "":  [
- *         "src/"
- *       ]
- *     },
- *     "files" : [
- *       "src/App/Bootstrap.php"    <-- This one
- *     ]
- *   }
- * ~~~
- *
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
@@ -114,7 +90,7 @@ class Bootstrap
      */
     public function initConfig()
     {
-        $config = \Bs\Config::create();
+        $config = \Bs\Config::getInstance();
         include($config->getLibBasePath() . '/config/application.php');
         if (is_file($config->getSrcPath() . '/config/application.php'))
             include($config->getSrcPath() . '/config/application.php');
@@ -128,7 +104,7 @@ class Bootstrap
      */
     public function addRoutes()
     {
-        $config = \Bs\Config::create();
+        $config = \Bs\Config::getInstance();
         include($config->getLibBasePath() . '/config/routes.php');
         if (is_file($config->getSrcPath() . '/config/routes.php'))
             include($config->getSrcPath() . '/config/routes.php');
