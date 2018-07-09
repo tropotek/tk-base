@@ -488,10 +488,13 @@ class Config extends \Tk\Config
      * Return the back URI if available, otherwise it will return the home URI
      *
      * @return \Tk\Uri
+     * @throws \Tk\Db\Exception
      */
     public function getBackUrl()
     {
-        return $this->getCrumbs()->getBackUrl();
+        if ($this->getCrumbs())
+            return $this->getCrumbs()->getBackUrl();
+        return $this->getSession()->getBackUrl();
     }
 
     /**

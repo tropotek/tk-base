@@ -8,6 +8,8 @@ namespace Bs\Controller;
  */
 abstract class Iface extends \Tk\Controller\Iface
 {
+
+
     /**
      * @return string
      */
