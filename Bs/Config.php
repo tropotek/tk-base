@@ -337,13 +337,13 @@ class Config extends \Tk\Config
      *
      * @return \Tk\Routing\RouteCollection
      */
-    public function getSiteRoutes()
+    public function getRouteCollection()
     {
-        if (!$this->get('site.routes')) {
+        if (!$this->get('route.collection')) {
             $obj = new \Tk\Routing\RouteCollection();
-            $this->set('site.routes', $obj);
+            $this->set('route.collection', $obj);
         }
-        return parent::get('site.routes');
+        return parent::get('route.collection');
     }
 
     /**

@@ -12,7 +12,7 @@
  */
 
 $config = \Bs\Config::getInstance();
-$routes = $config->getSiteRoutes();
+$routes = $config->getRouteCollection();
 
 // Default Home catchall
 $params = array();
