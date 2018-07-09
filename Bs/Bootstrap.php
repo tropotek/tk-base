@@ -117,6 +117,8 @@ class Bootstrap
         include($config->getLibBasePath() . '/config/application.php');
         if (is_file($config->getSrcPath() . '/config/application.php'))
             include($config->getSrcPath() . '/config/application.php');
+        if (is_file($config->getSrcPath() . '/config/config.php'))
+            include($config->getSrcPath() . '/config/config.php');
         return $config;
     }
 
