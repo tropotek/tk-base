@@ -83,6 +83,7 @@ class Bootstrap
         } else {
             \Dom\Template::$enableTracer = true;
         }
+
         // Init framework error handler
         \Tk\ErrorHandler::getInstance($config->getLog());
 
