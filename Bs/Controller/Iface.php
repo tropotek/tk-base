@@ -13,21 +13,13 @@ abstract class Iface extends \Tk\Controller\Iface
      */
     public function getDefaultTitle()
     {
-        $replace = array('admin-', 'user-');
-        /** @var \Tk\Request $request */
-        $request = $this->getConfig()->getRequest();
-        if ($request) {
-            $routeName = $request->getAttribute('_route');
-            $routeName = str_replace($replace, '', $routeName);
-            return ucwords(trim(str_replace('-', ' ', $routeName)));
-        }
-        return '';
+        return $this->getConfig()->makePageTitle();
     }
 
     /**
      * Get the currently logged in user
      *
-     * @return \Bs\Db\User
+     * @return \Bs\Db\User|\Uni\Db\User
      */
     public function getUser()
     {
@@ -43,11 +35,19 @@ abstract class Iface extends \Tk\Controller\Iface
     }
 
     /**
-     * @return \Tk\Ui\Crumbs
+     * @return \Tk\Crumbs
      */
     public function getCrumbs()
     {
         return $this->getConfig()->getCrumbs();
+    }
+
+    /**
+     * @return \Tk\Uri
+     */
+    public function getBackUrl()
+    {
+        return $this->getCrumbs()->getBackUrl();
     }
 
     /**

@@ -6,17 +6,16 @@ use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
 use Tk\Form\Event;
+use Bs\Controller\AdminManagerIface;
 
 /**
- *
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @see http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  *
  * @todo Add a delete data confirmation when uninstalling/disabling the plugin
  */
-class PluginManager extends \Bs\Controller\AdminManagerIface
+class PluginManager extends AdminManagerIface
 {
 
     /**

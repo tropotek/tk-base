@@ -520,16 +520,31 @@ class Config extends \Tk\Config
 
     /**
      * @param \Tk\Controller\Iface $controller
-     * @return \Tk\Controller\Page
+     * @return Page
      */
     public function createPage($controller)
     {
-        $page = new \Bs\Page();
+        $page = new Page();
         $page->setController($controller);
         if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
             $controller->setPageTitle($controller->getDefaultTitle());
         }
         return $page;
+    }
+
+    /**
+     * @return string
+     */
+    public function makePageTitle()
+    {
+        $replace = array('admin-', 'user-');
+        /** @var \Tk\Request $request */
+        $routeName = $this->getRequest()->getAttribute('_route');
+        if ($routeName) {
+            $routeName = str_replace($replace, '', $routeName);
+            return ucwords(trim(str_replace('-', ' ', $routeName)));
+        }
+        return '';
     }
 
     /**

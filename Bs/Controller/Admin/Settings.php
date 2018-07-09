@@ -5,13 +5,15 @@ use Tk\Request;
 use Tk\Form;
 use Tk\Form\Event;
 use Tk\Form\Field;
+use Bs\Controller\AdminIface;
+
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class Settings extends \Bs\Controller\AdminIface
+class Settings extends AdminIface
 {
 
     /**
@@ -75,9 +77,10 @@ class Settings extends \Bs\Controller\AdminIface
      * doSubmit()
      *
      * @param Form $form
+     * @param \Tk\Form\Event\Iface $event
      * @throws \Tk\Db\Exception
      */
-    public function doSubmit($form)
+    public function doSubmit($form, $event)
     {
         $values = $form->getValues();
         $this->data->replace($values);
@@ -96,10 +99,10 @@ class Settings extends \Bs\Controller\AdminIface
         $this->data->save();
         
         \Tk\Alert::addSuccess('Site settings saved.');
-        if ($form->getTriggeredEvent()->getName() == 'update') {
-            \Tk\Uri::create('/admin/index.html')->redirect();
+        $event->setRedirect($this->getBackUrl());
+        if ($form->getTriggeredEvent()->getName() == 'save') {
+            $event->setRedirect(\Tk\Uri::create());
         }
-        \Tk\Uri::create()->redirect();
     }
 
     /**

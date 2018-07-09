@@ -13,6 +13,7 @@
 
 $config = \Bs\Config::getInstance();
 $routes = $config->getRouteCollection();
+if (!$routes) return;
 
 // Default Home catchall
 $params = array();
@@ -32,8 +33,8 @@ $routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Re
 
 // Admin Pages
 $params = array('role' => \Bs\Db\User::ROLE_ADMIN);
-$routes->add('admin-home', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Index::doDefault', $params));
-$routes->add('admin-home-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Index::doDefault', $params));
+$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Index::doDefault', $params));
+$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Index::doDefault', $params));
 
 $routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault', $params));
 $routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault', $params));
