@@ -27,7 +27,14 @@ class MasqueradeHandler implements Subscriber
      */
     const MSQ = 'msq';
 
-
+    /**
+     * The order of role permissions
+     * @var array
+     */
+    public static $roleOrder = array(
+        User::ROLE_ADMIN,        // Highest
+        User::ROLE_USER          // Lowest
+    );
 
     /**
      * Add any headers to the final response.
@@ -171,6 +178,15 @@ class MasqueradeHandler implements Subscriber
         \Tk\Uri::create($userData['url'])->redirect();
     }
 
+    /**
+     * masqueradeLogout
+     *
+     * @throws \Tk\Exception
+     */
+    public static function masqueradeClear()
+    {
+        \App\Config::getInstance()->getSession()->remove(self::SID);
+    }
 
     /**
      * @param AuthEvent $event

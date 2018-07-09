@@ -28,10 +28,10 @@ class Page extends \Tk\Controller\Page
         }
 
         if ($this->getUser()) {
-            $template->setChoice('logout');
             $template->insertText('username', $this->getUser()->name);
             $template->setAttr('user-home', 'href', $this->getUser()->getHomeUrl());
             $template->setAttr('userUrl', 'href', $this->getUser()->getHomeUrl());
+            $template->setChoice('logout');
         } else {
             $template->setChoice('login');
         }

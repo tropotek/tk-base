@@ -92,6 +92,11 @@ $config['log.session'] = $config->getTempPath().'/session.log';
 //$config['hash.function'] = 'md5';
 
 /*
+ * Should the system use a salted password?
+ */
+$config['system.auth.salted'] = false;
+
+/*
  * Config for the \Tk\Auth\Adapter\DbTable
  */
 $config['system.auth.dbtable.tableName'] = 'user';
@@ -115,14 +120,6 @@ $config['system.auth.adapters'] = array(
 //$config['system.auth.username'] = 'admin';
 //$config['system.auth.password'] = 'password';
 
-
-
-// ------------------------------------------------------------
-
-// Include any overriding config options
-include_once($config->getSitePath() . '/src/config/config.php');
-
-// ------------------------------------------------------------
 
 
 

@@ -106,6 +106,28 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @return \Bs\Listener\AuthHandler
+     */
+    public function getAuthHandler()
+    {
+        if (!$this->get('auth.handler')) {
+            $this->set('auth.handler', new \Bs\Listener\AuthHandler());
+        }
+        return $this->get('auth.handler');
+    }
+
+    /**
+     * @return \Bs\Listener\MasqueradeHandler
+     */
+    public function getMasqueradeHandler()
+    {
+        if (!$this->get('auth.masquerade.handler')) {
+            $this->set('auth.masquerade.handler', new \Bs\Listener\MasqueradeHandler());
+        }
+        return $this->get('auth.masquerade.handler');
+    }
+
+    /**
      * hashPassword
      *
      * @param $pwd
@@ -116,7 +138,7 @@ class Config extends \Tk\Config
     public function hashPassword($pwd, $user = null)
     {
         $salt = '';
-        if ($user && false) {    // TODO: Use salted password
+        if ($user && $this->get('system.auth.salted')) {
             if (method_exists($user, 'getHash')) {
                 $salt = $user->getHash();
             } else if ($user->hash) {
@@ -160,31 +182,6 @@ class Config extends \Tk\Config
             $i++;
         }
         return $password;
-    }
-
-    /**
-     * Create a new user
-     *
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @param string $name
-     * @param bool $active
-     * @return \Bs\Db\User
-     * @throws \Tk\Exception
-     */
-    public function createNewUser($username, $email, $password = '', $name = '', $active = true)
-    {
-        $user = new \Bs\Db\User();
-        $user->username = $username;
-        $user->name = $name;
-        $user->email = $email;
-        if ($password)
-            $user->setNewPassword($password);
-        $user->active = $active;
-        $user->save();
-
-        return $user;
     }
 
     /**
@@ -236,7 +233,6 @@ class Config extends \Tk\Config
     {
         if (!parent::getRequest()) {
             $obj = \Tk\Request::create();
-            //$obj->setAttribute('config', $this);
             parent::setRequest($obj);
         }
         return parent::getRequest();
@@ -281,7 +277,6 @@ class Config extends \Tk\Config
     public function getSessionAdapter()
     {
         if (!$this->get('session.adapter')) {
-            //$adapter = null;
             $adapter = new \Tk\Session\Adapter\Database($this->getDb(), new \Tk\Encrypt());
             $this->set('session.adapter', $adapter);
         }
@@ -389,6 +384,7 @@ class Config extends \Tk\Config
             $dm->add(new \Dom\Modifier\Filter\UrlPath($this->getSiteUrl()));
             $dm->add(new \Dom\Modifier\Filter\JsLast());
             if (class_exists('Dom\Modifier\Filter\Less')) {
+                /** @var \Dom\Modifier\Filter\Less $less */
                 $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
                     array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl())));
                 $less->setCompress(true);
@@ -450,6 +446,44 @@ class Config extends \Tk\Config
         return $this->get('email.gateway');
     }
 
+
+    /**
+     * @param string $xtplFile The mail template filename as found in the /html/xtpl/mail folder
+     * @return \Tk\Mail\CurlyMessage
+     */
+    public function createMessage($xtplFile = 'default')
+    {
+        $config = self::getInstance();
+        $request = $config->getRequest();
+
+        $template = null;
+        $xtplFile = str_replace(array('./', '../'), '', strip_tags(trim($xtplFile)));
+        $xtplFile = $config->get('template.xtpl.path') . '/mail/' . $xtplFile . $config->get('template.xtpl.ext');
+        if (is_file($xtplFile))
+            $template = file_get_contents($xtplFile);
+
+        if (!$template) {
+            \Tk\Alert::addWarning('Message cannot be sent. Please contact site administrator.');
+        }
+        $message = \Tk\Mail\CurlyMessage::create($template);
+        $message->setFrom($config->get('site.email'));
+
+        $message->set('_uri', '');
+        if ($request->getUri())
+            $message->set('_uri', \Tk\Uri::create()->toString());
+        $message->set('_referer', '');
+        if ($request->getReferer())
+            $message->set('_referer', $request->getReferer()->toString());
+        $message->set('_ip', '');
+        if ($request->getIp())
+            $message->set('_ip', $request->getIp());
+        $message->set('_user_agent', '');
+        if ($request->getUserAgent())
+            $message->set('_user_agent', $request->getUserAgent());
+
+        return $message;
+    }
+
     /**
      * Return the back URI if available, otherwise it will return the home URI
      *
@@ -499,6 +533,18 @@ class Config extends \Tk\Config
     }
 
     /**
+     * Get the page role, if multiple roles return the first one.
+     *
+     * @return string
+     */
+    public function getPageRole()
+    {
+        $role = $this->getRequest()->getAttribute('role');
+        if (is_array($role)) $role = current($role);
+        return $role;
+    }
+
+    /**
      * @param string $formId
      * @param string $method
      * @param string|null $action
@@ -507,7 +553,6 @@ class Config extends \Tk\Config
     public static function createForm($formId, $method = \Tk\Form::METHOD_POST, $action = null)
     {
         $form = \Tk\Form::create($formId, $method, $action);
-        //$form->addCss('form-horizontal');
         $form->setEnableRequiredAttr();
         return $form;
     }
@@ -519,7 +564,6 @@ class Config extends \Tk\Config
     public static function createFormRenderer($form)
     {
         $obj = new \Tk\Form\Renderer\Dom($form);
-        //$obj->setFieldGroupClass(\Tk\Form\Renderer\FieldGroup::class);
         return $obj;
     }
 
@@ -561,34 +605,6 @@ class Config extends \Tk\Config
                 ->addCss('btn-default btn-once back');
         }
         return $ap;
-    }
-
-    /**
-     * @param string $xtplFile The mail template filename as found in the /html/xtpl/mail folder
-     * @return \Tk\Mail\CurlyMessage
-     */
-    public function createMessage($xtplFile = 'default')
-    {
-        $config = self::getInstance();
-        $request = $config->getRequest();
-
-        $template = null;
-        $xtplFile = str_replace(array('./', '../'), '', strip_tags(trim($xtplFile)));
-        $xtplFile = $config->get('template.xtpl.path') . '/mail/' . $xtplFile . $config->get('template.xtpl.ext');
-        if (is_file($xtplFile))
-            $template = file_get_contents($xtplFile);
-
-        if (!$template) {
-            \Tk\Alert::addWarning('Message cannot be sent. Please contact site administrator.');
-        }
-        $message = \Tk\Mail\CurlyMessage::create($template);
-        $message->setFrom($config->get('site.email'));
-        $message->set('_uri', $request->getUri()->toString());
-        $message->set('_referer', $request->getReferer()->toString());
-        $message->set('_ip', $request->getIp());
-        $message->set('_user_agent', $request->getUserAgent());
-
-        return $message;
     }
 
 

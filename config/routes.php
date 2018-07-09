@@ -54,4 +54,3 @@ $routes->add('user-home-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\Us
 $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault', $params));
 
 
-include($config->getSrcPath().'/config/routes.php');

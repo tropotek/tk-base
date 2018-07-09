@@ -45,6 +45,7 @@ class FrontController extends \Tk\Kernel\HttpKernel
         $request = $config->getRequest();
         $dispatcher = $this->getDispatcher();
 
+        // TODO: Maybe we no longer need the cli check, have a look
         if (!$config->isCli()) {
             $matcher = new \Tk\Routing\UrlMatcher($config->get('site.routes'));
             $dispatcher->addSubscriber(new \Tk\Listener\RouteListener($matcher));
@@ -82,8 +83,8 @@ class FrontController extends \Tk\Kernel\HttpKernel
         $dispatcher->addSubscriber(new \Bs\Listener\CrumbsHandler());
         $dispatcher->addSubscriber(new \Tk\Listener\CrumbsHandler());
 
-        $dispatcher->addSubscriber(new \Bs\Listener\AuthHandler());
-        $dispatcher->addSubscriber(new \Bs\Listener\MasqueradeHandler());
+        $dispatcher->addSubscriber($config->getAuthHandler());
+        $dispatcher->addSubscriber($config->getMasqueradeHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\ActionPanelHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\PageTemplateHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\MailHandler());
