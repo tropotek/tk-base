@@ -54,6 +54,16 @@ class User extends Model implements \Tk\ValidInterface
     public $lastLogin = null;
 
     /**
+     * @var string
+     */
+    public $sessionId = '';
+
+    /**
+     * @var string
+     */
+    public $ip = '';
+
+    /**
      * @var bool
      */
     public $active = true;
@@ -73,15 +83,9 @@ class User extends Model implements \Tk\ValidInterface
      */
     public $created = null;
 
-    /**
-     * @var string
-     */
-    public $ip = '';
-
 
     /**
      * User constructor.
-     *
      */
     public function __construct()
     {
@@ -99,36 +103,6 @@ class User extends Model implements \Tk\ValidInterface
             $this->hash = $this->getHash();
         }
         parent::save();
-    }
-
-    /**
-     * Return the users home|dashboard relative url
-     *
-     * @return \Tk\Uri
-     */
-    public function getHomeUrl()
-    {
-        if ($this->isAdmin())
-            return \Tk\Uri::create('/admin/index.html');
-        if ($this->isUser())
-            return \Tk\Uri::create('/user/index.html');
-        return \Tk\Uri::create('/index.html');
-    }
-
-    /**
-     * Set the password from a plain string
-     *
-     * @param string $pwd
-     * @return User
-     * @throws \Tk\Exception
-     */
-    public function setNewPassword($pwd = '')
-    {
-        if (!$pwd) {
-            $pwd = \Tk\Config::createPassword(10);
-        }
-        $this->password = \Bs\Config::getInstance()->hashPassword($pwd, $this);
-        return $this;
     }
 
     /**
@@ -151,16 +125,46 @@ class User extends Model implements \Tk\ValidInterface
      * @param bool $isTemp Set this to true, when generate a temporary hash used for registration
      * @return string
      * @throws \Tk\Db\Exception
+     * @throws \Tk\Exception
      */
     public function generateHash($isTemp = false)
     {
+        if (!$this->username) {
+            throw new \Tk\Exception('The username must be set before generating a valid hash');
+        }
         $key = sprintf('%s%s', $this->getVolatileId(), $this->username);
         if ($isTemp) {
             $key .= date('-YmdHis');
         }
-        return hash('md5', $key);
+        return \App\Config::getInstance()->hash($key);
     }
 
+    /**
+     * Return the users home|dashboard relative url
+     *
+     * @return \Tk\Uri
+     * @deprecated Use \Bs\Config::getInstance()->getUserHomeUrl($user)
+     */
+    public function getHomeUrl()
+    {
+        return \Bs\Config::getInstance()->getUserHomeUrl($this);
+    }
+
+    /**
+     * Set the password from a plain string
+     *
+     * @param string $pwd
+     * @return User
+     * @throws \Tk\Exception
+     */
+    public function setNewPassword($pwd = '')
+    {
+        if (!$pwd) {
+            $pwd = \Tk\Config::createPassword(10);
+        }
+        $this->password = \Bs\Config::getInstance()->hashPassword($pwd, $this);
+        return $this;
+    }
 
     /**
      * @param string|array $role
@@ -178,7 +182,6 @@ class User extends Model implements \Tk\ValidInterface
     }
 
     /**
-     *
      * @return boolean
      */
     public function isAdmin()
@@ -187,12 +190,19 @@ class User extends Model implements \Tk\ValidInterface
     }
 
     /**
-     *
      * @return boolean
      */
     public function isUser()
     {
         return $this->hasRole(self::ROLE_USER);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->active;
     }
 
 
@@ -202,18 +212,17 @@ class User extends Model implements \Tk\ValidInterface
      * objects for use within forms.
      *
      * @return array
+     * @throws \ReflectionException
      * @throws \Tk\Db\Exception
      */
     public function validate()
     {
         $errors = array();
 
-//        if (!$this->name) {
-//            $errors['name'] = 'Invalid field name value';
-//        }
-        if (!$this->role) {
+        if (!$this->role || !in_array($this->role, \Tk\ObjectUtil::getClassConstants($this, 'ROLE_'))) {
             $errors['role'] = 'Invalid field role value';
         }
+
         if (!$this->username) {
             $errors['username'] = 'Invalid field username value';
         } else {

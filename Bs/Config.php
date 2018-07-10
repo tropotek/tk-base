@@ -38,7 +38,6 @@ class Config extends \Tk\Config
         return $this->getSitePath() . rtrim($this->get('system.lib.base.path'), '/');
     }
 
-
     /**
      * getPluginFactory
      *
@@ -52,20 +51,6 @@ class Config extends \Tk\Config
             $this->set('plugin.factory', \Tk\Plugin\Factory::getInstance($this->getDb(), $this->getPluginPath(), $this->getEventDispatcher()));
         }
         return $this->get('plugin.factory');
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAdminActionPanel()
-    {
-        if (!$this->get('admin.action.panel')) {
-            $obj = \Tk\Ui\Admin\ActionPanel::create('Actions', 'fa fa-cogs');
-            $obj->add(\Tk\Ui\Button::create('Back', 'javascript: window.history.back();', 'fa fa-arrow-left'))
-                ->addCss('btn-default btn-once back');
-            $this->set('admin.action.panel', $obj);
-        }
-        return $this->get('admin.action.panel');
     }
 
     /**
@@ -103,28 +88,6 @@ class Config extends \Tk\Config
         // send the user submitted username and password to the adapter
         $adapter->replace($submittedData);
         return $adapter;
-    }
-
-    /**
-     * @return \Bs\Listener\AuthHandler
-     */
-    public function getAuthHandler()
-    {
-        if (!$this->get('auth.handler')) {
-            $this->set('auth.handler', new \Bs\Listener\AuthHandler());
-        }
-        return $this->get('auth.handler');
-    }
-
-    /**
-     * @return \Bs\Listener\MasqueradeHandler
-     */
-    public function getMasqueradeHandler()
-    {
-        if (!$this->get('auth.masquerade.handler')) {
-            $this->set('auth.masquerade.handler', new \Bs\Listener\MasqueradeHandler());
-        }
-        return $this->get('auth.masquerade.handler');
     }
 
     /**
@@ -200,31 +163,6 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->get('user');
-    }
-
-    /**
-     * @param Db\User $user
-     * @return $this
-     */
-    public function setUser($user)
-    {
-        $this->set('user', $user);
-        return $this;
-    }
-
-
-
-
-    /* ****************************************************************************************** */
-
-
-
-    /**
      * getRequest
      *
      * @return \Tk\Request
@@ -281,22 +219,6 @@ class Config extends \Tk\Config
             $this->set('session.adapter', $adapter);
         }
         return $this->get('session.adapter');
-    }
-
-
-    /**
-     * getFrontController
-     *
-     * @return \Bs\FrontController
-     * @throws \Tk\Exception
-     */
-    public function getFrontController()
-    {
-        if (!$this->get('front.controller')) {
-            $obj = new \Bs\FrontController($this->getEventDispatcher(), $this->getResolver());
-            $this->set('front.controller', $obj);
-        }
-        return parent::get('front.controller');
     }
 
     /**
@@ -446,7 +368,6 @@ class Config extends \Tk\Config
         return $this->get('email.gateway');
     }
 
-
     /**
      * @param string $xtplFile The mail template filename as found in the /html/xtpl/mail folder
      * @return \Tk\Mail\CurlyMessage
@@ -516,24 +437,8 @@ class Config extends \Tk\Config
     }
 
 
-
-
     //  -----------------------  Create methods  -----------------------
 
-
-    /**
-     * @param \Tk\Controller\Iface $controller
-     * @return Page
-     */
-    public function createPage($controller)
-    {
-        $page = new Page();
-        $page->setController($controller);
-        if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
-            $controller->setPageTitle($controller->getDefaultTitle());
-        }
-        return $page;
-    }
 
     /**
      * @return string
@@ -586,7 +491,6 @@ class Config extends \Tk\Config
     }
 
     /**
-     *
      * @param string $id
      * @param array $params
      * @param null|\Tk\Request $request
@@ -614,9 +518,11 @@ class Config extends \Tk\Config
      * @param string $icon
      * @param bool $withBack
      * @return \Tk\Ui\Admin\ActionPanel
+     * @deprecated No longer used I think
      */
     public static function createActionPanel($title = 'Actions', $icon = 'fa fa-cogs', $withBack = true)
     {
+        \Tk\Log::notice('\Bs\Config::creteActionPanel() called. Deprecated Function!!!');
         $ap = \Tk\Ui\Admin\ActionPanel::create($title, $icon);
         if ($withBack) {
             $ap->add(\Tk\Ui\Button::create('Back', 'javascript: window.history.back();', 'fa fa-arrow-left'))
@@ -625,7 +531,121 @@ class Config extends \Tk\Config
         return $ap;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAdminActionPanel()
+    {
+        if (!$this->get('admin.action.panel')) {
+            $obj = \Tk\Ui\Admin\ActionPanel::create('Actions', 'fa fa-cogs');
+            $obj->add(\Tk\Ui\Button::create('Back', 'javascript: window.history.back();', 'fa fa-arrow-left'))
+                ->addCss('btn-default btn-once back');
+            $this->set('admin.action.panel', $obj);
+        }
+        return $this->get('admin.action.panel');
+    }
 
+
+
+    // ------------------------------- Commonly Overridden ---------------------------------------
+
+
+    /**
+     * @param int $id
+     * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface|\Uni\Db\User
+     * @throws \Tk\Db\Exception
+     */
+    public function findUser($id)
+    {
+        return \Bs\Db\UserMap::create()->find($id);
+    }
+
+    /**
+     * @return Db\User
+     */
+    public function getUser()
+    {
+        return $this->get('user');
+    }
+
+    /**
+     * @param Db\User $user
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        $this->set('user', $user);
+        return $this;
+    }
+
+    /**
+     * Return the users home|dashboard relative url
+     *
+     * @param \Bs\Db\User|null $user
+     * @return \Tk\Uri
+     */
+    public function getUserHomeUrl($user = null)
+    {
+        if ($user) {
+            if ($user->isAdmin())
+                return \Tk\Uri::create('/admin/index.html');
+            if ($user->isUser())
+                return \Tk\Uri::create('/user/index.html');
+        }
+        return \Tk\Uri::create('/index.html');
+    }
+
+
+    /**
+     * getFrontController
+     *
+     * @return \Bs\FrontController
+     * @throws \Tk\Exception
+     */
+    public function getFrontController()
+    {
+        if (!$this->get('front.controller')) {
+            $obj = new \Bs\FrontController($this->getEventDispatcher(), $this->getResolver());
+            $this->set('front.controller', $obj);
+        }
+        return parent::get('front.controller');
+    }
+
+    /**
+     * @return \Bs\Listener\AuthHandler
+     */
+    public function getAuthHandler()
+    {
+        if (!$this->get('auth.handler')) {
+            $this->set('auth.handler', new \Bs\Listener\AuthHandler());
+        }
+        return $this->get('auth.handler');
+    }
+
+    /**
+     * @return \Bs\Listener\MasqueradeHandler
+     */
+    public function getMasqueradeHandler()
+    {
+        if (!$this->get('auth.masquerade.handler')) {
+            $this->set('auth.masquerade.handler', new \Bs\Listener\MasqueradeHandler());
+        }
+        return $this->get('auth.masquerade.handler');
+    }
+
+    /**
+     * @param \Tk\Controller\Iface $controller
+     * @return Page
+     */
+    public function createPage($controller)
+    {
+        $page = new Page();
+        $page->setController($controller);
+        if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
+            $controller->setPageTitle($controller->getDefaultTitle());
+        }
+        return $page;
+    }
 
 
 }

@@ -130,19 +130,18 @@ class UserMap extends Mapper
             }
         }
 
+        if (!empty($filter['active'])) {
+            $where .= sprintf('a.active = %s AND ', (int)$filter['active']);
+        }
+
         if (!empty($filter['email'])) {
             $where .= sprintf('a.email = %s AND ', $this->getDb()->quote($filter['email']));
         }
 
-        
         if (!empty($filter['exclude'])) {
-            if (!is_array($filter['exclude'])) $filter['exclude'] = array($filter['exclude']);
-            $w = '';
-            foreach ($filter['exclude'] as $v) {
-                $w .= sprintf('a.id != %d AND ', (int)$v);
-            }
+            $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) {
-                $where .= ' ('. rtrim($w, ' AND ') . ') AND ';
+                $where .= '('. $w . ') AND ';
             }
         }
         
