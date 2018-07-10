@@ -10,7 +10,7 @@ use Tk\Request;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class Index extends \Bs\Controller\AdminIface
+class Dashboard extends \Bs\Controller\AdminIface
 {
     /**
      * @throws \Exception
@@ -41,11 +41,7 @@ class Index extends \Bs\Controller\AdminIface
     {
         $xhtml = <<<HTML
 <div>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<p>TODO: Create the Admin Dashboard</p>
 <p>&nbsp;</p>
 </div>
 HTML;
