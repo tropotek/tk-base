@@ -33,8 +33,8 @@ $routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Re
 
 // Admin Pages
 $params = array('role' => \Bs\Db\User::ROLE_ADMIN);
-$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Index::doDefault', $params));
-$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Index::doDefault', $params));
+$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault', $params));
+$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault', $params));
 
 $routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault', $params));
 $routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault', $params));
@@ -50,8 +50,13 @@ $routes->add('dev-events', new \Tk\Routing\Route('/admin/dev/events.html', 'Bs\C
 
 // User Pages
 $params = array('role' => \Bs\Db\User::ROLE_USER);
-$routes->add('user-home', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Index::doDefault', $params));
-$routes->add('user-home-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Index::doDefault', $params));
+$routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Dashboard::doDefault', $params));
+$routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Dashboard::doDefault', $params));
 $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault', $params));
 
+// Example: How to do a simple controller/route all-in-one
+//$routes->add('simpleTest', new \Tk\Routing\Route('/test.html', function ($request) use ($config) {
+//    vd($config->toString());
+//    return '<p>This is a simple test</p>';
+//}, $params));
 
