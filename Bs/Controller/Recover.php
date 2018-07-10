@@ -40,8 +40,8 @@ class Recover extends Iface
      */
     public function doDefault(Request $request)
     {
-        $this->form = \App\Config::createForm('recover-account');
-        $this->form->setRenderer(\App\Config::createFormRenderer($this->form));
+        $this->form = $this->getConfig()->createForm('recover-account');
+        $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
         $this->form->addField(new Field\Input('account'))->setLabel('Username / Email');
         $this->form->addField(new Event\Submit('recover', array($this, 'doRecover')))->addCss('btn btn-lg btn-default btn-ss');

@@ -53,8 +53,8 @@ class Register extends Iface
         $this->user = new \Bs\Db\User();
         $this->user->role = \Bs\Db\User::ROLE_USER;
 
-        $this->form = \App\Config::createForm('register-account');
-        $this->form->setRenderer(\App\Config::createFormRenderer($this->form));
+        $this->form = $this->getConfig()->createForm('register-account');
+        $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
         $this->form->addField(new Field\Input('name'));
         $this->form->addField(new Field\Input('email'));

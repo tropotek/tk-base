@@ -40,7 +40,7 @@ class PluginManager extends AdminManagerIface
      */
     public function doDefault(Request $request)
     {
-        $this->pluginFactory = \App\Config::getInstance()->getPluginFactory();
+        $this->pluginFactory = $this->getConfig()->getPluginFactory();
 
         // Upload plugin
         $this->form = $this->getConfig()->createForm('formEdit');
@@ -63,7 +63,7 @@ class PluginManager extends AdminManagerIface
         $this->table->addCell(new \Tk\Table\Cell\Text('icon'))->setLabel('')
             ->setOnCellHtml(function ($cell, $obj, $html) {
                 // ToDO
-                $pluginName = \App\Config::getInstance()->getPluginFactory()->cleanPluginName($obj->name);
+                $pluginName = \Bs\Config::getInstance()->getPluginFactory()->cleanPluginName($obj->name);
                 if (is_file(\Tk\Config::getInstance()->getPluginPath().'/'.$pluginName.'/icon.png')) {
                     $url =  \Tk\Config::getInstance()->getPluginUrl() . '/' . $pluginName . '/icon.png';
                     $html = sprintf('<img class="media-object" src="%s" var="icon" style="width: 20px;" choice="icon"/>', $url);
@@ -245,7 +245,7 @@ class ActionsCell extends \Tk\Table\Cell\Text
     public function getCellHtml($info, $rowIdx = null)
     {
         $template = $this->__makeTemplate();
-        $pluginFactory = \App\Config::getInstance()->getPluginFactory();
+        $pluginFactory = \Bs\Config::getInstance()->getPluginFactory();
         $pluginName = $pluginFactory->cleanPluginName($info->name);
 
         if ($pluginFactory->isActive($pluginName)) {
@@ -328,7 +328,7 @@ HTML;
      */
     protected function doActivatePlugin(Request $request)
     {
-        $pluginFactory = \App\Config::getInstance()->getPluginFactory();
+        $pluginFactory = \Bs\Config::getInstance()->getPluginFactory();
         $pluginName = strip_tags(trim($request->get('act')));
         if (!$pluginName) {
             \Tk\Alert::addWarning('Cannot locate Plugin: ' . $pluginName);
@@ -351,7 +351,7 @@ HTML;
             return;
         }
         try {
-            \App\Config::getInstance()->getPluginFactory()->deactivatePlugin($pluginName);
+            \Bs\Config::getInstance()->getPluginFactory()->deactivatePlugin($pluginName);
             \Tk\Alert::addSuccess('Plugin `' . $pluginName . '` deactivated successfully');
         }catch (\Exception $e) {
             \Tk\Alert::addError('Deactivate Failed: ' . $e->getMessage());
@@ -371,7 +371,7 @@ HTML;
             \Tk\Alert::addWarning('Cannot locate Plugin: ' . $pluginName);
             return;
         }
-        $pluginPath = \App\Config::getInstance()->getPluginFactory()->getPluginPath($pluginName);
+        $pluginPath = \Bs\Config::getInstance()->getPluginFactory()->getPluginPath($pluginName);
 
         if (!is_dir($pluginPath)) {
             \Tk\Alert::addWarning('Plugin `' . $pluginName . '` path not found');

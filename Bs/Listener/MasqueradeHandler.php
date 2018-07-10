@@ -185,7 +185,7 @@ class MasqueradeHandler implements Subscriber
      */
     public static function masqueradeClear()
     {
-        \App\Config::getInstance()->getSession()->remove(self::SID);
+        \Bs\Config::getInstance()->getSession()->remove(self::SID);
     }
 
     /**

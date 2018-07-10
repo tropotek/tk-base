@@ -136,7 +136,7 @@ class User extends Model implements \Tk\ValidInterface
         if ($isTemp) {
             $key .= date('-YmdHis');
         }
-        return \App\Config::getInstance()->hash($key);
+        return \Bs\Config::getInstance()->hash($key);
     }
 
     /**

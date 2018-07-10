@@ -18,7 +18,7 @@ class BsEvents
      *
      * You will need to check what the controller class is to know where you are
      *   EG:
-     *     if ($event->get('controller') instanceof \App\Controller\Index) { ... }
+     *     if ($event->get('controller') instanceof \Bs\Controller\Index) { ... }
      *
      * @event \Tk\Event\Event
      * @var string
