@@ -174,6 +174,7 @@ class User extends Model implements \Tk\ValidInterface
     {
         if (!is_array($role)) $role = array($role);
         foreach ($role as $r) {
+            //vd($role, $r, $this->role);
             if ($r == $this->role || preg_match('/'.preg_quote($r).'/', $this->role)) {
                 return true;
             }

@@ -21,6 +21,24 @@ class Config extends \Tk\Config
         $this->set('system.lib.base.path', $this['system.vendor.path'] . '/ttek/tk-base');
     }
 
+    /**
+     * Load the site route config files
+     */
+    public function loadConfig()
+    {
+        include($this->getLibBasePath() . '/config/application.php');
+        parent::loadConfig();
+    }
+
+    /**
+     * Load the site route config files
+     */
+    public function loadRoutes()
+    {
+        include($this->getLibBasePath() . '/config/routes.php');
+        $this->loadRoutes();
+    }
+
 
     /**
      * @return string
@@ -389,16 +407,12 @@ class Config extends \Tk\Config
         $message = \Tk\Mail\CurlyMessage::create($template);
         $message->setFrom($config->get('site.email'));
 
-        $message->set('_uri', '');
         if ($request->getUri())
-            $message->set('_uri', \Tk\Uri::create()->toString());
-        $message->set('_referer', '');
+            $message->set('_uri', \Tk\Uri::create('')->toString());
         if ($request->getReferer())
             $message->set('_referer', $request->getReferer()->toString());
-        $message->set('_ip', '');
         if ($request->getIp())
             $message->set('_ip', $request->getIp());
-        $message->set('_user_agent', '');
         if ($request->getUserAgent())
             $message->set('_user_agent', $request->getUserAgent());
 
