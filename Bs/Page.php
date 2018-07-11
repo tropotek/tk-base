@@ -29,8 +29,8 @@ class Page extends \Tk\Controller\Page
 
         if ($this->getUser()) {
             $template->insertText('username', $this->getUser()->name);
-            $template->setAttr('user-home', 'href', $this->getUser()->getHomeUrl());
-            $template->setAttr('userUrl', 'href', $this->getUser()->getHomeUrl());
+            $template->setAttr('user-home', 'href', $this->getConfig()->getUserHomeUrl());
+            $template->setAttr('userUrl', 'href', $this->getConfig()->getUserHomeUrl());
             $template->setChoice('logout');
         } else {
             $template->setChoice('login');
