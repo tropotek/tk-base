@@ -635,6 +635,17 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @return \Bs\Listener\PageTemplateHandler
+     */
+    public function getPageTemplateHandler()
+    {
+        if (!$this->get('page.template.handler')) {
+            $this->set('page.template.handler', new \Bs\Listener\PageTemplateHandler());
+        }
+        return $this->get('page.template.handler');
+    }
+
+    /**
      * @param \Tk\Controller\Iface $controller
      * @return Page
      */

@@ -86,7 +86,7 @@ class FrontController extends \Tk\Kernel\HttpKernel
         $dispatcher->addSubscriber($config->getAuthHandler());
         $dispatcher->addSubscriber($config->getMasqueradeHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\ActionPanelHandler());
-        $dispatcher->addSubscriber(new \Bs\Listener\PageTemplateHandler());
+        $dispatcher->addSubscriber($config->getPageTemplateHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\MailHandler());
 
     }
