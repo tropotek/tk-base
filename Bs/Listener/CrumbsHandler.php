@@ -26,7 +26,8 @@ class CrumbsHandler implements Subscriber
         $homeUrl = '';
         if ($user) {
             $homeTitle = 'Dashboard';
-            $homeUrl = $user->getHomeUrl()->getRelativePath();
+            $homeUrl = $config->getUserHomeUrl($user)->getRelativePath();
+            //$homeUrl = $user->getHomeUrl()->getRelativePath();
         }
         $config->getCrumbs($homeTitle, $homeUrl);
     }
