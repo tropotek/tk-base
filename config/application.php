@@ -24,6 +24,7 @@ $config['site.email'] = 'user@example.com';
  * Setup what paths to check when migrating SQL
  */
 $config['sql.migrate.list'] = array(
+    'Lib Sql' => $config->getVendorPath() . '/ttek/tk-base',
     'Plugin Sql' => $config->getPluginPath(),
     'App Sql' => $config->getSrcPath() . '/config'
 );
@@ -84,8 +85,6 @@ $config['log.session'] = $config->getTempPath().'/session.log';
  * Send copies of all system emails to these recipients (not error emails)
  */
 //$config['mail.bcc'] = array('user1@example.edu.au');
-
-
 
 
 

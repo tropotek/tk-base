@@ -25,7 +25,7 @@ class PageTemplateHandler implements Subscriber
             $role = $config->getRequest()->getAttribute('role');
             if (is_array($role)) $role = current($role);
         }
-        
+
         $templatePath = $config['template.' . $role];
 
         // Setup the template loader
