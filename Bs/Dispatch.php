@@ -52,6 +52,7 @@ class Dispatch
      */
     public function init()
     {
+
         $config = \Bs\Config::getInstance();
         $logger = $config->getLog();
         $request = $config->getRequest();
