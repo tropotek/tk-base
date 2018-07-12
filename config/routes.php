@@ -54,6 +54,12 @@ $routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Con
 $routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Dashboard::doDefault', $params));
 $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault', $params));
 
+// Examples
+$params = array();
+
+// Ajax Routes
+//$routes->add('ajax-find-user', new \Tk\Routing\Route('/api/1.0/findUser', 'App\Ajax\User::doFindUser', $params, array('POST')));
+
 // Example: How to do a simple controller/route all-in-one
 //$routes->add('simpleTest', new \Tk\Routing\Route('/test.html', function ($request) use ($config) {
 //    vd($config->toString());
