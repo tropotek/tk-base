@@ -148,6 +148,7 @@ class Config extends \Tk\Config
         if ($salt) $str .= $salt;
         if ($this->get('hash.function'))
             $algo = $this->get('hash.function');
+        vd($algo, $str);
         return hash($algo, $str);
     }
 
