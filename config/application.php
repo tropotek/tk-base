@@ -21,6 +21,14 @@ $config['site.email'] = 'user@example.com';
 //$config['site.client.activation'] = false;
 
 /*
+ * Setup what paths to check when migrating SQL
+ */
+$config['sql.migrate.list'] = array(
+    'Plugin Sql' => $config->getPluginPath(),
+    'App Sql' => $config->getSrcPath() . '/config'
+);
+
+/*
  * Template folders for pages
  */
 $config['system.template.path'] = '/html';
@@ -90,7 +98,7 @@ $config['log.session'] = $config->getTempPath().'/session.log';
  * Warning if you change this after user account creation
  * users will have to reset/recover their passwords
  */
-//$config['hash.function'] = 'md5';
+$config['hash.function'] = 'md5';
 
 /*
  * Should the system use a salted password?
