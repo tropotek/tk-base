@@ -68,8 +68,6 @@ class Bootstrap
 
         // Load Config with db data
         $config->replace(\Tk\Db\Data::create()->all());
-        \Tk\Uri::$BASE_URL_PATH = $config->getSiteUrl();
-
 
         // Return if using cli (Command Line)
         if ($config->isCli()) return $config;

@@ -11,23 +11,27 @@ class Config extends \Tk\Config
 
     /**
      * init the default params.
-     *
-     * @param string $sitePath
-     * @param string $siteUrl
      */
-    protected function init($sitePath = '', $siteUrl = '')
+    protected function init()
     {
-        parent::init($sitePath, $siteUrl);
+        parent::init();
         $this->set('system.lib.base.path', $this['system.vendor.path'] . '/ttek/tk-base');
     }
 
     /**
      * Load the site route config files
+     * @throws \Tk\Db\Exception
+     * @throws \Tk\Plugin\Exception
      */
     public function loadConfig()
     {
         include($this->getLibBasePath() . '/config/application.php');
         parent::loadConfig();
+
+        // Init the plugins
+        $this->getPluginFactory();
+        // Initiate the email gateway
+        $this->getEmailGateway();
     }
 
     /**
@@ -255,6 +259,16 @@ class Config extends \Tk\Config
             $this->set('event.dispatcher', $obj);
         }
         return $this->get('event.dispatcher');
+    }
+
+    /**
+     * @param \Tk\Event\Dispatcher $dispatcher
+     * @throws \Tk\Db\Exception
+     * @throws \Tk\Exception
+     */
+    public function setupDispatcher($dispatcher)
+    {
+        \Bs\Dispatch::create($dispatcher);
     }
 
     /**
@@ -614,7 +628,7 @@ class Config extends \Tk\Config
     /**
      * getFrontController
      *
-     * @return \Bs\FrontController
+     * @return \Tk\Kernel\HttpKernel
      * @throws \Tk\Exception
      */
     public function getFrontController()
