@@ -40,7 +40,7 @@ class Config extends \Tk\Config
     public function loadRoutes()
     {
         include($this->getLibBasePath() . '/config/routes.php');
-        $this->loadRoutes();
+        $this->loadAppRoutes();
     }
 
 
