@@ -26,7 +26,7 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
         $homeUrl = '';
         if ($user) {
             $homeTitle = 'Dashboard';
-            $homeUrl = $config->getHomeUrl($user)->getRelativePath();
+            $homeUrl = $config->getUserHomeUrl($user)->getRelativePath();
         }
         $config->getCrumbs($homeTitle, $homeUrl);
     }
