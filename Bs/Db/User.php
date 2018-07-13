@@ -231,7 +231,7 @@ class User extends Model implements \Tk\ValidInterface
     {
         $errors = array();
 
-        if (!$this->role || !in_array($this->role, \Tk\ObjectUtil::getClassConstants($this, 'ROLE_'))) {
+        if (!$this->role) {
             $errors['role'] = 'Invalid field role value';
         }
 
