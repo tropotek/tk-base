@@ -10,7 +10,7 @@ use Tk\Event\GetResponseEvent;
  * @see http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class CrumbsHandler implements Subscriber
+class CrumbsHandler extends \Tk\Listener\CrumbsHandler
 {
     /**
      * Init the crumbs for this app
@@ -27,7 +27,6 @@ class CrumbsHandler implements Subscriber
         if ($user) {
             $homeTitle = 'Dashboard';
             $homeUrl = $config->getUserHomeUrl($user)->getRelativePath();
-            //$homeUrl = $user->getHomeUrl()->getRelativePath();
         }
         $config->getCrumbs($homeTitle, $homeUrl);
     }
@@ -37,8 +36,10 @@ class CrumbsHandler implements Subscriber
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            KernelEvents::REQUEST => array('onSystemInit', -1)
+        return array_merge(parent::getSubscribedEvents(),
+            array(
+                KernelEvents::REQUEST => array('onSystemInit', -1)
+            )
         );
     }
 

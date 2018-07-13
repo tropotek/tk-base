@@ -91,14 +91,17 @@ class Dispatch
         $dispatcher->addSubscriber($sh);
 
         // App Listeners
-        $dispatcher->addSubscriber(new \Bs\Listener\CrumbsHandler());
-        $dispatcher->addSubscriber(new \Tk\Listener\CrumbsHandler());
-
-        $dispatcher->addSubscriber($config->getAuthHandler());
-        $dispatcher->addSubscriber($config->getMasqueradeHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\ActionPanelHandler());
-        $dispatcher->addSubscriber($config->getPageTemplateHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\MailHandler());
+
+        if ($config->getAuthHandler())
+            $dispatcher->addSubscriber($config->getAuthHandler());
+        if ($config->getMasqueradeHandler())
+            $dispatcher->addSubscriber($config->getMasqueradeHandler());
+        if ($config->getPageTemplateHandler())
+            $dispatcher->addSubscriber($config->getPageTemplateHandler());
+        if ($config->getCrumbsHandler())
+            $dispatcher->addSubscriber($config->getCrumbsHandler());
 
     }
 
