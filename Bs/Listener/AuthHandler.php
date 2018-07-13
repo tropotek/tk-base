@@ -143,6 +143,10 @@ class AuthHandler implements Subscriber
     }
 
 
+
+    // TODO: For all emails lets try to bring it back to the default mail template
+    // TODO:   make it configurable so we could add it back in the future????
+
     /**
      * @param \Tk\Event\Event $event
      * @throws \Exception

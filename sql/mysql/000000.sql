@@ -16,12 +16,13 @@ CREATE TABLE IF NOT EXISTS `user` (
   `modified` DATETIME NOT NULL,
   `created` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+  KEY `username` (`username`),
+  KEY `email` (`email`)
+) ENGINE=InnoDB;
 
 
 -- TODO: this should b added to the site sql only
+# TRUNCATE `user`;
 # INSERT INTO `user` (`id`, `name`, `email`, `username`, `password`, `role`, `active`, `hash`, `modified`, `created`)
 # VALUES
 #   (NULL, 'Administrator', 'admin@example.com', 'admin', MD5('password'), 'admin', 1, MD5('1admin'), NOW() , NOW()),
