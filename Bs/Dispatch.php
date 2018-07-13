@@ -94,10 +94,14 @@ class Dispatch
         $dispatcher->addSubscriber(new \Bs\Listener\ActionPanelHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\MailHandler());
 
-        $dispatcher->addSubscriber($config->getAuthHandler());
-        $dispatcher->addSubscriber($config->getMasqueradeHandler());
-        $dispatcher->addSubscriber($config->getPageTemplateHandler());
-        $dispatcher->addSubscriber($config->getCrumbsHandler());
+        if ($config->getAuthHandler())
+            $dispatcher->addSubscriber($config->getAuthHandler());
+        if ($config->getMasqueradeHandler())
+            $dispatcher->addSubscriber($config->getMasqueradeHandler());
+        if ($config->getPageTemplateHandler())
+            $dispatcher->addSubscriber($config->getPageTemplateHandler());
+        if ($config->getCrumbsHandler())
+            $dispatcher->addSubscriber($config->getCrumbsHandler());
 
     }
 

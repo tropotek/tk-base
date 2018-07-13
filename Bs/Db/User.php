@@ -95,7 +95,7 @@ class User extends Model implements \Tk\ValidInterface
     }
 
     /**
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function save()
     {
@@ -103,6 +103,17 @@ class User extends Model implements \Tk\ValidInterface
             $this->hash = $this->getHash();
         }
         parent::save();
+    }
+
+    /**
+     * Get the path for all file associated to this object
+     *
+     * @return string
+     * @throws \Tk\Db\Exception
+     */
+    public function getDataPath()
+    {
+        return sprintf('/user/%s', $this->getVolatileId());
     }
 
     /**
