@@ -69,7 +69,7 @@ class Profile extends \Bs\Controller\AdminIface
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->form->addField(new Event\Link('cancel', $this->getCrumbs()->getBackUrl()));
 
-        $this->form->load(\Bs\Db\UserMap::create()->unmapForm($this->user));
+        $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
         
         $this->form->execute();
 
@@ -84,7 +84,7 @@ class Profile extends \Bs\Controller\AdminIface
     public function doSubmit($form, $event)
     {
         // Load the object with data from the form using a helper object
-        \Bs\Db\UserMap::create()->mapForm($form->getValues(), $this->user);
+        $this->getConfig()->getUserMapper()->mapForm($form->getValues(), $this->user);
 
         // Password validation needs to be here
         if ($this->form->getFieldValue('newPassword')) {

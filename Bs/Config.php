@@ -578,15 +578,34 @@ class Config extends \Tk\Config
 
     // ------------------------------- Commonly Overridden ---------------------------------------
 
+    /**
+     * @return \Bs\Db\UserMap
+     */
+    public function getUserMapper()
+    {
+        if (!$this->get('obj.user.mapper')) {
+            $this->set('obj.user.mapper', \Bs\Db\UserMap::create());
+        }
+        return $this->get('obj.user.mapper');
+    }
+
+    /**
+     * @return Db\User
+     */
+    public function createUser()
+    {
+        return new \Bs\Db\User();
+    }
 
     /**
      * @param int $id
-     * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface|\Uni\Db\User
+     * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface
      * @throws \Tk\Db\Exception
+     * @deprecated use \Bs\Config::getUserMapper()
      */
     public function findUser($id)
     {
-        return \Bs\Db\UserMap::create()->find($id);
+        return $this->getUserMapper()->find($id);
     }
 
     /**

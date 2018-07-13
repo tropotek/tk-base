@@ -67,7 +67,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
         $this->table->addAction(new \Tk\Table\Action\Csv($this->getConfig()->getDb()));
         $this->table->addAction(new \Tk\Table\Action\Delete())->setExcludeList(array('1'));
 
-        $users = \Bs\Db\UserMap::create()->findFiltered($this->table->getFilterValues(), $this->table->getTool('a.name'));
+        $users = $this->getConfig()->getUserMapper()->findFiltered($this->table->getFilterValues(), $this->table->getTool('a.name'));
         $this->table->setList($users);
 
     }

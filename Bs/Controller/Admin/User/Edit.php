@@ -46,10 +46,10 @@ class Edit extends \Bs\Controller\AdminIface
     public function doDefault(Request $request)
     {
 
-        
-        $this->user = new \Bs\Db\User();
+
+        $this->user = $this->getConfig()->createUser();
         if ($request->get('userId')) {
-            $this->user = \Bs\Db\User::getMapper()->find($request->get('userId'));
+            $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
         }
 
         $this->form = $this->getConfig()->createForm('user-edit');
@@ -57,7 +57,8 @@ class Edit extends \Bs\Controller\AdminIface
 
 
         $tab = 'Details';
-        $list = array('Admin' => \Bs\Db\User::ROLE_ADMIN, 'User' => \Bs\Db\User::ROLE_USER);
+        //$list = array('Admin' => \Bs\Db\User::ROLE_ADMIN, 'User' => \Bs\Db\User::ROLE_USER);
+        $list = \Tk\Form\Field\Select::arrayToSelectList(\Tk\ObjectUtil::getClassConstants('\Bs\Db\User', 'ROLE'));
         $this->form->addField(new Field\Select('role', $list))->setTabGroup($tab)->setRequired(true);
         $this->form->addField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
         $this->form->addField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
@@ -84,7 +85,7 @@ class Edit extends \Bs\Controller\AdminIface
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->form->addField(new Event\Link('cancel', $this->getCrumbs()->getBackUrl()));
 
-        $this->form->load(\Bs\Db\UserMap::create()->unmapForm($this->user));
+        $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
         
         $this->form->execute();
 
@@ -99,7 +100,7 @@ class Edit extends \Bs\Controller\AdminIface
     public function doSubmit($form, $event)
     {
         // Load the object with data from the form using a helper object
-        \Bs\Db\UserMap::create()->mapForm($form->getValues(), $this->user);
+        $this->getConfig()->getUserMapper()->mapForm($form->getValues(), $this->user);
 
         // Password validation needs to be here
         if ($this->form->getFieldValue('newPassword')) {

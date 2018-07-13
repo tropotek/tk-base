@@ -34,7 +34,7 @@ class AuthHandler implements Subscriber
         $user = null;                       // public user
 
         if ($auth->getIdentity()) {         // Check if user is logged in
-            $user = \Bs\Db\UserMap::create()->findByUsername($auth->getIdentity());
+            $user = $config->getUserMapper()->findByUsername($auth->getIdentity());
             $config->setUser($user);
         }
 
@@ -85,7 +85,7 @@ class AuthHandler implements Subscriber
             return;
         }
         
-        $user = \Bs\Db\UserMap::create()->findByUsername($result->getIdentity());
+        $user = $config->getUserMapper()->findByUsername($result->getIdentity());
         if (!$user) {
             throw new \Tk\Auth\Exception('User not found: Contact Your Administrator');
         }
@@ -97,6 +97,7 @@ class AuthHandler implements Subscriber
      */
     public function onLoginSuccess(AuthEvent $event)
     {
+        $config = \Bs\Config::getInstance();
         $result = $event->getResult();
         if (!$result) {
             throw new \Tk\Auth\Exception('Invalid login credentials');
@@ -106,7 +107,7 @@ class AuthHandler implements Subscriber
         }
 
         /* @var \Bs\Db\User $user */
-        $user = \Bs\Db\UserMap::create()->findByUsername($result->getIdentity());
+        $user = $config->getUserMapper()->findByUsername($result->getIdentity());
         if (!$user) {
             throw new \Tk\Auth\Exception('Invalid user login credentials');
         }

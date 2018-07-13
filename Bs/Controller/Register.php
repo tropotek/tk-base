@@ -50,7 +50,7 @@ class Register extends Iface
             $this->doConfirmation($request);
         }
 
-        $this->user = new \Bs\Db\User();
+        $this->user = $this->getConfig()->createUser();
         $this->user->role = \Bs\Db\User::ROLE_USER;
 
         $this->form = $this->getConfig()->createForm('register-account');
@@ -65,7 +65,7 @@ class Register extends Iface
         $this->form->addField(new Event\Link('forgotPassword', \Tk\Uri::create('/recover.html'), ''))
             ->removeCss('btn btn-sm btn-default btn-once');
 
-        $this->form->load(\Bs\Db\UserMap::create()->unmapForm($this->user));
+        $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
         $this->form->execute();
     }
 
@@ -78,7 +78,7 @@ class Register extends Iface
      */
     public function doRegister($form, $event)
     {
-        \Bs\Db\UserMap::create()->mapForm($form->getValues(), $this->user);
+        $this->getConfig()->getUserMapper()->mapForm($form->getValues(), $this->user);
 
         if (!$this->form->getFieldValue('password')) {
             $form->addFieldError('password', 'Please enter a password');
@@ -125,8 +125,7 @@ class Register extends Iface
      * Activate the user account if not activated already, then trash the request hash....
      *
      * @param Request $request
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function doConfirmation($request)
     {
@@ -136,7 +135,7 @@ class Register extends Iface
             throw new \InvalidArgumentException('Cannot locate user. Please contact administrator.');
         }
         /** @var \Bs\Db\User $user */
-        $user = \Bs\Db\UserMap::create()->findByHash($hash);
+        $user = $this->getConfig()->getUserMapper()->findByHash($hash);
         if (!$user) {
             throw new \InvalidArgumentException('Cannot locate user. Please contact administrator.');
         }

@@ -106,6 +106,14 @@ class User extends Model implements \Tk\ValidInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->active;
+    }
+
+    /**
      * Get the path for all file associated to this object
      *
      * @return string
@@ -207,14 +215,6 @@ class User extends Model implements \Tk\ValidInterface
     public function isUser()
     {
         return $this->hasRole(self::ROLE_USER);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive()
-    {
-        return $this->active;
     }
 
 

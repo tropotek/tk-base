@@ -44,14 +44,15 @@ class MasqueradeHandler implements Subscriber
     public function onMasquerade(GetResponseEvent $event)
     {
         $request = $event->getRequest();
+        $config = \Bs\Config::getInstance();
         if (!$request->has(self::MSQ)) return;
 
         try {
             /** @var User $user */
-            $user = \Bs\Config::getInstance()->getUser();
+            $user = $config->getUser();
             if (!$user) throw new \Tk\Exception('Invalid User');
             /** @var User $msqUser */
-            $msqUser = \Bs\Db\UserMap::create()->find($request->get(self::MSQ));
+            $msqUser = $config->getUserMapper()->find($request->get(self::MSQ));
             if (!$msqUser) throw new \Tk\Exception('Invalid User');
             self::masqueradeLogin($user, $msqUser);
         } catch (\Exception $e) {
@@ -68,13 +69,15 @@ class MasqueradeHandler implements Subscriber
      * @param User $user
      * @param User $msqUser
      * @return bool
+     * @throws \Tk\Db\Exception
      */
     public static function canMasqueradeAs($user, $msqUser)
     {
         if (!$msqUser || !$user) return false;
         if ($user->id == $msqUser->id) return false;
+        $config = \Bs\Config::getInstance();
 
-        $msqArr = \Bs\Config::getInstance()->getSession()->get(self::SID);
+        $msqArr = $config->getSession()->get(self::SID);
         if (is_array($msqArr)) {    // Check if we are already masquerading as this user in the queue
             foreach ($msqArr as $data) {
                 if ($data['userId'] == $msqUser->id) return false;
@@ -110,6 +113,7 @@ class MasqueradeHandler implements Subscriber
      * >0 The masquerading total (for nested masquerading)
      *
      * @return int
+     * @throws \Tk\Db\Exception
      */
     public static function isMasquerading()
     {
@@ -159,9 +163,10 @@ class MasqueradeHandler implements Subscriber
      */
     public static function masqueradeLogout()
     {
+        $config = \Bs\Config::getInstance();
         if (!self::isMasquerading()) return;
-        if (!\Bs\Config::getInstance()->getAuth()->hasIdentity()) return;
-        $msqArr = \Bs\Config::getInstance()->getSession()->get(self::SID);
+        if (!$config->getAuth()->hasIdentity()) return;
+        $msqArr = $config->getSession()->get(self::SID);
         if (!is_array($msqArr) || !count($msqArr)) return;
 
         $userData = array_pop($msqArr);
@@ -169,11 +174,11 @@ class MasqueradeHandler implements Subscriber
             throw new \Tk\Exception('Session data corrupt. Clear session data and try again.');
 
         // Save the updated masquerade queue
-        \Bs\Config::getInstance()->getSession()->set(self::SID, $msqArr);
+        $config->getSession()->set(self::SID, $msqArr);
 
         /** @var User $user */
-        $user = \Bs\Db\UserMap::create()->find($userData['userId']);
-        \Bs\Config::getInstance()->getAuth()->getStorage()->write($user->username);
+        $user = $config->getUserMapper()->find($userData['userId']);
+        $config->getAuth()->getStorage()->write($user->username);
 
         \Tk\Uri::create($userData['url'])->redirect();
     }
