@@ -5,7 +5,8 @@ $config = \Bs\Config::getInstance();
 /*
  * It must contain only alphanumeric characters and underscores. At least one letter must be present.
  */
-$config['session.name'] = 'sn_' . substr(md5(dirname(__FILE__)), 0, 16);
+//$config['session.name'] = 'sn_' . substr(md5(dirname(__FILE__)), 0, 16);
+$config['session.name'] = 'sn_' . substr(md5(\Tk\Uri::create($config->getSiteUrl())->toString()), 0, 32);
 
 /*
  * Enable or disable session encryption.
