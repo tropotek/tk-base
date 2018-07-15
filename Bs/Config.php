@@ -27,11 +27,6 @@ class Config extends \Tk\Config
     {
         include($this->getLibBasePath() . '/config/application.php');
         parent::loadConfig();
-
-        // Init the plugins
-        $this->getPluginFactory();
-        // Initiate the email gateway
-        $this->getEmailGateway();
     }
 
     /**
@@ -578,14 +573,14 @@ class Config extends \Tk\Config
     // ------------------------------- Commonly Overridden ---------------------------------------
 
     /**
-     * @return \Bs\Db\UserMap
+     * @return Db\UserMap
      */
     public function getUserMapper()
     {
-        if (!$this->get('obj.user.mapper')) {
-            $this->set('obj.user.mapper', \Bs\Db\UserMap::create());
+        if (!$this->get('obj.mapper.user')) {
+            $this->set('obj.mapper.user', Db\UserMap::create());
         }
-        return $this->get('obj.user.mapper');
+        return $this->get('obj.mapper.user');
     }
 
     /**
@@ -593,7 +588,7 @@ class Config extends \Tk\Config
      */
     public function createUser()
     {
-        return new \Bs\Db\User();
+        return new Db\User();
     }
 
     /**

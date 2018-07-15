@@ -47,6 +47,27 @@ class Dispatch
     }
 
     /**
+     * @return \Bs\Config
+     */
+    public function getConfig()
+    {
+        return \Bs\Config::getInstance();
+    }
+
+    /**
+     * @throws \Tk\Db\Exception
+     * @throws \Tk\Plugin\Exception
+     */
+    public function initObjects()
+    {
+        // Init the plugins
+        $this->getConfig()->getPluginFactory();
+        // Initiate the email gateway
+        $this->getConfig()->getEmailGateway();
+
+    }
+
+    /**
      * @throws \Tk\Db\Exception
      * @throws \Tk\Exception
      */
@@ -57,6 +78,9 @@ class Dispatch
         $logger = $config->getLog();
         $request = $config->getRequest();
         $dispatcher = $this->getDispatcher();
+
+        $this->initObjects();
+
         // TODO: Maybe we no longer need the cli check, have a look
         if (!$config->isCli()) {
             $matcher = new \Tk\Routing\UrlMatcher($config->getRouteCollection());
