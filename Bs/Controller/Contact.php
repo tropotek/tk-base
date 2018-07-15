@@ -158,7 +158,7 @@ $attachCount
 </p>
 MSG;
 
-        $message = $this->getConfig()->createMessage();
+        $message = $this->getConfig()->createTemplateMessage();
         $message->addTo($email);
         $message->setSubject($this->getConfig()->get('site.title') . ':  Contact Form Submission - ' . $name);
         $message->set('content', $content);

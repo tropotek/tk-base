@@ -396,10 +396,34 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @param string $templateStr
+     * @return \Tk\Mail\CurlyMessage
+     */
+    public function createMessage($templateStr = '{content}')
+    {
+        $config = self::getInstance();
+        $request = $config->getRequest();
+
+        $message = \Tk\Mail\CurlyMessage::create($templateStr);
+        $message->setFrom($config->get('site.email'));
+
+        if ($request->getUri())
+            $message->set('_uri', \Tk\Uri::create('')->toString());
+        if ($request->getReferer())
+            $message->set('_referer', $request->getReferer()->toString());
+        if ($request->getIp())
+            $message->set('_ip', $request->getIp());
+        if ($request->getUserAgent())
+            $message->set('_user_agent', $request->getUserAgent());
+
+        return $message;
+    }
+
+    /**
      * @param string $xtplFile The mail template filename as found in the /html/xtpl/mail folder
      * @return \Tk\Mail\CurlyMessage
      */
-    public function createMessage($xtplFile = 'default')
+    public function createTemplateMessage($xtplFile = 'default')
     {
         $config = self::getInstance();
         $request = $config->getRequest();
@@ -413,18 +437,7 @@ class Config extends \Tk\Config
         if (!$template) {
             \Tk\Alert::addWarning('Message cannot be sent. Please contact site administrator.');
         }
-        $message = \Tk\Mail\CurlyMessage::create($template);
-        $message->setFrom($config->get('site.email'));
-
-        if ($request->getUri())
-            $message->set('_uri', \Tk\Uri::create('')->toString());
-        if ($request->getReferer())
-            $message->set('_referer', $request->getReferer()->toString());
-        if ($request->getIp())
-            $message->set('_ip', $request->getIp());
-        if ($request->getUserAgent())
-            $message->set('_user_agent', $request->getUserAgent());
-
+        $message = $this->createTemplateMessage($template);
         return $message;
     }
 
