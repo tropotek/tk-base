@@ -3836,7 +3836,7 @@ abstract class elFinderVolumeDriver {
 				return false;
 			}
 			$dir = tempnam($tmpDir, 'elf');
-			if (!unlink($dir) || !mkdir($dir, 0700, true)) {
+			if (!unlink($dir) || !mkdir($dir, 0770, true)) {
 				return false;
 			}
 			register_shutdown_function(array($this, 'rmdirRecursive'), $dir);
@@ -3872,7 +3872,7 @@ abstract class elFinderVolumeDriver {
 						$chashes[] = $_file['hash'];
 					}
 				}
-				if (($res = mkdir($target, 0700, true)) && $chashes) {
+				if (($res = mkdir($target, 0770, true)) && $chashes) {
 					$res = $this->getItemsInHand($chashes, $target, $canLink);
 				}
 				if (!$res) {

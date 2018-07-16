@@ -1,12 +1,10 @@
 <?php
 namespace Bs\Listener;
 
-use Dom\Exception;
 use Tk\Event\Subscriber;
 
 
 /**
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @see http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
@@ -24,12 +22,22 @@ class MailHandler implements Subscriber
     {
         $message = $event->getMessage();
         $config = \Bs\Config::getInstance();
-        if ($message && is_array($config['mail.bcc'])) {
-            $recip = $message->getRecipients();
-            foreach ($config['mail.bcc'] as $email) {
-                if (in_array($email, $recip)) continue;
-                if (!\Tk\Mail\Message::isValidEmail($email)) continue;
-                $message->addBcc($email);
+
+        if ($message) {
+            $headers = $message->getHeadersList();
+
+            if (!array_key_exists('X-Exception', $headers)) {
+                $message->addHeader('X-System-Message', $config->get('site.title'));
+                $message->addHeader('X-Tk-Project', $config->get('system.info.project'));
+            }
+
+            if (is_array($config['mail.bcc'])) {
+                $recip = $message->getRecipients();
+                foreach ($config['mail.bcc'] as $email) {
+                    if (in_array($email, $recip)) continue;
+                    if (!\Tk\Mail\Message::isValidEmail($email)) continue;
+                    $message->addBcc($email);
+                }
             }
         }
     }
