@@ -66,6 +66,31 @@ class Upgrade extends Iface
                         break;
                     }
                 }
+/*
+lms@252s-weblive:~/public_html/app/voce2$ ./bin/cmd ug
+upgrade
+git reset --hard
+  HEAD is now at db58441 Preparing branch master for new release
+git checkout master
+  Previous HEAD position was db58441... Preparing branch master for new release
+  Switched to branch 'master'
+git pull
+  From github.com:fvas-elearning/lti-voce
+     b2cb233..573c625  master     -> origin/master
+  From github.com:fvas-elearning/lti-voce
+   * [new tag]         2.2.8      -> 2.2.8
+  Updating b2cb233..573c625
+  Fast-forward
+   changelog.md                    |    5 +++++
+   src/config/sql/mysql/000008.sql |    4 ++--
+   2 files changed, 7 insertions(+), 2 deletions(-)
+Error: Cannot find version tag.                                         <======== Why!!!!
+lms@252s-weblive:~/public_html/app/voce2$
+*/
+
+
+
+
                 if (!$tag) {
                     $this->writeError('Error: Cannot find version tag.');
                     return;
