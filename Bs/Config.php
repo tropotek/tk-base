@@ -108,8 +108,6 @@ class Config extends \Tk\Config
     }
 
     /**
-     * hashPassword
-     *
      * @param $pwd
      * @param \Bs\Db\User $user (optional)
      * @return string

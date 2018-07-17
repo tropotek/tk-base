@@ -21,6 +21,7 @@ class Mirror extends Iface
     {
         $this->setName('mirror')
             ->addOption('withData', 'd', InputOption::VALUE_NONE, 'Use scp to copy the data folder from the live site.')
+            ->addOption('deleteSqlFile', 'x', InputOption::VALUE_NONE, 'Delete the live temp sql file on exit.')
             ->addOption('noSql', 'S', InputOption::VALUE_NONE, 'Do not execute the sql component of the mirror')
             ->setDescription('Mirror the data and files from the Live site');
     }
@@ -73,7 +74,10 @@ class Mirror extends Iface
             $thisBackup->restore($liveSqlFile);
             $this->write('Apply dev sql updates');
             $thisBackup->restore($debugSqlFile);
-            unlink($liveSqlFile);
+
+            if ($input->getOption('deleteSqlFile')) {
+                unlink($liveSqlFile);
+            }
             unlink($thisSqlFile);
 
         }
