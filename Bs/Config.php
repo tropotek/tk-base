@@ -461,7 +461,7 @@ class Config extends \Tk\Config
      * @param string|null $action
      * @return \Tk\Form
      */
-    public static function createForm($formId, $method = \Tk\Form::METHOD_POST, $action = null)
+    public function createForm($formId, $method = \Tk\Form::METHOD_POST, $action = null)
     {
         $form = \Tk\Form::create($formId, $method, $action);
         $form->setEnableRequiredAttr();
@@ -472,7 +472,7 @@ class Config extends \Tk\Config
      * @param $form
      * @return \Tk\Form\Renderer\Dom
      */
-    public static function createFormRenderer($form)
+    public function createFormRenderer($form)
     {
         $obj = new \Tk\Form\Renderer\Dom($form);
         return $obj;
@@ -485,7 +485,7 @@ class Config extends \Tk\Config
      * @param null|\Tk\Session $session
      * @return \Tk\Table
      */
-    public static function createTable($id, $params = array(), $request = null, $session = null)
+    public function createTable($id, $params = array(), $request = null, $session = null)
     {
         $form = \Tk\Table::create($id, $params, $request, $session);
         return $form;
@@ -495,7 +495,7 @@ class Config extends \Tk\Config
      * @param \Tk\Table $table
      * @return \Tk\Table\Renderer\Dom\Table
      */
-    public static function createTableRenderer($table)
+    public function createTableRenderer($table)
     {
         $obj = \Tk\Table\Renderer\Dom\Table::create($table);
         return $obj;
@@ -508,7 +508,7 @@ class Config extends \Tk\Config
      * @return \Tk\Ui\Admin\ActionPanel
      * @deprecated No longer used I think
      */
-    public static function createActionPanel($title = 'Actions', $icon = 'fa fa-cogs', $withBack = true)
+    public function createActionPanel($title = 'Actions', $icon = 'fa fa-cogs', $withBack = true)
     {
         \Tk\Log::notice('\Bs\Config::creteActionPanel() called. Deprecated Function!!!');
         $ap = \Tk\Ui\Admin\ActionPanel::create($title, $icon);

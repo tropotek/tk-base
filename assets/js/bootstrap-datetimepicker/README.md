@@ -1,19 +1,21 @@
-# Deprecation warning!
-We are going to move this project to [this repository](https://github.com/AuspeXeu/bootstrap-datetimepicker). Please do not file new issues or pull requests!
-
-# Project : bootstrap-datetimepicker
-======================================
-
-[![Build Status](https://travis-ci.org/smalot/bootstrap-datetimepicker.svg?branch=master)](https://travis-ci.org/smalot/bootstrap-datetimepicker)
+# bootstrap-datetimepicker [![Build Status](https://travis-ci.org/AuspeXeu/bootstrap-datetimepicker.svg?branch=master)](https://travis-ci.org/AuspeXeu/bootstrap-datetimepicker)
 
 [Homepage](http://www.malot.fr/bootstrap-datetimepicker/)
 
 [Demo page](http://www.malot.fr/bootstrap-datetimepicker/demo.php)
 
-# Project forked
+# Dependencies
 
-This project is a fork of [bootstrap-datepicker project](https://github.com/eternicode/bootstrap-datepicker).
+This component has now switched to *only* support solid [FontAwesome](https://fontawesome.com/) icons. Therefore the following dependencies must be included for more instructions on how to include these in your project please visit their [website](https://fontawesome.com/get-started).
 
+```
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/solid.css" integrity="sha384-Rw5qeepMFvJVEZdSo1nDQD5B6wX0m7c5Z/pLNvjkB14W6Yki1hKbSEQaX9ffUbWe" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/fontawesome.css" integrity="sha384-GVa9GOgVQgOk+TNYXu7S/InPTfSDTtBalSgkgqQ7sCik56N9ztlkoTr2f/T44oKV" crossorigin="anonymous">
+```
+
+# Contribute
+
+Before creating an issue/pull request, please for [this](https://jsfiddle.net/AuspeXeu/sqwwcjzu/) jsFiddle and create a working example of your problem.
 
 # Home
 
@@ -88,10 +90,12 @@ $('#datetimepicker').datetimepicker();
 
 As component:
 
+The class `dtp-trigger` is used to mark the element that shows the picker.
+
 ```html
 <div class="input-append date" id="datetimepicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
     <input size="16" type="text" value="12-02-2012" readonly>
-    <span class="add-on"><i class="icon-th"></i></span>
+    <span class="add-on"><i class="icon-th dtp-trigger"></i></span>
 </div>
 ```
 ```javascript
@@ -370,7 +374,7 @@ This event is fired when a hour is rendered inside the datepicker. Should return
 ```javascript
 $('#date')
     .datetimepicker({
-        onRenderHour: function(hour) {
+        onRenderHour: function(date) {
             //Disable any time between 12:00 and 13:59
             if (date.getUTCHours() === 12 || date.getUTCHours() === 13)
                 return ['disabled'];
@@ -393,12 +397,6 @@ $('#date')
     });
 ```
 
-### fontAwesome
-
-Boolean. Default: false
-
-If true, [Font Awesome](http://fontawesome.io/) will be used.
-
 ## Markup
 
 Format as component.
@@ -406,7 +404,7 @@ Format as component.
 ```html
 <div class="input-append date" id="datetimepicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
     <input class="span2" size="16" type="text" value="12-02-2012">
-    <span class="add-on"><i class="icon-th"></i></span>
+    <span class="add-on"><i class="icon-th dtp-trigger"></i></span>
 </div>
 ```
 
@@ -415,8 +413,8 @@ Format as component with reset button to clear the input field.
 ```html
 <div class="input-append date" id="datetimepicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
     <input class="span2" size="16" type="text" value="12-02-2012">
-    <span class="add-on"><i class="icon-remove"></i></span>
-    <span class="add-on"><i class="icon-th"></i></span>
+    <span class="add-on"><i class="icon-remove dtp-clear"></i></span>
+    <span class="add-on"><i class="icon-th dtp-trigger"></i></span>
 </div>
 ```
 
@@ -719,3 +717,7 @@ If your browser (or those of your users) is displaying characters wrong, chances
 ```html
 <script type="text/javascript" src="bootstrap-datetimepicker.de.js" charset="UTF-8"></script>
 ```
+
+# Project forked
+
+This project is a fork of [bootstrap-datepicker project](https://github.com/smalot/bootstrap-datetimepicker).
