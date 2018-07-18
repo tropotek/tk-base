@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.18 [2018-07-18]:
+-------------------------------
+Upgraded date fields to use datetimepicker plugin
+Fixed SubjectDashboard Entity issue
+
+
 Ver 1.0.16 [2018-07-17]:
 -------------------------------
 Minor Code Updates
