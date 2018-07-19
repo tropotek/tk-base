@@ -89,7 +89,6 @@ class Edit extends \Bs\Controller\AdminIface
         if (!$this->user->getId())
             $f->setRequired(true);
 
-
         $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->form->addField(new Event\Link('cancel', $this->getCrumbs()->getBackUrl()));
