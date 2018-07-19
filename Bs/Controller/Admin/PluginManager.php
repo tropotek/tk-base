@@ -15,7 +15,7 @@ use Bs\Controller\AdminManagerIface;
  *
  * @todo Add a delete data confirmation when uninstalling/disabling the plugin
  */
-class PluginManager extends AdminManagerIface
+class PluginManager extends \Bs\Controller\AdminIface
 {
 
     /**

@@ -9,21 +9,7 @@ namespace Bs\Controller;
  */
 class AdminEditIface extends AdminIface
 {
-
-    /**
-     * @var \Tk\Form
-     */
-    protected $form = null;
-
-
-
-    /**
-     * @return \Tk\Form
-     */
-    public function getForm()
-    {
-        return $this->form;
-    }
+    use EditTrait;
     
 
 }

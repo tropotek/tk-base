@@ -38,6 +38,8 @@ class AuthHandler implements Subscriber
             $config->setUser($user);
         }
 
+        vd($event->getRequest()->getAttributes(), $event->getCollection());
+
         // Get page access permission from route params (see config/routes.php)
         $role = $event->getRequest()->getAttribute('role');
 
@@ -159,7 +161,7 @@ class AuthHandler implements Subscriber
 
         $url = \Tk\Uri::create('/register.html')->set('h', $user->hash);
 
-        $message = $config->createTemplateMessage('account.activated');
+        $message = $config->createMessage('account.activated');
         $message->setSubject('Account Registration.');
         $message->addTo($user->email);
         $message->set('name', $user->name);
@@ -181,7 +183,7 @@ class AuthHandler implements Subscriber
         // Send an email to confirm account active
         $url = \Tk\Uri::create('/login.html');
 
-        $message = $config->createTemplateMessage('account.activated');
+        $message = $config->createMessage('account.activated');
         $message->setSubject('Account Activation.');
         $message->addTo($user->email);
         $message->set('name', $user->name);
@@ -203,7 +205,7 @@ class AuthHandler implements Subscriber
 
         $url = \Tk\Uri::create('/login.html');
 
-        $message = $config->createTemplateMessage('account.activated');
+        $message = $config->createMessage('account.activated');
         $message->setSubject('Password Recovery');
         $message->addTo($user->email);
         $message->set('name', $user->name);
