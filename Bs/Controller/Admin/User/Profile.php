@@ -67,7 +67,7 @@ class Profile extends \Bs\Controller\AdminIface
 
         $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Link('cancel', $this->getCrumbs()->getBackUrl()));
+        $this->form->addField(new Event\Link('cancel', $this->getConfig()->getBackUrl()));
 
         $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
         
@@ -78,8 +78,7 @@ class Profile extends \Bs\Controller\AdminIface
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
-     * @throws \ReflectionException
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function doSubmit($form, $event)
     {
@@ -116,7 +115,7 @@ class Profile extends \Bs\Controller\AdminIface
         \Tk\Alert::addSuccess('Record saved!');
         $event->setRedirect(\Tk\Uri::create());
         if ($form->getTriggeredEvent()->getName() == 'update') {
-            $event->setRedirect($this->getCrumbs()->getBackUrl());
+            $event->setRedirect($this->getConfig()->getBackUrl());
         }
     }
 

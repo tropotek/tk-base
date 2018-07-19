@@ -135,8 +135,7 @@ class AuthHandler implements Subscriber
         $auth = $config->getAuth();
         $url = $event->getRedirect();
         if (!$url) {
-            $url = \Tk\Uri::create('/index.html');
-            $event->setRedirect($url);
+            $event->setRedirect(\Tk\Uri::create('/'));
         }
 
         $auth->clearIdentity();
