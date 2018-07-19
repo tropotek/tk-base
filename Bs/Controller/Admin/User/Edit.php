@@ -8,8 +8,6 @@ use Tk\Form\Field;
 use Tk\Form\Event;
 
 /**
- *
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
@@ -25,7 +23,7 @@ class Edit extends \Bs\Controller\AdminIface
     /**
      * @var \Bs\Db\User
      */
-    private $user = null;
+    protected $user = null;
 
 
     /**
@@ -38,23 +36,34 @@ class Edit extends \Bs\Controller\AdminIface
 
     /**
      * @param Request $request
-     * @throws Form\Exception
-     * @throws \ReflectionException
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function doDefault(Request $request)
     {
+        $this->init($request);
+        $this->buildForm();
+        $this->execute();
+    }
 
-
+    /**
+     * @param Request $request
+     * @throws \Exception
+     */
+    public function init($request)
+    {
         $this->user = $this->getConfig()->createUser();
         if ($request->get('userId')) {
             $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
         }
+    }
 
+    /**
+     * @throws \Exception
+     */
+    public function buildForm()
+    {
         $this->form = $this->getConfig()->createForm('user-edit');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
-
 
         $tab = 'Details';
         //$list = array('Admin' => \Bs\Db\User::ROLE_ADMIN, 'User' => \Bs\Db\User::ROLE_USER);
@@ -84,9 +93,14 @@ class Edit extends \Bs\Controller\AdminIface
         $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->form->addField(new Event\Link('cancel', $this->getCrumbs()->getBackUrl()));
+    }
 
+    /**
+     * @throws \Exception
+     */
+    public function execute()
+    {
         $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
-        
         $this->form->execute();
 
     }
@@ -94,8 +108,7 @@ class Edit extends \Bs\Controller\AdminIface
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
-     * @throws \ReflectionException
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function doSubmit($form, $event)
     {
@@ -144,7 +157,6 @@ class Edit extends \Bs\Controller\AdminIface
 
     /**
      * @return \Dom\Template
-     * @throws \Dom\Exception
      */
     public function show()
     {
