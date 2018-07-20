@@ -2,6 +2,7 @@
 namespace Bs\Controller\Admin;
 
 use Dom\Template;
+use Tk\Db\Exception;
 use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
@@ -218,14 +219,25 @@ class ActionsCell extends \Tk\Table\Cell\Text
     /**
      * Called when the Table::execute is called
      */
-    public function execute() {
+    public function execute()
+    {
         /** @var \Tk\Request $request */
         $request = \Tk\Config::getInstance()->getRequest();
 
         if ($request->has('act')) {
-            $this->doActivatePlugin($request);
+            try {
+                $this->doActivatePlugin($request);
+            } catch (Exception $e) {
+            } catch (\Tk\Plugin\Exception $e) {
+                \Tk\Alert::addError($e->getMessage());
+            }
         } else if ($request->has('del')) {
-            $this->doDeletePlugin($request);
+
+            try {
+                $this->doDeletePlugin($request);
+            } catch (Exception $e) {
+            } catch (\Tk\Plugin\Exception $e) {
+            }
         } else if ($request->has('deact')) {
             $this->doDeactivatePlugin($request);
         }
@@ -321,8 +333,6 @@ HTML;
 
     /**
      * @param Request $request
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Plugin\Exception
      */
     protected function doActivatePlugin(Request $request)
     {
@@ -337,10 +347,14 @@ HTML;
             \Tk\Alert::addSuccess('Plugin `' . $pluginName . '` activated successfully');
         }catch (\Exception $e) {
             \Tk\Alert::addError('Activate Failed: ' . $e->getMessage());
+            \Tk\Log::warning($e->__toString());
         }
         \Tk\Uri::create()->reset()->redirect();
     }
 
+    /**
+     * @param Request $request
+     */
     protected function doDeactivatePlugin(Request $request)
     {
         $pluginName = strip_tags(trim($request->get('deact')));
@@ -353,6 +367,7 @@ HTML;
             \Tk\Alert::addSuccess('Plugin `' . $pluginName . '` deactivated successfully');
         }catch (\Exception $e) {
             \Tk\Alert::addError('Deactivate Failed: ' . $e->getMessage());
+            \Tk\Log::warning($e->__toString());
         }
         \Tk\Uri::create()->reset()->redirect();
     }
