@@ -61,6 +61,7 @@ class AuthHandler implements Subscriber
      * Use path for permission validation
      *
      * @param ControllerEvent $event
+     * @throws \ReflectionException
      */
     public function validatePageAccess(\Tk\Event\ControllerEvent $event)
     {
@@ -76,21 +77,44 @@ class AuthHandler implements Subscriber
 
         $controller = $event->getController();
         if ($controller instanceof \Tk\Controller\Iface) {
-            $url = \Tk\Uri::create();
-            $role = 'public';
+            $role = '';
             if ($config->getUser()) {
                 $role = $config->getUser()->getRole();
             }
+            $urlRole = $this->getUrlRole(\Tk\Uri::create());
             // Use path for permission validation
-            if (!preg_match('|^\/'.preg_quote($role).'|', $url->getRelativePath())) {
+            if ($urlRole) {
                 if (!$config->getUser()) {
                     \Tk\Uri::create('/login.html')->redirect();
                 }
-                // Could redirect to a authentication error page.
-                \Tk\Alert::addWarning('You do not have access to the requested page.');
-                $config->getUserHomeUrl($config->getUser())->redirect();
+                if (!$role == $urlRole) {
+                    // Could redirect to a authentication error page.
+                    \Tk\Alert::addWarning('You do not have access to the requested page.');
+                    $config->getUserHomeUrl($config->getUser())->redirect();
+                }
             }
         }
+    }
+
+    /**
+     * @param \Tk\Uri $url
+     * @return string
+     * @throws \ReflectionException
+     * @note Using this page auth method means urls like /admin.html will
+     *       not work as expected, keep away from using
+     *       roles name as the start of a page name to avoid any bugs
+     * @todo: keep an eye on this to be sure we do not get any errors
+     */
+    protected function getUrlRole($url)
+    {
+        $config = \Bs\Config::getInstance();
+        $roles = $config->getAvaliableUserRoles();
+        if (preg_match('|^\/([a-z0-9_-]+).*|', $url->getRelativePath(), $regs)) {
+            if (!empty($regs[1]) && in_array($regs[1], $roles)) {
+                return $regs[1];
+            }
+        }
+        return '';
     }
 
 

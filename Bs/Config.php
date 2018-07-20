@@ -595,6 +595,15 @@ class Config extends \Tk\Config
         return \Tk\Uri::create('/index.html');
     }
 
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function getAvaliableUserRoles()
+    {
+        return \Tk\ObjectUtil::getClassConstants('Bs\Db\User', 'ROLE');
+    }
+
 
     /**
      * getFrontController
