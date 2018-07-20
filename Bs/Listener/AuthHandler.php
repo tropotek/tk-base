@@ -38,11 +38,9 @@ class AuthHandler implements Subscriber
             $config->setUser($user);
         }
 
-        vd($event->getRequest()->getAttributes(), $event->getCollection());
-
+        // The following is deprecated in preference of the hasAccess() method in the controller
         // Get page access permission from route params (see config/routes.php)
         $role = $event->getRequest()->getAttribute('role');
-
         // no role means page is publicly accessible
         if (!$role || empty($role)) return;
         if ($user) {
@@ -53,6 +51,28 @@ class AuthHandler implements Subscriber
             }
         } else {
             \Tk\Uri::create('/login.html')->redirect();
+        }
+
+
+    }
+
+
+    /**
+     * @param ControllerEvent $event
+     */
+    public function onController(\Tk\Event\ControllerEvent $event)
+    {
+        $config = \Bs\Config::getInstance();
+        $controller = $event->getController();
+        if ($controller instanceof \Bs\Controller\Iface) {
+            if (!$controller->hasAccess($config->getUser())) {
+                if (!$config->getUser()) {
+                    \Tk\Uri::create('/login.html')->redirect();
+                }
+                // Could redirect to a authentication error page.
+                \Tk\Alert::addWarning('You do not have access to the requested page.');
+                $config->getUserHomeUrl($config->getUser())->redirect();
+            }
         }
     }
 
@@ -239,6 +259,7 @@ class AuthHandler implements Subscriber
     {
         return array(
             KernelEvents::REQUEST => 'onRequest',
+            KernelEvents::CONTROLLER => array('onController', 100),
             AuthEvents::LOGIN => 'onLogin',
             AuthEvents::LOGIN_SUCCESS => 'onLoginSuccess',
             AuthEvents::LOGOUT => 'onLogout',

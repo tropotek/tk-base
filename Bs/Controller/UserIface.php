@@ -11,4 +11,25 @@ class UserIface extends Iface
     use ActionPanelTrait;
 
 
+    /**
+     * @param \Bs\Db\User $user
+     * @return bool
+     */
+    public function hasAccess($user = null)
+    {
+        if ($user) {
+            return ($user->isUser());
+        }
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplatePath()
+    {
+        return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.admin');
+    }
+
+
 }

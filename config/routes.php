@@ -15,54 +15,53 @@ $config = \Bs\Config::getInstance();
 $routes = $config->getRouteCollection();
 if (!$routes) return;
 
-// Default Home catchall
-$params = array();
-// Used to redirect index.php request back home
-$routes->add('public-index-php-fix', new \Tk\Routing\Route('/index.php', function ($request) use ($config) {
-    \Tk\Uri::create('/')->redirect();
-}, $params));
-$routes->add('home', new \Tk\Routing\Route('/index.html', 'Bs\Controller\Index::doDefault', $params));
-$routes->add('home-base', new \Tk\Routing\Route('/', 'Bs\Controller\Index::doDefault', $params));
-$routes->add('contact', new \Tk\Routing\Route('/contact.html', 'Bs\Controller\Contact::doDefault', $params));
 
-$routes->add('login', new \Tk\Routing\Route('/login.html', 'Bs\Controller\Login::doDefault', $params));
-$routes->add('logout', new \Tk\Routing\Route('/logout.html', 'Bs\Controller\Logout::doDefault', $params));
-$routes->add('register', new \Tk\Routing\Route('/register.html', 'Bs\Controller\Register::doDefault', $params));
-$routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Recover::doDefault', $params));
+// Used to redirect index.php request back home in rarer instances
+$routes->add('public-index-php-fix', new \Tk\Routing\Route('/index.php', function ($request) {
+    \Tk\Uri::create('/')->redirect();
+}));
+$routes->add('home', new \Tk\Routing\Route('/index.html', 'Bs\Controller\Index::doDefault'));
+$routes->add('home-base', new \Tk\Routing\Route('/', 'Bs\Controller\Index::doDefault'));
+$routes->add('contact', new \Tk\Routing\Route('/contact.html', 'Bs\Controller\Contact::doDefault'));
+
+$routes->add('login', new \Tk\Routing\Route('/login.html', 'Bs\Controller\Login::doDefault'));
+$routes->add('logout', new \Tk\Routing\Route('/logout.html', 'Bs\Controller\Logout::doDefault'));
+$routes->add('register', new \Tk\Routing\Route('/register.html', 'Bs\Controller\Register::doDefault'));
+$routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Recover::doDefault'));
 
 
 // Admin Pages
-$params = array('role' => \Bs\Db\User::ROLE_ADMIN);
-$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault', $params));
-$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault', $params));
+$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault'));
+$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault'));
 
-$routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault', $params));
-$routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault', $params));
-$routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault', $params));
+$routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault'));
+$routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault'));
+$routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault'));
 
-$routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault', $params));
-$routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html', 'Bs\Controller\Admin\PluginManager::doDefault', $params));
+$routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault'));
+$routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html', 'Bs\Controller\Admin\PluginManager::doDefault'));
 
-
-// Dev pages
-$routes->add('dev-events', new \Tk\Routing\Route('/admin/dev/events.html', 'Bs\Controller\Admin\Dev\Events::doDefault', $params));
+// Admin Dev pages
+$routes->add('dev-events', new \Tk\Routing\Route('/admin/dev/events.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
 
 
 // User Pages
-$params = array('role' => \Bs\Db\User::ROLE_USER);
-$routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Dashboard::doDefault', $params));
-$routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Dashboard::doDefault', $params));
-$routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault', $params));
+$routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Dashboard::doDefault'));
+$routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Dashboard::doDefault'));
+$routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault'));
+
+
+
 
 // Examples
 $params = array();
 
 // Ajax Routes
-//$routes->add('ajax-find-user', new \Tk\Routing\Route('/api/1.0/findUser', 'App\Ajax\User::doFindUser', $params, array('POST')));
+//$routes->add('ajax-find-user', new \Tk\Routing\Route('/api/1.0/findUser', 'App\Ajax\User::doFindUser', array('POST')));
 
 // Example: How to do a simple controller/route all-in-one
 //$routes->add('simpleTest', new \Tk\Routing\Route('/test.html', function ($request) use ($config) {
 //    vd($config->toString());
 //    return '<p>This is a simple test</p>';
-//}, $params));
+//}));
 

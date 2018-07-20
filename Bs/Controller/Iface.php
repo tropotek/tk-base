@@ -11,6 +11,23 @@ abstract class Iface extends \Tk\Controller\Iface
 
 
     /**
+     * @param null $user
+     * @return bool
+     */
+    public function hasAccess($user = null)
+    {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplatePath()
+    {
+        return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.public');
+    }
+
+    /**
      * @return string
      */
     public function getDefaultTitle()

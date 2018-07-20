@@ -20,16 +20,22 @@ class PageTemplateHandler implements Subscriber
         $controller = $event->get('controller');
         $config = \Bs\Config::getInstance();
 
-        $role = 'public';
+        $templatePath = '';
+        if ($controller instanceof \Bs\Controller\Iface) {
+            $templatePath = $controller->getTemplatePath();
+        } else {
+            $templatePath = $config->getSitePath() . $config['template.public'];
+        }
+
+        // Deprecated in favor of using the $controller->getTemplatePath() function
         if ($config->getRequest()->getAttribute('role')) {
             $role = $config->getRequest()->getAttribute('role');
             if (is_array($role)) $role = current($role);
+            $templatePath = $config->getSitePath() . $config['template.' . $role];
         }
 
-        $templatePath = $config['template.' . $role];
-
         // Setup the template loader
-        $controller->getPage()->setTemplatePath($config->getSitePath() . $templatePath);
+        $controller->getPage()->setTemplatePath($templatePath);
         $config->getDomLoader();
 
     }
