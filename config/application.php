@@ -128,3 +128,29 @@ $config['system.auth.adapters'] = array(
 
 
 
+/* **********************************************
+ *  Common Dom\Template var name for UI elements
+ * **********************************************/
+
+/*
+ * where in teh page template to place the controller result string/template
+ */
+$config['template.var.page.site-title'] = 'site-title';
+$config['template.var.page.page-header'] = 'page-header';
+$config['template.var.page.breadcrumbs'] = 'breadcrumb';
+$config['template.var.page.alerts'] = 'alerts';
+$config['template.var.page.content'] = 'content';
+$config['template.var.page.login'] = 'login';
+$config['template.var.page.logout'] = 'logout';
+
+$config['template.var.page.user-name'] = 'user-name';
+$config['template.var.page.username'] = 'username';
+$config['template.var.page.user-url'] = 'user-url';
+
+// side-nav
+$config['template.var.page.side-nav'] = 'side-nav';
+
+
+
+
+

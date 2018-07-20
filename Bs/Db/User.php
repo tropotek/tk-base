@@ -185,6 +185,12 @@ class User extends Model implements \Tk\ValidInterface
         return $this;
     }
 
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+
     /**
      * @param string|array $role
      * @return boolean
@@ -194,7 +200,7 @@ class User extends Model implements \Tk\ValidInterface
         if (!is_array($role)) $role = array($role);
         foreach ($role as $r) {
             //vd($role, $r, $this->role);
-            if ($r == $this->role || preg_match('/'.preg_quote($r).'/', $this->role)) {
+            if ($r == $this->getRole() || preg_match('/'.preg_quote($r).'/', $this->getRole())) {
                 return true;
             }
         }

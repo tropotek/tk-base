@@ -79,7 +79,7 @@ class AuthHandler implements Subscriber
             $url = \Tk\Uri::create();
             $role = 'public';
             if ($config->getUser()) {
-                $role = $config->getUser()->role;
+                $role = $config->getUser()->getRole();
             }
             // Use path for permission validation
             if (!preg_match('|^\/'.preg_quote($role).'|', $url->getRelativePath())) {
@@ -150,7 +150,7 @@ class AuthHandler implements Subscriber
         if (!$user) {
             throw new \Tk\Auth\Exception('Invalid user login credentials');
         }
-        if (!$user->active) {
+        if (!$user->isActive()) {
             throw new \Tk\Auth\Exception('Inactive account, please contact your administrator.');
         }
 

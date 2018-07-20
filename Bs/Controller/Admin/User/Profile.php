@@ -95,10 +95,10 @@ class Profile extends \Bs\Controller\AdminIface
         $form->addFieldErrors($this->user->validate());
         
         // Just a small check to ensure the user down not change their own role
-        if ($this->user->getId() == $this->getUser()->getId() && $this->user->role != $this->getUser()->role) {
+        if ($this->user->getId() == $this->getUser()->getId() && $this->user->getRole() != $this->getUser()->getRole()) {
             $form->addError('You cannot change your own role information as this will make the system unstable.');
         }
-        if ($this->user->getId() == $this->getUser()->getId() && !$this->user->active) {
+        if ($this->user->getId() == $this->getUser()->getId() && !$this->user->isActive()) {
             $form->addError('You cannot change your own active status as this will make the system unstable.');
         }
         

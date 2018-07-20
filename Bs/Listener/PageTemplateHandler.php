@@ -40,6 +40,7 @@ class PageTemplateHandler implements Subscriber
      */
     public function showPage(\Tk\Event\Event $event)
     {
+        $config = \Bs\Config::getInstance();
         /** @var \Bs\Controller\Iface $controller */
         $controller = $event->get('controller');
         $template = $controller->getPage()->getTemplate();
@@ -63,9 +64,9 @@ class PageTemplateHandler implements Subscriber
 //        $template->appendMetaTag('tk-version', '1.0', $template->getTitleElement());
 
         if ($this->getConfig()->get('site.title')) {
-            $template->setAttr('siteTitle', 'title', $this->getConfig()->get('site.title'));
-            $template->setAttr('siteName', 'title', $this->getConfig()->get('site.title'));
-            $template->insertText('siteTitle', $this->getConfig()->get('site.title'));
+//            $template->setAttr('siteTitle', 'title', $this->getConfig()->get('site.title'));
+//            $template->setAttr('siteName', 'title', $this->getConfig()->get('site.title'));
+            $template->insertText($config->get('template.var.page.site-title'), $this->getConfig()->get('site.title'));
             $template->setTitleText(trim($template->getTitleText() . ' - ' . $this->getConfig()->get('site.title'), '- '));
         }
 
@@ -92,8 +93,8 @@ JS;
         // Set page title
         if ($controller->getPageTitle()) {
             $template->setTitleText(trim($controller->getPageTitle() . ' - ' . $template->getTitleText(), '- '));
-            $template->insertText('pageHeading', $controller->getPageTitle());
-            $template->setChoice('pageHeading');
+            $template->insertText($config->get('template.var.page.page-header'), $controller->getPageTitle());
+            $template->setChoice($config->get('template.var.page.page-header'));
         }
 
         if ($this->getConfig()->isDebug()) {
@@ -104,17 +105,17 @@ JS;
         // ---- tk-base specific calls ----
 
         if (\Tk\AlertCollection::hasMessages()) {
-            $template->insertTemplate('alerts', \Tk\AlertCollection::getInstance()->show());
-            $template->setChoice('alerts');
+            $template->insertTemplate($config->get('template.var.page.alerts'), \Tk\AlertCollection::getInstance()->show());
+            $template->setChoice($config->get('template.var.page.alerts'));
         }
 
         if ($this->getConfig()->getUser()) {
-            $template->insertText('username', $this->getConfig()->getUser()->name);
-            $template->setAttr('user-home', 'href', $this->getConfig()->getUserHomeUrl());
-            $template->setAttr('userUrl', 'href', $this->getConfig()->getUserHomeUrl());
-            $template->setChoice('logout');
+            $template->insertText($config->get('template.var.page.user-name'), $this->getConfig()->getUser()->name);
+            $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getUser()->username);
+            $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
+            $template->setChoice($config->get('template.var.page.logout'));
         } else {
-            $template->setChoice('login');
+            $template->setChoice($config->get('template.var.page.login'));
         }
 
     }
