@@ -64,8 +64,14 @@ class AuthHandler implements Subscriber
     public function onController(\Tk\Event\ControllerEvent $event)
     {
         $config = \Bs\Config::getInstance();
+
+        // Deprecated remove when role is no longer used as a route attribute
+        $role = $event->getRequest()->getAttribute('role');
+        if ($role) return;
+        // --------------------------------------------------------
+
         $controller = $event->getController();
-        if ($controller instanceof \Bs\Controller\Iface) {
+        if ($controller instanceof \Tk\Controller\Iface) {
             if (!$controller->hasAccess($config->getUser())) {
                 if (!$config->getUser()) {
                     \Tk\Uri::create('/login.html')->redirect();
@@ -182,7 +188,7 @@ class AuthHandler implements Subscriber
 
         $url = \Tk\Uri::create('/register.html')->set('h', $user->hash);
 
-        $message = $config->createMessage('account.activated');
+        $message = $config->createMessage('account.registration');
         $message->setSubject('Account Registration.');
         $message->addTo($user->email);
         $message->set('name', $user->name);
@@ -226,7 +232,7 @@ class AuthHandler implements Subscriber
 
         $url = \Tk\Uri::create('/login.html');
 
-        $message = $config->createMessage('account.activated');
+        $message = $config->createMessage('account.recover');
         $message->setSubject('Password Recovery');
         $message->addTo($user->email);
         $message->set('name', $user->name);
