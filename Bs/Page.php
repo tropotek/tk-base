@@ -9,28 +9,6 @@ namespace Bs;
 class Page extends \Tk\Controller\Page
 {
 
-//    public function show()
-//    {
-//        $template = parent::show();
-//
-//        // TODO: Move to a listener renderer
-//
-//        if (\Tk\AlertCollection::hasMessages()) {
-//            $template->insertTemplate('alerts', \Tk\AlertCollection::getInstance()->show());
-//            $template->setChoice('alerts');
-//        }
-//
-//        if ($this->getUser()) {
-//            $template->insertText('username', $this->getUser()->name);
-//            $template->setAttr('user-home', 'href', $this->getConfig()->getUserHomeUrl());
-//            $template->setAttr('userUrl', 'href', $this->getConfig()->getUserHomeUrl());
-//            $template->setChoice('logout');
-//        } else {
-//            $template->setChoice('login');
-//        }
-//
-//        return $template;
-//    }
 
     /**
      * Get the currently logged in user

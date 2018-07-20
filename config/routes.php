@@ -54,7 +54,6 @@ $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Con
 
 
 // Examples
-$params = array();
 
 // Ajax Routes
 //$routes->add('ajax-find-user', new \Tk\Routing\Route('/api/1.0/findUser', 'App\Ajax\User::doFindUser', array('POST')));

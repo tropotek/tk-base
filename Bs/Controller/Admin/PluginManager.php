@@ -54,8 +54,6 @@ class PluginManager extends \Bs\Controller\AdminIface
         //$actionsCell = $this->getActionsCell();
 
 
-
-
         // Plugin manager table
         $this->table = $this->getConfig()->createTable('PluginList');
         $this->table->setRenderer($this->getConfig()->createTableRenderer($this->table));

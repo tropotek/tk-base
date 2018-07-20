@@ -39,8 +39,7 @@ class AuthHandler implements Subscriber
         }
 
         // ---------------- deprecated  ---------------------
-        // The following is deprecated in preference of the hasAccess() method in the controller
-        // Get page access permission from route params (see config/routes.php)
+        // The following is deprecated in preference of the validatePageAccess() method below
         $role = $event->getRequest()->getAttribute('role');
         // no role means page is publicly accessible
         if (!$role || empty($role)) return;
@@ -59,20 +58,31 @@ class AuthHandler implements Subscriber
 
 
     /**
+     * Use path for permission validation
+     *
      * @param ControllerEvent $event
      */
-    public function onController(\Tk\Event\ControllerEvent $event)
+    public function validatePageAccess(\Tk\Event\ControllerEvent $event)
     {
         $config = \Bs\Config::getInstance();
 
         // Deprecated remove when role is no longer used as a route attribute
         $role = $event->getRequest()->getAttribute('role');
-        if ($role) return;
+        if ($role) {
+            \Tk\Log::notice('Using legacy page permission system');
+            return;
+        }
         // --------------------------------------------------------
 
         $controller = $event->getController();
         if ($controller instanceof \Tk\Controller\Iface) {
-            if (!$controller->hasAccess($config->getUser())) {
+            $url = \Tk\Uri::create();
+            $role = 'public';
+            if ($config->getUser()) {
+                $role = $config->getUser()->role;
+            }
+            // Use path for permission validation
+            if (!preg_match('|^\/'.preg_quote($role).'|', $url->getRelativePath())) {
                 if (!$config->getUser()) {
                     \Tk\Uri::create('/login.html')->redirect();
                 }
@@ -266,7 +276,7 @@ class AuthHandler implements Subscriber
     {
         return array(
             KernelEvents::REQUEST => 'onRequest',
-            KernelEvents::CONTROLLER => array('onController', 100),
+            KernelEvents::CONTROLLER => array('validatePageAccess', 100),
             AuthEvents::LOGIN => 'onLogin',
             AuthEvents::LOGIN_SUCCESS => 'onLoginSuccess',
             AuthEvents::LOGOUT => 'onLogout',

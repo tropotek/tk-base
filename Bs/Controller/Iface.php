@@ -10,14 +10,6 @@ abstract class Iface extends \Tk\Controller\Iface
 {
 
 
-    /**
-     * @param null $user
-     * @return bool
-     */
-    public function hasAccess($user = null)
-    {
-        return true;
-    }
 
     /**
      * Get a new instance of the page to display the content in.
