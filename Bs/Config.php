@@ -660,6 +660,7 @@ class Config extends \Tk\Config
     /**
      * @param \Tk\Controller\Iface $controller
      * @return Page
+     * @deprecated See the Controller/Iface::getPage();
      */
     public function createPage($controller)
     {
