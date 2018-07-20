@@ -20,11 +20,19 @@ abstract class Iface extends \Tk\Controller\Iface
     }
 
     /**
-     * @return string
+     * Get a new instance of the page to display the content in.
+     *
+     * NOTE: This is the default, override to load your own page objects
+     *
+     * @return \Tk\Controller\Page
      */
-    public function getTemplatePath()
+    public function getPage()
     {
-        return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.public');
+        if (!$this->page) {
+            $this->page = $this->getConfig()->createPage($this);
+            $this->page->setController($this);
+        }
+        return parent::getPage();
     }
 
     /**

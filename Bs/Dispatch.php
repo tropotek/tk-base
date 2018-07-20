@@ -64,6 +64,8 @@ class Dispatch
         $this->getConfig()->getPluginFactory();
         // Initiate the email gateway
         $this->getConfig()->getEmailGateway();
+        // Initiate the Dom\Template loader object
+        $this->getConfig()->getDomLoader();
 
     }
 

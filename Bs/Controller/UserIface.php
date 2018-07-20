@@ -26,7 +26,7 @@ class UserIface extends Iface
     /**
      * @return string
      */
-    public function getTemplatePath()
+    public function getPageTemplatePath()
     {
         return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.admin');
     }

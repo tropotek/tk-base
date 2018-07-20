@@ -366,13 +366,7 @@ class Config extends \Tk\Config
         if (!$this->get('dom.loader')) {
             $dl = \Dom\Loader::getInstance()->setParams($this->all());
             $dl->addAdapter(new \Dom\Loader\Adapter\DefaultLoader());
-            /** @var \Tk\Controller\Iface $controller */
-            $controller = $this->getRequest()->getAttribute('controller.object');
-            if ($controller->getPage()) {
-                $templatePath = dirname($controller->getPage()->getTemplatePath());
-                $xtplPath = str_replace('{templatePath}', $templatePath, $this['template.xtpl.path']);
-                $dl->addAdapter(new \Dom\Loader\Adapter\ClassPath($xtplPath, $this['template.xtpl.ext']));
-            }
+            $dl->addAdapter(new \Dom\Loader\Adapter\ClassPath($this['template.xtpl.path'], $this['template.xtpl.ext']));
             $this->set('dom.loader', $dl);
         }
         return $this->get('dom.loader');
@@ -670,10 +664,10 @@ class Config extends \Tk\Config
     public function createPage($controller)
     {
         $page = new Page();
-        $page->setController($controller);
-        if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
-            $controller->setPageTitle($controller->getDefaultTitle());
-        }
+        //$page->setController($controller);
+//        if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
+//            $controller->setPageTitle($controller->getDefaultTitle());
+//        }
         return $page;
     }
 

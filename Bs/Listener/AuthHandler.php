@@ -38,6 +38,7 @@ class AuthHandler implements Subscriber
             $config->setUser($user);
         }
 
+        // ---------------- deprecated  ---------------------
         // The following is deprecated in preference of the hasAccess() method in the controller
         // Get page access permission from route params (see config/routes.php)
         $role = $event->getRequest()->getAttribute('role');
@@ -52,7 +53,7 @@ class AuthHandler implements Subscriber
         } else {
             \Tk\Uri::create('/login.html')->redirect();
         }
-
+        //-----------------------------------------------------
 
     }
 
