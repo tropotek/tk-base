@@ -9,8 +9,6 @@ namespace Bs\Controller;
 abstract class Iface extends \Tk\Controller\Iface
 {
 
-
-
     /**
      * Get a new instance of the page to display the content in.
      *
@@ -22,7 +20,6 @@ abstract class Iface extends \Tk\Controller\Iface
     {
         if (!$this->page) {
             $this->page = $this->getConfig()->createPage($this);
-            $this->page->setController($this);
         }
         return parent::getPage();
     }

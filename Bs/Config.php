@@ -660,15 +660,11 @@ class Config extends \Tk\Config
     /**
      * @param \Tk\Controller\Iface $controller
      * @return Page
-     * @deprecated See the Controller/Iface::getPage();
      */
     public function createPage($controller)
     {
         $page = new Page();
-        //$page->setController($controller);
-//        if (!$controller->getPageTitle()) {     // Set a default page Title for the crumbs
-//            $controller->setPageTitle($controller->getDefaultTitle());
-//        }
+        $page->setController($controller);
         return $page;
     }
 
