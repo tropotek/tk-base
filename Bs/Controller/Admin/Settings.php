@@ -50,13 +50,13 @@ class Settings extends \Bs\Controller\AdminIface
 
         $this->getActionPanel()->add(\Tk\Ui\Button::create('Plugins', \Tk\Uri::create('/admin/plugins.html'), 'fa fa-plug'));
 
-        $this->form = Form::create('formEdit');
-        $this->form->setRenderer(new \Tk\Form\Renderer\Dom($this->form));
+        $this->form = $this->getConfig()->createForm('formEdit');
+        $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
         $this->form->addField(new Field\Input('site.title'))->setLabel('Site Title')->setRequired(true);
         $this->form->addField(new Field\Input('site.email'))->setLabel('Site Email')->setRequired(true);
-        $this->form->addField(new Field\Input('site.meta.keywords'))->setLabel('SEO Keywords')->setRequired(true);
-        $this->form->addField(new Field\Input('site.meta.description'))->setLabel('SEO Description')->setRequired(true);
+        $this->form->addField(new Field\Input('site.meta.keywords'))->setLabel('SEO Keywords');
+        $this->form->addField(new Field\Input('site.meta.description'))->setLabel('SEO Description');
         $this->form->addField(new Field\Input('site.google.map.key'))->setLabel('Google API Key')
             ->setNotes('<a href="https://cloud.google.com/maps-platform/" target="_blank">Get Google Maps Api Key</a> And be sure to enable `Maps Javascript API`, `Maps Embed API` and `Places API for Web` for this site.');
 

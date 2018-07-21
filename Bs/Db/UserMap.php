@@ -91,25 +91,25 @@ class UserMap extends Mapper
     }
 
     /**
-     * Find filtered records
+     * Create a filtered query
      *
      * @param array $filter
      * @param Tool $tool
+     * @param string $where
+     * @param string $from
      * @return ArrayObject|User[]
-     * @throws \Tk\Db\Exception
      */
-    public function findFiltered($filter = array(), $tool = null)
+    public function makeQuery($filter = array(), $tool = null, &$where = '', &$from = '')
     {
-        $from = sprintf('%s a ', $this->getDb()->quoteParameter($this->getTable()));
-        $where = '';
+        $from .= sprintf('%s a ', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['keywords'])) {
-            $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
+            $kw = '%' . $this->escapeString($filter['keywords']) . '%';
             $w = '';
-            $w .= sprintf('a.name LIKE %s OR ', $this->getDb()->quote($kw));
-            $w .= sprintf('a.username LIKE %s OR ', $this->getDb()->quote($kw));
-            $w .= sprintf('a.email LIKE %s OR ', $this->getDb()->quote($kw));
-            $w .= sprintf('a.role LIKE %s OR ', $this->getDb()->quote($kw));
+            $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.username LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.role LIKE %s OR ', $this->quote($kw));
             if (is_numeric($filter['keywords'])) {
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
@@ -135,11 +135,11 @@ class UserMap extends Mapper
         }
 
         if (!empty($filter['email'])) {
-            $where .= sprintf('a.email = %s AND ', $this->getDb()->quote($filter['email']));
+            $where .= sprintf('a.email = %s AND ', $this->quote($filter['email']));
         }
 
-        if (!empty($filter['exclude'])) {
-            $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
+        if (!empty($filter['ignore'])) {
+            $w = $this->makeMultiQuery($filter['ignore'], 'a.id', 'AND', '!=');
             if ($w) {
                 $where .= '('. $w . ') AND ';
             }
@@ -148,8 +148,22 @@ class UserMap extends Mapper
         if ($where) {
             $where = substr($where, 0, -4);
         }
+        return $where;
 
+
+    }
+
+    /**
+     * @param array $filter
+     * @param Tool $tool
+     * @return ArrayObject|User[]
+     * @throws \Exception
+     */
+    public function findFiltered($filter = array(), $tool = null)
+    {
+        $where = $this->makeQuery($filter, $tool, $where, $from);
         $res = $this->selectFrom($from, $where, $tool);
         return $res;
     }
+
 }
