@@ -328,10 +328,6 @@ TPL;
 
         $propertyName = $this->quote($this->getName());
         $append = '';
-//        if ($this->getName() == 'name' || $this->getName() == 'title') {
-//            $append .= sprintf('->addCss(\'key\')');
-//            $append .= sprintf('->setUrl(\Tk\Uri::create(\'/admin/%sEdit.html\'))', lcfirst($className));
-//        }
 
         return sprintf($tpl, $mapClass, $propertyName, $argAppend, $append);
     }
