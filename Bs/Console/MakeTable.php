@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class MakeModel extends Iface
+class MakeTable extends Iface
 {
 
     /**
@@ -19,11 +19,11 @@ class MakeModel extends Iface
      */
     protected function configure()
     {
-        $this->setName('make-model')
-            ->addArgument('table', InputArgument::REQUIRED, 'The name of the table to build the class files from.')
+        $this->setName('make-table')
+            ->addArgument('table', InputArgument::REQUIRED, 'The name of the table to generate the class file from.')
             ->addOption('overwrite', 'o', InputOption::VALUE_NONE, 'Overwrite existing class files.')
-            ->setAliases(array('mm'))
-            ->setDescription('Create a PHP Model Class from the DB schema');
+            ->setAliases(array('mt'))
+            ->setDescription('Create a PHP Manager Table Class from the DB schema');
     }
 
     /**
@@ -44,26 +44,18 @@ class MakeModel extends Iface
         }
 
         $gen = \Bs\Util\ModelGenerator::create($db, $table);
-        $modelPath = $config->getSitePath() . '/src/' . str_replace('\\', '/', $gen->getNamespace()) . '/' . $gen->getClassName() . '.php';
+        $phpFile = $config->getSitePath() . '/src/App/Table/' . $gen->getClassName() . '.php';
         if (!$input->getOption('overwrite'))
-            $modelPath = $this->makeUniquePhpFilename($modelPath);
-        $modelContent = $gen->makeModel();
+            $phpFile = $this->makeUniquePhpFilename($phpFile);
+        $tableContent = $gen->makeTable();
 
-        $mapPath = $config->getSitePath() . '/src/' . str_replace('\\', '/', $gen->getNamespace()) . '/' . $gen->getClassName() . 'Map.php';
-        if (!$input->getOption('overwrite'))
-            $mapPath = $this->makeUniquePhpFilename($mapPath);
-        $mapContent = $gen->makeMapper();
-
-        if (!is_dir(dirname($modelPath))) {
-            $this->writeComment('Creating Db path: ' . dirname($modelPath));
-            mkdir(dirname($modelPath), 0777, true);
+        if (!is_dir(dirname($phpFile))) {
+            $this->writeComment('Creating Path: ' . dirname($phpFile));
+            mkdir(dirname($phpFile), 0777, true);
         }
 
-        $this->writeComment('Writing Model: ' . $modelPath);
-        file_put_contents($modelPath, $modelContent);
-
-        $this->writeComment('Writing Mapper: ' . $mapPath);
-        file_put_contents($mapPath, $mapContent);
+        $this->writeComment('Writing: ' . $phpFile);
+        file_put_contents($phpFile, $tableContent);
 
     }
 

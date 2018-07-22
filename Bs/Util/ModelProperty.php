@@ -141,7 +141,7 @@ class ModelProperty extends \Tk\Collection
     /**
      * @var %s
      */
-    public %s = %s;
+    public $%s = %s;
 TPL;
         return sprintf($tpl, $this->getType(), $this->getName(), $this->getDefaultValue());
     }
@@ -180,7 +180,7 @@ TPL;
     public function getColumnMap()
     {
         $tpl = <<<TPL
-            \$this->dbMap->addPropertyMap(new %s(%s%s)%s)
+            \$this->dbMap->addPropertyMap(new %s(%s%s)%s);
 TPL;
 
         $mapClass = 'Db\Text';
@@ -266,6 +266,74 @@ TPL;
 
         return sprintf($tpl, $this->getName(), $this->get('Field'), $filterVal);
 
+    }
+
+    /**
+     * @param string $className
+     * @param string $namespace
+     * @return string
+     */
+    public function getTableCell($className, $namespace)
+    {
+        $tpl = <<<TPL
+        \$this->addCell(new %s(%s))%s;
+TPL;
+
+        $mapClass = 'Cell\Text';
+        switch ($this->getType()) {
+            case self::TYPE_BOOL:
+                $mapClass = 'Cell\Boolean';
+                break;
+            case self::TYPE_DATE:
+                $mapClass = 'Cell\Date';
+                break;
+        }
+        if ($this->getName() == 'id') {
+            $mapClass = 'Cell\Checkbox';
+        }
+
+        $propertyName = $this->quote($this->getName());
+        $append = '';
+        if ($this->getName() == 'name' || $this->getName() == 'title') {
+            $append .= sprintf('->addCss(\'key\')');
+            $append .= sprintf('->setUrl(\Tk\Uri::create(\'/admin/%sEdit.html\'))', lcfirst($className));
+        }
+
+        return sprintf($tpl, $mapClass, $propertyName, $append);
+    }
+
+    /**
+     * @param string $className
+     * @param string $namespace
+     * @return string
+     */
+    public function getFormField($className, $namespace)
+    {
+        $tpl = <<<TPL
+        \$this->addField(new %s(%s%s))%s;
+TPL;
+
+        $mapClass = 'Field\Input';
+        $argAppend = '';
+        if ($this->get('Type') == 'text') {
+            $mapClass = 'Field\Textarea';
+        }
+        if ($this->getType() == self::TYPE_BOOL) {
+            $mapClass = 'Field\Checkbox';
+        }
+        if (preg_match('/Id$/', $this->getName())) {
+            $mapClass = 'Field\Select';
+            $argAppend = sprintf(', array(\'-- Select --\' => \'\')');
+        }
+
+        $propertyName = $this->quote($this->getName());
+        $append = '';
+//        if ($this->getName() == 'name' || $this->getName() == 'title') {
+//            $append .= sprintf('->addCss(\'key\')');
+//            $append .= sprintf('->setUrl(\Tk\Uri::create(\'/admin/%sEdit.html\'))', lcfirst($className));
+//        }
+
+        return sprintf($tpl, $mapClass, $propertyName, $argAppend, $append);
     }
 
 

@@ -139,6 +139,14 @@ class ModelGenerator
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    protected function tableFromClass()
+    {
+        return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $this->className)), '_');
+    }
+
 
 
     /**
@@ -173,7 +181,13 @@ class ModelGenerator
             $data['properties'] .= "\n" . $mp->getDefinition() . "\n";
             if ($mp->getType() == '\DateTime' && $mp->get('Null') == 'NO')
                 $data['construct'] .= $mp->getInitaliser() . "\n";
-            if ($mp->get('Null') == 'NO' && $mp->getName() != 'id')
+            if (
+                $mp->get('Null') == 'NO' &&
+                $mp->get('Type') != 'text' &&
+                $mp->getType() != ModelProperty::TYPE_DATE &&
+                $mp->getType() != ModelProperty::TYPE_BOOL &&
+                $mp->getName() != 'id'
+            )
                 $data['validators'] .= "\n" . $mp->getValidation() . "\n";
         }
         return $data;
@@ -268,14 +282,6 @@ STR;
         return $data;
     }
 
-    /**
-     * @return string
-     */
-    protected function tableFromClass()
-    {
-        return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $this->className)), '_');
-    }
-
 
     /**
      * @return \Tk\CurlyTemplate
@@ -290,6 +296,7 @@ use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
+use Bs\Db\Mapper;
 
 /**
  * @author {author-name}
@@ -379,6 +386,224 @@ class {classname}Map extends Mapper
 
 }
 
+STR;
+        $tpl = \Tk\CurlyTemplate::create($classTpl);
+        return $tpl;
+    }
+
+
+
+
+
+    /**
+     * @param array $params any overrides for the curly template
+     * @return string
+     * @throws \Exception
+     */
+    public function makeTable($params = array())
+    {
+        $tpl = $this->createTableTemplate();
+        $data = $this->getDefaultData();
+        $classData = $this->processTable();
+        $data = array_merge($data, $classData, $params);
+        return $tpl->parse($data);
+    }
+
+    /**
+     * @return array
+     */
+    protected function processTable()
+    {
+        $data = array(
+            'cell-list' => ''
+        );
+        foreach ($this->tableInfo as $col) {
+            $mp = ModelProperty::create($col);
+            if ($mp->getName() == 'del') continue;
+            if ($mp->get('Type') != 'text')
+                $data['cell-list'] .= $mp->getTableCell($this->getClassName(), $this->getNamespace()) . "\n";
+        }
+        return $data;
+    }
+
+    /**
+     * @return \Tk\CurlyTemplate
+     */
+    protected function createTableTemplate()
+    {
+        $classTpl = <<<STR
+<?php
+namespace App\Table;
+
+use Tk\Form\Field;
+use Tk\Table\Cell;
+
+/**
+ * @author {author-name}
+ * @created {date}
+ * @link {author-www}
+ * @license Copyright {year} {author-biz}
+ */
+class {classname} extends \Bs\TableIface
+{
+    
+    /**
+     * @throws \Exception
+     */
+    public function initCells()
+    {
+{cell-list}
+        // Filters
+        \$this->addFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
+
+        // Actions
+        \$this->addAction(\Tk\Table\Action\Csv::create());
+        \$this->addAction(\Tk\Table\Action\Delete::create());
+
+        // load table
+        \$this->findList();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function findList()
+    {
+        \$filter = \$this->getFilterValues();
+        \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$this->getTool());
+        \$this->setList(\$list);
+    }
+
+}
+STR;
+        $tpl = \Tk\CurlyTemplate::create($classTpl);
+        return $tpl;
+    }
+
+
+
+    /**
+     * @param array $params any overrides for the curly template
+     * @return string
+     * @throws \Exception
+     */
+    public function makeForm($params = array())
+    {
+        $tpl = $this->createFormTemplate();
+        $data = $this->getDefaultData();
+        $classData = $this->processForm();
+        $data = array_merge($data, $classData, $params);
+        return $tpl->parse($data);
+    }
+
+    /**
+     * @return array
+     */
+    protected function processForm()
+    {
+        $data = array(
+            'property-name' => lcfirst($this->className),
+            'field-list' => ''
+        );
+        foreach ($this->tableInfo as $col) {
+            $mp = ModelProperty::create($col);
+            if ($mp->getName() == 'del' || $mp->getName() == 'modified' || $mp->getName() == 'created' || $mp->getName() == 'id') continue;
+            $data['field-list'] .= $mp->getFormField($this->getClassName(), $this->getNamespace()) . "\n";
+        }
+        return $data;
+    }
+
+    /**
+     * @return \Tk\CurlyTemplate
+     */
+    protected function createFormTemplate()
+    {
+        $classTpl = <<<STR
+<?php
+namespace App\Form;
+
+use Tk\Form\Field;
+use Tk\Form\Event;
+
+/**
+ * @author {author-name}
+ * @created {date}
+ * @link {author-www}
+ * @license Copyright {year} {author-biz}
+ */
+class {classname} extends \Bs\FormIface
+{
+    /**
+     * @var \{namespace}\{classname}
+     */
+    protected \${property-name} = null;
+
+
+    /**
+     * @throws \Exception
+     */
+    public function initFields()
+    {
+{field-list}
+        \$this->addField(new Event\Submit('update', array(\$this, 'doSubmit')));
+        \$this->addField(new Event\Submit('save', array(\$this, 'doSubmit')));
+        \$this->addField(new Event\Link('cancel', \$this->getBackUrl()));
+
+    }
+
+    /**
+     * @param \Tk\Request \$request
+     * @throws \Exception
+     */
+    public function execute(\$request = null)
+    {
+        \$this->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->{property-name}));
+        parent::execute(\$request);
+    }
+
+    /**
+     * @param {classname} \$form
+     * @param Event\Iface \$event
+     * @throws \Exception
+     */
+    public function doSubmit(\$form, \$event)
+    {
+        // Load the object with form data
+        \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->{property-name});
+
+        \$form->addFieldErrors(\$this->{property-name}->validate());
+
+        if (\$form->hasErrors()) {
+            return;
+        }
+        \$this->{property-name}->save();
+
+        \Tk\Alert::addSuccess('Record saved!');
+        \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->{property-name}->getId()));
+        if (\$form->getTriggeredEvent()->getName() == 'update') {
+            \$event->setRedirect(\$this->getBackUrl());
+        }
+    }
+
+    /**
+     * @return \{namespace}\{classname}
+     */
+    public function get{classname}()
+    {
+        return \$this->{property-name};
+    }
+
+    /**
+     * @param \{namespace}\{classname} \${property-name}
+     * @return \$this
+     */
+    public function set{classname}(\${property-name})
+    {
+        \$this->{property-name} = \${property-name};
+        return \$this;
+    }
+    
+}
 STR;
         $tpl = \Tk\CurlyTemplate::create($classTpl);
         return $tpl;

@@ -62,7 +62,7 @@ class UserMap extends Mapper
     /**
      * @param $username
      * @return \Tk\Db\Map\Model|User
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function findByUsername($username)
     {
@@ -73,7 +73,7 @@ class UserMap extends Mapper
     /**
      * @param $email
      * @return \Tk\Db\Map\Model|User
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function findByEmail($email)
     {
@@ -83,7 +83,7 @@ class UserMap extends Mapper
     /**
      * @param $hash
      * @return \Tk\Db\Map\Model|User
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function findByHash($hash)
     {
