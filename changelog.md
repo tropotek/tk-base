@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.20 [2018-07-23]:
+-------------------------------
+  - Added a new ModelGenerator console command to generate models and mappers
+
+
 Ver 1.0.18 [2018-07-18]:
 -------------------------------
 Upgraded date fields to use datetimepicker plugin
