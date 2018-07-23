@@ -9,14 +9,17 @@ use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
 
 /**
- * Class StartupHandler
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
 class AuthHandler implements Subscriber
 {
+
+    protected $loginUrl = '/login.html';
+
+    protected $registerUrl = '/register.html';
+
 
     /**
      * do any auth init setup
@@ -50,7 +53,7 @@ class AuthHandler implements Subscriber
                 $config->getUserHomeUrl($user)->redirect();
             }
         } else {
-            \Tk\Uri::create('/login.html')->redirect();
+            $this->getLoginUrl()->redirect();
         }
         //-----------------------------------------------------
 
@@ -86,7 +89,7 @@ class AuthHandler implements Subscriber
             // Use path for permission validation
             if ($urlRole) {     // If page requires a valid role for access
                 if (!$config->getUser()) {  // if no user and the url has permissions set
-                    \Tk\Uri::create('/login.html')->redirect();
+                    $this->getLoginUrl()->redirect();
                 }
                 if (!$role == $urlRole) {   // Finally check if the use has access to the url
                     // Could redirect to a authentication error page.
@@ -200,7 +203,7 @@ class AuthHandler implements Subscriber
         $user = $event->get('user');
         $config = \Bs\Config::getInstance();
 
-        $url = \Tk\Uri::create('/register.html')->set('h', $user->hash);
+        $url = $this->getRegisterUrl()->set('h', $user->hash);
 
         $message = $config->createMessage('account.registration');
         $message->setSubject('Account Registration.');
@@ -222,7 +225,7 @@ class AuthHandler implements Subscriber
         $config = \Bs\Config::getInstance();
 
         // Send an email to confirm account active
-        $url = \Tk\Uri::create('/login.html');
+        $url = $this->getLoginUrl();
 
         $message = $config->createMessage('account.activated');
         $message->setSubject('Account Activation.');
@@ -244,7 +247,7 @@ class AuthHandler implements Subscriber
         $pass = $event->get('password');
         $config = \Bs\Config::getInstance();
 
-        $url = \Tk\Uri::create('/login.html');
+        $url = $this->getLoginUrl();
 
         $message = $config->createMessage('account.recover');
         $message->setSubject('Password Recovery');
@@ -255,6 +258,25 @@ class AuthHandler implements Subscriber
         \Bs\Config::getInstance()->getEmailGateway()->send($message);
 
     }
+
+    /**
+     * @return \Bs\Uri
+     */
+    public function getLoginUrl()
+    {
+        return \Bs\Uri::create($this->loginUrl);
+    }
+
+    /**
+     * @return \Bs\Uri
+     */
+    public function getRegisterUrl()
+    {
+        return \Bs\Uri::create($this->registerUrl);
+    }
+
+
+
 
     /**
      * Returns an array of event names this subscriber wants to listen to.

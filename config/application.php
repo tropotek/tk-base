@@ -155,3 +155,14 @@ $config['template.var.page.side-nav'] = 'side-nav';
 
 
 
+/* **********************************************
+ *  Common URL for the base controllers
+ * **********************************************/
+
+$config['url.auth.home'] = '/index.html';
+$config['url.auth.login'] = '/login.html';
+$config['url.auth.logout'] = '/logout.html';
+$config['url.auth.register'] = '/register.html';
+$config['url.auth.recover'] = '/recover.html';
+
+
