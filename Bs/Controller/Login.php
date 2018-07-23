@@ -114,6 +114,19 @@ class Login extends Iface
             $template->setChoice('register');
         }
 
+        $js = <<<JS
+jQuery(function ($) {
+  
+  $('#login-form').on("keypress", function (e) {
+    if (e.which === 13) {
+      $(this).find('#login-form_login').trigger('click');
+    }
+  });
+  
+});
+JS;
+        $template->appendJs($js);
+
         return $template;
     }
 
