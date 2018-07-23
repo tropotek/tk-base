@@ -179,7 +179,6 @@ class AuthHandler implements Subscriber
         if (!$url) {
             $event->setRedirect(\Tk\Uri::create('/'));
         }
-
         $auth->clearIdentity();
         $config->getSession()->destroy();
     }
