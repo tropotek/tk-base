@@ -36,7 +36,7 @@ class Recover extends Iface
     /**
      * @param Request $request
      * @throws Form\Exception
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function doDefault(Request $request)
     {
@@ -45,7 +45,7 @@ class Recover extends Iface
 
         $this->form->addField(new Field\Input('account'))->setLabel('Username / Email');
         $this->form->addField(new Event\Submit('recover', array($this, 'doRecover')))->addCss('btn btn-lg btn-default btn-ss');
-        $this->form->addField(new Event\Link('login', \Tk\Uri::create('/login.html'), ''))
+        $this->form->addField(new Event\Link('login', \Tk\Uri::create($this->getConfig()->get('url.auth.login')), ''))
             ->removeCss('btn btn-sm btn-default btn-once');
 
         $this->form->execute();
@@ -55,8 +55,7 @@ class Recover extends Iface
     /**
      * @param Form $form
      * @param \Tk\Form\Event\Iface $event
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function doRecover($form, $event)
     {

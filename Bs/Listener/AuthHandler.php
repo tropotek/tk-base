@@ -16,10 +16,6 @@ use Tk\Auth\AuthEvents;
 class AuthHandler implements Subscriber
 {
 
-    protected $loginUrl = '/login.html';
-
-    protected $registerUrl = '/register.html';
-
 
     /**
      * do any auth init setup
@@ -264,7 +260,7 @@ class AuthHandler implements Subscriber
      */
     public function getLoginUrl()
     {
-        return \Bs\Uri::create($this->loginUrl);
+        return \Bs\Uri::create(\Bs\Config::getInstance()->get('url.auth.login'));
     }
 
     /**
@@ -272,7 +268,7 @@ class AuthHandler implements Subscriber
      */
     public function getRegisterUrl()
     {
-        return \Bs\Uri::create($this->registerUrl);
+        return \Bs\Uri::create(\Bs\Config::getInstance()->get('url.auth.register'));
     }
 
 

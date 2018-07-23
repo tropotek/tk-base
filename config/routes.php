@@ -41,9 +41,6 @@ $routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 
 $routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault'));
 $routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html', 'Bs\Controller\Admin\PluginManager::doDefault'));
 
-// Admin Dev pages
-$routes->add('dev-events', new \Tk\Routing\Route('/admin/dev/events.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
-
 
 // User Pages
 $routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Dashboard::doDefault'));

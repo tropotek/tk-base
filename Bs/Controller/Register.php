@@ -62,7 +62,7 @@ class Register extends Iface
         $this->form->addField(new Field\Password('password'));
         $this->form->addField(new Field\Password('passwordConf'))->setLabel('Password Confirm');
         $this->form->addField(new Event\Submit('register', array($this, 'doRegister')))->addCss('btn btn-lg btn-primary btn-ss');
-        $this->form->addField(new Event\Link('forgotPassword', \Tk\Uri::create('/recover.html'), ''))
+        $this->form->addField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
             ->removeCss('btn btn-sm btn-default btn-once');
 
         $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
@@ -73,8 +73,7 @@ class Register extends Iface
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
-     * @throws \ReflectionException
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function doRegister($form, $event)
     {
@@ -148,7 +147,7 @@ class Register extends Iface
         $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::REGISTER_CONFIRM, $event);
 
         \Tk\Alert::addSuccess('Account Activation Successful.');
-        \Tk\Uri::create('/login.html')->redirect();
+        \Tk\Uri::create($this->getConfig()->get('url.auth.login'))->redirect();
 
     }
 
