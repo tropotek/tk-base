@@ -61,7 +61,7 @@ class AuthHandler implements Subscriber
      * Use path for permission validation
      *
      * @param ControllerEvent $event
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function validatePageAccess(\Tk\Event\ControllerEvent $event)
     {
@@ -95,27 +95,6 @@ class AuthHandler implements Subscriber
                 }
             }
         }
-    }
-
-    /**
-     * @param \Tk\Uri $url
-     * @return string
-     * @throws \ReflectionException
-     * @note Using this page auth method means urls like /admin.html will
-     *       not work as expected, keep away from using
-     *       roles name as the start of a page name to avoid any bugs
-     * @todo: keep an eye on this to be sure we do not get any errors
-     */
-    protected function getUrlRole($url)
-    {
-        $config = \Bs\Config::getInstance();
-        $roles = $config->getAvailableUserRoles();
-        if (preg_match('|^\/([a-z0-9_-]+).*|', $url->getRelativePath(), $regs)) {
-            if (!empty($regs[1]) && in_array($regs[1], $roles)) {
-                return $regs[1];
-            }
-        }
-        return '';
     }
 
 
