@@ -597,13 +597,11 @@ class Config extends \Tk\Config
 
     /**
      * @return array
-     * @throws \ReflectionException
      */
-    public function getAvaliableUserRoles()
+    public function getAvailableUserRoles()
     {
         return \Tk\ObjectUtil::getClassConstants('Bs\Db\User', 'ROLE');
     }
-
 
     /**
      * getFrontController
@@ -665,14 +663,11 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @param \Tk\Controller\Iface $controller
      * @return Page
      */
-    public function createPage($controller)
+    public function createPage()
     {
-        $page = new Page();
-        $page->setController($controller);
-        return $page;
+        return new Page();
     }
 
 

@@ -77,17 +77,18 @@ class AuthHandler implements Subscriber
 
         $controller = $event->getController();
         if ($controller instanceof \Tk\Controller\Iface) {
+            $urlRole = \Bs\Uri::create()->getRole($config->getAvailableUserRoles());
             $role = '';
             if ($config->getUser()) {
                 $role = $config->getUser()->getRole();
             }
-            $urlRole = $this->getUrlRole(\Tk\Uri::create());
+
             // Use path for permission validation
-            if ($urlRole) {
-                if (!$config->getUser()) {
+            if ($urlRole) {     // If page requires a valid role for access
+                if (!$config->getUser()) {  // if no user and the url has permissions set
                     \Tk\Uri::create('/login.html')->redirect();
                 }
-                if (!$role == $urlRole) {
+                if (!$role == $urlRole) {   // Finally check if the use has access to the url
                     // Could redirect to a authentication error page.
                     \Tk\Alert::addWarning('You do not have access to the requested page.');
                     $config->getUserHomeUrl($config->getUser())->redirect();
@@ -108,7 +109,7 @@ class AuthHandler implements Subscriber
     protected function getUrlRole($url)
     {
         $config = \Bs\Config::getInstance();
-        $roles = $config->getAvaliableUserRoles();
+        $roles = $config->getAvailableUserRoles();
         if (preg_match('|^\/([a-z0-9_-]+).*|', $url->getRelativePath(), $regs)) {
             if (!empty($regs[1]) && in_array($regs[1], $roles)) {
                 return $regs[1];

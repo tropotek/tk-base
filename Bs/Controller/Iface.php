@@ -19,7 +19,8 @@ abstract class Iface extends \Tk\Controller\Iface
     public function getPage()
     {
         if (!$this->page) {
-            $this->page = $this->getConfig()->createPage($this);
+            $this->page = $this->getConfig()->createPage();
+            $this->page->setController($this);
         }
         return parent::getPage();
     }

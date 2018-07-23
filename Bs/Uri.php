@@ -71,4 +71,33 @@ class Uri extends \Tk\Uri
         return $this;
     }
 
+
+    /**
+     * Attempts to get a valid user role from the start of a site path
+     *
+     *
+     * Example uses following roles array:
+     *  $roles = array('admin', 'user');
+     *
+     * URI`s return values:
+     *  o /index.html               => ''
+     *  o /user/profile.html        => 'user'
+     *  o /system/admin/edit.html   => ''
+     *  o /admin/settings           => 'admin
+     *
+     * The script check for a role after the first `/` char and if exists returns that as the found role.
+     * This call will be handy for authentication and page template loading
+     *
+     * @param array $roles  Supply a list of available roles to search for
+     * @return string
+     */
+    public function getRole($roles = array())
+    {
+        if (preg_match('|^\/([a-z0-9_-]+).*|', $this->getRelativePath(), $regs)) {
+            if (!empty($regs[1]) && in_array($regs[1], $roles)) {
+                return $regs[1];
+            }
+        }
+        return '';
+    }
 }

@@ -15,24 +15,24 @@ class PageTemplateHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @deprecated Update Your Config and setup a controller getPageTemplatePath() method
      */
-    public function setPageTemplatePath(\Tk\Event\Event $event)
-    {
-        /** @var \Bs\Controller\Iface $controller */
-        $controller = $event->get('controller');
-        $config = \Bs\Config::getInstance();
-
-        // ---------------- deprecated  ---------------------
-        // Deprecated in favor of using the $controller->getTemplatePath() function
-        if ($config->getRequest()->getAttribute('role')) {
-            $role = $config->getRequest()->getAttribute('role');
-            if (is_array($role)) $role = current($role);
-            $templatePath = $config->getSitePath() . $config['template.' . $role];
-            $config->set('deprecated.usingPageObject', true);
-            $controller->getPage()->setTemplatePath($templatePath);
-        }
-        //-----------------------------------------------------
-
-    }
+//    public function setPageTemplatePath(\Tk\Event\Event $event)
+//    {
+//        /** @var \Bs\Controller\Iface $controller */
+//        $controller = $event->get('controller');
+//        $config = \Bs\Config::getInstance();
+//
+//        // ---------------- deprecated  ---------------------
+//        // Deprecated in favor of using the $controller->getTemplatePath() function
+//        if ($config->getRequest()->getAttribute('role')) {
+//            $role = $config->getRequest()->getAttribute('role');
+//            if (is_array($role)) $role = current($role);
+//            $templatePath = $config->getSitePath() . $config['template.' . $role];
+//            $config->set('deprecated.usingPageObject', true);
+//            //$controller->getPage()->setTemplatePath($templatePath);
+//        }
+//        //-----------------------------------------------------
+//
+//    }
 
 
     /**
@@ -71,15 +71,22 @@ class PageTemplateHandler implements Subscriber
         }
 
         // TODO: create a listener for this????
+        $rel = \Tk\Uri::create()->getRelativePath();
         $siteUrl = $this->getConfig()->getSiteUrl();
         $dataUrl = $this->getConfig()->getDataUrl();
         $templateUrl = $this->getConfig()->getTemplateUrl();
+        $role = '';
+        if ($this->getConfig()->getUser()) {
+            $role = $this->getConfig()->getUser()->getRole();
+        }
 
         $js = <<<JS
 var config = {
+  relativePath : '$rel',
   siteUrl : '$siteUrl',
   dataUrl : '$dataUrl',
   templateUrl: '$templateUrl',
+  role: '$role',
   jquery: {
     dateFormat: 'dd/mm/yy'    
   },
@@ -91,7 +98,7 @@ JS;
         $template->appendJs($js, array('data-jsl-priority' => -1000));
 
         // Set page title
-        if ($controller->getPageTitle()) {
+        if ($controller->getPageTitle() && $controller->isShowTitle()) {
             $template->setTitleText(trim($controller->getPageTitle() . ' - ' . $template->getTitleText(), '- '));
             $template->insertText($config->get('template.var.page.page-header'), $controller->getPageTitle());
             $template->setChoice($config->get('template.var.page.page-header'));
@@ -152,7 +159,7 @@ JS;
     public static function getSubscribedEvents()
     {
         return array(
-            \Tk\PageEvents::PAGE_INIT => 'setPageTemplatePath',         // Deprecated
+            //\Tk\PageEvents::PAGE_INIT => 'setPageTemplatePath',         // Deprecated
             \Tk\PageEvents::CONTROLLER_SHOW => 'showPage'
         );
     }

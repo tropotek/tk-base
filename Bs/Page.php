@@ -10,6 +10,22 @@ class Page extends \Tk\Controller\Page
 {
 
 
+
+    /**
+     * Page constructor.
+     *
+     * @param string $templatePath
+     */
+    public function __construct($templatePath = '')
+    {
+        if (!$templatePath) {   // set the default template path using the url role if available
+            $urlRole = \Bs\Uri::create()->getRole($this->getConfig()->getAvailableUserRoles());
+            if (!$urlRole) $urlRole = 'public';
+            $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlRole);
+        }
+        parent::__construct($templatePath);
+    }
+
     /**
      * Get the currently logged in user
      *
