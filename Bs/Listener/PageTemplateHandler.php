@@ -13,36 +13,12 @@ class PageTemplateHandler implements Subscriber
 
     /**
      * @param \Tk\Event\Event $event
-     * @deprecated Update Your Config and setup a controller getPageTemplatePath() method
-     */
-//    public function setPageTemplatePath(\Tk\Event\Event $event)
-//    {
-//        /** @var \Bs\Controller\Iface $controller */
-//        $controller = $event->get('controller');
-//        $config = \Bs\Config::getInstance();
-//
-//        // ---------------- deprecated  ---------------------
-//        // Deprecated in favor of using the $controller->getTemplatePath() function
-//        if ($config->getRequest()->getAttribute('role')) {
-//            $role = $config->getRequest()->getAttribute('role');
-//            if (is_array($role)) $role = current($role);
-//            $templatePath = $config->getSitePath() . $config['template.' . $role];
-//            $config->set('deprecated.usingPageObject', true);
-//            //$controller->getPage()->setTemplatePath($templatePath);
-//        }
-//        //-----------------------------------------------------
-//
-//    }
-
-
-    /**
-     * @param \Tk\Event\Event $event
      */
     public function showPage(\Tk\Event\Event $event)
     {
-        $config = \Bs\Config::getInstance();
         /** @var \Bs\Controller\Iface $controller */
         $controller = $event->get('controller');
+        $config = \Bs\Config::getInstance();
         $template = $controller->getPage()->getTemplate();
 
         if ($this->getConfig()->get('site.meta.keywords')) {
@@ -59,13 +35,7 @@ class PageTemplateHandler implements Subscriber
             $template->appendCss($this->getConfig()->get('site.global.css'));
         }
 
-//        $template->appendMetaTag('tk-author', 'http://www.tropotek.com/', $template->getTitleElement());
-//        $template->appendMetaTag('tk-project', 'tk2uni', $template->getTitleElement());
-//        $template->appendMetaTag('tk-version', '1.0', $template->getTitleElement());
-
         if ($this->getConfig()->get('site.title')) {
-//            $template->setAttr('siteTitle', 'title', $this->getConfig()->get('site.title'));
-//            $template->setAttr('siteName', 'title', $this->getConfig()->get('site.title'));
             $template->insertText($config->get('template.var.page.site-title'), $this->getConfig()->get('site.title'));
             $template->setTitleText(trim($template->getTitleText() . ' - ' . $this->getConfig()->get('site.title'), '- '));
         }
@@ -159,7 +129,6 @@ JS;
     public static function getSubscribedEvents()
     {
         return array(
-            //\Tk\PageEvents::PAGE_INIT => 'setPageTemplatePath',         // Deprecated
             \Tk\PageEvents::CONTROLLER_SHOW => 'showPage'
         );
     }

@@ -42,10 +42,8 @@ class Dashboard extends \Bs\Controller\UserIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div class="container">
-<div class="row">
+<div>
 
-  <div class="col-lg-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <i class="fa fa-users fa-fw"></i> Welcome <span var="name"></span>
@@ -54,11 +52,9 @@ class Dashboard extends \Bs\Controller\UserIface
 
         <p>Something spiffy.....</p>
         <p><a href="/logout.html">Logout ;-)</a></p>
+        
       </div>
     </div>
-  </div>
-
-</div>
 </div>
 HTML;
 
