@@ -566,6 +566,7 @@ class Config extends \Tk\Config
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getAvailableUserRoles()
     {

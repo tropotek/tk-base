@@ -18,7 +18,7 @@ class Uri extends \Tk\Uri
      * </code>
      *
      * @param null|string|\Tk\Uri $spec
-     * @param null|\Uni\Db\UserIface $user
+     * @param null|\Bs\Db\User $user
      * @return string|\Tk\Uri|static
      */
     public static function createHomeUrl($spec = null, $user = null)
@@ -49,9 +49,9 @@ class Uri extends \Tk\Uri
     public function ignoreCrumb($b = true)
     {
         if ($b)
-            $this->set(\Uni\Ui\Crumbs::CRUMB_IGNORE);
+            $this->set(\Tk\Crumbs::CRUMB_IGNORE);
         else
-            $this->remove(\Uni\Ui\Crumbs::CRUMB_IGNORE);
+            $this->remove(\Tk\Crumbs::CRUMB_IGNORE);
         return $this;
     }
 
