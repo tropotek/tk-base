@@ -2,6 +2,5 @@
 .idea
 .directory
 *.swp
-*bak*
 _*
 *.iml
