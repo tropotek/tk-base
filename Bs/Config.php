@@ -493,37 +493,6 @@ class Config extends \Tk\Config
         return $obj;
     }
 
-    /**
-     * @param string $title
-     * @param string $icon
-     * @param bool $withBack
-     * @return \Tk\Ui\Admin\ActionPanel
-     * @deprecated No longer used I think
-     */
-    public function createActionPanel($title = 'Actions', $icon = 'fa fa-cogs', $withBack = true)
-    {
-        \Tk\Log::notice('\Bs\Config::creteActionPanel() called. Deprecated Function!!!');
-        $ap = \Tk\Ui\Admin\ActionPanel::create($title, $icon);
-        if ($withBack) {
-            $ap->add(\Tk\Ui\Button::create('Back', 'javascript: window.history.back();', 'fa fa-arrow-left'))
-                ->addCss('btn-default btn-once back');
-        }
-        return $ap;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAdminActionPanel()
-    {
-        if (!$this->get('admin.action.panel')) {
-            $obj = \Tk\Ui\Admin\ActionPanel::create('Actions', 'fa fa-cogs');
-            $obj->add(\Tk\Ui\Button::create('Back', 'javascript: window.history.back();', 'fa fa-arrow-left'))
-                ->addCss('btn-default btn-once back');
-            $this->set('admin.action.panel', $obj);
-        }
-        return $this->get('admin.action.panel');
-    }
 
 
 
@@ -551,7 +520,7 @@ class Config extends \Tk\Config
     /**
      * @param int $id
      * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      * @deprecated use \Bs\Config::getUserMapper()
      */
     public function findUser($id)
