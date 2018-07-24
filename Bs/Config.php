@@ -334,6 +334,14 @@ class Config extends \Tk\Config
                     array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl())));
                 $less->setCompress(true);
             }
+            if (class_exists('Leafo\ScssPhp\Compiler')) {
+                /** @var \Dom\Modifier\Filter\Scss $scss */
+                $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
+                    array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl())));
+                $scss->setCompress(true);
+            }
+
+
             if ($this->isDebug()) {
                 $dm->add($this->getDomFilterPageBytes());
             }
