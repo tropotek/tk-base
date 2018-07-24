@@ -16,7 +16,6 @@ use Tk\Auth\AuthEvents;
 class AuthHandler implements Subscriber
 {
 
-
     /**
      * do any auth init setup
      *
@@ -52,20 +51,20 @@ class AuthHandler implements Subscriber
             $this->getLoginUrl()->redirect();
         }
         //-----------------------------------------------------
-
     }
 
 
     /**
      * Use path for permission validation
      *
-     * @param ControllerEvent $event
+     * @param GetResponseEvent $event
      * @throws \Exception
      */
-    public function validatePageAccess(\Tk\Event\ControllerEvent $event)
+    public function validatePageAccess(GetResponseEvent $event)
     {
         $config = \Bs\Config::getInstance();
 
+        // --------------------------------------------------------
         // Deprecated remove when role is no longer used as a route attribute
         $role = $event->getRequest()->getAttribute('role');
         if ($role) {
@@ -74,28 +73,21 @@ class AuthHandler implements Subscriber
         }
         // --------------------------------------------------------
 
-        $controller = $event->getController();
-        if ($controller instanceof \Tk\Controller\Iface) {
-            $urlRole = \Bs\Uri::create()->getRole($config->getAvailableUserRoles());
+        $urlRole = \Bs\Uri::create()->getRole($config->getAvailableUserRoles());
+        if ($urlRole && !$urlRole != 'public') {
             $role = '';
             if ($config->getUser()) {
                 $role = $config->getUser()->getRole();
             }
-
-            // Use path for permission validation
-            if ($urlRole) {     // If page requires a valid role for access
-                if (!$config->getUser()) {  // if no user and the url has permissions set
-                    $this->getLoginUrl()->redirect();
-                }
-                if (!$role == $urlRole) {   // Finally check if the use has access to the url
-                    // Could redirect to a authentication error page.
-                    \Tk\Alert::addWarning('You do not have access to the requested page.');
-                    $config->getUserHomeUrl($config->getUser())->redirect();
-                }
+            if (!$config->getUser()) {  // if no user and the url has permissions set
+                $this->getLoginUrl()->redirect();
+            }
+            if (!$role == $urlRole) {   // Finally check if the use has access to the url
+                \Tk\Alert::addWarning('You do not have access to the requested page.');
+                $config->getUserHomeUrl($config->getUser())->redirect();
             }
         }
     }
-
 
     /**
      * @param AuthEvent $event
@@ -182,7 +174,6 @@ class AuthHandler implements Subscriber
         $auth->clearIdentity();
         $config->getSession()->destroy();
     }
-
 
 
     // TODO: For all emails lets try to bring it back to the default mail template
@@ -296,8 +287,7 @@ class AuthHandler implements Subscriber
     public static function getSubscribedEvents()
     {
         return array(
-            KernelEvents::REQUEST => 'onRequest',
-            KernelEvents::CONTROLLER => array('validatePageAccess', 100),
+            KernelEvents::REQUEST => array(array('onRequest', 5), array('validatePageAccess', -5)),
             AuthEvents::LOGIN => 'onLogin',
             AuthEvents::LOGIN_SUCCESS => 'onLoginSuccess',
             AuthEvents::LOGOUT => 'onLogout',

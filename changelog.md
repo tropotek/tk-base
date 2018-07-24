@@ -1,5 +1,14 @@
 #CHANGELOG#
 
+Ver 1.0.26 [2018-07-25]:
+-------------------------------
+
+
+Ver 1.0.24 [2018-07-25]:
+-------------------------------
+  - Added a new scss Dom modifier object to the template lib
+
+
 Ver 1.0.22 [2018-07-24]:
 -------------------------------
   - Added new Uri object
