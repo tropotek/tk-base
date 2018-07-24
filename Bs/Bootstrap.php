@@ -38,7 +38,7 @@ class Bootstrap
         $config = \Bs\Config::getInstance();
 
         // This maybe should be created in a Factory or DI Container....
-        if (is_readable($config->getLogPath())) {
+        if (is_writable($config->getLogPath())) {
             if (!$config->getRequest()->has('nolog')) {
                 $logger = new Logger('system');
                 $handler = new StreamHandler($config->getLogPath(), $config->getLogLevel());
