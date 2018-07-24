@@ -128,7 +128,6 @@ $config['system.auth.adapters'] = array(
 
 
 
-
 /* **********************************************
  *  Common Dom\Template var name for UI elements
  * **********************************************/
@@ -150,8 +149,6 @@ $config['template.var.page.user-url'] = 'user-url';
 
 // side-nav
 $config['template.var.page.side-nav'] = 'side-nav';
-
-
 
 
 
