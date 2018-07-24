@@ -14,9 +14,7 @@ var project_core = function () {
       console.warn('DualListBox plugin not available.');
       return;
     }
-
-    $('select.tk-dualSelect').DualListBox();
-
+    $('select.tk-dualSelect, select.tk-dual-select').DualListBox();
   };
 
   /**

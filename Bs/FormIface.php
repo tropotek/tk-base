@@ -26,6 +26,13 @@ class FormIface extends \Tk\Form
 
 
     /**
+     * Useful for extended form objects
+     */
+    public function initFields() { }
+
+
+
+    /**
      * @return Config
      */
     public function getConfig()

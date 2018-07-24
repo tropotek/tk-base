@@ -452,6 +452,8 @@ class {classname} extends \Bs\TableIface
      */
     public function initCells()
     {
+        \$this->setRenderer(\$this->getConfig()->createTableRenderer(\$this));
+    
 {cell-list}
         // Filters
         \$this->addFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
@@ -544,6 +546,8 @@ class {classname} extends \Bs\FormIface
      */
     public function initFields()
     {
+        \$this->setRenderer(\$this->getConfig()->createFormRenderer(\$this));
+        
 {field-list}
         \$this->addField(new Event\Submit('update', array(\$this, 'doSubmit')));
         \$this->addField(new Event\Submit('save', array(\$this, 'doSubmit')));
