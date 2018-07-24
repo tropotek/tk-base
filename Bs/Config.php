@@ -1,7 +1,6 @@
 <?php
 namespace Bs;
 
-
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
