@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.22 [2018-07-24]:
+-------------------------------
+  - Added new Uri object
+  - Upgraded the site to further use the new base and uni libs
+
+
 Ver 1.0.20 [2018-07-23]:
 -------------------------------
   - Added a new ModelGenerator console command to generate models and mappers
