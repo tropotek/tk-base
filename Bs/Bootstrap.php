@@ -20,7 +20,7 @@ class Bootstrap
         $obj = new static();
         return $obj->init();
     }
-    
+
     /**
      * This will also load dependant objects into the config, so this is the DI object for now.
      *
