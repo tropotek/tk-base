@@ -476,7 +476,7 @@ class Config extends \Tk\Config
      */
     public function createFormRenderer($form)
     {
-        $obj = new \Tk\Form\Renderer\Dom($form);
+        $obj = \Tk\Form\Renderer\Dom::create($form);
         return $obj;
     }
 
