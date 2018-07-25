@@ -38,6 +38,10 @@ class Upgrade extends Iface
             $this->writeError('Error: Only run this command in a live environment.');
             return;
         }
+
+
+        // TODO: create a backup of the database before executing this.....
+
         
         $cmdList = array(
             'git reset --hard',
