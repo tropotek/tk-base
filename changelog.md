@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.32 [2018-07-26]:
+-------------------------------
+Updated the form field group renderer to be more usable
+
+
 Ver 1.0.30 [2018-07-25]:
 -------------------------------
 
