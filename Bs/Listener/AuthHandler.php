@@ -82,7 +82,7 @@ class AuthHandler implements Subscriber
             if (!$config->getUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
-            if (!$role == $urlRole) {   // Finally check if the use has access to the url
+            if ($role != $urlRole) {   // Finally check if the use has access to the url
                 \Tk\Alert::addWarning('You do not have access to the requested page.');
                 $config->getUserHomeUrl($config->getUser())->redirect();
             }
