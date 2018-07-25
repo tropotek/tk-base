@@ -477,8 +477,19 @@ class Config extends \Tk\Config
     public function createFormRenderer($form)
     {
         $obj = \Tk\Form\Renderer\Dom::create($form);
+        $obj->setFieldGroupRenderer($this->getFormFieldGroupRenderer($form));
         return $obj;
     }
+
+    /**
+     * @param \Tk\Form $form
+     * @return \Tk\Form\Renderer\FieldGroup
+     */
+    public function getFormFieldGroupRenderer($form)
+    {
+        return \Tk\Form\Renderer\FieldGroup::create($form);
+    }
+
 
     /**
      * @param string $id
