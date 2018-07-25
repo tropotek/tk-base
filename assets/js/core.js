@@ -263,15 +263,49 @@ var project_core = function () {
     });
   };
 
-  //**
+
+  /**
+   * Create a standard bootstrap alert box and then add the 'growl' class to the alert div
+   * and the alert will react similar to growl type alerts
+   */
   var initGrowLikeAlerts = function () {
     // Growl like alert messages that fade out.
-    $('.tk-alert-container .alert').each(function () {
-      var a = $(this);
-      setTimeout(function () {
-        a.fadeOut(1000);
-      }, 5000);
+
+    $('.tk-alert-container').each(function () {
+      var growlContainer = $('<div class="tk-growl-container"></div>');
+      var alertContainer = $(this);
+      alertContainer.before(growlContainer);
+
+      growlContainer.updateAlerts = function () {
+        alertContainer.find('.alert.growl').each(function () {
+          var alert = $(this);
+          alert.detach().appendTo(growlContainer);
+        });
+
+        $(this).find('.alert').not('.hiding').each(function () {
+          var a = $(this);
+          $(this).addClass('hiding');
+          setTimeout(function () {
+            a.fadeOut(1000, function() { $(this).remove(); });
+          }, 4000);
+        });
+      };
+      growlContainer.updateAlerts();
+      // TODO: make this a plugin so we can dynamically add the alers from other scripts
+      function addAlert(msg, type) {
+        var alert = $('<div class="alert alert-'+type+' growl">\n' +
+          '    <button class="close noblock" data-dismiss="alert">&times;</button>\n' +
+          //'    <h4><i choice="icon" var="icon"></i> <strong var="title">This is a test</strong></h4>\n' +
+          '    <span>'+msg+'</span>\n' +
+          '  </div>');
+        growlContainer.append(alert);
+        growlContainer.updateAlerts();
+      }
+      // setTimeout(function () {
+      //   addAlert('This is a test message', 'info');
+      // }, 1000);
     });
+
   };
 
 
