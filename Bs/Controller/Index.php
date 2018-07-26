@@ -11,17 +11,18 @@ use Tk\Request;
 class Index extends Iface
 {
 
+    public function __construct()
+    {
+        $this->setPageTitle('Home');
+    }
 
     /**
      * @param Request $request
      */
     public function doDefault(Request $request)
     {
-        $this->setPageTitle('Home');
         // TODO:
-
     }
-
 
     /**
      * @return \Dom\Template
@@ -31,6 +32,21 @@ class Index extends Iface
         $template = parent::show();
         
         return $template;
+    }
+
+    /**
+     * @return \Dom\Template
+     */
+    public function __makeTemplate()
+    {
+        $xhtml = <<<HTML
+<div>
+  <h1>Home</h1>
+  <p>TODO: Add some content here!</p>
+</div>
+HTML;
+
+        return \Dom\Loader::load($xhtml);
     }
 
 

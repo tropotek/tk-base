@@ -22,7 +22,6 @@ $routes->add('public-index-php-fix', new \Tk\Routing\Route('/index.php', functio
 }));
 $routes->add('home', new \Tk\Routing\Route('/index.html', 'Bs\Controller\Index::doDefault'));
 $routes->add('home-base', new \Tk\Routing\Route('/', 'Bs\Controller\Index::doDefault'));
-$routes->add('contact', new \Tk\Routing\Route('/contact.html', 'Bs\Controller\Contact::doDefault'));
 
 $routes->add('login', new \Tk\Routing\Route('/login.html', 'Bs\Controller\Login::doDefault'));
 $routes->add('logout', new \Tk\Routing\Route('/logout.html', 'Bs\Controller\Logout::doDefault'));

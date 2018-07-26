@@ -113,4 +113,23 @@ class Recover extends Iface
         return $template;
     }
 
+
+    /**
+     * @return \Dom\Template
+     */
+    public function __makeTemplate()
+    {
+        $xhtml = <<<HTML
+<div class="tk-login-panel tk-recover">
+
+  <div var="form"></div>
+  <div class="not-member" choice="register">
+    <p>Not a member? <a href="/register.html">Register here</a></p>
+  </div>
+
+</div>
+HTML;
+
+        return \Dom\Loader::load($xhtml);
+    }
 }
