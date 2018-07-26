@@ -24,4 +24,16 @@ class Logout extends Iface
             $event->getRedirect()->redirect();
     }
 
+
+    /**
+     * @return \Dom\Template
+     */
+    public function __makeTemplate()
+    {
+        $xhtml = <<<HTML
+<div></div>
+HTML;
+
+        return \Dom\Loader::load($xhtml);
+    }
 }

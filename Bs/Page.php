@@ -10,11 +10,9 @@ class Page extends \Tk\Controller\Page
 {
 
 
-
     /**
-     * Page constructor.
-     *
      * @param string $templatePath
+     * @throws \Exception
      */
     public function __construct($templatePath = '')
     {
@@ -24,6 +22,13 @@ class Page extends \Tk\Controller\Page
             $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlRole);
         }
         parent::__construct($templatePath);
+
+        $this->getConfig()->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
+            dirname($templatePath).'/xtpl',
+            $this->getConfig()->get('template.xtpl.ext'),
+            false
+        ));
+
     }
 
     /**
