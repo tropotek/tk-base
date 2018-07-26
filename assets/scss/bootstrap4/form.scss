@@ -11,7 +11,10 @@
  */
 .tk-form {
 
-
+  .error-block {
+    display: block;
+    .text-danger;
+  }
 
 
 

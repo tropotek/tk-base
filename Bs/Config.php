@@ -8,6 +8,9 @@ namespace Bs;
  */
 class Config extends \Tk\Config
 {
+    const CSS_FW_BOOTSTRAP_3 = 'bootstrap3';
+    const CSS_FW_BOOTSTRAP_4 = 'bootstrap4';
+
 
     /**
      * init the default params.
@@ -582,7 +585,7 @@ class Config extends \Tk\Config
             if ($user->isUser())
                 return \Tk\Uri::create('/user/index.html');
         }
-        return \Tk\Uri::create('/index.html');
+        return \Tk\Uri::create('/');
     }
 
     /**
