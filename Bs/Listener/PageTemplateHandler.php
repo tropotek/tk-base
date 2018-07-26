@@ -82,7 +82,7 @@ JS;
         // ---- tk-base specific calls ----
 
         if (\Tk\AlertCollection::hasMessages()) {
-            $template->insertTemplate($config->get('template.var.page.alerts'), \Tk\AlertCollection::getInstance()->show());
+            $template->appendTemplate($config->get('template.var.page.alerts'), \Tk\AlertCollection::getInstance()->show());
             $template->setChoice($config->get('template.var.page.alerts'));
         }
 
@@ -91,6 +91,7 @@ JS;
             $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getUser()->username);
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
             $template->setChoice($config->get('template.var.page.logout'));
+            $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRole());
         } else {
             $template->setChoice($config->get('template.var.page.login'));
         }

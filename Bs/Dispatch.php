@@ -117,7 +117,7 @@ class Dispatch
         $dispatcher->addSubscriber($sh);
 
         // App Listeners
-        $dispatcher->addSubscriber(new \Bs\Listener\ActionPanelHandler());
+        $dispatcher->addSubscriber(new \Tk\Listener\ActionPanelHandler());
         $dispatcher->addSubscriber(new \Bs\Listener\MailHandler());
 
         if ($config->getAuthHandler())

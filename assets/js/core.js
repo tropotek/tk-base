@@ -309,6 +309,47 @@ var project_core = function () {
   };
 
 
+  /**
+   *
+   */
+  var initTkPanel = function () {
+    if (config.tkPanel.template === undefined) {
+      config.tkPanel.template =
+        '<div class="panel panel-default">\n' +
+        '  <div class="panel-heading"><i class="tp-icon"></i> <span class="tp-title"></span></div>\n' +
+        '  <div class="tp-body panel-body"></div>\n' +
+        '</div>';
+    }
+
+    $('.tk-panel').each(function () {
+      var element = $(this);
+      element.hide();
+      var defaults = {
+        panelTemplate: config.tkPanel.template
+      };
+      var settings = $.extend({}, defaults, element.data());
+      if (settings.panelTitle === undefined && $('.page-header').length)
+        settings.panelTitle = $('.page-header').text();
+
+      var tpl = $(settings.panelTemplate);
+      console.log(tpl);
+      tpl.hide();
+      if (settings.panelIcon !== undefined) {
+        tpl.find('.tp-icon').addClass(settings.panelIcon);
+      }
+      if (settings.panelTitle !== undefined) {
+        tpl.find('.tp-title').text(settings.panelTitle);
+      }
+      element.before(tpl);
+      element.detach();
+      tpl.find('.tp-body').append(element);
+      element.show();
+      tpl.show();
+
+
+    });
+  };
+
   return {
     initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
@@ -318,6 +359,7 @@ var project_core = function () {
     , initMasqueradeConfirm: initMasqueradeConfirm
     , initTableDeleteConfirm: initTableDeleteConfirm
     , initGrowLikeAlerts: initGrowLikeAlerts
+    , initTkPanel: initTkPanel
   }
 
 }();
