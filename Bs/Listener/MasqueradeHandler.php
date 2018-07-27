@@ -52,7 +52,7 @@ class MasqueradeHandler implements Subscriber
             $user = $config->getUser();
             if (!$user) throw new \Tk\Exception('Invalid User');
             /** @var User $msqUser */
-            $msqUser = $config->getUserMapper()->find($request->get(self::MSQ));
+            $msqUser = $config->getUserMapper()->findByHash($request->get(self::MSQ));
             if (!$msqUser) throw new \Tk\Exception('Invalid User');
             self::masqueradeLogin($user, $msqUser);
         } catch (\Exception $e) {
