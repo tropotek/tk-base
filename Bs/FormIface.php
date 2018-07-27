@@ -15,12 +15,14 @@ class FormIface extends \Tk\Form
      * @param $formId
      * @param string $method
      * @param string|\Tk\Uri|null $action
-     * @return FormIface|\Tk\Form|static
+     * @return FormIface|\Tk\Form
      */
     public static function create($formId, $method = self::METHOD_POST, $action = null)
     {
+        /** @var FormIface $obj */
         $obj = parent::create($formId, $method, $action);
         $obj->setRenderer(\Bs\Config::getInstance()->createFormRenderer($obj));
+        $obj->initFields();
         return $obj;
     }
 
