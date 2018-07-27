@@ -78,7 +78,7 @@ class Events extends \Bs\Controller\AdminIface
     {
         $template = parent::show();
 
-        $template->replaceTemplate('table', $this->table->getRenderer()->show());
+        $template->appendTemplate('table', $this->table->getRenderer()->show());
 
         return $template;
     }
