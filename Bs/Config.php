@@ -658,6 +658,7 @@ class Config extends \Tk\Config
 
     /**
      * @return Page
+     * @throws \Exception
      */
     public function createPage()
     {

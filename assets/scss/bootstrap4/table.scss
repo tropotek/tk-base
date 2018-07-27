@@ -11,7 +11,55 @@
  */
 .tk-table {
 
+  th {
+    //@fa-var-sort-alpha-asc: "\f15d";
+    //@fa-var-sort-alpha-desc: "\f15e";
+    //@fa-var-sort-amount-asc: "\f160";
+    //@fa-var-sort-amount-desc: "\f161";
+    //@fa-var-sort-asc: "\f0de";
+    //@fa-var-sort-desc: "\f0dd";
+    //@fa-var-sort-down: "\f0dd";
+    //@fa-var-sort-numeric-asc: "\f162";
+    //@fa-var-sort-numeric-desc: "\f163";
+    &.orderAsc a {
+      &:after {
+        // fa-sort-alpha-asc
+        content: "\f160";
+        font-size: 0.8em;
+        font-weight: normal;
+        padding: 0 0 0 5px;
+        vertical-align: middle;
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      text-decoration: underline;
+    }
+    &.orderDesc a {
+      &:after {
+        // fa-sort-alpha-desc
+        content: "\f161";
+        font-size: 0.8em;
+        font-weight: normal;
+        padding: 0 0 0 5px;
+        vertical-align: middle;
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      text-decoration: underline;
+    }
+  }
 
+  td, th {
+    white-space: nowrap;
+  }
+
+  .key {
+    width: 100%;
+  }
 
 
 
