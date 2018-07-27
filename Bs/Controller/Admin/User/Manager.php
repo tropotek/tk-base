@@ -82,7 +82,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
         $this->getActionPanel()->add(\Tk\Ui\Button::create('Add User', \Tk\Uri::create('/admin/userEdit.html'), 'fa fa-user'));
 
-        $template->replaceTemplate('table', $this->table->getRenderer()->show());
+        $template->appendTemplate('table', $this->table->getRenderer()->show());
         
         return $template;
     }

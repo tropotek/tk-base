@@ -162,7 +162,7 @@ class Edit extends \Bs\Controller\AdminIface
         $template = parent::show();
         
         // Render the form
-        $template->insertTemplate('form', $this->form->getRenderer()->show());
+        $template->appendTemplate('form', $this->form->getRenderer()->show());
         
         if ($this->user->id)
             $template->insertText('username', $this->user->name . ' - [ID ' . $this->user->id . ']');
