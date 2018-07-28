@@ -61,6 +61,54 @@
     width: 100%;
   }
 
+  .tk-filters {
+    padding: 5px 0;
+
+    .tk-form-fields {
+      /*width: 100%;*/
+      //line-height: 2.5em;
+      vertical-align: top;
+      .form-group {
+        vertical-align: top;
+        .help-block.error-block {
+          margin: 0;
+          display: none;
+        }
+      }
+    }
+    .tk-form-events {
+      margin-left: 10px;
+      .btn {
+        vertical-align: top;
+      }
+    }
+  }
+  .tk-actions {
+    margin: 5px 0 10px 0px;
+    .btn {
+      margin-right: 5px;
+    }
+  }
+  .pagination {
+    margin: 0;
+  }
+  .tk-results {
+    line-height: 2em;
+  }
+  .tk-orderBy {
+
+    .btn {
+      vertical-align: top;
+    }
+    .drag {
+      margin-left: 10px;
+      cursor: ns-resize;
+      vertical-align: middle;
+      display: inline-block;
+      color: #AAA;
+      line-height: 1.8em;
+    }
+  }
 
 
 }

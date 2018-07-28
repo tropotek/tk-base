@@ -322,10 +322,10 @@ CSS;
     {
         $html = <<<HTML
 <div class="text-right">
-<a href="#" class="btn btn-success btn-xs noblock act" choice="inactive" var="act" title="Activate Plugin"><i class="fa fa-sign-in"></i></a>
-<a href="#" class="btn btn-danger btn-xs noblock del" choice="inactive" var="del" title="Delete Plugin Files"><i class="fa fa-trash-o"></i></a>
-<a href="#" class="btn btn-primary btn-xs noblock setup" choice="active" var="setup" title="Configure Plugin"><i class="fa fa-cog"></i></a>
-<a href="#" class="btn btn-danger btn-xs noblock deact" choice="active" var="deact" title="Deactivate Plugin"><i class="fa fa-power-off"></i></a>
+<a href="#" class="btn btn-success btn-sm noblock act" choice="inactive" var="act" title="Activate Plugin"><i class="fa fa-sign-in"></i></a>
+<a href="#" class="btn btn-danger btn-sm noblock del" choice="inactive" var="del" title="Delete Plugin Files"><i class="fa fa-trash-o"></i></a>
+<a href="#" class="btn btn-primary btn-sm noblock setup" choice="active" var="setup" title="Configure Plugin"><i class="fa fa-cog"></i></a>
+<a href="#" class="btn btn-danger btn-sm noblock deact" choice="active" var="deact" title="Deactivate Plugin"><i class="fa fa-power-off"></i></a>
 </div>
 HTML;
         return \Dom\Loader::load($html);
