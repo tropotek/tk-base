@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.34 [2018-07-30]:
+-------------------------------
+  - Added new cube template and updated action panel
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+
+
 Ver 1.0.32 [2018-07-26]:
 -------------------------------
 Updated the form field group renderer to be more usable
