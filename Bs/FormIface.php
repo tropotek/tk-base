@@ -33,6 +33,14 @@ class FormIface extends \Tk\Form
         $obj->setRenderer(\Bs\Config::getInstance()->createFormRenderer($obj));
         return $obj;
     }
+    /**
+     * @param \Tk\Request $request
+     * @throws \Exception
+     */
+    public function execute($request = null)
+    {
+        parent::execute($request);
+    }
 
     /**
      * @return null|\Tk\Db\ModelInterface
