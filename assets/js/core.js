@@ -349,6 +349,34 @@ var project_core = function () {
     });
   };
 
+
+  /**
+   *
+   */
+  var initDataToggle = function () {
+
+    $('[data-toggle="hide"]').each(function () {
+      var el = $(this);
+      var target = $(el.data('target'));
+      target.each(function() {
+        $(this).hide();
+      });
+      el.on('click', function () {
+        target.toggle();
+      })
+    });
+    $('[data-toggle="show"]').each(function () {
+      var el = $(this);
+      var target = $(el.data('target'));
+      target.each(function() {
+        $(this).show();
+      });
+      el.on('click', function () {
+        target.toggle();
+      })
+    });
+  };
+
   return {
     initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
@@ -359,6 +387,7 @@ var project_core = function () {
     , initTableDeleteConfirm: initTableDeleteConfirm
     , initGrowLikeAlerts: initGrowLikeAlerts
     , initTkPanel: initTkPanel
+    , initDataToggle: initDataToggle
   }
 
 }();

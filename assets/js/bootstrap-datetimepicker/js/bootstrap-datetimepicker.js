@@ -1833,9 +1833,9 @@
     },
     headTemplate: '<thead>' +
                 '<tr>' +
-                '<th class="prev"><span class="fas fa-arrow-left"></span> </th>' +
+                '<th class="prev"><span class="fa fas fa-arrow-left"></span> </th>' +
                 '<th colspan="5" class="switch"></th>' +
-                '<th class="next"><span class="fas fa-arrow-right"></span> </th>' +
+                '<th class="next"><span class="fa fas fa-arrow-right"></span> </th>' +
                 '</tr>' +
       '</thead>',
     contTemplate: '<tbody><tr><td colspan="7"></td></tr></tbody>',

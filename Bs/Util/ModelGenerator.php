@@ -535,10 +535,6 @@ use Tk\Form\Event;
  */
 class {classname} extends \Bs\FormIface
 {
-    /**
-     * @var \{namespace}\{classname}
-     */
-    protected \${property-name} = null;
 
 
     /**
@@ -590,11 +586,11 @@ class {classname} extends \Bs\FormIface
     }
 
     /**
-     * @return \{namespace}\{classname}
+     * @return \Tk\Db\ModelInterface|\{namespace}\{classname}
      */
     public function get{classname}()
     {
-        return \$this->{property-name};
+        return \$this->getModel();
     }
 
     /**
@@ -603,8 +599,7 @@ class {classname} extends \Bs\FormIface
      */
     public function set{classname}(\${property-name})
     {
-        \$this->{property-name} = \${property-name};
-        return \$this;
+        return \$this->setModel(\${property-name});
     }
     
 }

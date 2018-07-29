@@ -6,15 +6,39 @@
  * @license Copyright 2015 Michael Mifsud
  */
 
+$gray-color-dark: #999 !default;
+$red-color: #F33 !default;
+
+
+
 /**
  * \Tk\Form\Renderer\Dom\Form
  */
 .tk-form {
 
-  .error-block {
-    display: block;
+  //.required > label:before {
+  //  content:"* ";
+  //  color: #e70000;
+  //  font-weight: bold;
+  //}
+  .required > label {
+    text-decoration: underline dotted;
 
   }
+
+  .form-group {
+    .help-block {
+      margin-top: 5px;
+      &.help-text {
+        color: $gray-color-dark;
+      }
+    }
+  }
+
+  .error-block {
+    display: block;
+  }
+
   .tk-form-events {
     .btn {
       margin-right: 10px;

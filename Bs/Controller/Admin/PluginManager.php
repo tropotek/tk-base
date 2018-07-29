@@ -7,7 +7,6 @@ use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
 use Tk\Form\Event;
-use Bs\Controller\AdminManagerIface;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -20,9 +19,14 @@ class PluginManager extends \Bs\Controller\AdminIface
 {
 
     /**
-     * @var Form
+     * @var \Tk\Form
      */
     protected $form = null;
+
+    /**
+     * @var \Tk\Table
+     */
+    protected $table = null;
 
 
     /**
@@ -149,10 +153,10 @@ class PluginManager extends \Bs\Controller\AdminIface
         $template = parent::show();
 
         // Render the form
-        $template->insertTemplate('form', $this->form->getRenderer()->show());
+        $template->appendTemplate('form', $this->form->getRenderer()->show());
 
         // render Table
-        $template->replaceTemplate('PluginList', $this->table->getRenderer()->show());
+        $template->appendTemplate('PluginList', $this->table->getRenderer()->show());
 
         return $template;
     }

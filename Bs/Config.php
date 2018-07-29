@@ -452,6 +452,7 @@ class Config extends \Tk\Config
      * Get the page role, if multiple roles return the first one.
      *
      * @return string
+     * @deprecated
      */
     public function getPageRole()
     {
@@ -553,24 +554,6 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->get('user');
-    }
-
-    /**
-     * @param Db\User $user
-     * @return $this
-     */
-    public function setUser($user)
-    {
-        $this->set('user', $user);
-        return $this;
-    }
-
-    /**
      * Return the users home|dashboard relative url
      *
      * @param \Bs\Db\User|null $user
@@ -586,6 +569,24 @@ class Config extends \Tk\Config
                 return \Tk\Uri::create('/user/index.html');
         }
         return \Tk\Uri::create('/');
+    }
+
+    /**
+     * @return Db\User
+     */
+    public function getUser()
+    {
+        return $this->get('user');
+    }
+
+    /**
+     * @param Db\User $user
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        $this->set('user', $user);
+        return $this;
     }
 
     /**
