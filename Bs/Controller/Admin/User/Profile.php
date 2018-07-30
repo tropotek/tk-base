@@ -38,9 +38,7 @@ class Profile extends \Bs\Controller\AdminIface
     /**
      *
      * @param Request $request
-     * @throws Form\Exception
-     * @throws \ReflectionException
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function doDefault(Request $request)
     {

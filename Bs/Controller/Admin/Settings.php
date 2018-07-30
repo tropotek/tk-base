@@ -39,9 +39,7 @@ class Settings extends \Bs\Controller\AdminIface
      *
      * @param Request $request
      * @return void
-     * @throws Form\Exception
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function doDefault(Request $request)
     {
@@ -77,7 +75,7 @@ class Settings extends \Bs\Controller\AdminIface
      *
      * @param Form $form
      * @param \Tk\Form\Event\Iface $event
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function doSubmit($form, $event)
     {
@@ -114,7 +112,7 @@ class Settings extends \Bs\Controller\AdminIface
         //$this->getActionPanel()->add(\Tk\Ui\Button::create('Users', \Tk\Uri::create('/admin/userManager.html'), 'fa fa-users'));
         
         // Render the form
-        $template->insertTemplate('form', $this->form->getRenderer()->show());
+        $template->appendTemplate('form', $this->form->getRenderer()->show());
 
         return $template;
     }
