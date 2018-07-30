@@ -14,13 +14,11 @@ class TableIface extends \Tk\Table
     /**
      * @param $id
      * @param array $params
-     * @param null|array|\Tk\Request $request
-     * @param null|array|\Tk\Session $session
      * @return static|TableIface|\Tk\Table
      */
-    public static function create($id, $params = array(), $request = null, $session = null)
+    public static function create($id, $params = null)
     {
-        $obj = parent::create($id, $params, $request, $session);
+        $obj = parent::create($id, $params);
         $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));
         return $obj;
     }
