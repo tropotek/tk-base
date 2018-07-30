@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.36 [2018-07-31]:
+-------------------------------
+  - Fixed the LDAP and LTI implementations.
+
+
 Ver 1.0.34 [2018-07-30]:
 -------------------------------
   - Added new cube template and updated action panel
