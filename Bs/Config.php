@@ -470,6 +470,7 @@ class Config extends \Tk\Config
     public function createForm($formId, $method = \Tk\Form::METHOD_POST, $action = null)
     {
         $form = \Tk\Form::create($formId, $method, $action);
+        $form->setDispatcher($this->getEventDispatcher());
         $form->setEnableRequiredAttr();
         return $form;
     }
@@ -505,6 +506,7 @@ class Config extends \Tk\Config
     public function createTable($id, $params = array(), $request = null, $session = null)
     {
         $form = \Tk\Table::create($id, $params, $request, $session);
+        $form->setDispatcher($this->getEventDispatcher());
         return $form;
     }
 
