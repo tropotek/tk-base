@@ -448,9 +448,10 @@ class {classname} extends \Bs\TableIface
 {
     
     /**
+     * @return \$this
      * @throws \Exception
      */
-    public function initCells()
+    public function init()
     {
         \$this->setRenderer(\$this->getConfig()->createTableRenderer(\$this));
     
@@ -463,17 +464,20 @@ class {classname} extends \Bs\TableIface
         \$this->addAction(\Tk\Table\Action\Delete::create());
 
         // load table
-        \$this->findList();
+        \$this->setList(\$this->findList());
+        
+        return \$this;
     }
 
     /**
+     * @return \Tk\Db\Map\ArrayObject|\{namespace}\{classname}[]
      * @throws \Exception
      */
     protected function findList()
     {
         \$filter = \$this->getFilterValues();
         \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$this->getTool());
-        \$this->setList(\$list);
+        return \$list;
     }
 
 }
