@@ -30,20 +30,20 @@ $routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Re
 
 
 // Admin Pages
-$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault'));
-$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault'));
-
-//$routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault'));
-//$routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault'));
+//$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault'));
+//$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault'));
 $routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault'));
+
+$routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault'));
+$routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault'));
 
 $routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault'));
 $routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html', 'Bs\Controller\Admin\PluginManager::doDefault'));
 
 
 // User Pages
-$routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Dashboard::doDefault'));
-$routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Dashboard::doDefault'));
+//$routes->add('user-dashboard', new \Tk\Routing\Route('/user/index.html', 'Bs\Controller\User\Dashboard::doDefault'));
+//$routes->add('user-dashboard-base', new \Tk\Routing\Route('/user/', 'Bs\Controller\User\Dashboard::doDefault'));
 $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault'));
 
 

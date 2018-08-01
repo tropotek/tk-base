@@ -48,7 +48,7 @@ class Edit extends \Bs\Controller\AdminIface
     {
         $this->targetRole = $targetRole;
         switch($targetRole) {
-            case \Uni\Db\Role::TYPE_ADMIN:
+            case \Bs\Db\Role::TYPE_ADMIN:
                 $this->setPageTitle('Admin Edit');
                 break;
         }
@@ -73,6 +73,7 @@ class Edit extends \Bs\Controller\AdminIface
     public function init($request)
     {
         $this->user = $this->getConfig()->createUser();
+        $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_USER;
         if ($request->get('userId')) {
             $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
         }
@@ -87,17 +88,22 @@ class Edit extends \Bs\Controller\AdminIface
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
         $tab = 'Details';
+        if ($this->user->getId() != 1 && $this->getUser()->isAdmin()) {
+            $list = \Bs\Db\RoleMap::create()->findFiltered(array());
+            $this->form->addField(new Field\Select('roleId', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
+        } else {
+            $this->form->addField(new Field\Html('roleId', $this->user->getRole()->getName()))->setTabGroup($tab);
+        }
 
-        // TODO: Do not think this is required as they should be seperate pages
-        $list = \Tk\Form\Field\Select::arrayToSelectList(\Tk\ObjectUtil::getClassConstants('\Bs\Db\Role', 'DEFAULT_TYPE'));
-        $this->form->addField(new Field\Select('roleId', $list))->setTabGroup($tab)->setRequired(true);
-
-        $this->form->addField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
-        $this->form->addField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
         $this->form->addField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
+        if ($this->user->getId() != 1 && $this->getUser()->isAdmin()) {
+            $this->form->addField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
+        } else {
+            $this->form->addField(new Field\Html('username'))->setTabGroup($tab);
+        }
+        $this->form->addField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
         if ($this->user->getId() != 1)
             $this->form->addField(new Field\Checkbox('active'))->setTabGroup($tab);
-
 
         $tab = 'Password';
         $this->form->setAttr('autocomplete', 'off');
@@ -165,6 +171,7 @@ class Edit extends \Bs\Controller\AdminIface
         // Keep the admin account available and working. (hack for basic sites)
         if ($this->user->getId() == 1) {
             $this->user->active = true;
+            $this->user->username = 'admin';
             $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_ADMIN;
         }
 
@@ -182,6 +189,11 @@ class Edit extends \Bs\Controller\AdminIface
      */
     public function show()
     {
+        if ($this->user->getId() && \Bs\Listener\MasqueradeHandler::canMasqueradeAs($this->getUser(), $this->user)) {
+            $this->getActionPanel()->add(\Tk\Ui\Button::create('Masquerade',
+                \Bs\Uri::create()->reset()->set(\Bs\Listener\MasqueradeHandler::MSQ, $this->user->getHash()), 'fa fa-user-secret'))->addCss('tk-masquerade');
+        }
+
         $template = parent::show();
         
         // Render the form

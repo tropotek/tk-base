@@ -46,8 +46,6 @@ class Settings extends \Bs\Controller\AdminIface
 
         $this->data = \Tk\Db\Data::create();
 
-        $this->getActionPanel()->add(\Tk\Ui\Button::create('Plugins', \Tk\Uri::create('/admin/plugins.html'), 'fa fa-plug'));
-
         $this->form = $this->getConfig()->createForm('formEdit');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
@@ -107,6 +105,10 @@ class Settings extends \Bs\Controller\AdminIface
      */
     public function show()
     {
+        $this->getActionPanel()->add(\Tk\Ui\Button::create('Plugins', \Bs\Uri::createHomeUrl('/plugins.html'), 'fa fa-plug'));
+        $this->getActionPanel()->add(\Tk\Ui\Button::create('Users', \Bs\Uri::createHomeUrl('/userManager.html'), 'fa fa-users'));
+
+
         $template = parent::show();
 
         //$this->getActionPanel()->add(\Tk\Ui\Button::create('Users', \Tk\Uri::create('/admin/userManager.html'), 'fa fa-users'));

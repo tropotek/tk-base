@@ -25,7 +25,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function __construct()
     {
         $this->setPageTitle('User Manager');
-        $this->getCrumbs()->reset();
+        //$this->getCrumbs()->reset();
     }
 
     /**
@@ -36,14 +36,6 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function doDefaultRole(\Tk\Request $request, $targetRole)
     {
         $this->targetRole = $targetRole;
-        switch($targetRole) {
-            case \Uni\Db\Role::TYPE_ADMIN:
-                $this->setPageTitle('Admin Users');
-                break;
-            case \Uni\Db\Role::TYPE_USER:
-                $this->setPageTitle('User Manager');
-                break;
-        }
         $this->doDefault($request);
     }
 
@@ -53,6 +45,14 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function doDefault(\Tk\Request $request)
     {
+        switch($this->targetRole) {
+            case \Bs\Db\Role::TYPE_ADMIN:
+                $this->setPageTitle('Admin Users');
+                break;
+            case \Bs\Db\Role::TYPE_USER:
+                $this->setPageTitle('User Manager');
+                break;
+        }
 
         $this->table = $this->getConfig()->createTable('user-list');
         $this->table->setRenderer($this->getConfig()->createTableRenderer($this->table));
@@ -64,7 +64,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
                 /* @var $obj \Bs\Db\User */
                 /* @var $button \Tk\Table\Cell\ActionButton */
                 if (\Bs\Listener\MasqueradeHandler::canMasqueradeAs(\Bs\Config::getInstance()->getUser(), $obj)) {
-                    $button->setUrl(\Tk\Uri::create()->set(\Bs\Listener\MasqueradeHandler::MSQ, $obj->getId()));
+                    $button->setUrl(\Tk\Uri::create()->set(\Bs\Listener\MasqueradeHandler::MSQ, $obj->getHash()));
                 } else {
                     $button->setAttr('disabled', 'disabled')->addCss('disabled');
                 }
@@ -72,7 +72,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
         $this->table->addCell(new \Tk\Table\Cell\Checkbox('id'));
         $this->table->addCell($actionsCell);
-        $this->table->addCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl(\Tk\Uri::create('admin/userEdit.html'));
+        $this->table->addCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl(\Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'));
         $this->table->addCell(new \Tk\Table\Cell\Text('username'));
         $this->table->addCell(new \Tk\Table\Cell\Text('email'));
         $this->table->addCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
@@ -88,7 +88,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
         $this->table->addFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
 
         // Actions
-        $this->table->addAction(\Tk\Table\Action\Csv::create($this->getConfig()->getDb()));
+        $this->table->addAction(\Tk\Table\Action\Csv::create());
         $this->table->addAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array(1)));
 
         $filter = $this->table->getFilterValues();
@@ -106,7 +106,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
     {
         $template = parent::show();
 
-        $this->getActionPanel()->add(\Tk\Ui\Button::create('Add User', \Tk\Uri::create('/admin/userEdit.html'), 'fa fa-user'));
+        $this->getActionPanel()->add(\Tk\Ui\Button::create('Add User', \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'), 'fa fa-user'));
 
         $template->appendTemplate('table', $this->table->getRenderer()->show());
         

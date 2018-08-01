@@ -5,6 +5,7 @@ use Tk\Event\Subscriber;
 use Tk\Kernel\KernelEvents;
 use Tk\Event\GetResponseEvent;
 use Bs\Db\User;
+use Bs\Db\Role;
 use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
 
@@ -32,8 +33,8 @@ class MasqueradeHandler implements Subscriber
      * @var array
      */
     public static $roleOrder = array(
-        User::ROLE_ADMIN,        // Highest
-        User::ROLE_USER          // Lowest
+        Role::TYPE_ADMIN,        // Highest
+        Role::TYPE_USER          // Lowest
     );
 
     /**
@@ -69,14 +70,13 @@ class MasqueradeHandler implements Subscriber
      * @param User $user
      * @param User $msqUser
      * @return bool
-     * @throws \Tk\Db\Exception
      */
     public static function canMasqueradeAs($user, $msqUser)
     {
         if (!$msqUser || !$user) return false;
-        if ($user->id == $msqUser->id) return false;
-        $config = \Bs\Config::getInstance();
+        if ($user->getId() == $msqUser->getId()) return false;
 
+        $config = \Bs\Config::getInstance();
         $msqArr = $config->getSession()->get(self::SID);
         if (is_array($msqArr)) {    // Check if we are already masquerading as this user in the queue
             foreach ($msqArr as $data) {
@@ -84,24 +84,17 @@ class MasqueradeHandler implements Subscriber
             }
         }
 
-        // Get the users role precedence order index
-
-        // If not admin their role must be higher in precedence see \Bs\Db\User::$roleOrder
-//        $userRoleIdx = array_search($user->role, \Bs\Db\User::$roleOrder);
-//        $msqRoleIdx = array_search($msqUser->role, \Bs\Db\User::$roleOrder);
-//        if (!$user->isAdmin && $userRoleIdx >= $msqRoleIdx) {
-//            return false;
-//        }
-
-        // If not admin their role must be higher in precedence see \Bs\Db\User::$roleOrder
-        if (!$user->isAdmin()) {
-            return false;
+        // Admins can masquerade as anyone except themselves
+        if ($user->isAdmin()) {
+            return true;
         }
 
-        // If not admins they must be of the same institution
-//        if (!$user->isAdmin && $user->getInstitution()->id != $msqUser->institutionId) {
-//            return false;
-//        }
+        // If not admin their role must be higher in precedence see User::$roleOrder
+        $msqRoleIdx = array_search($msqUser->getRoleType(), self::$roleOrder);
+        $userRoleIdx = array_search($user->getRoleType(), self::$roleOrder);
+        if ($userRoleIdx >= $msqRoleIdx) {
+            return false;
+        }
         return true;
     }
 
@@ -113,12 +106,13 @@ class MasqueradeHandler implements Subscriber
      * >0 The masquerading total (for nested masquerading)
      *
      * @return int
-     * @throws \Tk\Db\Exception
      */
     public static function isMasquerading()
     {
-        if (!\Bs\Config::getInstance()->getSession()->has(self::SID)) return 0;
-        $msqArr = \Bs\Config::getInstance()->getSession()->get(self::SID);
+        $config = \Bs\Config::getInstance();
+
+        if (!$config->getSession()->has(self::SID)) return 0;
+        $msqArr = $config->getSession()->get(self::SID);
         return count($msqArr);
     }
 
@@ -134,8 +128,9 @@ class MasqueradeHandler implements Subscriber
         if (!$msqUser || !$user) return;
         if ($user->id == $msqUser->id) return;
 
+        $config = \Bs\Config::getInstance();
         // Get the masquerade queue from the session
-        $msqArr = \Bs\Config::getInstance()->getSession()->get(self::SID);
+        $msqArr = $config->getSession()->get(self::SID);
         if (!is_array($msqArr)) $msqArr = array();
 
         if (!self::canMasqueradeAs($user, $msqUser)) {
@@ -149,17 +144,17 @@ class MasqueradeHandler implements Subscriber
         );
         array_push($msqArr, $userData);
         // Save the updated masquerade queue
-        \Bs\Config::getInstance()->getSession()->set(self::SID, $msqArr);
+        $config->getSession()->set(self::SID, $msqArr);
 
         // Login as the selected user
-        \Bs\Config::getInstance()->getAuth()->getStorage()->write($msqUser->username);
-        \Tk\Uri::create($msqUser->getHomeUrl())->redirect();
+        $config->getAuth()->getStorage()->write($msqUser->getUsername());
+        $config->getUserHomeUrl($msqUser)->redirect();
     }
 
     /**
      * masqueradeLogout
      *
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public static function masqueradeLogout()
     {
@@ -185,8 +180,6 @@ class MasqueradeHandler implements Subscriber
 
     /**
      * masqueradeLogout
-     *
-     * @throws \Tk\Exception
      */
     public static function masqueradeClear()
     {
@@ -204,11 +197,7 @@ class MasqueradeHandler implements Subscriber
         }
     }
 
-
-
     /**
-     * getSubscribedEvents
-     *
      * @return array
      */
     public static function getSubscribedEvents()

@@ -17,6 +17,11 @@ interface UserIface
     /**
      * @return string
      */
+    public function getHash();
+
+    /**
+     * @return string
+     */
     public function getName();
 
     /**
