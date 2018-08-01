@@ -162,10 +162,10 @@ var project_core = function () {
      */
     var _elFinderPickerCallback = function (callback, value, meta) {
       tinymce.activeEditor.windowManager.open({
-        file: config.templateUrl + '/app/js/elFinder/elfinder.html', // use an absolute path!
+        file: config.siteUrl + '/vendor/ttek/tk-base/assets/js/elFinder/elfinder.html', // use an absolute path!
         title: 'File Manager',
         width: 900,
-        height: 350,
+        height: 430,
         resizable: false,
         config: config
       }, {
