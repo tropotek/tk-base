@@ -108,7 +108,6 @@ $config['system.auth.salted'] = false;
 $config['system.auth.dbtable.tableName'] = 'user';
 $config['system.auth.dbtable.usernameColumn'] = 'username';
 $config['system.auth.dbtable.passwordColumn'] = 'password';
-$config['system.auth.dbtable.activeColumn'] = 'active';
 
 /*
  * Config for the \Tk\Auth\Adapter\DbTable
