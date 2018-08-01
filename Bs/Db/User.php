@@ -8,7 +8,7 @@ use Tk\Db\Map\Model;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class User extends Model implements \Tk\ValidInterface
+class User extends Model implements UserIface, \Tk\ValidInterface
 {
     /**
      * @deprecated Use Role::TYPE_ADMIN
@@ -126,6 +126,22 @@ class User extends Model implements \Tk\ValidInterface
             $this->hash = $this->getHash();
         }
         parent::save();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     /**
