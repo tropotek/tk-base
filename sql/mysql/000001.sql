@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS `user_role` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB;
 
-
 INSERT INTO `user_role` (name, type, description, static, modified, created) VALUES
   ('admin', 'admin', 'System administrator role', 1, NOW(), NOW()),
   ('user', 'user', 'Site default user role', 1, NOW(), NOW())
@@ -32,7 +31,7 @@ UPDATE `user` a, `user_role` b
 SET a.`role_id` = b.`id`
 WHERE b.`type` = a.`role`;
 
-alter table user drop column role;
+ALTER TABLE user DROP COLUMN role;
 
 -- --------------------------------------------------------
 -- The role permission table
@@ -43,8 +42,6 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
   `name` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY `role_id_name` (`role_id`, `name`)
 ) ENGINE=InnoDB;
-
-
 
 
 
@@ -72,13 +69,13 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
 
 
 
-
-
-
-
-
-
-
+-- TODO: this should b added to the site sql only
+# TRUNCATE `user`;
+# INSERT INTO `user` (`role_id`, `name`, `email`, `username`, `password`, `hash`, `modified`, `created`)
+# VALUES
+#   (1, 'Administrator', 'admin@example.com', 'admin', MD5('password'), 'admin', MD5('1admin'), NOW() , NOW()),
+#   (2, 'User', 'user@example.com', 'user1', MD5('password'), 'user', MD5('2user'), NOW() , NOW())
+# ;
 
 
 

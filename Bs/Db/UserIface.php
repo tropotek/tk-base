@@ -22,6 +22,17 @@ interface UserIface
     /**
      * @return string
      */
+    public function getUsername();
+
+    /**
+     * Return the users hashed password
+     * @return string
+     */
+    public function getPassword();
+
+    /**
+     * @return string
+     */
     public function getEmail();
 
     /**

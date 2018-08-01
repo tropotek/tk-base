@@ -145,6 +145,23 @@ class User extends Model implements UserIface, \Tk\ValidInterface
     }
 
     /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * Return the users hashed password
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
      * @return bool
      */
     public function isActive()
@@ -152,11 +169,11 @@ class User extends Model implements UserIface, \Tk\ValidInterface
         return $this->active;
     }
 
+
     /**
      * Get the path for all file associated to this object
      *
      * @return string
-     * @throws \Tk\Db\Exception
      */
     public function getDataPath()
     {
@@ -167,7 +184,6 @@ class User extends Model implements UserIface, \Tk\ValidInterface
      * Get the user hash or generate one if needed
      *
      * @return string
-     * @throws \Tk\Exception
      */
     public function getHash()
     {
@@ -182,14 +198,9 @@ class User extends Model implements UserIface, \Tk\ValidInterface
      *
      * @param bool $isTemp Set this to true, when generate a temporary hash used for registration
      * @return string
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
      */
     public function generateHash($isTemp = false)
     {
-        if (!$this->username) {
-            throw new \Tk\Exception('The username must be set before generating a valid hash');
-        }
         $key = sprintf('%s%s', $this->getVolatileId(), $this->username);
         if ($isTemp) {
             $key .= date('-YmdHis');
@@ -198,22 +209,10 @@ class User extends Model implements UserIface, \Tk\ValidInterface
     }
 
     /**
-     * Return the users home|dashboard relative url
-     *
-     * @return \Tk\Uri
-     * @deprecated Use \Bs\Config::getInstance()->getUserHomeUrl($user)
-     */
-    public function getHomeUrl()
-    {
-        return \Bs\Config::getInstance()->getUserHomeUrl($this);
-    }
-
-    /**
      * Set the password from a plain string
      *
      * @param string $pwd
      * @return User
-     * @throws \Tk\Exception
      */
     public function setNewPassword($pwd = '')
     {
@@ -248,22 +247,6 @@ class User extends Model implements UserIface, \Tk\ValidInterface
         return $this->getRole()->getType();
     }
 
-
-    /**
-     * @param string|array $role
-     * @return boolean
-     */
-    public function hasRole($role)
-    {
-        if (!is_array($role)) $role = array($role);
-        foreach ($role as $r) {
-            if ($r == $this->getRoleType() || preg_match('/'.preg_quote($r).'/', $this->getRoleType())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * @return boolean
      */
@@ -286,6 +269,34 @@ class User extends Model implements UserIface, \Tk\ValidInterface
     public function isPublic()
     {
         return (!$this->getRole() || !$this->getRole()->getType() || $this->getRole()->hasType(Role::TYPE_PUBLIC));
+    }
+
+
+    /**
+     * @param string|array $role
+     * @return boolean
+     * @deprecated Use getRole()->hasType() or getRoleType()
+     */
+    public function hasRole($role)
+    {
+        if (!is_array($role)) $role = array($role);
+        foreach ($role as $r) {
+            if ($r == $this->getRoleType() || preg_match('/'.preg_quote($r).'/', $this->getRoleType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return the users home|dashboard relative url
+     *
+     * @return \Tk\Uri
+     * @deprecated Use \Bs\Config::getInstance()->getUserHomeUrl($user)
+     */
+    public function getHomeUrl()
+    {
+        return \Bs\Config::getInstance()->getUserHomeUrl($this);
     }
 
 

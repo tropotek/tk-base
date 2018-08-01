@@ -112,7 +112,6 @@ class Config extends \Tk\Config
      * @param $pwd
      * @param \Bs\Db\User $user (optional)
      * @return string
-     * @throws \Tk\Exception
      */
     public function hashPassword($pwd, $user = null)
     {
