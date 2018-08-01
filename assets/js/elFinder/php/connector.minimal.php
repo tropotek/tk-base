@@ -1,5 +1,5 @@
 <?php
-$appPath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+$appPath = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))));
 require $appPath . '/_prepend.php';
 
 //error_reporting(0); // Set E_ALL for debuging
