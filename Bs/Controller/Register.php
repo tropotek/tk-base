@@ -51,7 +51,7 @@ class Register extends Iface
         }
 
         $this->user = $this->getConfig()->createUser();
-        $this->user->role = \Bs\Db\User::ROLE_USER;
+        $this->user->role_id = \Bs\Db\ROLE::DEFAULT_TYPE_USER;
 
         $this->form = $this->getConfig()->createForm('register-account');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));

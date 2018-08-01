@@ -10,13 +10,27 @@ use Tk\Db\Map\Model;
  */
 class User extends Model implements \Tk\ValidInterface
 {
+    /**
+     * @deprecated Use Role::TYPE_ADMIN
+     */
     const ROLE_ADMIN = 'admin';
+    /**
+     * @deprecated Use Role::TYPE_USER
+     */
     const ROLE_USER = 'user';
+
+
+
 
     /**
      * @var int
      */
     public $id = 0;
+
+    /**
+     * @var int
+     */
+    public $roleId = 0;
 
     /**
      * @var string
@@ -37,11 +51,6 @@ class User extends Model implements \Tk\ValidInterface
      * @var string
      */
     public $password = '';
-
-    /**
-     * @var string
-     */
-    public $role = '';
 
     /**
      * @var string
@@ -85,6 +94,12 @@ class User extends Model implements \Tk\ValidInterface
 
 
     /**
+     * @var RoleIface
+     */
+    private $role = null;
+
+
+    /**
      * User constructor.
      */
     public function __construct()
@@ -92,6 +107,14 @@ class User extends Model implements \Tk\ValidInterface
         $this->modified = new \DateTime();
         $this->created = new \DateTime();
         $this->ip = \Bs\Config::getInstance()->getRequest()->getIp();
+    }
+
+    /**
+     * @return \Tk\Db\Map\Mapper|UserMap
+     */
+    public function getMapper()
+    {
+        return self::createMapper();
     }
 
     /**
@@ -185,9 +208,28 @@ class User extends Model implements \Tk\ValidInterface
         return $this;
     }
 
+    /**
+     * @return RoleIface
+     */
     public function getRole()
     {
+        if (!$this->role) {
+            try {
+                $this->role = \Bs\Config::getInstance()->getRoleMapper()->find($this->roleId);
+            } catch (\Exception $e) {
+                \Tk\Log::warning('No valid role found for UID: ' . $this->getId());
+                $this->role = new Role();
+            }
+        }
         return $this->role;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoleType()
+    {
+        return $this->getRole()->getType();
     }
 
 
@@ -199,8 +241,7 @@ class User extends Model implements \Tk\ValidInterface
     {
         if (!is_array($role)) $role = array($role);
         foreach ($role as $r) {
-            //vd($role, $r, $this->role);
-            if ($r == $this->getRole() || preg_match('/'.preg_quote($r).'/', $this->getRole())) {
+            if ($r == $this->getRoleType() || preg_match('/'.preg_quote($r).'/', $this->getRoleType())) {
                 return true;
             }
         }
@@ -212,7 +253,7 @@ class User extends Model implements \Tk\ValidInterface
      */
     public function isAdmin()
     {
-        return $this->hasRole(self::ROLE_ADMIN);
+        return $this->getRole()->hasType(Role::TYPE_ADMIN);
     }
 
     /**
@@ -220,7 +261,15 @@ class User extends Model implements \Tk\ValidInterface
      */
     public function isUser()
     {
-        return $this->hasRole(self::ROLE_USER);
+        return $this->getRole()->hasType(Role::TYPE_USER);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPublic()
+    {
+        return (!$this->getRole() || !$this->getRole()->getType() || $this->getRole()->hasType(Role::TYPE_PUBLIC));
     }
 
 
@@ -230,15 +279,14 @@ class User extends Model implements \Tk\ValidInterface
      * objects for use within forms.
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws \Tk\Db\Exception
+     * @throws \Exception
      */
     public function validate()
     {
         $errors = array();
 
-        if (!$this->role) {
-            $errors['role'] = 'Invalid field role value';
+        if (!$this->roleId) {
+            $errors['roleId'] = 'Invalid field roleId value';
         }
 
         if (!$this->username) {

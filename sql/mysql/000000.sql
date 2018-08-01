@@ -1,24 +1,7 @@
 
 
--- --------------------------------------------------------
---
--- Table structure for table `auth`
---
--- TODO: Something to think about for the future of the system
--- TODO: This way the lower libs say tk-auth can have control
---
-# CREATE TABLE IF NOT EXISTS `auth` (
-#   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-#   `user_id` INT UNSIGNED NOT NULL DEFAULT 0,
-#   `username` varchar(128) NOT NULL,
-#   `password` varchar(128) NOT NULL DEFAULT '',
-#   PRIMARY KEY (`id`),
-#   UNIQUE KEY `username` (`username`)
-# ) ENGINE=InnoDB;
-
-
 CREATE TABLE IF NOT EXISTS `user` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(255) NOT NULL DEFAULT '',
   `email` varchar(255) NOT NULL DEFAULT '',
   `username` varchar(255) NOT NULL DEFAULT '',
@@ -31,7 +14,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `del` TINYINT(1) NOT NULL DEFAULT 0,
   `modified` DATETIME NOT NULL,
   `created` DATETIME NOT NULL,
-  PRIMARY KEY (`id`),
   KEY `username` (`username`),
   KEY `email` (`email`)
 ) ENGINE=InnoDB;

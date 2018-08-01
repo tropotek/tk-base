@@ -47,6 +47,7 @@ class Bootstrap
                 $logger->pushHandler($handler);
                 $config->setLog($logger);
                 \Tk\Log::getInstance($logger);
+                \Dom\Template::$logger = $logger;
             }
         } else {
             error_log('Log Path not readable: ' . $config->getLogPath());

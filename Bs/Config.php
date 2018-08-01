@@ -210,7 +210,6 @@ class Config extends \Tk\Config
      * getSession
      *
      * @return \Tk\Session
-     * @throws \Tk\Db\Exception
      */
     public function getSession()
     {
@@ -226,7 +225,6 @@ class Config extends \Tk\Config
      * getSessionAdapter
      *
      * @return \Tk\Session\Adapter\Iface|null
-     * @throws \Tk\Db\Exception
      */
     public function getSessionAdapter()
     {
@@ -323,7 +321,6 @@ class Config extends \Tk\Config
      * get a dom Modifier object
      *
      * @return \Dom\Modifier\Modifier
-     * @throws \Tk\Exception
      */
     public function getDomModifier()
     {
@@ -402,7 +399,6 @@ class Config extends \Tk\Config
      * Return the back URI if available, otherwise it will return the home URI
      *
      * @return \Tk\Uri
-     * @throws \Tk\Db\Exception
      */
     public function getBackUrl()
     {
@@ -416,7 +412,7 @@ class Config extends \Tk\Config
      * @param string $homeUrl
      * @return \Tk\Crumbs
      */
-    public function getCrumbs($homeTitle=null, $homeUrl=null)
+    public function getCrumbs($homeTitle = null, $homeUrl = null)
     {
         if (!$this->get('crumbs')) {
             if ($homeTitle)
@@ -498,14 +494,11 @@ class Config extends \Tk\Config
 
     /**
      * @param string $id
-     * @param array $params
-     * @param null|\Tk\Request $request
-     * @param null|\Tk\Session $session
      * @return \Tk\Table
      */
-    public function createTable($id, $params = array(), $request = null, $session = null)
+    public function createTable($id)
     {
-        $form = \Tk\Table::create($id, $params, $request, $session);
+        $form = \Tk\Table::create($id);
         $form->setDispatcher($this->getEventDispatcher());
         return $form;
     }
@@ -526,6 +519,25 @@ class Config extends \Tk\Config
     // ------------------------------- Commonly Overridden ---------------------------------------
 
     /**
+     * @return Db\RoleMap
+     */
+    public function getRoleMapper()
+    {
+        if (!$this->get('obj.mapper.role')) {
+            $this->set('obj.mapper.role', Db\RoleMap::create());
+        }
+        return $this->get('obj.mapper.role');
+    }
+
+    /**
+     * @return Db\Role
+     */
+    public function createRole()
+    {
+        return new Db\Role();
+    }
+
+    /**
      * @return Db\UserMap
      */
     public function getUserMapper()
@@ -544,6 +556,10 @@ class Config extends \Tk\Config
         return new Db\User();
     }
 
+
+
+
+
     /**
      * @param int $id
      * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface
@@ -553,24 +569,6 @@ class Config extends \Tk\Config
     public function findUser($id)
     {
         return $this->getUserMapper()->find($id);
-    }
-
-    /**
-     * Return the users home|dashboard relative url
-     *
-     * @param \Bs\Db\User|null $user
-     * @return \Tk\Uri
-     */
-    public function getUserHomeUrl($user = null)
-    {
-        if (!$user) $user = $this->getUser();
-        if ($user) {
-            if ($user->isAdmin())
-                return \Tk\Uri::create('/admin/index.html');
-            if ($user->isUser())
-                return \Tk\Uri::create('/user/index.html');
-        }
-        return \Tk\Uri::create('/');
     }
 
     /**
@@ -592,10 +590,36 @@ class Config extends \Tk\Config
     }
 
     /**
+     * Return the users home|dashboard relative url
+     *
+     * @param \Bs\Db\User|null $user
+     * @return \Tk\Uri
+     */
+    public function getUserHomeUrl($user = null)
+    {
+        if (!$user) $user = $this->getUser();
+        if ($user) {
+            if ($user->isAdmin())
+                return \Tk\Uri::create('/admin/index.html');
+            if ($user->isUser())
+                return \Tk\Uri::create('/user/index.html');
+        }
+        return \Tk\Uri::create('/');
+    }
+
+    /**
      * @return array
-     * @throws \Exception
+     * @deprecated use getAvailableUserRoleTypes()
      */
     public function getAvailableUserRoles()
+    {
+        return $this->getAvailableUserRoleTypes();
+    }
+
+    /**
+     * @return array
+     */
+    public function getAvailableUserRoleTypes()
     {
         return \Tk\ObjectUtil::getClassConstants('Bs\Db\User', 'ROLE');
     }
@@ -604,7 +628,7 @@ class Config extends \Tk\Config
      * getFrontController
      *
      * @return \Tk\Kernel\HttpKernel
-     * @throws \Tk\Exception
+     * @throws \Exception
      */
     public function getFrontController()
     {

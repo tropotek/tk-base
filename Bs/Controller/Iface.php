@@ -64,7 +64,7 @@ abstract class Iface extends \Tk\Controller\Iface
      */
     public function getBackUrl()
     {
-        return $this->getCrumbs()->getBackUrl();
+        return $this->getConfig()->getBackUrl();
     }
 
     /**

@@ -540,7 +540,7 @@ class {classname} extends \Bs\FormIface
     /**
      * @throws \Exception
      */
-    public function initFields()
+    public function init()
     {
         \$this->setRenderer(\$this->getConfig()->createFormRenderer(\$this));
         

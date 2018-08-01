@@ -34,6 +34,10 @@ class AuthHandler implements Subscriber
         if ($auth->getIdentity()) {         // Check if user is logged in
             $user = $config->getUserMapper()->findByUsername($auth->getIdentity());
             $config->setUser($user);
+            if (!$user->isActive()) {
+                $config->setUser(null);
+                $user = null;
+            }
         }
 
         // ---------------- deprecated  ---------------------
@@ -42,7 +46,7 @@ class AuthHandler implements Subscriber
         // no role means page is publicly accessible
         if (!$role || empty($role)) return;
         if ($user) {
-            if (!$user->hasRole($role)) {
+            if (!$user->getRole()->hasType($role)) {
                 // Could redirect to a authentication error page.
                 \Tk\Alert::addWarning('You do not have access to the requested page.');
                 $config->getUserHomeUrl($user)->redirect();
@@ -73,11 +77,11 @@ class AuthHandler implements Subscriber
         }
         // --------------------------------------------------------
 
-        $urlRole = \Bs\Uri::create()->getRole($config->getAvailableUserRoles());
+        $urlRole = \Bs\Uri::create()->getRoleType($config->getAvailableUserRoleTypes());
         if ($urlRole && !$urlRole != 'public') {
             $role = '';
             if ($config->getUser()) {
-                $role = $config->getUser()->getRole();
+                $role = $config->getUser()->getRole()->getType();
             }
             if (!$config->getUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
@@ -110,18 +114,6 @@ class AuthHandler implements Subscriber
                     break;
                 }
             }
-        }
-
-        if (!$result) {
-            throw new \Tk\Auth\Exception('Invalid username or password');
-        }
-        if (!$result->isValid()) {
-            return;
-        }
-        
-        $user = $config->getUserMapper()->findByUsername($result->getIdentity());
-        if (!$user) {
-            throw new \Tk\Auth\Exception('User not found: Contact Your Administrator');
         }
     }
 

@@ -47,7 +47,7 @@ class PageTemplateHandler implements Subscriber
         $templateUrl = $this->getConfig()->getTemplateUrl();
         $role = '';
         if ($this->getConfig()->getUser()) {
-            $role = $this->getConfig()->getUser()->getRole();
+            $role = $this->getConfig()->getUser()->getRole()->getType();
         }
 
         $js = <<<JS
@@ -91,7 +91,7 @@ JS;
             $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getUser()->username);
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
             $template->setChoice($config->get('template.var.page.logout'));
-            $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRole());
+            $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRole()->getType());
         } else {
             $template->setChoice($config->get('template.var.page.login'));
         }

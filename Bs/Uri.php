@@ -73,7 +73,7 @@ class Uri extends \Tk\Uri
 
 
     /**
-     * Attempts to get a valid user role from the start of a site path
+     * Attempts to get a valid user role type from the start of a site path
      *
      *
      * Example uses following roles array:
@@ -91,7 +91,7 @@ class Uri extends \Tk\Uri
      * @param array $roles  Supply a list of available roles to search for
      * @return string
      */
-    public function getRole($roles = array())
+    public function getRoleType($roles = array())
     {
         if (preg_match('|^\/([a-z0-9_-]+).*|', $this->getRelativePath(), $regs)) {
             if (!empty($regs[1]) && in_array($regs[1], $roles)) {
@@ -99,5 +99,15 @@ class Uri extends \Tk\Uri
             }
         }
         return '';
+    }
+
+    /**
+     * @param array $roles
+     * @return string
+     * @deprecated use getRoleType()
+     */
+    public function getRole($roles = array())
+    {
+        return $this->getRoleType($roles);
     }
 }

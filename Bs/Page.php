@@ -17,7 +17,7 @@ class Page extends \Tk\Controller\Page
     public function __construct($templatePath = '')
     {
         if (!$templatePath) {   // set the default template path using the url role if available
-            $urlRole = \Bs\Uri::create()->getRole($this->getConfig()->getAvailableUserRoles());
+            $urlRole = \Bs\Uri::create()->getRoleType($this->getConfig()->getAvailableUserRoleTypes());
             if (!$urlRole) $urlRole = 'public';
             $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlRole);
         }

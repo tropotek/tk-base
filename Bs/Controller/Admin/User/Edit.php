@@ -14,6 +14,11 @@ use Tk\Form\Event;
  */
 class Edit extends \Bs\Controller\AdminIface
 {
+    /**
+     * Setup the controller to work with users of this role
+     * @var string
+     */
+    protected $targetRole = 'user';
 
     /**
      * @var Form
@@ -35,10 +40,26 @@ class Edit extends \Bs\Controller\AdminIface
     }
 
     /**
-     * @param Request $request
+     * @param \Tk\Request $request
+     * @param string $targetRole
      * @throws \Exception
      */
-    public function doDefault(Request $request)
+    public function doDefaultRole(\Tk\Request $request, $targetRole)
+    {
+        $this->targetRole = $targetRole;
+        switch($targetRole) {
+            case \Uni\Db\Role::TYPE_ADMIN:
+                $this->setPageTitle('Admin Edit');
+                break;
+        }
+        $this->doDefault($request);
+    }
+
+    /**
+     * @param \Tk\Request $request
+     * @throws \Exception
+     */
+    public function doDefault(\Tk\Request $request)
     {
         $this->init($request);
         $this->buildForm();
@@ -66,9 +87,11 @@ class Edit extends \Bs\Controller\AdminIface
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
         $tab = 'Details';
-        //$list = array('Admin' => \Bs\Db\User::ROLE_ADMIN, 'User' => \Bs\Db\User::ROLE_USER);
-        $list = \Tk\Form\Field\Select::arrayToSelectList(\Tk\ObjectUtil::getClassConstants('\Bs\Db\User', 'ROLE'));
-        $this->form->addField(new Field\Select('role', $list))->setTabGroup($tab)->setRequired(true);
+
+        // TODO: Do not think this is required as they should be seperate pages
+        $list = \Tk\Form\Field\Select::arrayToSelectList(\Tk\ObjectUtil::getClassConstants('\Bs\Db\Role', 'DEFAULT_TYPE'));
+        $this->form->addField(new Field\Select('roleId', $list))->setTabGroup($tab)->setRequired(true);
+
         $this->form->addField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
         $this->form->addField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
         $this->form->addField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
@@ -91,7 +114,7 @@ class Edit extends \Bs\Controller\AdminIface
 
         $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Link('cancel', $this->getCrumbs()->getBackUrl()));
+        $this->form->addField(new Event\Link('cancel', $this->getBackUrl()));
     }
 
     /**
@@ -124,11 +147,11 @@ class Edit extends \Bs\Controller\AdminIface
         $form->addFieldErrors($this->user->validate());
         
         // Just a small check to ensure the user down not change their own role
-        if ($this->user->getId() == $this->getUser()->getId() && $this->user->getRole() != $this->getUser()->getRole()) {
-            $form->addError('You cannot change your own role information as this will make the system unstable.');
+        if ($this->user->getId() == $this->getUser()->getId() && $this->user->getRoleType() != $this->getUser()->getRoleType()) {
+            $form->addError('You cannot change your own role information.');
         }
         if ($this->user->getId() == $this->getUser()->getId() && !$this->user->isActive()) {
-            $form->addError('You cannot change your own active status as this will make the system unstable.');
+            $form->addError('You cannot change your own active status.');
         }
         
         if ($form->hasErrors()) {
@@ -142,7 +165,7 @@ class Edit extends \Bs\Controller\AdminIface
         // Keep the admin account available and working. (hack for basic sites)
         if ($this->user->getId() == 1) {
             $this->user->active = true;
-            $this->user->role = \Bs\Db\User::ROLE_ADMIN;
+            $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_ADMIN;
         }
 
         $this->user->save();
@@ -150,7 +173,7 @@ class Edit extends \Bs\Controller\AdminIface
         \Tk\Alert::addSuccess('Record saved!');
         $event->setRedirect(\Tk\Uri::create());
         if ($form->getTriggeredEvent()->getName() == 'update') {
-            $event->setRedirect($this->getCrumbs()->getBackUrl());
+            $event->setRedirect($this->getBackUrl());
         }
     }
 

@@ -11,36 +11,31 @@ use Tk\DataMap\Form;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class UserMap extends Mapper
+class RoleMap extends Mapper
 {
     /**
-     *
      * @return \Tk\DataMap\DataMap
+     * @throws \Exception
      */
     public function getDbMap()
     {
         if (!$this->dbMap) {
             $this->setMarkDeleted('del');
+            $this->setTable('user_role');
             $this->dbMap = new \Tk\DataMap\DataMap();
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
-            $this->dbMap->addPropertyMap(new Db\Integer('roleId', 'role_id'));
             $this->dbMap->addPropertyMap(new Db\Text('name'));
-            $this->dbMap->addPropertyMap(new Db\Text('email'));
-            $this->dbMap->addPropertyMap(new Db\Text('username'));
-            $this->dbMap->addPropertyMap(new Db\Text('password'));
-            $this->dbMap->addPropertyMap(new Db\Date('lastLogin', 'last_login'));
-            $this->dbMap->addPropertyMap(new Db\Text('notes'));
+            $this->dbMap->addPropertyMap(new Db\Text('type'));
+            $this->dbMap->addPropertyMap(new Db\Text('description'));
             $this->dbMap->addPropertyMap(new Db\Boolean('active'));
-            $this->dbMap->addPropertyMap(new Db\Text('hash'));
+            $this->dbMap->addPropertyMap(new Db\Boolean('static'));
             $this->dbMap->addPropertyMap(new Db\Date('modified'));
             $this->dbMap->addPropertyMap(new Db\Date('created'));
-
         }
         return $this->dbMap;
     }
 
     /**
-     *
      * @return \Tk\DataMap\DataMap
      */
     public function getFormMap()
@@ -48,47 +43,14 @@ class UserMap extends Mapper
         if (!$this->formMap) {
             $this->formMap = new \Tk\DataMap\DataMap();
             $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
-            $this->formMap->addPropertyMap(new Form\Integer('roleId'));
             $this->formMap->addPropertyMap(new Form\Text('name'));
-            $this->formMap->addPropertyMap(new Form\Text('email'));
-            $this->formMap->addPropertyMap(new Form\Text('username'));
-            $this->formMap->addPropertyMap(new Form\Text('password'));
-            $this->formMap->addPropertyMap(new Form\Text('notes'));
+            $this->formMap->addPropertyMap(new Form\Text('type'));
+            $this->formMap->addPropertyMap(new Form\Text('description'));
             $this->formMap->addPropertyMap(new Form\Boolean('active'));
         }
         return $this->formMap;
     }
 
-    /**
-     * @param $username
-     * @return \Tk\Db\Map\Model|User
-     * @throws \Exception
-     */
-    public function findByUsername($username)
-    {
-        $result = $this->select('username = ' . $this->getDb()->quote($username) );
-        return $result->current();
-    }
-
-    /**
-     * @param $email
-     * @return \Tk\Db\Map\Model|User
-     * @throws \Exception
-     */
-    public function findByEmail($email)
-    {
-        return $this->select('email = ' . $this->getDb()->quote($email))->current();
-    }
-
-    /**
-     * @param $hash
-     * @return \Tk\Db\Map\Model|User
-     * @throws \Exception
-     */
-    public function findByHash($hash)
-    {
-        return $this->select('hash = ' . $this->getDb()->quote($hash))->current();
-    }
 
     /**
      * @param array $filter
@@ -105,8 +67,7 @@ class UserMap extends Mapper
             $kw = '%' . $this->escapeString($filter['keywords']) . '%';
             $w = '';
             $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.username LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.type LIKE %s OR ', $this->quote($kw));
             if (is_numeric($filter['keywords'])) {
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
@@ -116,8 +77,8 @@ class UserMap extends Mapper
             }
         }
 
-        if (!empty($filter['roleId'])) {
-            $where .= sprintf('a.roleId = %s AND ', (int)$filter['roleId']);
+        if (!empty($filter['name'])) {
+            $where .= sprintf('a.name = %s AND ', $this->getDb()->quote($filter['name']));
         }
 
         if (!empty($filter['username'])) {
@@ -131,19 +92,14 @@ class UserMap extends Mapper
             $where .= sprintf('a.active = %s AND ', (int)$filter['active']);
         }
 
-        if (!empty($filter['email'])) {
-            $where .= sprintf('a.email = %s AND ', $this->quote($filter['email']));
+        if (!empty($filter['static'])) {
+            $where .= sprintf('a.static = %s AND ', (int)$filter['static']);
         }
 
-
-        if (!empty($filter['role']) && empty($filter['type'])) {
-            $filter['type'] = $filter['role'];
-        }
         if (!empty($filter['type'])) {
-            $from .= sprintf(', user_role d');
-            $w = $this->makeMultiQuery($filter['type'], 'd.type');
+            $w = $this->makeMultiQuery($filter['type'], 'a.type');
             if ($w) {
-                $where .= 'a.role_id = d.id AND ('. $w . ') AND ';
+                $where .= '('. $w . ') AND ';
             }
         }
 
@@ -153,25 +109,84 @@ class UserMap extends Mapper
                 $where .= '('. $w . ') AND ';
             }
         }
-        
-        if ($where) {
-            $where = substr($where, 0, -4);
-        }
-
         return $this;
     }
 
     /**
      * @param array $filter
      * @param Tool $tool
-     * @return ArrayObject|User[]
+     * @return ArrayObject|Role[]
      * @throws \Exception
      */
     public function findFiltered($filter = array(), $tool = null)
     {
         $this->makeQuery($filter, $tool, $where, $from);
+        if ($where) {
+            $where = rtrim($where, 'AND ');
+        }
         $res = $this->selectFrom($from, $where, $tool);
         return $res;
     }
 
+    // --------------------------------------------
+
+
+    /**
+     * Note: Be sure to check the active status of this role
+     *       and return false if this is a non active role.
+     *
+     * @param int $roleId
+     * @param string $name
+     * @return bool
+     */
+    public function hasPermission($roleId, $name)
+    {
+        $stm = $this->getDb()->prepare('SELECT * FROM user_permission WHERE role_id = ? AND name = ?');
+        $stm->execute(array($roleId, $name));
+        return ($stm->rowCount() > 0);
+    }
+
+    /**
+     * @param int $roleId
+     * @param string $name
+     */
+    public function addPermission($roleId, $name)
+    {
+        if ($name && !$this->hasPermission($roleId, $name)) {
+            $stm = $this->getDb()->prepare('INSERT INTO user_permission (role_id, name)  VALUES (?, ?)');
+            $stm->execute(array($roleId, $name));
+        }
+    }
+
+    /**
+     * @param int $roleId
+     * @param string $name
+     */
+    public function removePermission($roleId, $name = null)
+    {
+        if ($name !== null) {
+            if ($this->hasPermission($roleId, $name)) {
+                $stm = $this->getDb()->prepare('DELETE FROM user_permission WHERE role_id = ? AND name = ?');
+                $stm->execute(array($roleId, $name));
+            }
+        } else {
+            $stm = $this->getDb()->prepare('DELETE FROM user_permission WHERE role_id = ?');
+            $stm->execute(array($roleId));
+        }
+    }
+
+    /**
+     * @param int $roleId
+     * @return array
+     */
+    public function getPermissions($roleId)
+    {
+        $stm = $this->getDb()->prepare('SELECT * FROM user_permission a WHERE a.role_id = ?');
+        $stm->execute(array($roleId));
+        $arr = array();
+        foreach ($stm as $row) {
+            $arr[] = $row->name;
+        }
+        return $arr;
+    }
 }

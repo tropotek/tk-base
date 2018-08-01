@@ -1,19 +1,22 @@
 <?php
 namespace Bs\Controller\Admin\User;
 
-use Tk\Request;
 use Dom\Template;
 use Tk\Form\Field;
 
 /**
- *
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
 class Manager extends \Bs\Controller\AdminManagerIface
 {
+
+    /**
+     * Setup the controller to work with users of this role
+     * @var string
+     */
+    protected $targetRole = 'user';
 
 
     /**
@@ -26,15 +29,31 @@ class Manager extends \Bs\Controller\AdminManagerIface
     }
 
     /**
-     *
-     * @param Request $request
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
-     * @throws \Tk\Form\Exception
+     * @param \Tk\Request $request
+     * @param string $targetRole
      * @throws \Exception
      */
-    public function doDefault(Request $request)
+    public function doDefaultRole(\Tk\Request $request, $targetRole)
     {
+        $this->targetRole = $targetRole;
+        switch($targetRole) {
+            case \Uni\Db\Role::TYPE_ADMIN:
+                $this->setPageTitle('Admin Users');
+                break;
+            case \Uni\Db\Role::TYPE_USER:
+                $this->setPageTitle('User Manager');
+                break;
+        }
+        $this->doDefault($request);
+    }
+
+    /**
+     * @param \Tk\Request $request
+     * @throws \Exception
+     */
+    public function doDefault(\Tk\Request $request)
+    {
+
         $this->table = $this->getConfig()->createTable('user-list');
         $this->table->setRenderer($this->getConfig()->createTableRenderer($this->table));
 
@@ -56,7 +75,12 @@ class Manager extends \Bs\Controller\AdminManagerIface
         $this->table->addCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl(\Tk\Uri::create('admin/userEdit.html'));
         $this->table->addCell(new \Tk\Table\Cell\Text('username'));
         $this->table->addCell(new \Tk\Table\Cell\Text('email'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('role'));
+        $this->table->addCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
+            /** @var \Bs\Db\User $obj */
+            if ($obj->getRole())
+                $value = $obj->getRole()->getName();
+            return $value;
+        });
         $this->table->addCell(new \Tk\Table\Cell\Boolean('active'));
         $this->table->addCell(new \Tk\Table\Cell\Date('created'));
 
@@ -64,10 +88,12 @@ class Manager extends \Bs\Controller\AdminManagerIface
         $this->table->addFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
 
         // Actions
-        $this->table->addAction(new \Tk\Table\Action\Csv($this->getConfig()->getDb()));
-        $this->table->addAction(new \Tk\Table\Action\Delete())->setExcludeList(array(1));
+        $this->table->addAction(\Tk\Table\Action\Csv::create($this->getConfig()->getDb()));
+        $this->table->addAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array(1)));
 
-        $users = $this->getConfig()->getUserMapper()->findFiltered($this->table->getFilterValues(), $this->table->getTool('a.name'));
+        $filter = $this->table->getFilterValues();
+
+        $users = $this->getConfig()->getUserMapper()->findFiltered($filter, $this->table->getTool('a.name'));
         $this->table->setList($users);
 
     }
