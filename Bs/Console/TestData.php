@@ -12,15 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class TestData extends Iface
 {
 
-    /**
-     *
-     */
-    protected function configure()
-    {
-        $this->setName('testData')
-            ->setAliases(array('td'))
-            ->setDescription('Fill the database with test data');
-    }
 
 
 
