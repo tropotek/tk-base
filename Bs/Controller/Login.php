@@ -22,6 +22,9 @@ class Login extends Iface
      */
     protected $form = null;
 
+
+
+
     /**
      * Login constructor.
      */
@@ -53,18 +56,18 @@ class Login extends Iface
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
-     * @throws \Tk\Db\Exception
      */
     public function doLogin($form, $event)
     {
-        if (!$form->getFieldValue('username')) {
-            $form->addFieldError('username', 'Please enter a valid username');
-        }
-        if (!$form->getFieldValue('password')) {
-            $form->addFieldError('password', 'Please enter a valid password');
-        }
+//        if (!$form->getFieldValue('username')) {
+//            $form->addFieldError('username', 'Please enter a valid username');
+//        }
+//        if (!$form->getFieldValue('password')) {
+//            $form->addFieldError('password', 'Please enter a valid password');
+//        }
 
         if ($form->hasErrors()) {
+            $form->addError('Invalid username or password');
             return;
         }
 
@@ -107,10 +110,13 @@ class Login extends Iface
         $template = parent::show();
 
         // Render the form
-        $template->insertTemplate('form', $this->form->getRenderer()->show());
+        if ($this->form && $this->form->getRenderer() instanceof \Tk\Form\Renderer\Dom) {
+            $template->appendTemplate('form', $this->form->getRenderer()->show());
+        }
 
         if ($this->getConfig()->get('site.client.registration')) {
             $template->setChoice('register');
+            $this->getPage()->getTemplate()->setChoice('register');
         }
 
         $js = <<<JS

@@ -620,7 +620,7 @@ class Config extends \Tk\Config
      */
     public function getAvailableUserRoleTypes()
     {
-        return \Tk\ObjectUtil::getClassConstants('Bs\Db\User', 'ROLE');
+        return \Tk\ObjectUtil::getClassConstants($this->createRole(), 'TYPES');
     }
 
     /**
@@ -683,13 +683,16 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @param string $templatePath (optional)
      * @return Page
-     * @throws \Exception
      */
-    public function createPage()
+    public function createPage($templatePath = '')
     {
-        return new Page();
+        try {
+            return new Page($templatePath);
+        } catch (\Exception $e) {
+            \Tk\Log::error($e->__toString());
+        }
     }
-
 
 }

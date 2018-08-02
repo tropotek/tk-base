@@ -59,16 +59,13 @@ class Recover extends Iface
      */
     public function doRecover($form, $event)
     {
-        if (!$form->getFieldValue('account')) {
-            $form->addFieldError('account', 'Please enter a valid username or email');
-        }
 
         if ($form->hasErrors()) {
+            $form->addError('Please enter a valid username or email');
             return;
         }
 
         // TODO: This should be made a bit more secure for larger sites.
-
         $account = $form->getFieldValue('account');
         /** @var \Bs\Db\User $user */
         $user = null;
@@ -78,7 +75,7 @@ class Recover extends Iface
             $user = $this->getConfig()->getUserMapper()->findByUsername($account);
         }
         if (!$user) {
-            $form->addFieldError('account', 'Please enter a valid username or email');
+            $form->addError('Please enter a valid username or email');
             return;
         }
 
@@ -104,7 +101,9 @@ class Recover extends Iface
         $template = parent::show();
 
         // Render the form
-        $template->insertTemplate('form', $this->form->getRenderer()->show());
+        if ($this->form && $this->form->getRenderer() instanceof \Tk\Form\Renderer\Dom) {
+            $template->appendTemplate('form', $this->form->getRenderer()->show());
+        }
 
         if ($this->getConfig()->get('site.client.registration')) {
             $template->setChoice('register');
