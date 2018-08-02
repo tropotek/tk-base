@@ -153,27 +153,22 @@ var project_core = function () {
       console.warn('CodeMirror plugin not available.');
       return;
     }
-
     $('textarea.code').each(function () {
-      //$(this).css('height', 300);
-      var ta = this;
-      var cm = CodeMirror.fromTextArea(ta, $.extend({}, {
+      var el = this;
+      this.cm = CodeMirror.fromTextArea(this, $.extend({}, {
         lineNumbers: true,
-        mode: 'css',
+        mode: 'javascript',
         smartIndent: true,
         indentUnit: 2,
         tabSize: 2,
+        autoRefresh:true,
         indentWithTabs: false,
         dragDrop: false
       }, $(this).data()) );
-      ta.cm = cm;
 
-    });
-
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      $('textarea.code').each(function () {
-        this.cm.refresh();
-      });
+      $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function() {
+        this.refresh();
+      }.bind(el.cm));
     });
   };
 

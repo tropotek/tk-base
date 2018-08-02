@@ -561,7 +561,7 @@ class {classname} extends \Bs\FormIface
      */
     public function execute(\$request = null)
     {
-        \$this->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->{property-name}));
+        \$this->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
         parent::execute(\$request);
     }
 
@@ -573,17 +573,17 @@ class {classname} extends \Bs\FormIface
     public function doSubmit(\$form, \$event)
     {
         // Load the object with form data
-        \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->{property-name});
+        \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
 
-        \$form->addFieldErrors(\$this->{property-name}->validate());
+        \$form->addFieldErrors(\$this->get{classname}()->validate());
 
         if (\$form->hasErrors()) {
             return;
         }
-        \$this->{property-name}->save();
+        \$this->get{classname}()->save();
 
         \Tk\Alert::addSuccess('Record saved!');
-        \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->{property-name}->getId()));
+        \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->get{classname}()>getId()));
         if (\$form->getTriggeredEvent()->getName() == 'update') {
             \$event->setRedirect(\$this->getBackUrl());
         }

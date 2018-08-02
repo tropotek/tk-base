@@ -72,7 +72,7 @@ class Settings extends \Bs\Controller\AdminIface
 
         $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->addField(new Event\LinkButton('cancel', \Tk\Uri::create('/admin/index.html')));
+        $this->form->addField(new Event\LinkButton('cancel', $this->getBackUrl()));
 
         $this->form->load($this->data->toArray());
         $this->form->execute();
@@ -119,10 +119,7 @@ class Settings extends \Bs\Controller\AdminIface
         $this->getActionPanel()->add(\Tk\Ui\Button::create('Plugins', \Bs\Uri::createHomeUrl('/plugins.html'), 'fa fa-plug'));
         $this->getActionPanel()->add(\Tk\Ui\Button::create('Users', \Bs\Uri::createHomeUrl('/userManager.html'), 'fa fa-users'));
 
-
         $template = parent::show();
-
-        //$this->getActionPanel()->add(\Tk\Ui\Button::create('Users', \Tk\Uri::create('/admin/userManager.html'), 'fa fa-users'));
         
         // Render the form
         $template->appendTemplate('form', $this->form->getRenderer()->show());
