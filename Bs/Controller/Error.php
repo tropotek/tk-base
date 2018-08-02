@@ -80,7 +80,7 @@ class Error extends Iface
         }
         $template->setAttr('home-url', 'href', $url);
 
-        if (!$this->getConfig()->isDebug()) {
+        if ($this->getConfig()->isDebug()) {
             $template->setTitleText('Error: ' . $this->params['class']);
             $template->insertText('class', $this->params['class']);
             $template->appendHtml('message', $this->params['message'] . ' ' . $this->params['extra']);
@@ -93,10 +93,14 @@ class Error extends Iface
                 $template->setChoice('log');
             }
         } else if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND) {
-            $template->insertText('class', '404 Error Page Not Found');
+            $title = '404 Error Page Not Found';
+            $template->setTitleText('Error: ' . $title);
+            $template->insertText('class', $title);
             $template->appendHtml('message', 'Page not found. If you find this page, please let us know.');
         } else {
-            $template->insertText('class', '500 Error Internal Server Error');
+            $title = '500 Error Internal Server Error';
+            $template->setTitleText('Error: ' . $title);
+            $template->insertText('class', $title);
             $template->appendHtml('message', 'Something went very wrong. We are sorry for that. ');
         }
 
@@ -112,7 +116,35 @@ class Error extends Iface
      */
     public function __makeTemplate()
     {
-        return \Dom\Template::loadFile($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'));
+        try {
+            if (is_file($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'))) {
+                return \Dom\Template::loadFile($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'));
+            }
+            // TODO: Delete later, this method should be deprecated
+            if (is_file($this->getConfig()->get('template.xtpl.path') . '/error.html')) {
+                return \Dom\Template::loadFile($this->getConfig()->get('template.xtpl.path') . '/error.html');
+            }
+        } catch (\Exception $e) { \Tk\Log::warning('No Error template available using default.'); }
+
+        $html = <<<HTML
+<html lang="en">
+<head>
+  <base href="/" var="base-url" />
+  <meta charset="utf-8"/>
+  <title>Server Error</title></head>
+<body>
+
+<h1 var="class"></h1>
+<p class="message"><strong var="message"></strong></p>
+<p>&nbsp;</p>
+<pre class="trace" var="trace" choice="trace"></pre>
+<p>&nbsp;</p>
+<div class="log-dump" var="log" choice="log"></div>
+
+</body>
+</html>
+HTML;
+        return \Dom\Template::load($html);
     }
 
 }
