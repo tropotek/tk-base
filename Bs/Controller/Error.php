@@ -69,16 +69,35 @@ class Error extends Iface
     {
         $template = parent::show();
 
-        $template->setTitleText('Error: ' . $this->params['class']);
-        $template->insertText('class', $this->params['class']);
-        $template->insertHtml('message', $this->params['message'] . ' ' . $this->params['extra']);
-        if ($this->params['trace']) {
-            $template->insertHtml('trace', $this->params['trace']);
-            $template->setChoice('trace');
+        $template->setAttr('base-url', 'href', $this->getConfig()->getSiteUrl() . dirname($this->getConfig()->get('template.error')) . '/');
+
+        $url = $this->getConfig()->getSiteUrl() . '/';
+        if ($this->getUser()) {
+            $url = $this->getConfig()->getUserHomeUrl()->getPath();
         }
-        if ($this->params['log']) {
-            $template->insertHtml('log', $this->params['log']);
-            $template->setChoice('log');
+        if ($this->getConfig()->getBackUrl()) {
+            $url = $this->getConfig()->getBackUrl();
+        }
+        $template->setAttr('home-url', 'href', $url);
+
+        if (!$this->getConfig()->isDebug()) {
+            $template->setTitleText('Error: ' . $this->params['class']);
+            $template->insertText('class', $this->params['class']);
+            $template->appendHtml('message', $this->params['message'] . ' ' . $this->params['extra']);
+            if ($this->params['trace']) {
+                $template->appendHtml('trace', $this->params['trace']);
+                $template->setChoice('trace');
+            }
+            if ($this->params['log']) {
+                $template->appendHtml('log', $this->params['log']);
+                $template->setChoice('log');
+            }
+        } else if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND) {
+            $template->insertText('class', '404 Error Page Not Found');
+            $template->appendHtml('message', 'Page not found. If you find this page, please let us know.');
+        } else {
+            $template->insertText('class', '500 Error Internal Server Error');
+            $template->appendHtml('message', 'Something went very wrong. We are sorry for that. ');
         }
 
         return $template;
@@ -93,7 +112,7 @@ class Error extends Iface
      */
     public function __makeTemplate()
     {
-        return \Dom\Template::loadFile($this->getConfig()->get('template.xtpl.path').'/error.html');
+        return \Dom\Template::loadFile($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'));
     }
 
 }

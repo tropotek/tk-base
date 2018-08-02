@@ -41,8 +41,11 @@ $config['template.public'] = $config['system.template.path'].'/public/public.htm
  * This path is where designers can place templates that override the system default templates for Dom\Renderer objects.
  */
 $config['template.var.page.content'] = 'content';
-$config['template.xtpl.path'] = $config->getSitePath() . $config['system.template.path'] . '/xtpl';
+$config['template.xtpl.path'] = $config['system.template.path'] . '/xtpl';
 $config['template.xtpl.ext'] = '.xtpl';
+
+
+$config['template.error'] = $config['template.xtpl.path'].'/error.html';
 
 
 /**
