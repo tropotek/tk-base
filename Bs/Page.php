@@ -28,12 +28,6 @@ class Page extends \Tk\Controller\Page
             $this->getConfig()->get('template.xtpl.ext'),
             false
         ));
-
-
-
-
-        
-
     }
 
     /**
