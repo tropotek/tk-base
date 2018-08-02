@@ -17,8 +17,8 @@ include_once(__DIR__ . '/session.php');
 
 $config['site.title'] = 'Base Template';
 $config['site.email'] = 'user@example.com';
-//$config['site.client.registration'] = false;
-//$config['site.client.activation'] = false;
+$config['site.client.registration'] = false;
+$config['site.client.activation'] = true;
 
 /*
  * Setup what paths to check when migrating SQL

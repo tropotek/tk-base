@@ -146,6 +146,40 @@ var project_core = function () {
   };
 
   /**
+   * Code Mirror setup
+   */
+  var initCodemirror = function () {
+    if (CodeMirror === undefined) {
+      console.warn('CodeMirror plugin not available.');
+      return;
+    }
+
+    $('textarea.code').each(function () {
+      //$(this).css('height', 300);
+      var ta = this;
+      var cm = CodeMirror.fromTextArea(ta, $.extend({}, {
+        lineNumbers: true,
+        mode: 'css',
+        smartIndent: true,
+        indentUnit: 2,
+        tabSize: 2,
+        indentWithTabs: false,
+        dragDrop: false
+      }, $(this).data()) );
+      ta.cm = cm;
+
+    });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      $('textarea.code').each(function () {
+        this.cm.refresh();
+      });
+    });
+  };
+
+
+
+  /**
    * Tiny MCE setup
    */
   var initTinymce = function () {
@@ -153,7 +187,6 @@ var project_core = function () {
       console.warn('tinymce plugin not available.');
       return;
     }
-
 
     /**
      * private elFinder callback function
@@ -382,6 +415,7 @@ var project_core = function () {
     , initLinkBlur: initLinkBlur
     , initTkFileInput: initTkFileInput
     , initDualListBox: initDualListBox
+    , initCodemirror: initCodemirror
     , initTinymce: initTinymce
     , initMasqueradeConfirm: initMasqueradeConfirm
     , initTableDeleteConfirm: initTableDeleteConfirm
