@@ -315,6 +315,7 @@ TPL;
 
         $mapClass = 'Field\Input';
         $argAppend = '';
+        $append = '';
         if ($this->get('Type') == 'text') {
             $mapClass = 'Field\Textarea';
         }
@@ -323,11 +324,11 @@ TPL;
         }
         if (preg_match('/Id$/', $this->getName())) {
             $mapClass = 'Field\Select';
-            $argAppend = sprintf(', array(\'-- Select --\' => \'\')');
+            $argAppend = sprintf(', array()');
+            $append = sprintf('->prependOption(\'-- Select --\', \'\')');
         }
 
         $propertyName = $this->quote($this->getName());
-        $append = '';
 
         return sprintf($tpl, $mapClass, $propertyName, $argAppend, $append);
     }
