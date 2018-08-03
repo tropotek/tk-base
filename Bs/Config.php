@@ -336,7 +336,7 @@ class Config extends \Tk\Config
             if (class_exists('Leafo\ScssPhp\Compiler')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
                 if ($this->isDebug()) {
-                    \Dom\Modifier\Filter\Scss::$CACHE_TIMEOUT = 0;
+                    \Dom\Modifier\Filter\Scss::$CACHE_TIMEOUT = 10;
                 }
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
                     array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl())));
