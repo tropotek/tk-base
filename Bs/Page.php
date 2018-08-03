@@ -22,7 +22,8 @@ class Page extends \Tk\Controller\Page
             $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlRole);
         }
         parent::__construct($templatePath);
-
+        vd();
+        // TODO: Could possibly add more than one if more than one page is created .... ???? !!!!!
         $this->getConfig()->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
             dirname($templatePath).'/xtpl',
             $this->getConfig()->get('template.xtpl.ext'),

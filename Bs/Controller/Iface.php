@@ -77,9 +77,10 @@ abstract class Iface extends \Tk\Controller\Iface
         $html = <<<HTML
 <div></div>
 HTML;
-        return \Dom\Loader::load($html);
+        $tpl = \Dom\Loader::load($html);
         // OR FOR A FILE
-        //return \Dom\Loader::loadFile($this->getTemplatePath().'/public.xtpl');
+        //$tpl = \Dom\Loader::loadFile($this->getTemplatePath().'/public.xtpl');
+        return $tpl;
     }
 
 }
