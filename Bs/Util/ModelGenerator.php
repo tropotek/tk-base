@@ -544,7 +544,7 @@ class {classname} extends \Bs\FormIface
     /**
      * @throws \Exception
      */
-    public function init()
+    public function initFields()
     {
         \$this->setRenderer(\$this->getConfig()->createFormRenderer(\$this));
         
@@ -583,7 +583,7 @@ class {classname} extends \Bs\FormIface
         \$this->get{classname}()->save();
 
         \Tk\Alert::addSuccess('Record saved!');
-        \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->get{classname}()>getId()));
+        \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->get{classname}()->getId()));
         if (\$form->getTriggeredEvent()->getName() == 'update') {
             \$event->setRedirect(\$this->getBackUrl());
         }
