@@ -147,8 +147,8 @@ class UserMap extends Mapper
             }
         }
 
-        if (!empty($filter['ignore'])) {
-            $w = $this->makeMultiQuery($filter['ignore'], 'a.id', 'AND', '!=');
+        if (!empty($filter['exclude'])) {
+            $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) {
                 $where .= '('. $w . ') AND ';
             }
