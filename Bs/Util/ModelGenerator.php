@@ -457,7 +457,7 @@ class {classname} extends \Bs\TableIface
     
 {cell-list}
         // Filters
-        \$this->addFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
+        \$this->addFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Keywords');
 
         // Actions
         \$this->addAction(\Tk\Table\Action\Csv::create());

@@ -23,7 +23,7 @@ class Profile extends \Bs\Controller\AdminIface
     /**
      * @var \Bs\Db\User
      */
-    private $user = null;
+    protected $user = null;
 
 
     /**

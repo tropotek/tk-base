@@ -291,6 +291,15 @@ var project_core = function () {
     });
   };
 
+  /**
+   *
+   */
+  var initDataConfirm = function () {
+    $('body').on('click', '[data-confirm]', function () {
+      return confirm($(this).data('confirm'));
+    });
+  };
+
 
   /**
    * Create a standard bootstrap alert box and then add the 'growl' class to the alert div
@@ -461,6 +470,7 @@ var project_core = function () {
     , initTkPanel: initTkPanel
     , initDataToggle: initDataToggle
     , initTkFormTabs: initTkFormTabs
+    , initDataConfirm: initDataConfirm
   }
 
 }();

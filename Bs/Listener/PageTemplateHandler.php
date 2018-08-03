@@ -89,6 +89,11 @@ JS;
         if ($this->getConfig()->getUser()) {
             $template->insertText($config->get('template.var.page.user-name'), $this->getConfig()->getUser()->name);
             $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getUser()->username);
+            $i = strpos($this->getConfig()->getUser()->username, '@');
+            if ($i > 0) {
+                $template->insertText($config->get('template.var.page.username'), substr($this->getConfig()->getUser()->username, 0, $i));
+            }
+
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
             $template->setChoice($config->get('template.var.page.logout'));
             $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRole()->getType());
