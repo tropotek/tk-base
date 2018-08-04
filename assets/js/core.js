@@ -242,18 +242,32 @@ var project_core = function () {
       browser_spellcheck: true,
       file_picker_callback: _elFinderPickerCallback
     };
-    $('textarea.mce').each(function () {
+    $('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
       var el = $(this);
       var opts = $.extend({}, mceOpts, {});
-      if (el.hasClass('.mce-min')) {
+      if (el.hasClass('mce-min')) {
         opts = $.extend({}, opts, {
           plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
-          toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
-          'alignjustify | bullist numlist | link unlink | removeformat code charmap',
+          toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
+          '| bullist numlist | link unlink | removeformat code',
           toolbar2: '',
           toolbar3: ''
         });
-      } else if (el.hasClass('.mce-med')) {
+      } else if (el.hasClass('mce-med')) {
+        opts = $.extend({}, opts, {
+          //plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
+          plugins: [
+            'advlist autolink autosave link image lists charmap print preview hr anchor',
+            'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
+            'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
+          ],
+          toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
+          '| bullist numlist | link unlink | removeformat',
+          toolbar2: '',
+          toolbar3: '',
+          menubar: true
+        });
+
         opts.height = el.data('height') ? el.data('height') : 250;
       } else {
         opts.height = el.data('height') ? el.data('height') : 400;

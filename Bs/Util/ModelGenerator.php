@@ -457,7 +457,7 @@ class {classname} extends \Bs\TableIface
     
 {cell-list}
         // Filters
-        \$this->addFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Keywords');
+        \$this->addFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
         \$this->addAction(\Tk\Table\Action\Csv::create());
@@ -473,7 +473,7 @@ class {classname} extends \Bs\TableIface
      * @return \Tk\Db\Map\ArrayObject|\{namespace}\{classname}[]
      * @throws \Exception
      */
-    protected function findList()
+    public function findList()
     {
         \$filter = \$this->getFilterValues();
         \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$this->getTool());
