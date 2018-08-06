@@ -268,9 +268,9 @@ var project_core = function () {
           menubar: true
         });
 
-        opts.height = el.data('height') ? el.data('height') : 250;
-      } else {
         opts.height = el.data('height') ? el.data('height') : 400;
+      } else {
+        opts.height = el.data('height') ? el.data('height') : 500;
       }
       el.tinymce(opts);
     });
