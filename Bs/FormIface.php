@@ -20,13 +20,25 @@ class FormIface extends \Tk\Form
      */
     private $initDone = false;
 
+
+
+    /**
+     * @param string $formId
+     * @param string $method
+     * @param string|\Tk\Uri|null $action
+     */
+    public function __construct($formId = 'bs-form', $method = self::METHOD_POST, $action = null)
+    {
+        parent::__construct($formId, $method, $action);
+    }
+
     /**
      * @param $formId
      * @param string $method
      * @param string|\Tk\Uri|null $action
      * @return FormIface|\Tk\Form|static
      */
-    public static function create($formId, $method = self::METHOD_POST, $action = null)
+    public static function create($formId = '', $method = self::METHOD_POST, $action = null)
     {
         /** @var FormIface $obj */
         $obj = parent::create($formId, $method, $action);
@@ -58,7 +70,7 @@ class FormIface extends \Tk\Form
     {
         $this->model = $model;
         if (!$this->initDone) {
-            $this->initFields();
+            $this->init();
             $this->initDone = true;
         }
         return $this;
@@ -67,8 +79,7 @@ class FormIface extends \Tk\Form
     /**
      * Useful for extended form objects
      */
-    public function initFields() { }
-
+    public function init() { }
 
 
     /**
@@ -76,7 +87,7 @@ class FormIface extends \Tk\Form
      */
     public function getConfig()
     {
-        return \Bs\Config::getInstance();
+        return Config::getInstance();
     }
 
     /**

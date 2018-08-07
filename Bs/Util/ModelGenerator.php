@@ -332,7 +332,6 @@ class {classname}Map extends Mapper
         return \$this->formMap;
     }
 
-
     /**
      * @param array \$filter
      * @param Tool \$tool
@@ -392,9 +391,6 @@ STR;
     }
 
 
-
-
-
     /**
      * @param array $params any overrides for the curly template
      * @return string
@@ -415,7 +411,9 @@ STR;
     protected function processTable()
     {
         $data = array(
-            'cell-list' => ''
+            'cell-list' => '',
+            'property-name' => lcfirst($this->className),
+            'table-id' => str_replace('_', '-', $this->getTable())
         );
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create($col);
@@ -439,6 +437,16 @@ use Tk\Form\Field;
 use Tk\Table\Cell;
 
 /**
+ * Example:
+ * <code>
+ *   \$table = new {classname}::create();
+ *   \$table->init();
+ *   \$list = ObjectMap::getObjectListing();
+ *   \$table->setList(\$list);
+ *   \$tableTemplate = \$table->getRenderer()->show();
+ *   \$template->appendTemplate(\$tableTemplate);
+ * </code>
+ * 
  * @author {author-name}
  * @created {date}
  * @link {author-www}
@@ -446,6 +454,14 @@ use Tk\Table\Cell;
  */
 class {classname} extends \Bs\TableIface
 {
+
+    /**
+     * @param string \$tableId
+     */
+    public function __construct(\$tableId = '{table-id}')
+    {
+        parent::__construct(\$tableId);
+    }
     
     /**
      * @return \$this
@@ -453,29 +469,30 @@ class {classname} extends \Bs\TableIface
      */
     public function init()
     {
-        \$this->setRenderer(\$this->getConfig()->createTableRenderer(\$this));
     
 {cell-list}
         // Filters
         \$this->addFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
+        //\$this->addAction(\Tk\Table\Action\Link::create('New {classname}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{property-name}Edit.html')));
         \$this->addAction(\Tk\Table\Action\Csv::create());
         \$this->addAction(\Tk\Table\Action\Delete::create());
 
         // load table
-        \$this->setList(\$this->findList());
+        //\$this->setList(\$this->findList());
         
         return \$this;
     }
 
     /**
+     * @param array \$filter
      * @return \Tk\Db\Map\ArrayObject|\{namespace}\{classname}[]
      * @throws \Exception
      */
-    public function findList()
+    public function findList(\$filter = array())
     {
-        \$filter = \$this->getFilterValues();
+        \$filter = array_merge(\$this->getFilterValues(), \$filter);
         \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$this->getTool());
         return \$list;
     }
@@ -509,6 +526,7 @@ STR;
     {
         $data = array(
             'property-name' => lcfirst($this->className),
+            'form-id' => str_replace('_', '-', $this->getTable()),
             'field-list' => ''
         );
         foreach ($this->tableInfo as $col) {
@@ -532,6 +550,14 @@ use Tk\Form\Field;
 use Tk\Form\Event;
 
 /**
+ * Example:
+ * <code>
+ *   \$form = new {classname}::create();
+ *   \$form->setModel(\$obj);
+ *   \$formTemplate = \$form->getRenderer()->show();
+ *   \$template->appendTemplate('form', \$formTemplate);
+ * </code>
+ * 
  * @author {author-name}
  * @created {date}
  * @link {author-www}
@@ -540,13 +566,22 @@ use Tk\Form\Event;
 class {classname} extends \Bs\FormIface
 {
 
+    /**
+     * @param string \$formId
+     * @param string \$method self::METHOD_POST | self::METHOD_GET
+     * @param string|\Tk\Uri|null \$action
+     */
+    public function __construct(\$formId = '{form-id}', \$method = self::METHOD_POST, \$action = null)
+    {
+        parent::__construct(\$formId, \$method, \$action);
+    }
 
     /**
      * @throws \Exception
      */
     public function initFields()
     {
-        \$this->setRenderer(\$this->getConfig()->createFormRenderer(\$this));
+        //\$this->setRenderer(\$this->getConfig()->createFormRenderer(\$this));
         
 {field-list}
         \$this->addField(new Event\Submit('update', array(\$this, 'doSubmit')));

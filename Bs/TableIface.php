@@ -10,15 +10,13 @@ namespace Bs;
 class TableIface extends \Tk\Table
 {
 
-
     /**
      * @param $id
-     * @param array $params
      * @return static|TableIface|\Tk\Table
      */
-    public static function create($id, $params = null)
+    public static function create($id = 'bs-table')
     {
-        $obj = parent::create($id, $params);
+        $obj = parent::create($id);
         $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));
         return $obj;
     }
@@ -28,12 +26,11 @@ class TableIface extends \Tk\Table
      */
     public function getConfig()
     {
-        return \Bs\Config::getInstance();
+        return Config::getInstance();
     }
 
     /**
      * @return \Tk\Uri
-     * @throws \Exception
      */
     public function getBackUrl()
     {
@@ -47,6 +44,5 @@ class TableIface extends \Tk\Table
     {
         return $this->getConfig()->getUser();
     }
-
 
 }
