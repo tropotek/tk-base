@@ -458,7 +458,7 @@ class {classname} extends \Bs\TableIface
     /**
      * @param string \$tableId
      */
-    public function __construct(\$tableId = '{table-id}')
+    public function __construct(\$tableId = '{table-id}-table')
     {
         parent::__construct(\$tableId);
     }
@@ -571,7 +571,7 @@ class {classname} extends \Bs\FormIface
      * @param string \$method self::METHOD_POST | self::METHOD_GET
      * @param string|\Tk\Uri|null \$action
      */
-    public function __construct(\$formId = '{form-id}', \$method = self::METHOD_POST, \$action = null)
+    public function __construct(\$formId = '{form-id}-form', \$method = self::METHOD_POST, \$action = null)
     {
         parent::__construct(\$formId, \$method, \$action);
     }
@@ -579,9 +579,8 @@ class {classname} extends \Bs\FormIface
     /**
      * @throws \Exception
      */
-    public function initFields()
+    public function init()
     {
-        //\$this->setRenderer(\$this->getConfig()->createFormRenderer(\$this));
         
 {field-list}
         \$this->addField(new Event\Submit('update', array(\$this, 'doSubmit')));
