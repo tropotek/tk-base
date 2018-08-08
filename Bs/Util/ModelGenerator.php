@@ -320,7 +320,6 @@ class {classname}Map extends Mapper
     }
 
     /**
-     *
      * @return \Tk\DataMap\DataMap
      */
     public function getFormMap()
