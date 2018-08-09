@@ -7,7 +7,7 @@ namespace Bs;
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Tropotek
  */
-class FormIface extends \Tk\Form
+abstract class FormIface extends \Tk\Form
 {
     /**
      * @var null|\Tk\Db\ModelInterface
@@ -24,27 +24,39 @@ class FormIface extends \Tk\Form
 
     /**
      * @param string $formId
-     * @param string $method
-     * @param string|\Tk\Uri|null $action
      */
-    public function __construct($formId = 'bs-form', $method = self::METHOD_POST, $action = null)
+    public function __construct($formId = '')
     {
-        parent::__construct($formId, $method, $action);
+        if (!$formId) $formId = 'bs-form';
+        parent::__construct($formId);
     }
 
     /**
-     * @param $formId
-     * @param string $method
-     * @param string|\Tk\Uri|null $action
+     * @param string $formId
      * @return FormIface|\Tk\Form|static
      */
-    public static function create($formId = '', $method = self::METHOD_POST, $action = null)
+    public static function create($formId = '')
     {
         /** @var FormIface $obj */
-        $obj = parent::create($formId, $method, $action);
+        $obj = parent::create($formId);
         $obj->setRenderer(\Bs\Config::getInstance()->createFormRenderer($obj));
         return $obj;
     }
+
+    /**
+     * @param null|\Tk\Db\ModelInterface $model
+     * @return FormIface|\Tk\Form|static
+     */
+    public static function createModel($model = null)
+    {
+        /** @var FormIface $obj */
+        $name = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename($model)));
+        $obj = self::create($name . '-table');
+        $obj->setModel($model);
+        return $obj;
+    }
+
+
     /**
      * @param \Tk\Request $request
      * @throws \Exception
@@ -69,6 +81,7 @@ class FormIface extends \Tk\Form
     public function setModel($model)
     {
         $this->model = $model;
+
         if (!$this->initDone) {
             $this->init();
             $this->initDone = true;
@@ -77,9 +90,9 @@ class FormIface extends \Tk\Form
     }
 
     /**
-     * Useful for extended form objects
+     * init all your form fields here
      */
-    public function init() { }
+    abstract public function init();
 
 
     /**

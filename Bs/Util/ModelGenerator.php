@@ -502,8 +502,6 @@ STR;
         return $tpl;
     }
 
-
-
     /**
      * @param array $params any overrides for the curly template
      * @return string
@@ -564,16 +562,6 @@ use Tk\Form\Event;
  */
 class {classname} extends \Bs\FormIface
 {
-
-    /**
-     * @param string \$formId
-     * @param string \$method self::METHOD_POST | self::METHOD_GET
-     * @param string|\Tk\Uri|null \$action
-     */
-    public function __construct(\$formId = '{form-id}-form', \$method = self::METHOD_POST, \$action = null)
-    {
-        parent::__construct(\$formId, \$method, \$action);
-    }
 
     /**
      * @throws \Exception
