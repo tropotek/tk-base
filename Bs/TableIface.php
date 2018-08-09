@@ -11,10 +11,20 @@ class TableIface extends \Tk\Table
 {
 
     /**
+     * @param string $tableId
+     */
+    public function __construct($tableId = '')
+    {
+        if (!$tableId)
+            $tableId = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename(get_class($this))));
+        parent::__construct($tableId);
+    }
+
+    /**
      * @param $id
      * @return static|TableIface|\Tk\Table
      */
-    public static function create($id = 'bs-table')
+    public static function create($id = '')
     {
         $obj = parent::create($id);
         $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));

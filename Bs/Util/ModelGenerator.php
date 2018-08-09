@@ -453,14 +453,6 @@ use Tk\Table\Cell;
  */
 class {classname} extends \Bs\TableIface
 {
-
-    /**
-     * @param string \$tableId
-     */
-    public function __construct(\$tableId = '{table-id}-table')
-    {
-        parent::__construct(\$tableId);
-    }
     
     /**
      * @return \$this

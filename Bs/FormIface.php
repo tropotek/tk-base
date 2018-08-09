@@ -27,7 +27,8 @@ abstract class FormIface extends \Tk\Form
      */
     public function __construct($formId = '')
     {
-        if (!$formId) $formId = 'bs-form';
+        if (!$formId)
+            $formId = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename(get_class($this))));
         parent::__construct($formId);
     }
 
@@ -50,8 +51,7 @@ abstract class FormIface extends \Tk\Form
     public static function createModel($model = null)
     {
         /** @var FormIface $obj */
-        $name = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename($model)));
-        $obj = self::create($name . '-table');
+        $obj = self::create();
         $obj->setModel($model);
         return $obj;
     }
