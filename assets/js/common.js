@@ -12,7 +12,7 @@ jQuery(function ($) {
   project_core.initTkFileInput();
   project_core.initGrowLikeAlerts();
   project_core.initDataConfirm();
-
+  project_core.initTkPanel();
 
 });
 

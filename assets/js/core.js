@@ -288,7 +288,7 @@ var project_core = function () {
   };
 
   /**
-   *
+   * TODO: use data-confirm
    */
   var initMasqueradeConfirm = function () {
     $('body').on('click', '.tk-msq, .tk-masquerade', function () {
@@ -297,7 +297,7 @@ var project_core = function () {
   };
 
   /**
-   *
+   * TODO: use data-confirm
    */
   var initTableDeleteConfirm = function () {
     $('body').on('click', '.tk-remove', function () {
@@ -306,7 +306,9 @@ var project_core = function () {
   };
 
   /**
-   *
+   * Now we can have a button confirmatino just by adding an attribute
+   *  Eg:
+   *    <a href="#" class="btn" data-confirm="Are you sure you want to do this?">Delete</a>
    */
   var initDataConfirm = function () {
     $('body').on('click', '[data-confirm]', function () {
@@ -361,6 +363,9 @@ var project_core = function () {
 
 
   /**
+   * Create a bootstrap 3 panel around a div. Update the template to add your own panel
+   * Div Eg:
+   *   <div class="tk-panel" data-panel-title="Panel Title" data-panel-icon="fa fa-building-o"></div>
    *
    */
   var initTkPanel = function () {
@@ -402,7 +407,7 @@ var project_core = function () {
 
 
   /**
-   *
+   * Creates bootstrap tabs around the \Tk\Form renderer output
    */
   var initTkFormTabs = function () {
     // create bootstrap tab elements around a tabbed form

@@ -183,7 +183,17 @@ class AuthHandler implements Subscriber
 
         $url = $this->getRegisterUrl()->set('h', $user->hash);
 
-        $message = $config->createMessage('account.registration');
+        $message = $config->createMessage();
+        $content = sprintf('
+    <h2>Account Registration.</h2>
+    <p>
+      Welcome {name}
+    </p>
+    <p>
+      To complete your account registration please click on the following activation Link:<br/>
+      <a href="{activate-url}">http://link-as-text/</a>
+    </p>');
+        $message->set('content', $content);
         $message->setSubject('Account Registration.');
         $message->addTo($user->email);
         $message->set('name', $user->name);
@@ -205,7 +215,16 @@ class AuthHandler implements Subscriber
         // Send an email to confirm account active
         $url = $this->getLoginUrl();
 
-        $message = $config->createMessage('account.activated');
+        $message = $config->createMessage();
+        $content = sprintf('
+    <h2>Account Successfully Activated.</h2>
+    <p>
+      Welcome {name}
+    </p>
+    <p>
+      Your account has been successfully activated click here to <a href="{login-url}">login</a>.
+    </p>');
+        $message->set('content', $content);
         $message->setSubject('Account Activation.');
         $message->addTo($user->email);
         $message->set('name', $user->name);
@@ -227,12 +246,21 @@ class AuthHandler implements Subscriber
 
         $url = $this->getLoginUrl();
 
-        $message = $config->createMessage('account.recover');
+        $message = $config->createMessage();
+        $content = sprintf('
+    <h2>Account Successfully Activated.</h2>
+    <p>
+      Welcome {name}
+    </p>
+    <p>
+      Your account has been successfully activated click here to <a href="{login-url}">login</a>.
+    </p>');
+        $message->set('content', $content);
         $message->setSubject('Password Recovery');
         $message->addTo($user->email);
         $message->set('name', $user->name);
-        $message->set('password', $pass);
-        $message->set('login-url', $url->toString());
+        $message->set('password', $pass);   // TODO: Find another way we cannot have teh password sent via email
+        $message->set('login-url', $url->toString());       // TODO make this url link to the recover password page and they can create a new pass
         \Bs\Config::getInstance()->getEmailGateway()->send($message);
 
     }

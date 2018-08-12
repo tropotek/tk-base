@@ -462,11 +462,10 @@ class Config extends \Tk\Config
      * @param string|null $action
      * @return \Tk\Form
      */
-    public function createForm($formId, $method = \Tk\Form::METHOD_POST, $action = null)
+    public function createForm($formId)
     {
-        $form = \Tk\Form::create($formId, $method, $action);
+        $form = \Tk\Form::create($formId);
         $form->setDispatcher($this->getEventDispatcher());
-        $form->setEnableRequiredAttr();
         return $form;
     }
 
@@ -620,7 +619,7 @@ class Config extends \Tk\Config
      */
     public function getAvailableUserRoleTypes()
     {
-        return \Tk\ObjectUtil::getClassConstants($this->createRole(), 'TYPES');
+        return \Tk\ObjectUtil::getClassConstants($this->createRole(), 'TYPE');
     }
 
     /**

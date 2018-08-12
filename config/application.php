@@ -40,12 +40,14 @@ $config['template.public'] = $config['system.template.path'].'/public/public.htm
 /*
  * This path is where designers can place templates that override the system default templates for Dom\Renderer objects.
  */
-$config['template.var.page.content'] = 'content';
-$config['template.xtpl.path'] = $config['system.template.path'] . '/xtpl';
+$config['template.xtpl.path'] = $config['system.template.path'] . '/app/xtpl';
 $config['template.xtpl.ext'] = '.xtpl';
 
-
-$config['template.error'] = $config['template.xtpl.path'].'/error.html';
+/*
+ * Set the error page template, this has minimum system requirements
+ * for parsing and is usually a seperate file.
+ */
+$config['template.error'] = dirname($config['template.admin']).'/error.html';
 
 
 /**
@@ -86,6 +88,12 @@ $config['log.session'] = $config->getTempPath().'/session.log';
  * Send copies of all system emails to these recipients (not error emails)
  */
 //$config['mail.bcc'] = array('user1@example.edu.au');
+
+/*
+ * This make the Form renderer add the required attribute to required
+ * fields. This can be disabled by using the novalidate attribute on the form
+ */
+$config['system.form.required.attr.enabled'] = true;
 
 
 
