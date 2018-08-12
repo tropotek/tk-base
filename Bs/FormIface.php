@@ -7,7 +7,7 @@ namespace Bs;
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Tropotek
  */
-class FormIface extends \Tk\Form
+abstract class FormIface extends \Tk\Form
 {
     /**
      * @var null|\Tk\Db\ModelInterface
@@ -20,19 +20,43 @@ class FormIface extends \Tk\Form
      */
     private $initDone = false;
 
+
+
     /**
-     * @param $formId
-     * @param string $method
-     * @param string|\Tk\Uri|null $action
+     * @param string $formId
+     */
+    public function __construct($formId = '')
+    {
+        if (!$formId)
+            $formId = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename(get_class($this))));
+        parent::__construct($formId);
+    }
+
+    /**
+     * @param string $formId
      * @return FormIface|\Tk\Form|static
      */
-    public static function create($formId, $method = self::METHOD_POST, $action = null)
+    public static function create($formId = '')
     {
         /** @var FormIface $obj */
-        $obj = parent::create($formId, $method, $action);
+        $obj = parent::create($formId);
         $obj->setRenderer(\Bs\Config::getInstance()->createFormRenderer($obj));
         return $obj;
     }
+
+    /**
+     * @param null|\Tk\Db\ModelInterface $model
+     * @return FormIface|\Tk\Form|static
+     */
+    public static function createModel($model = null)
+    {
+        /** @var FormIface $obj */
+        $obj = self::create();
+        $obj->setModel($model);
+        return $obj;
+    }
+
+
     /**
      * @param \Tk\Request $request
      * @throws \Exception
@@ -57,18 +81,18 @@ class FormIface extends \Tk\Form
     public function setModel($model)
     {
         $this->model = $model;
+
         if (!$this->initDone) {
-            $this->initFields();
+            $this->init();
             $this->initDone = true;
         }
         return $this;
     }
 
     /**
-     * Useful for extended form objects
+     * init all your form fields here
      */
-    public function initFields() { }
-
+    abstract public function init();
 
 
     /**
@@ -76,7 +100,7 @@ class FormIface extends \Tk\Form
      */
     public function getConfig()
     {
-        return \Bs\Config::getInstance();
+        return Config::getInstance();
     }
 
     /**
