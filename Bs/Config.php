@@ -458,8 +458,6 @@ class Config extends \Tk\Config
 
     /**
      * @param string $formId
-     * @param string $method
-     * @param string|null $action
      * @return \Tk\Form
      */
     public function createForm($formId)
