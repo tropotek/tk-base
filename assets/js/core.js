@@ -369,6 +369,10 @@ var project_core = function () {
    *
    */
   var initTkPanel = function () {
+
+    if (config.tkPanel === undefined) {
+      config.tkPanel = {};
+    }
     if (config.tkPanel.template === undefined) {
       config.tkPanel.template =
         '<div class="panel panel-default">\n' +
