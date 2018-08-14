@@ -33,6 +33,8 @@ $config['sql.migrate.list'] = array(
  * Template folders for pages
  */
 $config['system.template.path'] = '/html';
+
+
 $config['template.admin'] = $config['system.template.path'].'/admin/admin.html';
 $config['template.user'] = $config['system.template.path'].'/admin/admin.html';
 $config['template.public'] = $config['system.template.path'].'/public/public.html';
@@ -40,7 +42,7 @@ $config['template.public'] = $config['system.template.path'].'/public/public.htm
 /*
  * This path is where designers can place templates that override the system default templates for Dom\Renderer objects.
  */
-$config['template.xtpl.path'] = $config['system.template.path'] . '/app/xtpl';
+$config['template.xtpl.path'] = dirname($config['template.admin']) . '/xtpl';
 $config['template.xtpl.ext'] = '.xtpl';
 
 /*
