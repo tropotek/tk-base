@@ -34,22 +34,25 @@ $config['sql.migrate.list'] = array(
  */
 $config['system.template.path'] = '/html';
 
+$config['system.theme.admin']   = $config['system.template.path'] . '/admin';
+$config['system.theme.public']  = $config['system.template.path'] . '/public';
 
-$config['template.admin'] = $config['system.template.path'].'/admin/admin.html';
-$config['template.user'] = $config['system.template.path'].'/admin/admin.html';
-$config['template.public'] = $config['system.template.path'].'/public/public.html';
+$config['template.admin']       = $config['system.theme.admin'] . '/admin.html';
+$config['template.user']        = $config['system.theme.admin'] . '/admin.html';
+$config['template.public']      = $config['system.theme.public'] . '/public.html';
+
+/*
+ * Set the error page template, this has minimum system requirements
+ * for parsing and is usually a separate file.
+ */
+$config['template.error']       = dirname($config['template.admin']) . '/error.html';
 
 /*
  * This path is where designers can place templates that override the system default templates for Dom\Renderer objects.
  */
-$config['template.xtpl.path'] = dirname($config['template.admin']) . '/xtpl';
-$config['template.xtpl.ext'] = '.xtpl';
+$config['template.xtpl.path']   = $config['system.template.path'] . '/app/xtpl';
+$config['template.xtpl.ext']    = '.xtpl';
 
-/*
- * Set the error page template, this has minimum system requirements
- * for parsing and is usually a seperate file.
- */
-$config['template.error'] = dirname($config['template.admin']).'/error.html';
 
 
 /**
