@@ -338,13 +338,17 @@ var project_core = function () {
         $(this).find('.alert').not('.hiding').each(function () {
           var a = $(this);
           $(this).addClass('hiding');
+          console.log('--------------');
           setTimeout(function () {
-            a.fadeOut(1000, function() { $(this).remove(); });
+            a.fadeOut(1000, function() { $(this).removeClass('hiding'); $(this).remove(); });
           }, 4000);
         });
       };
       growlContainer.updateAlerts();
-      // TODO: make this a plugin so we can dynamically add the alers from other scripts
+
+
+
+      // TODO: make this a plugin so we can dynamically add the alerts from other scripts
       function addAlert(msg, type) {
         var alert = $('<div class="alert alert-'+type+' growl">\n' +
           '    <button class="close noblock" data-dismiss="alert">&times;</button>\n' +
