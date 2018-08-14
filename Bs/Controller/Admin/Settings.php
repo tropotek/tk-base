@@ -123,7 +123,6 @@ class Settings extends \Bs\Controller\AdminIface
         
         // Render the form
         $template->appendTemplate('form', $this->form->getRenderer()->show());
-
         return $template;
     }
 
