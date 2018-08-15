@@ -28,7 +28,7 @@ abstract class FormIface extends \Tk\Form
     public function __construct($formId = '')
     {
         if (!$formId)
-            $formId = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename(get_class($this))));
+            $formId = trim(strtolower(preg_replace('/[A-Z]/', '_$0', \Tk\ObjectUtil::basename(get_class($this)))), '_');
         parent::__construct($formId);
     }
 

@@ -16,7 +16,7 @@ class TableIface extends \Tk\Table
     public function __construct($tableId = '')
     {
         if (!$tableId)
-            $tableId = strtolower(preg_replace('/[A-Z]/', '-$0', \Tk\ObjectUtil::basename(get_class($this))));
+            $tableId = trim(strtolower(preg_replace('/[A-Z]/', '_$0', \Tk\ObjectUtil::basename(get_class($this)))), '_');
         parent::__construct($tableId);
     }
 

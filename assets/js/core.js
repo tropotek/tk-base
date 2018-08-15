@@ -338,7 +338,6 @@ var project_core = function () {
         $(this).find('.alert').not('.hiding').each(function () {
           var a = $(this);
           $(this).addClass('hiding');
-          console.log('--------------');
           setTimeout(function () {
             a.fadeOut(1000, function() { $(this).removeClass('hiding'); $(this).remove(); });
           }, 4000);
@@ -396,7 +395,6 @@ var project_core = function () {
         settings.panelTitle = $('.page-header').text();
 
       var tpl = $(settings.panelTemplate);
-      console.log(tpl);
       tpl.addClass(element.attr('class'));
 
       tpl.hide();
