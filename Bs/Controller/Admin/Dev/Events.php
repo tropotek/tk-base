@@ -39,12 +39,12 @@ class Events extends \Bs\Controller\AdminIface
         $this->table = new \Tk\Table('EventList');
         $this->table->setRenderer(\Tk\Table\Renderer\Dom\Table::create($this->table));
 
-        $this->table->addCell(new \Tk\Table\Cell\Text('name'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('value'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('eventClass'));
-        $this->table->addCell(new \Tk\Table\Cell\Html('doc'))->addCss('key');
+        $this->table->appendCell(new \Tk\Table\Cell\Text('name'));
+        $this->table->appendCell(new \Tk\Table\Cell\Text('value'));
+        $this->table->appendCell(new \Tk\Table\Cell\Text('eventClass'));
+        $this->table->appendCell(new \Tk\Table\Cell\Html('doc'))->addCss('key');
 
-        $this->table->addAction(\Tk\Table\Action\Csv::create());
+        $this->table->appendAction(\Tk\Table\Action\Csv::create());
 
         $list = $this->convertEventData($this->getConfig()->getEventDispatcher()->getAvailableEvents(\App\Config::getInstance()->getSitePath()));
         $this->table->setList($list);

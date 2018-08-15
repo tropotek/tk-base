@@ -396,6 +396,9 @@ var project_core = function () {
         settings.panelTitle = $('.page-header').text();
 
       var tpl = $(settings.panelTemplate);
+      console.log(tpl);
+      tpl.addClass(element.attr('class'));
+
       tpl.hide();
       if (settings.panelIcon !== undefined) {
         tpl.find('.tp-icon').addClass(settings.panelIcon);

@@ -276,7 +276,7 @@ TPL;
     public function getTableCell($className, $namespace)
     {
         $tpl = <<<TPL
-        \$this->addCell(new %s(%s))%s;
+        \$this->appendCell(new %s(%s))%s;
 TPL;
 
         $mapClass = 'Cell\Text';
@@ -310,7 +310,7 @@ TPL;
     public function getFormField($className, $namespace)
     {
         $tpl = <<<TPL
-        \$this->addField(new %s(%s%s))%s;
+        \$this->appendField(new %s(%s%s))%s;
 TPL;
 
         $mapClass = 'Field\Input';

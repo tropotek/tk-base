@@ -50,29 +50,29 @@ class Settings extends \Bs\Controller\AdminIface
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
         $tab = 'Site';
-        $this->form->addField(new Field\Input('site.title'))->setTabGroup($tab)->setLabel('Site Title')->setRequired(true);
-        $this->form->addField(new Field\Input('site.email'))->setTabGroup($tab)->setLabel('Site Email')->setRequired(true);
+        $this->form->appendField(new Field\Input('site.title'))->setTabGroup($tab)->setLabel('Site Title')->setRequired(true);
+        $this->form->appendField(new Field\Input('site.email'))->setTabGroup($tab)->setLabel('Site Email')->setRequired(true);
 
         $tab = 'SEO';
-        $this->form->addField(new Field\Input('site.meta.keywords'))->setTabGroup($tab)->setLabel('SEO Keywords');
-        $this->form->addField(new Field\Input('site.meta.description'))->setTabGroup($tab)->setLabel('SEO Description');
+        $this->form->appendField(new Field\Input('site.meta.keywords'))->setTabGroup($tab)->setLabel('SEO Keywords');
+        $this->form->appendField(new Field\Input('site.meta.description'))->setTabGroup($tab)->setLabel('SEO Description');
 
         $tab = 'Setup';
-        $this->form->addField(new Field\Input('site.google.map.key'))->setTabGroup($tab)->setLabel('Google API Key')
+        $this->form->appendField(new Field\Input('site.google.map.key'))->setTabGroup($tab)->setLabel('Google API Key')
             ->setNotes('<a href="https://cloud.google.com/maps-platform/" target="_blank">Get Google Maps Api Key</a> And be sure to enable `Maps Javascript API`, `Maps Embed API` and `Places API for Web` for this site.');
-        $this->form->addField(new Field\Checkbox('site.client.registration'))->setTabGroup($tab)->setLabel('Client Registration')
+        $this->form->appendField(new Field\Checkbox('site.client.registration'))->setTabGroup($tab)->setLabel('Client Registration')
             ->setNotes('Enable Client registrations to be submitted');
 
         $tab = 'Global';
-        $this->form->addField(new Field\Textarea('site.global.css'))->setAttr('id', 'site-global-css')->setTabGroup($tab)->setLabel('Custom Styles')
+        $this->form->appendField(new Field\Textarea('site.global.css'))->setAttr('id', 'site-global-css')->setTabGroup($tab)->setLabel('Custom Styles')
             ->setNotes('You can omit the &lt;style&gt; tags here')->addCss('code')->setAttr('data-mode', 'css');
-        $this->form->addField(new Field\Textarea('site.global.js'))->setAttr('id', 'site-global-js')->setTabGroup($tab)->setLabel('Custom JS')
+        $this->form->appendField(new Field\Textarea('site.global.js'))->setAttr('id', 'site-global-js')->setTabGroup($tab)->setLabel('Custom JS')
             ->setNotes('You can omit the &lt;script&gt; tags here')->addCss('code')->setAttr('data-mode', 'javascript');
 
 
-        $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->addField(new Event\LinkButton('cancel', $this->getBackUrl()));
+        $this->form->appendField(new Event\Submit('update', array($this, 'doSubmit')));
+        $this->form->appendField(new Event\Submit('save', array($this, 'doSubmit')));
+        $this->form->appendField(new Event\LinkButton('cancel', $this->getBackUrl()));
 
         $this->form->load($this->data->toArray());
         $this->form->execute();
@@ -92,10 +92,10 @@ class Settings extends \Bs\Controller\AdminIface
         $this->data->replace($values);
         
         if (empty($values['site.title']) || strlen($values['site.title']) < 3) {
-            $form->addFieldError('site.title', 'Please enter your name');
+            $form->appendFieldError('site.title', 'Please enter your name');
         }
         if (empty($values['site.email']) || !filter_var($values['site.email'], \FILTER_VALIDATE_EMAIL)) {
-            $form->addFieldError('site.email', 'Please enter a valid email address');
+            $form->appendFieldError('site.email', 'Please enter a valid email address');
         }
         
         if ($this->form->hasErrors()) {

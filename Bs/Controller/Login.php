@@ -43,10 +43,10 @@ class Login extends Iface
         $this->form = $this->getConfig()->createForm('login-form');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
-        $this->form->addField(new Field\Input('username'));
-        $this->form->addField(new Field\Password('password'));
-        $this->form->addField(new Event\Submit('login', array($this, 'doLogin')))->addCss('btn btn-lg btn-primary btn-ss');
-        $this->form->addField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
+        $this->form->appendField(new Field\Input('username'));
+        $this->form->appendField(new Field\Password('password'));
+        $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->addCss('btn btn-lg btn-primary btn-ss');
+        $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
             ->removeCss('btn btn-sm btn-default btn-once');
 
         $this->form->execute();
@@ -60,10 +60,10 @@ class Login extends Iface
     public function doLogin($form, $event)
     {
 //        if (!$form->getFieldValue('username')) {
-//            $form->addFieldError('username', 'Please enter a valid username');
+//            $form->appendFieldError('username', 'Please enter a valid username');
 //        }
 //        if (!$form->getFieldValue('password')) {
-//            $form->addFieldError('password', 'Please enter a valid password');
+//            $form->appendFieldError('password', 'Please enter a valid password');
 //        }
 
         if ($form->hasErrors()) {

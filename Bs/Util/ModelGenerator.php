@@ -463,12 +463,12 @@ class {classname} extends \Bs\TableIface
     
 {cell-list}
         // Filters
-        \$this->addFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
+        \$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-        //\$this->addAction(\Tk\Table\Action\Link::create('New {classname}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{property-name}Edit.html')));
-        \$this->addAction(\Tk\Table\Action\Csv::create());
-        \$this->addAction(\Tk\Table\Action\Delete::create());
+        //\$this->appendAction(\Tk\Table\Action\Link::create('New {classname}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{property-name}Edit.html')));
+        \$this->appendAction(\Tk\Table\Action\Csv::create());
+        \$this->appendAction(\Tk\Table\Action\Delete::create());
 
         // load table
         //\$this->setList(\$this->findList());
@@ -537,6 +537,7 @@ namespace App\Form;
 
 use Tk\Form\Field;
 use Tk\Form\Event;
+use Tk\Form;
 
 /**
  * Example:
@@ -562,9 +563,9 @@ class {classname} extends \Bs\FormIface
     {
         
 {field-list}
-        \$this->addField(new Event\Submit('update', array(\$this, 'doSubmit')));
-        \$this->addField(new Event\Submit('save', array(\$this, 'doSubmit')));
-        \$this->addField(new Event\Link('cancel', \$this->getBackUrl()));
+        \$this->appendField(new Event\Submit('update', array(\$this, 'doSubmit')));
+        \$this->appendField(new Event\Submit('save', array(\$this, 'doSubmit')));
+        \$this->appendField(new Event\Link('cancel', \$this->getBackUrl()));
 
     }
 
@@ -579,7 +580,7 @@ class {classname} extends \Bs\FormIface
     }
 
     /**
-     * @param {classname} \$form
+     * @param Form \$form
      * @param Event\Iface \$event
      * @throws \Exception
      */

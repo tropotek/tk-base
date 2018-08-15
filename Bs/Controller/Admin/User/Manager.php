@@ -70,26 +70,26 @@ class Manager extends \Bs\Controller\AdminManagerIface
                 }
             });
 
-        $this->table->addCell(new \Tk\Table\Cell\Checkbox('id'));
-        $this->table->addCell($actionsCell);
-        $this->table->addCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl(\Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('username'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('email'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
+        $this->table->appendCell(new \Tk\Table\Cell\Checkbox('id'));
+        $this->table->appendCell($actionsCell);
+        $this->table->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl(\Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'));
+        $this->table->appendCell(new \Tk\Table\Cell\Text('username'));
+        $this->table->appendCell(new \Tk\Table\Cell\Text('email'));
+        $this->table->appendCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
             /** @var \Bs\Db\User $obj */
             if ($obj->getRole())
                 $value = $obj->getRole()->getName();
             return $value;
         });
-        $this->table->addCell(new \Tk\Table\Cell\Boolean('active'));
-        $this->table->addCell(new \Tk\Table\Cell\Date('created'));
+        $this->table->appendCell(new \Tk\Table\Cell\Boolean('active'));
+        $this->table->appendCell(new \Tk\Table\Cell\Date('created'));
 
         // Filters
-        $this->table->addFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
+        $this->table->appendFilter(new Field\Input('keywords'))->setLabel('')->setAttr('placeholder', 'Keywords');
 
         // Actions
-        $this->table->addAction(\Tk\Table\Action\Csv::create());
-        $this->table->addAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array(1)));
+        $this->table->appendAction(\Tk\Table\Action\Csv::create());
+        $this->table->appendAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array(1)));
 
         $filter = $this->table->getFilterValues();
 

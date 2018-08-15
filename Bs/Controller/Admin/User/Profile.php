@@ -47,25 +47,25 @@ class Profile extends \Bs\Controller\AdminIface
         $this->form = $this->getConfig()->createForm('user-edit');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
-        $this->form->addField(new Field\Html('username'))->setRequired(true);
-        $this->form->addField(new Field\Input('email'))->setRequired(true);
-        $this->form->addField(new Field\Input('name'))->setRequired(true);
+        $this->form->appendField(new Field\Html('username'))->setRequired(true);
+        $this->form->appendField(new Field\Input('email'))->setRequired(true);
+        $this->form->appendField(new Field\Input('name'))->setRequired(true);
 
         $this->form->setAttr('autocomplete', 'off');
-        $f = $this->form->addField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
+        $f = $this->form->appendField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');");
         if (!$this->user->getId())
             $f->setRequired(true);
-        $f = $this->form->addField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
+        $f = $this->form->appendField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setNotes('Change this users password.');
         if (!$this->user->getId())
             $f->setRequired(true);
 
 
-        $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Link('cancel', $this->getConfig()->getBackUrl()));
+        $this->form->appendField(new Event\Submit('update', array($this, 'doSubmit')));
+        $this->form->appendField(new Event\Submit('save', array($this, 'doSubmit')));
+        $this->form->appendField(new Event\Link('cancel', $this->getConfig()->getBackUrl()));
 
         $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
         
@@ -86,8 +86,8 @@ class Profile extends \Bs\Controller\AdminIface
         // Password validation needs to be here
         if ($this->form->getFieldValue('newPassword')) {
             if ($this->form->getFieldValue('newPassword') != $this->form->getFieldValue('confPassword')) {
-                $form->addFieldError('newPassword', 'Passwords do not match.');
-                $form->addFieldError('confPassword');
+                $form->appendFieldError('newPassword', 'Passwords do not match.');
+                $form->appendFieldError('confPassword');
             }
         }
         $form->addFieldErrors($this->user->validate());

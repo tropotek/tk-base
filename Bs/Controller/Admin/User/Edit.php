@@ -90,37 +90,37 @@ class Edit extends \Bs\Controller\AdminIface
         $tab = 'Details';
         if ($this->user->getId() != 1 && $this->getUser()->isAdmin()) {
             $list = \Bs\Db\RoleMap::create()->findFiltered(array());
-            $this->form->addField(new Field\Select('roleId', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
+            $this->form->appendField(new Field\Select('roleId', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
         } else {
-            $this->form->addField(new Field\Html('roleId', $this->user->getRole()->getName()))->setTabGroup($tab);
+            $this->form->appendField(new Field\Html('roleId', $this->user->getRole()->getName()))->setTabGroup($tab);
         }
 
-        $this->form->addField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
+        $this->form->appendField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
         if ($this->user->getId() != 1 && $this->getUser()->isAdmin()) {
-            $this->form->addField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
+            $this->form->appendField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
         } else {
-            $this->form->addField(new Field\Html('username'))->setTabGroup($tab);
+            $this->form->appendField(new Field\Html('username'))->setTabGroup($tab);
         }
-        $this->form->addField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
+        $this->form->appendField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
         if ($this->user->getId() != 1)
-            $this->form->addField(new Field\Checkbox('active'))->setTabGroup($tab);
+            $this->form->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
 
         $tab = 'Password';
         $this->form->setAttr('autocomplete', 'off');
-        $f = $this->form->addField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
+        $f = $this->form->appendField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setTabGroup($tab);
         if (!$this->user->getId())
             $f->setRequired(true);
-        $f = $this->form->addField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
+        $f = $this->form->appendField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setNotes('Change this users password.')->setTabGroup($tab);
         if (!$this->user->getId())
             $f->setRequired(true);
 
-        $this->form->addField(new Event\Submit('update', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->addField(new Event\Link('cancel', $this->getBackUrl()));
+        $this->form->appendField(new Event\Submit('update', array($this, 'doSubmit')));
+        $this->form->appendField(new Event\Submit('save', array($this, 'doSubmit')));
+        $this->form->appendField(new Event\Link('cancel', $this->getBackUrl()));
     }
 
     /**
@@ -146,8 +146,8 @@ class Edit extends \Bs\Controller\AdminIface
         // Password validation needs to be here
         if ($this->form->getFieldValue('newPassword')) {
             if ($this->form->getFieldValue('newPassword') != $this->form->getFieldValue('confPassword')) {
-                $form->addFieldError('newPassword', 'Passwords do not match.');
-                $form->addFieldError('confPassword');
+                $form->appendFieldError('newPassword', 'Passwords do not match.');
+                $form->appendFieldError('confPassword');
             }
         }
         $form->addFieldErrors($this->user->validate());

@@ -43,9 +43,9 @@ class Recover extends Iface
         $this->form = $this->getConfig()->createForm('recover-account');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
-        $this->form->addField(new Field\Input('account'))->setLabel('Username / Email');
-        $this->form->addField(new Event\Submit('recover', array($this, 'doRecover')))->addCss('btn btn-lg btn-default btn-ss');
-        $this->form->addField(new Event\Link('login', \Tk\Uri::create($this->getConfig()->get('url.auth.login')), ''))
+        $this->form->appendField(new Field\Input('account'))->setLabel('Username / Email');
+        $this->form->appendField(new Event\Submit('recover', array($this, 'doRecover')))->addCss('btn btn-lg btn-default btn-ss');
+        $this->form->appendField(new Event\Link('login', \Tk\Uri::create($this->getConfig()->get('url.auth.login')), ''))
             ->removeCss('btn btn-sm btn-default btn-once');
 
         $this->form->execute();

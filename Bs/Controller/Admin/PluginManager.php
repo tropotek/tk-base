@@ -50,8 +50,8 @@ class PluginManager extends \Bs\Controller\AdminIface
         // Upload plugin
         $this->form = $this->getConfig()->createForm('formEdit');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
-        $this->form->addField(new Field\File('package', '', $this->getConfig()->getPluginPath()))->addCss('tk-fileinput');
-        $this->form->addField(new Event\Submit('upload', array($this, 'doUpload')))->addCss('btn-primary');
+        $this->form->appendField(new Field\File('package', '', $this->getConfig()->getPluginPath()))->addCss('tk-fileinput');
+        $this->form->appendField(new Event\Submit('upload', array($this, 'doUpload')))->addCss('btn-primary');
         $this->form->execute();
 
 
@@ -63,7 +63,7 @@ class PluginManager extends \Bs\Controller\AdminIface
         $this->table = $this->getConfig()->createTable('PluginList');
         $this->table->setRenderer($this->getConfig()->createTableRenderer($this->table));
 
-        $this->table->addCell(new \Tk\Table\Cell\Text('icon'))->setLabel('')
+        $this->table->appendCell(new \Tk\Table\Cell\Text('icon'))->setLabel('')
             ->setOnCellHtml(function ($cell, $obj, $html) {
                 // ToDO
                 $pluginName = \Bs\Config::getInstance()->getPluginFactory()->cleanPluginName($obj->name);
@@ -73,11 +73,11 @@ class PluginManager extends \Bs\Controller\AdminIface
 ;                }
                 return $html;
             });;
-        $this->table->addCell(new ActionsCell('actions'));
-        $this->table->addCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setOrderProperty('');
-        $this->table->addCell(new \Tk\Table\Cell\Text('access'))->setOrderProperty('');
-        $this->table->addCell(new \Tk\Table\Cell\Text('version'))->setOrderProperty('');
-        $this->table->addCell(new \Tk\Table\Cell\Date('time'))->setFormat(\Tk\Date::FORMAT_MED_DATE)->setLabel('Created')->setOrderProperty('');
+        $this->table->appendCell(new ActionsCell('actions'));
+        $this->table->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setOrderProperty('');
+        $this->table->appendCell(new \Tk\Table\Cell\Text('access'))->setOrderProperty('');
+        $this->table->appendCell(new \Tk\Table\Cell\Text('version'))->setOrderProperty('');
+        $this->table->appendCell(new \Tk\Table\Cell\Date('time'))->setFormat(\Tk\Date::FORMAT_MED_DATE)->setLabel('Created')->setOrderProperty('');
 
         $this->table->setList($this->getPluginList());
 
@@ -115,11 +115,11 @@ class PluginManager extends \Bs\Controller\AdminIface
         $package = $form->getField('package');
 
         if (!preg_match('/\.(zip|gz|tgz)$/i', $package->getValue())) {
-            $form->addFieldError('package', 'Please Select a valid plugin file. (zip/tar.gz/tgz only)');
+            $form->appendFieldError('package', 'Please Select a valid plugin file. (zip/tar.gz/tgz only)');
         }
         $dest = $this->getConfig()->getPluginPath() . $package->getValue();
         if (is_dir(str_replace(array('.zip', '.tgz', '.tar.gz'), '', $dest))) {
-            $form->addFieldError('package', 'A plugin with that name already exists');
+            $form->appendFieldError('package', 'A plugin with that name already exists');
         }
 
         if ($form->hasErrors()) {
