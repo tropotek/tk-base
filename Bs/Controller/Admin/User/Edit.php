@@ -146,8 +146,8 @@ class Edit extends \Bs\Controller\AdminIface
         // Password validation needs to be here
         if ($this->form->getFieldValue('newPassword')) {
             if ($this->form->getFieldValue('newPassword') != $this->form->getFieldValue('confPassword')) {
-                $form->appendFieldError('newPassword', 'Passwords do not match.');
-                $form->appendFieldError('confPassword');
+                $form->addFieldError('newPassword', 'Passwords do not match.');
+                $form->addFieldError('confPassword');
             }
         }
         $form->addFieldErrors($this->user->validate());

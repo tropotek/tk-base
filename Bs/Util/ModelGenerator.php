@@ -467,8 +467,8 @@ class {classname} extends \Bs\TableIface
 
         // Actions
         //\$this->appendAction(\Tk\Table\Action\Link::create('New {classname}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{property-name}Edit.html')));
-        \$this->appendAction(\Tk\Table\Action\Csv::create());
         \$this->appendAction(\Tk\Table\Action\Delete::create());
+        \$this->appendAction(\Tk\Table\Action\Csv::create());
 
         // load table
         //\$this->setList(\$this->findList());
@@ -478,13 +478,15 @@ class {classname} extends \Bs\TableIface
 
     /**
      * @param array \$filter
+     * @param null|\Tk\Db\Tool \$tool
      * @return \Tk\Db\Map\ArrayObject|\{namespace}\{classname}[]
      * @throws \Exception
      */
-    public function findList(\$filter = array())
+    public function findList(\$filter = array(), \$tool = null)
     {
+        if (!\$tool) \$tool = \$this->getTool();
         \$filter = array_merge(\$this->getFilterValues(), \$filter);
-        \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$this->getTool());
+        \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$tool);
         return \$list;
     }
 

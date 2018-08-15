@@ -115,11 +115,11 @@ class PluginManager extends \Bs\Controller\AdminIface
         $package = $form->getField('package');
 
         if (!preg_match('/\.(zip|gz|tgz)$/i', $package->getValue())) {
-            $form->appendFieldError('package', 'Please Select a valid plugin file. (zip/tar.gz/tgz only)');
+            $form->addFieldError('package', 'Please Select a valid plugin file. (zip/tar.gz/tgz only)');
         }
         $dest = $this->getConfig()->getPluginPath() . $package->getValue();
         if (is_dir(str_replace(array('.zip', '.tgz', '.tar.gz'), '', $dest))) {
-            $form->appendFieldError('package', 'A plugin with that name already exists');
+            $form->addFieldError('package', 'A plugin with that name already exists');
         }
 
         if ($form->hasErrors()) {

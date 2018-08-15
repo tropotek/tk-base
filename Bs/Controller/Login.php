@@ -60,10 +60,10 @@ class Login extends Iface
     public function doLogin($form, $event)
     {
 //        if (!$form->getFieldValue('username')) {
-//            $form->appendFieldError('username', 'Please enter a valid username');
+//            $form->addFieldError('username', 'Please enter a valid username');
 //        }
 //        if (!$form->getFieldValue('password')) {
-//            $form->appendFieldError('password', 'Please enter a valid password');
+//            $form->addFieldError('password', 'Please enter a valid password');
 //        }
 
         if ($form->hasErrors()) {

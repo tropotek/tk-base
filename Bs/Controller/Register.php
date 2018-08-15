@@ -80,18 +80,18 @@ class Register extends Iface
         $this->getConfig()->getUserMapper()->mapForm($form->getValues(), $this->user);
 
         if (!$this->form->getFieldValue('password')) {
-            $form->appendFieldError('password', 'Please enter a password');
-            $form->appendFieldError('passwordConf');
+            $form->addFieldError('password', 'Please enter a password');
+            $form->addFieldError('passwordConf');
         }
         // Check the password strength, etc....
         if (!preg_match('/.{6,32}/', $this->form->getFieldValue('password'))) {
-            $form->appendFieldError('password', 'Please enter a valid password');
-            $form->appendFieldError('passwordConf');
+            $form->addFieldError('password', 'Please enter a valid password');
+            $form->addFieldError('passwordConf');
         }
         // Password validation needs to be here
         if ($this->form->getFieldValue('password') != $this->form->getFieldValue('passwordConf')) {
-            $form->appendFieldError('password', 'Passwords do not match.');
-            $form->appendFieldError('passwordConf');
+            $form->addFieldError('password', 'Passwords do not match.');
+            $form->addFieldError('passwordConf');
         }
 
         $form->addFieldErrors($this->user->validate());

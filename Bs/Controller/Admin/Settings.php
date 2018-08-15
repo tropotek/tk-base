@@ -92,10 +92,10 @@ class Settings extends \Bs\Controller\AdminIface
         $this->data->replace($values);
         
         if (empty($values['site.title']) || strlen($values['site.title']) < 3) {
-            $form->appendFieldError('site.title', 'Please enter your name');
+            $form->addFieldError('site.title', 'Please enter your name');
         }
         if (empty($values['site.email']) || !filter_var($values['site.email'], \FILTER_VALIDATE_EMAIL)) {
-            $form->appendFieldError('site.email', 'Please enter a valid email address');
+            $form->addFieldError('site.email', 'Please enter a valid email address');
         }
         
         if ($this->form->hasErrors()) {
