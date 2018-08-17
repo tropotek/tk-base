@@ -14,12 +14,21 @@ namespace Bs\Ui;
  */
 class LogoutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
+    /**
+     * @var null|\Tk\Ui\Dialog
+     */
+    protected $dialog = null;
 
 
     /**
      */
     public function __construct()
     {
+        $config = \Bs\Config::getInstance();
+        $this->dialog = \Tk\Ui\Dialog::create('logoutModal', 'Ready To Leave');
+        $this->dialog->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')
+            ->addCss('btn-primary')
+            ->setUrl(\Tk\Uri::create($config->get('url.auth.logout'))));
     }
 
     /**
@@ -29,11 +38,9 @@ class LogoutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displ
     {
         /** @var \Dom\Template $template */
         $template = $this->getTemplate();
-        $config = \Bs\Config::getInstance();
 
-        $template->setAttr('logout-url', 'href', \Tk\Uri::create($config->get('url.auth.logout')));
-
-        return $template;
+        $this->dialog->setContent($template);
+        return $this->dialog->show();
     }
 
     /**
@@ -42,24 +49,10 @@ class LogoutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displ
     public function __makeTemplate()
     {
         $html = <<<HTML
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>
-        <div class="modal-body">
-          <p>Select "Logout" below if you are ready to end your current session.</p>
-          <p>&nbsp;</p>
-        </div>
-        <div class="modal-footer">
-          <!--<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>-->
-          <a class="btn btn-primary" href="/logout.html" var="logout-url"><i class="fa fa-sign-out"></i> Logout</a>
-        </div>
-      </div>
-    </div>
-  </div>
+<div>
+  <p>Select "Logout" below if you are ready to end your current session.</p>
+  <p>&nbsp;</p>
+</div>
 HTML;
         return \Dom\Loader::load($html);
     }

@@ -14,6 +14,10 @@ namespace Bs\Ui;
  */
 class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
+    /**
+     * @var null|\Tk\Ui\Dialog
+     */
+    protected $dialog = null;
 
 
     /**
@@ -21,6 +25,9 @@ class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displa
      */
     public function __construct()
     {
+        $config = \Bs\Config::getInstance();
+        $this->dialog = \Tk\Ui\Dialog::create('aboutModal', 'About' . $config->get('site.title'));
+        $this->dialog->getButtonList()->append(\Tk\Ui\Button::createButton('Close')->setAttr('data-dismiss', 'modal'));
     }
 
     /**
@@ -39,7 +46,8 @@ class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displa
         $template->insertText('licence', $config->get('system.info.licence'));
         $template->insertText('description', $config->get('system.info.description'));
 
-        return $template;
+        $this->dialog->setContent($template);
+        return $this->dialog->show();
     }
 
     /**
@@ -48,28 +56,15 @@ class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displa
     public function __makeTemplate()
     {
         $html = <<<HTML
-<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="aboutModalLabel" var="title"></h5>
-        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-      </div>
-      <div class="modal-body">
-        <p>
-          Version: <span var="version"></span><br/>
-          Released: <span var="released"></span><br/>
-          Licence: <span var="licence"></span><br/>
-          Authors:  <span var="authors"></span><br/>
-          Description: <span var="description"></span><br/>
-        </p>
-        <p class=""><small>Copyright © <a href="https://www.tropotek.com/">tropotek.com</a> 2018</small></p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
+<div>
+  <p>
+    Version: <span var="version"></span><br/>
+    Released: <span var="released"></span><br/>
+    Licence: <span var="licence"></span><br/>
+    Authors:  <span var="authors"></span><br/>
+    Description: <span var="description"></span><br/>
+  </p>
+  <p class=""><small>Copyright © <a href="https://www.tropotek.com/">tropotek.com</a> 2018</small></p>
 </div>
 HTML;
         return \Dom\Loader::load($html);
