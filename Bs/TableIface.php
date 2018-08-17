@@ -28,6 +28,7 @@ class TableIface extends \Tk\Table
     {
         $obj = parent::create($id);
         $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));
+        $obj->setDispatcher(\Bs\Config::getInstance()->getEventDispatcher());
         return $obj;
     }
 
