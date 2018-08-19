@@ -1,6 +1,7 @@
-# Created by .ignore support plugin (hsz.mobi)
-.idea
+[Tt]humbs.db
+*.DS_Store
+
+vendor/
+composer.lock
+/.idea
 .directory
-*.swp
-_*
-*.iml
