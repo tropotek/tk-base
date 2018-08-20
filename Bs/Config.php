@@ -335,9 +335,10 @@ class Config extends \Tk\Config
             }
             if (class_exists('Leafo\ScssPhp\Compiler')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
-                if ($this->isDebug()) {
-                    \Dom\Modifier\Filter\Scss::$CACHE_TIMEOUT = 10;
-                }
+//                if ($this->isDebug()) {
+//                    // Now use Ctrl+Shift+R in the browser to recompile scss files
+//                    \Dom\Modifier\Filter\Scss::$CACHE_TIMEOUT = 10;
+//                }
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
                     array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl())));
                 $scss->setCompress(true);
