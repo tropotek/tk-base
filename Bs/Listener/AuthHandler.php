@@ -37,6 +37,7 @@ class AuthHandler implements Subscriber
             if (!$user->isActive()) {
                 $config->setUser(null);
                 $user = null;
+                $config->getSession()->destroy();
             }
         }
 
@@ -164,7 +165,7 @@ class AuthHandler implements Subscriber
             $event->setRedirect(\Tk\Uri::create('/'));
         }
         $auth->clearIdentity();
-        $config->getSession()->destroy();
+        //$config->getSession()->destroy();     // Screws with masquerading code
     }
 
 
