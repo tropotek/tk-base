@@ -670,6 +670,17 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @return \Bs\Ui\MenuManager
+     */
+    public function getMenuManager()
+    {
+        if (!$this->get('system.menu.manager')) {
+            $this->set('system.menu.manager', \Bs\Ui\MenuManager::getInstance());
+        }
+        return $this->get('system.menu.manager');
+    }
+
+    /**
      * @return \Bs\Listener\PageTemplateHandler
      */
     public function getCrumbsHandler()
