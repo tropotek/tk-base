@@ -55,17 +55,31 @@ class Login extends Iface
      */
     public function doDefault(Request $request)
     {
-        $this->form = $this->getConfig()->createForm('login-form');
-        $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
+        $this->init();
+
+        $this->form->execute();
+
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function init()
+    {
+        if (!$this->form) {
+            $this->form = $this->getConfig()->createForm('login-form');
+            $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
+        }
 
         $this->form->appendField(new Field\Input('username'));
         $this->form->appendField(new Field\Password('password'));
         $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->addCss('btn btn-lg btn-primary btn-ss');
         $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
-            ->removeCss('btn btn-sm btn-default btn-once');
-
-        $this->form->execute();
-
+            ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
+        if ($this->getConfig()->get('site.client.registration')) {
+            $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
+                ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
+        }
     }
 
     /**
@@ -160,9 +174,6 @@ JS;
 <div class="tk-login-panel tk-login">
 
   <div var="form"></div>
-  <div class="not-member" choice="register">
-    <p>Not a member? <a href="/register.html">Register here</a></p>
-  </div>
 
 </div>
 HTML;

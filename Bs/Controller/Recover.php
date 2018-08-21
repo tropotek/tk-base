@@ -9,8 +9,6 @@ use Tk\Auth\AuthEvents;
 
 
 /**
- * Class Index
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
@@ -56,16 +54,30 @@ class Recover extends Iface
      */
     public function doDefault(Request $request)
     {
-        $this->form = $this->getConfig()->createForm('recover-account');
-        $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
-
-        $this->form->appendField(new Field\Input('account'))->setLabel('Username / Email');
-        $this->form->appendField(new Event\Submit('recover', array($this, 'doRecover')))->addCss('btn btn-lg btn-default btn-ss');
-        $this->form->appendField(new Event\Link('login', \Tk\Uri::create($this->getConfig()->get('url.auth.login')), ''))
-            ->removeCss('btn btn-sm btn-default btn-once');
+        $this->init();
 
         $this->form->execute();
 
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function init()
+    {
+        if (!$this->form) {
+            $this->form = $this->getConfig()->createForm('recover-account');
+            $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
+        }
+
+        $this->form->appendField(new Field\Input('account'))->setLabel('Username / Email');
+        $this->form->appendField(new Event\Submit('recover', array($this, 'doRecover')))->addCss('btn btn-lg btn-primary btn-ss');
+        $this->form->appendField(new Event\Link('login', \Tk\Uri::create($this->getConfig()->get('url.auth.login')), ''))
+            ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-login-url');
+        if ($this->getConfig()->get('site.client.registration')) {
+            $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
+                ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
+        }
     }
 
     /**
@@ -138,9 +150,6 @@ class Recover extends Iface
 <div class="tk-login-panel tk-recover">
 
   <div var="form"></div>
-  <div class="not-member" choice="register">
-    <p>Not a member? <a href="/register.html">Register here</a></p>
-  </div>
 
 </div>
 HTML;

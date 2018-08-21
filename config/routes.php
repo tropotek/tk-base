@@ -24,9 +24,9 @@ $routes->add('home', new \Tk\Routing\Route('/index.html', 'Bs\Controller\Index::
 $routes->add('home-base', new \Tk\Routing\Route('/', 'Bs\Controller\Index::doDefault'));
 
 $routes->add('login', new \Tk\Routing\Route('/login.html', 'Bs\Controller\Login::doDefault'));
-$routes->add('logout', new \Tk\Routing\Route('/logout.html', 'Bs\Controller\Logout::doDefault'));
 $routes->add('register', new \Tk\Routing\Route('/register.html', 'Bs\Controller\Register::doDefault'));
 $routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Recover::doDefault'));
+$routes->add('logout', new \Tk\Routing\Route('/logout.html', 'Bs\Controller\Logout::doDefault'));
 
 
 // Admin Pages

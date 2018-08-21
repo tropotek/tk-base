@@ -59,6 +59,15 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @return bool
+     */
+    public function isBootsrap4()
+    {
+        return !preg_match('|\/admin$|', $this->get('system.theme.path'));
+        //return ($this->get('template.css.framework') == \Bs\Config::CSS_FW_BOOTSTRAP_4);
+    }
+
+    /**
      * getPluginFactory
      *
      * @return \Tk\Plugin\Factory
