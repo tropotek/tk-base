@@ -1,5 +1,5 @@
 <?php
-namespace Uni\Ui;
+namespace Bs\Ui;
 
 use Tk\Ui\Link;
 
