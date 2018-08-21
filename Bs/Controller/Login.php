@@ -34,12 +34,27 @@ class Login extends Iface
     }
 
     /**
+     * @return \Tk\Controller\Page
+     */
+    public function getPage()
+    {
+        if (!$this->page) {
+            $templatePath = '';
+            if ($this->getConfig()->get('template.login')) {
+                $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.login');
+            }
+            $this->page = $this->getConfig()->createPage($templatePath);
+            $this->page->setController($this);
+        }
+        return parent::getPage();
+    }
+
+    /**
      * @param Request $request
      * @throws \Exception
      */
     public function doDefault(Request $request)
     {
-
         $this->form = $this->getConfig()->createForm('login-form');
         $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
 
