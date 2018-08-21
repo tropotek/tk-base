@@ -73,7 +73,7 @@ class MasqueradeHandler implements Subscriber
      */
     public static function canMasqueradeAs($user, $msqUser)
     {
-        if (!$msqUser || !$user || !$user->active) return false;
+        if (!$msqUser || !$user || !$msqUser->active) return false;
         if ($user->getId() == $msqUser->getId()) return false;
 
         $config = \Bs\Config::getInstance();
