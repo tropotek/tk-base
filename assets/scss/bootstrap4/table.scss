@@ -91,6 +91,20 @@
     .btn {
       margin-right: 5px;
     }
+    .dropdown-menu {
+      li {
+        padding: 0.2em;
+        label {
+          margin: 0;
+          input {
+            vertical-align: middle;
+          }
+        }
+        &:hover {
+          background: #EFEFEF;
+        }
+      }
+    }
   }
   .pagination {
     margin: 0;
