@@ -82,7 +82,6 @@ JS;
         // ---- tk-base specific calls ----
 
         if (\Tk\AlertCollection::hasMessages()) {
-            vd('------');
             $template->appendTemplate($config->get('template.var.page.alerts'), \Tk\AlertCollection::getInstance()->show());
             $template->setChoice($config->get('template.var.page.alerts'));
         }
