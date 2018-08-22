@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.62 [2018-08-23]:
+-------------------------------
+  - Fixed the Animals select plugin
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+
+
 Ver 1.0.60 [2018-08-20]:
 -------------------------------
 
