@@ -83,7 +83,7 @@ class Error extends Iface
         if ($this->getConfig()->isDebug()) {
             $template->setTitleText('Error: ' . $this->params['class']);
             $template->insertText('class', $this->params['class']);
-            $template->appendHtml('message', $this->params['message'] . ' ' . $this->params['extra']);
+            $template->appendHtml('message', htmlentities($this->params['message']) . ' ' . $this->params['extra']);
             if ($this->params['trace']) {
                 $template->appendHtml('trace', $this->params['trace']);
                 $template->setChoice('trace');

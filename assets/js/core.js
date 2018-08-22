@@ -485,6 +485,14 @@ var project_core = function () {
     });
   };
 
+  var initTkTable = function () {
+    $('.tk-table .tk-filters .help-block.error-block').remove();
+    $('.tk-table .tk-filters .form-group > label').remove();
+
+  };
+
+
+
   return {
     initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
@@ -499,6 +507,7 @@ var project_core = function () {
     , initDataToggle: initDataToggle
     , initTkFormTabs: initTkFormTabs
     , initDataConfirm: initDataConfirm
+    , initTkTable: initTkTable
   }
 
 }();
