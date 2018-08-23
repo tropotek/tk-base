@@ -690,6 +690,18 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @return \Symfony\Component\Console\Application
+     */
+    public function getConsoleApplication()
+    {
+        if (!$this->get('system.console')) {
+            $app = new \Symfony\Component\Console\Application($this->get('site.title'), $this->get('system.info.version'));
+            $this->set('system.console', $app);
+        }
+        return $this->get('system.console');
+    }
+
+    /**
      * @return \Bs\Listener\PageTemplateHandler
      */
     public function getCrumbsHandler()
