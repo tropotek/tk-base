@@ -151,6 +151,7 @@ $config['system.auth.adapters'] = array(
  * where in teh page template to place the controller result string/template
  */
 $config['template.var.page.site-title'] = 'site-title';
+$config['template.var.page.site-short-title'] = 'site-short-title';
 $config['template.var.page.page-header'] = 'page-header';
 $config['template.var.page.breadcrumbs'] = 'breadcrumb';
 $config['template.var.page.alerts'] = 'alerts';
