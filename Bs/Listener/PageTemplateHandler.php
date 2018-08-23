@@ -36,6 +36,7 @@ class PageTemplateHandler implements Subscriber
         }
 
         if ($this->getConfig()->get('site.title')) {
+            $template->insertText($config->get('template.var.page.site-short-title'), $this->getConfig()->get('site.short.title'));
             $template->insertText($config->get('template.var.page.site-title'), $this->getConfig()->get('site.title'));
             $template->setTitleText(trim($template->getTitleText() . ' - ' . $this->getConfig()->get('site.title'), '- '));
         }
