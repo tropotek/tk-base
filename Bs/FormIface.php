@@ -51,7 +51,7 @@ abstract class FormIface extends \Tk\Form
     public static function createModel($model = null)
     {
         /** @var FormIface $obj */
-        $obj = self::create();
+        $obj = self::create(\Tk\ObjectUtil::basename($model));
         $obj->setModel($model);
         return $obj;
     }
