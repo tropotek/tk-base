@@ -26,6 +26,13 @@ $red-color: #F33 !default;
 
   }
 
+  &.form-inline {
+    .form-row {
+      vertical-align: top;
+      display: inline-block;
+    }
+  }
+
   .form-group {
 
     .help-block {
