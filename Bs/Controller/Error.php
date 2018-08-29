@@ -92,16 +92,16 @@ class Error extends Iface
                 $template->appendHtml('log', $this->params['log']);
                 $template->setChoice('log');
             }
-        } else if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND) {
+        } else if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND || $this->e instanceof \Tk\NotFoundHttpException) {
             $title = '404 Error Page Not Found';
             $template->setTitleText('Error: ' . $title);
             $template->insertText('class', $title);
-            $template->appendHtml('message', 'Page not found. If you find this page, please let us know.');
+            $template->appendHtml('message', 'Page not found!');
         } else {
             $title = '500 Error Internal Server Error';
             $template->setTitleText('Error: ' . $title);
             $template->insertText('class', $title);
-            $template->appendHtml('message', 'Something went very wrong. We are sorry for that. ');
+            $template->appendHtml('message', 'Something went very wrong.');
         }
 
         return $template;
