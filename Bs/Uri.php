@@ -30,12 +30,13 @@ class Uri extends \Tk\Uri
         if (!$user) {
             $user = Config::getInstance()->getUser();
         }
-        if (is_object($user)) {
-            $home = Config::getInstance()->getUserHomeUrl($user);
-            if($home instanceof \Tk\Uri) {
-                $home = $home->getRelativePath();
-            }
-            $home = dirname($home);
+        if ($user instanceof \Bs\Db\UserIface) {
+            $home = '/'.$user->getRoleType();
+//            $home = Config::getInstance()->getUserHomeUrl($user);
+//            if($home instanceof \Tk\Uri) {
+//                $home = $home->getRelativePath();
+//            }
+//            $home = rtrim(dirname($home), '/');
         }
         return new static($home . '/' . trim($spec,'/'));
     }
