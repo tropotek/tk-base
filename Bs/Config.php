@@ -485,6 +485,7 @@ class Config extends \Tk\Config
     {
         $obj = \Tk\Form\Renderer\Dom::create($form);
         $obj->setFieldGroupRenderer($this->getFormFieldGroupRenderer($form));
+        $obj->getLayout()->setDefaultCol('col');
         return $obj;
     }
 
