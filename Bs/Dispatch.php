@@ -95,6 +95,14 @@ class Dispatch
         $dispatcher->addSubscriber(new \Tk\Listener\StartupHandler($logger, $request, $config->getSession()));
 
 
+        if ($config->get('system.email.exception')) {
+            $dispatcher->addSubscriber(new \Tk\Listener\ExceptionEmailListener(
+                $config->getEmailGateway(),
+                $config->get('system.email.exception'),
+                $config->get('site.title')
+            ));
+        }
+
         // Exception Handling, log first so we can grab the session log
         $dispatcher->addSubscriber(new \Tk\Listener\LogExceptionListener($logger, true));
 
@@ -102,14 +110,6 @@ class Dispatch
             $dispatcher->addSubscriber(new \Tk\Listener\JsonExceptionListener($config->isDebug()));
         } else {
             $dispatcher->addSubscriber(new \Tk\Listener\ExceptionListener($config->isDebug(), 'Bs\Controller\Error'));
-        }
-
-        if ($config->get('system.email.exception')) {
-            $dispatcher->addSubscriber(new \Tk\Listener\ExceptionEmailListener(
-                $config->getEmailGateway(),
-                $config->get('system.email.exception'),
-                $config->get('site.title')
-            ));
         }
 
         $sh = new \Tk\Listener\ShutdownHandler($logger, $config->getScriptTime());
