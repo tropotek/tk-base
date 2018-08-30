@@ -68,6 +68,9 @@
       /*width: 100%;*/
       //line-height: 2.5em;
       vertical-align: top;
+      .form-row {
+        display: inline-block;
+      }
       .form-group {
         display: inline-block;
         margin-right: 15px;
