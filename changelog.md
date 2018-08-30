@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.76 [2018-08-31]:
+-------------------------------
+  - Fixed cron job
+  - Upgraded to handle new form updates
+
+
 Ver 1.0.74 [2018-08-29]:
 -------------------------------
 
