@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.78 [2018-09-01]:
+-------------------------------
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+
+
 Ver 1.0.76 [2018-08-31]:
 -------------------------------
   - Fixed cron job
