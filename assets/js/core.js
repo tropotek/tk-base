@@ -149,7 +149,7 @@ var project_core = function () {
    * Code Mirror setup
    */
   var initCodemirror = function () {
-    if (CodeMirror === undefined) {
+    if (typeof CodeMirror === undefined) {
       console.warn('CodeMirror plugin not available.');
       return;
     }

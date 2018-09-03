@@ -442,7 +442,7 @@ use Tk\Table\Cell;
  *   \$table->init();
  *   \$list = ObjectMap::getObjectListing();
  *   \$table->setList(\$list);
- *   \$tableTemplate = \$table->getRenderer()->show();
+ *   \$tableTemplate = \$table->show();
  *   \$template->appendTemplate(\$tableTemplate);
  * </code>
  * 
