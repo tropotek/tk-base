@@ -24,13 +24,6 @@ class MailHandler implements Subscriber
         $config = \Bs\Config::getInstance();
 
         if ($message) {
-            $headers = $message->getHeadersList();
-
-            if (!array_key_exists('X-Exception', $headers)) {
-                $message->addHeader('X-System-Message', $config->get('site.title'));
-                $message->addHeader('X-Tk-Project', $config->get('system.info.project'));
-            }
-
             if (is_array($config['mail.bcc'])) {
                 $recip = $message->getRecipients();
                 foreach ($config['mail.bcc'] as $email) {
