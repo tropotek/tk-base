@@ -17,8 +17,6 @@ class Dispatch
 
     /**
      * @param \Tk\Event\Dispatcher $dispatcher
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
      */
     public function __construct($dispatcher)
     {
@@ -29,8 +27,6 @@ class Dispatch
     /**
      * @param \Tk\Event\Dispatcher $dispatcher
      * @return Dispatch
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
      */
     public static function create($dispatcher)
     {
@@ -55,8 +51,6 @@ class Dispatch
     }
 
     /**
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Plugin\Exception
      */
     public function initObjects()
     {
@@ -70,8 +64,6 @@ class Dispatch
     }
 
     /**
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
      */
     public function init()
     {
