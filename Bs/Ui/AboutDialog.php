@@ -12,13 +12,8 @@ namespace Bs\Ui;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
+class AboutDialog extends \Tk\Ui\Dialog
 {
-    /**
-     * @var null|\Tk\Ui\Dialog
-     */
-    protected $dialog = null;
-
 
     /**
      * Element constructor.
@@ -26,14 +21,13 @@ class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displa
     public function __construct()
     {
         $config = \Bs\Config::getInstance();
-        $this->dialog = \Tk\Ui\Dialog::create('aboutModal', 'About' . $config->get('site.title'));
-        $this->dialog->getButtonList()->append(\Tk\Ui\Button::createButton('Close')->setAttr('data-dismiss', 'modal'));
+        parent::__construct('aboutModal', 'About' . $config->get('site.title'));
     }
 
     /**
      * @return \Dom\Template
      */
-    public function show()
+    public function doShow()
     {
         /** @var \Dom\Template $template */
         $template = $this->getTemplate();
@@ -46,8 +40,7 @@ class AboutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displa
         $template->insertText('licence', $config->get('system.info.licence'));
         $template->insertText('description', $config->get('system.info.description'));
 
-        $this->dialog->setContent($template);
-        return $this->dialog->show();
+        return $template;
     }
 
     /**

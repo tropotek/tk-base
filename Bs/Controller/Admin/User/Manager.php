@@ -67,7 +67,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
         $actionsCell = $this->getActionsCell();
         $actionsCell->addButton(\Tk\Table\Cell\ActionButton::create('Masquerade', \Tk\Uri::create(),
-            'fa fa-user-secret', 'tk-masquerade'))
+            'fa fa-user-secret', 'tk-masquerade'))->setAttr('data-confirm', 'You are about to masquerade as the selected user?')
             ->setOnShow(function ($cell, $obj, $button) {
                 /* @var $obj \Bs\Db\User */
                 /* @var $button \Tk\Table\Cell\ActionButton */

@@ -292,7 +292,8 @@ var project_core = function () {
    */
   var initMasqueradeConfirm = function () {
     $('body').on('click', '.tk-msq, .tk-masquerade', function () {
-      return confirm('You are about to masquerade as the selected user?');
+      if (!$(this).is('[data-confirm]'))
+        return confirm('You are about to masquerade as the selected user?');
     });
   };
 
@@ -301,7 +302,8 @@ var project_core = function () {
    */
   var initTableDeleteConfirm = function () {
     $('body').on('click', '.tk-remove', function () {
-      return confirm('Are you sure you want to remove this item?');
+      if (!$(this).is('[data-confirm]'))
+        return confirm('Are you sure you want to remove this item?');
     });
   };
 

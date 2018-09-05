@@ -93,7 +93,7 @@ class AuthHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
-        
+
         if (MasqueradeHandler::isMasquerading()) {
             MasqueradeHandler::masqueradeClear();
         }
@@ -131,7 +131,7 @@ class AuthHandler implements Subscriber
             $config->setUser($user);
         }
 
-        if($event->getRedirect() == null) {
+        if(!$event->getRedirect()) {
             $event->setRedirect(\Bs\Config::getInstance()->getUserHomeUrl($user));
         }
     }
@@ -165,7 +165,6 @@ class AuthHandler implements Subscriber
         }
         $auth->clearIdentity();
         if (!\Bs\Listener\MasqueradeHandler::isMasquerading()) {
-            vd('-----------------');
             $config->getSession()->destroy();     // Screws with masquerading code
         }
     }

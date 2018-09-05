@@ -191,7 +191,8 @@ class Edit extends \Bs\Controller\AdminIface
     {
         if ($this->user->getId() && \Bs\Listener\MasqueradeHandler::canMasqueradeAs($this->getUser(), $this->user)) {
             $this->getActionPanel()->add(\Tk\Ui\Button::create('Masquerade',
-                \Bs\Uri::create()->reset()->set(\Bs\Listener\MasqueradeHandler::MSQ, $this->user->getHash()), 'fa fa-user-secret'))->addCss('tk-masquerade');
+                \Bs\Uri::create()->reset()->set(\Bs\Listener\MasqueradeHandler::MSQ, $this->user->getHash()), 'fa fa-user-secret'))
+                ->setAttr('data-confirm', 'You are about to masquerade as the selected user?')->addCss('tk-masquerade');
         }
 
         $template = parent::show();

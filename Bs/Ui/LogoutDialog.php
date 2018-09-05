@@ -12,21 +12,17 @@ namespace Bs\Ui;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class LogoutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
+class LogoutDialog extends \Tk\Ui\Dialog
 {
-    /**
-     * @var null|\Tk\Ui\Dialog
-     */
-    protected $dialog = null;
 
 
     /**
      */
     public function __construct()
     {
+        parent::__construct('logoutModal', 'Ready To Leave');
         $config = \Bs\Config::getInstance();
-        $this->dialog = \Tk\Ui\Dialog::create('logoutModal', 'Ready To Leave');
-        $this->dialog->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')
+        $this->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')
             ->addCss('btn-primary')
             ->setUrl(\Tk\Uri::create($config->get('url.auth.logout'))));
     }
@@ -34,13 +30,11 @@ class LogoutDialog extends \Dom\Renderer\Renderer implements \Dom\Renderer\Displ
     /**
      * @return \Dom\Template
      */
-    public function show()
+    public function doShow()
     {
-        /** @var \Dom\Template $template */
         $template = $this->getTemplate();
 
-        $this->dialog->setContent($template);
-        return $this->dialog->show();
+        return $template;
     }
 
     /**
