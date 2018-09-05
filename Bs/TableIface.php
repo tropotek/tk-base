@@ -13,7 +13,7 @@ use Dom\Template;
 class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
 {
 
-    
+
 
     /**
      * @param string $tableId
