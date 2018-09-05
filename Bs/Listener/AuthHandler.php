@@ -93,6 +93,10 @@ class AuthHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
+        
+        if (MasqueradeHandler::isMasquerading()) {
+            MasqueradeHandler::masqueradeClear();
+        }
 
         $result = null;
         if (!$event->getAdapter()) {
