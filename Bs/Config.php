@@ -556,6 +556,15 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @param Db\User $user
+     * @return int|string
+     */
+    public function getUserIdentity($user)
+    {
+        return $user->getUsername();
+    }
+
+    /**
      * @return Db\User
      */
     public function createUser()

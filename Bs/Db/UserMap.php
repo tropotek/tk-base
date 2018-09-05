@@ -60,6 +60,16 @@ class UserMap extends Mapper
     }
 
     /**
+     * @param string|int $identity
+     * @return \Tk\Db\Map\Model|User
+     * @throws \Exception
+     */
+    public function findByAuthIdentity($identity)
+    {
+        return $this->findByUsername($identity);
+    }
+
+    /**
      * @param $username
      * @return \Tk\Db\Map\Model|User
      * @throws \Exception

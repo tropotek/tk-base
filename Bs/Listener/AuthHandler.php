@@ -3,7 +3,6 @@ namespace Bs\Listener;
 
 use Tk\Event\Subscriber;
 use Tk\Kernel\KernelEvents;
-use Tk\Event\ControllerEvent;
 use Tk\Event\GetResponseEvent;
 use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
@@ -17,10 +16,7 @@ class AuthHandler implements Subscriber
 {
 
     /**
-     * do any auth init setup
-     *
      * @param GetResponseEvent $event
-     * @throws \Tk\Db\Exception
      * @throws \Exception
      */
     public function onRequest(GetResponseEvent $event)
@@ -30,14 +26,11 @@ class AuthHandler implements Subscriber
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
         $user = null;                       // public user
-
         if ($auth->getIdentity()) {         // Check if user is logged in
-            $user = $config->getUserMapper()->findByUsername($auth->getIdentity());
-            $config->setUser($user);
-            if (!$user->isActive()) {
-                $config->setUser(null);
-                $user = null;
-                $config->getSession()->destroy();
+            $user = $config->getUserMapper()->findByAuthIdentity($auth->getIdentity());
+            if ($user && $user->isActive()) {
+                // We set the user here for each page load
+                $config->setUser($user);
             }
         }
 
@@ -60,8 +53,6 @@ class AuthHandler implements Subscriber
 
 
     /**
-     * Use path for permission validation
-     *
      * @param GetResponseEvent $event
      * @throws \Exception
      */
@@ -106,12 +97,13 @@ class AuthHandler implements Subscriber
         $result = null;
         if (!$event->getAdapter()) {
             $adapterList = $config->get('system.auth.adapters');
+            $result = null;
             foreach ($adapterList as $name => $class) {
                 $event->setAdapter($config->getAuthAdapter($class, $event->all()));
                 if (!$event->getAdapter()) continue;
                 $result = $auth->authenticate($event->getAdapter());
-                $event->setResult($result);
                 if ($result && $result->isValid()) {
+                    $event->setResult($result);
                     break;
                 }
             }
@@ -126,30 +118,33 @@ class AuthHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         $result = $event->getResult();
-        if (!$result) {
-            throw new \Tk\Auth\Exception('Invalid login credentials');
-        }
-        if (!$result->isValid()) {
-            return;
-        }
+
+        if (!$result || !$result->isValid()) return;
 
         /* @var \Bs\Db\User $user */
-        $user = $config->getUserMapper()->findByUsername($result->getIdentity());
-        if (!$user) {
-            throw new \Tk\Auth\Exception('Invalid user login credentials');
-        }
-        if (!$user->isActive()) {
-            throw new \Tk\Auth\Exception('Inactive account, please contact your administrator.');
+        $user = $config->getUserMapper()->findByAuthIdentity($result->getIdentity());
+        if ($user && $user->isActive()) {
+            $config->setUser($user);
         }
 
-        if($user && $event->getRedirect() == null) {
+        if($event->getRedirect() == null) {
             $event->setRedirect(\Bs\Config::getInstance()->getUserHomeUrl($user));
         }
+    }
 
-        // Update the user record.
-        $user->lastLogin = \Tk\Date::create();
-        $user->save();
-
+    /**
+     * @param AuthEvent $event
+     * @throws \Exception
+     */
+    public function updateUser(AuthEvent $event)
+    {
+        if (\Bs\Listener\MasqueradeHandler::isMasquerading()) return;
+        $config = \Bs\Config::getInstance();
+        $user = $config->getUser();
+        if ($user) {
+            $user->lastLogin = \Tk\Date::create();
+            $user->save();
+        }
     }
 
     /**
@@ -165,12 +160,15 @@ class AuthHandler implements Subscriber
             $event->setRedirect(\Tk\Uri::create('/'));
         }
         $auth->clearIdentity();
-        //$config->getSession()->destroy();     // Screws with masquerading code
+        if (!\Bs\Listener\MasqueradeHandler::isMasquerading()) {
+            vd('-----------------');
+            $config->getSession()->destroy();     // Screws with masquerading code
+        }
     }
 
 
     // TODO: For all emails lets try to bring it back to the default mail template
-    // TODO:   make it configurable so we could add it back in the future????
+    // TODO:  make it configurable so we could add it back in the future????
 
     /**
      * @param \Tk\Event\Event $event
@@ -283,8 +281,6 @@ class AuthHandler implements Subscriber
     }
 
 
-
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -302,7 +298,6 @@ class AuthHandler implements Subscriber
      *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
      *
      * @return array The event names to listen to
-     *
      * @api
      */
     public static function getSubscribedEvents()
@@ -310,7 +305,7 @@ class AuthHandler implements Subscriber
         return array(
             KernelEvents::REQUEST => array(array('onRequest', 5), array('validatePageAccess', -5)),
             AuthEvents::LOGIN => 'onLogin',
-            AuthEvents::LOGIN_SUCCESS => 'onLoginSuccess',
+            AuthEvents::LOGIN_SUCCESS => array(array('onLoginSuccess', 5), array('updateUser', 0)),
             AuthEvents::LOGOUT => 'onLogout',
             AuthEvents::REGISTER => 'onRegister',
             AuthEvents::REGISTER_CONFIRM => 'onRegisterConfirm',
