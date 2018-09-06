@@ -41,6 +41,12 @@ $red-color: #F33 !default;
         color: $gray-color-dark;
       }
     }
+    &.tk-is-invalid {
+      // Hacky fix for "Bootstrap 4 input-group hiding invalid-feedback class" bug
+      .invalid-feedback {
+        display: block;
+      }
+    }
   }
 
   .error-block {
