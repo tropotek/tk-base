@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 1.0.88 [2018-09-11]:
+-------------------------------
+  - Fixed most of it now
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+  - Still updating new-template branch
+
+
 Ver 1.0.86 [2018-09-04]:
 -------------------------------
   - Merge branch 'master' of https://github.com/tropotek/tk-base
