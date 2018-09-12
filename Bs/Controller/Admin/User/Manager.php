@@ -132,14 +132,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
         $xhtml = <<<HTML
 <div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <i class="fa fa-users fa-fw"></i> Users
-    </div>
-    <div class="panel-body">
-      <div var="table"></div>
-    </div>
-  </div>
+  <div class="tk-panel" data-panel-icon="fa fa-users" var="table"></div>
 
 </div>
 HTML;

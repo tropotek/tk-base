@@ -127,7 +127,7 @@ class Profile extends \Bs\Controller\AdminIface
         
         // Render the form
         $template->insertTemplate('form', $this->form->getRenderer()->show());
-        $template->insertText('username', $this->user->name . ' - [ID ' . $this->user->id . ']');
+        $template->setAttr('form', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
         
         return $template;
     }
@@ -143,15 +143,8 @@ class Profile extends \Bs\Controller\AdminIface
         $xhtml = <<<HTML
 <div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <i class="fa fa-user fa-fw"></i> <span var="username"></span>
-    </div>
-    <div class="panel-body">
-        <div var="form"></div>
-    </div>
-  </div>
-    
+  <div class="tk-panel" data-panel-icon="fa fa-user" var="form"></div>
+  
 </div>
 HTML;
 

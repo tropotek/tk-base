@@ -93,14 +93,8 @@ class Events extends \Bs\Controller\AdminIface
         $xhtml = <<<HTML
 <div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <i class="fa fa-empire fa-fw"></i> Available Events
-    </div>
-    <div class="panel-body">
-      <p>The events are available for use with plugins or when adding to the system codebase.</p>
-      <div var="table"></div>
-    </div>
+  <div class="tk-panel" data-panel-icon="fa fa-empire" var="table">
+    <p>The events are available for use with plugins or when adding to the system codebase.</p>
   </div>
 
 </div>

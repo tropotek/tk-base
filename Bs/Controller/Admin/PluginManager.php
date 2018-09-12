@@ -173,25 +173,12 @@ class PluginManager extends \Bs\Controller\AdminIface
 
   <div class="row">
     <div class="col-md-8 col-sm-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title"><i class="fa fa-plug"></i> Available Plugins</h4>
-        </div>
-        <div class="panel-body">
-          <div class="pluginList" var="PluginList"></div>
-        </div>
-      </div>
+      <div class="tk-panel" data-panel-title="Available Plugins" data-panel-icon="fa fa-plug" var="PluginList"></div>
     </div>
 
     <div class="col-md-4 col-sm-12">
-      <div class="panel panel-default" id="uploadForm">
-        <div class="panel-heading">
-          <h3 class="panel-title"><span class="fa fa-sign-out"></span> Upload Plugin</h3>
-        </div>
-        <div class="panel-body">
-          <p>Select A zip/tgz plugin package to upload.</p>
-          <div var="form"></div>
-        </div>
+      <div class="tk-panel" data-panel-title="Upload Plugin" data-panel-icon="fa fa-upload" var="form">
+        <p>Select A zip/tgz plugin package to upload.</p>
       </div>
     </div>
   </div>

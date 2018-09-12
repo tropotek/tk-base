@@ -202,9 +202,7 @@ class Edit extends \Bs\Controller\AdminIface
         $template->appendTemplate('form', $this->form->getRenderer()->show());
         
         if ($this->user->id)
-            $template->insertText('username', $this->user->name . ' - [ID ' . $this->user->id . ']');
-        else
-            $template->insertText('username', 'Create User');
+            $template->setAttr('form', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
         
         return $template;
     }
@@ -220,14 +218,7 @@ class Edit extends \Bs\Controller\AdminIface
         $xhtml = <<<HTML
 <div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <i class="fa fa-user fa-fw"></i> <span var="username"></span>
-    </div>
-    <div class="panel-body">
-        <div var="form"></div>
-    </div>
-  </div>
+  <div class="tk-panel" data-panel-title="Create User" data-panel-icon="fa fa-user" var="form"></div>
     
 </div>
 HTML;
