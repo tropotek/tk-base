@@ -94,8 +94,8 @@ class AuthHandler implements Subscriber
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
 
-        if (MasqueradeHandler::isMasquerading()) {
-            MasqueradeHandler::masqueradeClear();
+        if ($config->getMasqueradeHandler()->isMasquerading()) {
+            $config->getMasqueradeHandler()->masqueradeClear();
         }
 
         $result = null;
@@ -142,8 +142,8 @@ class AuthHandler implements Subscriber
      */
     public function updateUser(AuthEvent $event)
     {
-        if (\Bs\Listener\MasqueradeHandler::isMasquerading()) return;
         $config = \Bs\Config::getInstance();
+        if ($config->getMasqueradeHandler()->isMasquerading()) return;
         $user = $config->getUser();
         if ($user) {
             $user->lastLogin = \Tk\Date::create();
@@ -164,7 +164,7 @@ class AuthHandler implements Subscriber
             $event->setRedirect(\Tk\Uri::create('/'));
         }
         $auth->clearIdentity();
-        if (!\Bs\Listener\MasqueradeHandler::isMasquerading()) {
+        if (!$config->getMasqueradeHandler()->isMasquerading()) {
             $config->getSession()->destroy();     // Screws with masquerading code
         }
     }

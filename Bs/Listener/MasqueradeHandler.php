@@ -55,7 +55,7 @@ class MasqueradeHandler implements Subscriber
             /** @var User $msqUser */
             $msqUser = $config->getUserMapper()->findByHash($request->get(static::MSQ));
             if (!$msqUser) throw new \Tk\Exception('Invalid User');
-            static::masqueradeLogin($user, $msqUser);
+            $this->masqueradeLogin($user, $msqUser);
 
         } catch (\Exception $e) {
             \Tk\Alert::addWarning($e->getMessage());
@@ -72,9 +72,9 @@ class MasqueradeHandler implements Subscriber
      * @param User $msqUser
      * @return bool
      */
-    public static function canMasqueradeAs($user, $msqUser)
+    public function canMasqueradeAs($user, $msqUser)
     {
-        $config = \Bs\Config::getInstance();
+        $config = $this->getConfig();
         if (!$msqUser || !$user || !$msqUser->active) return false;
         if ($user->id == $msqUser->id) return false;
 
@@ -86,14 +86,23 @@ class MasqueradeHandler implements Subscriber
             }
         }
         // Get the users role precedence order index
-        $userRoleIdx = array_search($user->getRoleType(), static::$roleOrder);
-        $msqRoleIdx = array_search($msqUser->getRoleType(), static::$roleOrder);
+        $userRoleIdx = $this->getRolePrecedenceIdx($user);
+        $msqRoleIdx = $this->getRolePrecedenceIdx($msqUser);
 
         // If not admin their role must be higher in precedence see \Uni\Db\User::$roleOrder
         if ($user->isAdmin() || $userRoleIdx < $msqRoleIdx) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param \Bs\Db\UserIface $user
+     * @return int
+     */
+    public function getRolePrecedenceIdx($user)
+    {
+        return array_search($user->getRoleType(), static::$roleOrder);
     }
 
 
@@ -104,9 +113,9 @@ class MasqueradeHandler implements Subscriber
      * @return bool|void
      * @throws \Exception
      */
-    public static function masqueradeLogin($user, $msqUser)
+    public function masqueradeLogin($user, $msqUser)
     {
-        $config = \Bs\Config::getInstance();
+        $config = $this->getConfig();
         if (!$msqUser || !$user) return;
         if ($user->id == $msqUser->id) return;
 
@@ -114,7 +123,7 @@ class MasqueradeHandler implements Subscriber
         $msqArr = $config->getSession()->get(static::SID);
         if (!is_array($msqArr)) $msqArr = array();
 
-        if (!static::canMasqueradeAs($user, $msqUser)) {
+        if (!$this->canMasqueradeAs($user, $msqUser)) {
             return;
         }
 
@@ -146,10 +155,10 @@ class MasqueradeHandler implements Subscriber
      *
      * @throws \Exception
      */
-    public static function masqueradeLogout()
+    public function masqueradeLogout()
     {
-        $config = \Bs\Config::getInstance();
-        if (!static::isMasquerading()) return;
+        $config = $this->getConfig();
+        if (!$this->isMasquerading()) return;
         if (!$config->getAuth()->hasIdentity()) return;
         $msqArr = $config->getSession()->get(static::SID);
         if (!is_array($msqArr) || !count($msqArr)) return;
@@ -177,9 +186,9 @@ class MasqueradeHandler implements Subscriber
      * @return int
      * @throws \Exception
      */
-    public static function isMasquerading()
+    public function isMasquerading()
     {
-        $config = \Bs\Config::getInstance();
+        $config = $this->getConfig();
         if (!$config->getSession()->has(static::SID)) return 0;
         $msqArr = $config->getSession()->get(static::SID);
         return count($msqArr);
@@ -191,9 +200,9 @@ class MasqueradeHandler implements Subscriber
      * @return \Bs\Db\UserIface|null
      * @throws \Exception
      */
-    public static function getMasqueradingUser()
+    public function getMasqueradingUser()
     {
-        $config = \Bs\Config::getInstance();
+        $config = $this->getConfig();
         $user = null;
         if ($config->getSession()->has(static::SID)) {
             $msqArr = current($config->getSession()->get(static::SID));
@@ -206,9 +215,9 @@ class MasqueradeHandler implements Subscriber
     /**
      * masqueradeLogout
      */
-    public static function masqueradeClear()
+    public function masqueradeClear()
     {
-        \Bs\Config::getInstance()->getSession()->remove(static::SID);
+        $this->getConfig()->getSession()->remove(static::SID);
     }
 
     /**
@@ -217,10 +226,18 @@ class MasqueradeHandler implements Subscriber
      */
     public function onLogout(AuthEvent $event)
     {
-        if (static::isMasquerading()) {   // stop masquerading
-            static::masqueradeLogout();
+        if ($this->isMasquerading()) {   // stop masquerading
+            $this->masqueradeLogout();
             //$event->stopPropagation();
         }
+    }
+
+    /**
+     * @return \Bs\Config|\Tk\Config
+     */
+    public function getConfig()
+    {
+        return \Bs\Config::getInstance();
     }
 
     /**

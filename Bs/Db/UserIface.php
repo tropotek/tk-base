@@ -41,6 +41,11 @@ interface UserIface
     public function getEmail();
 
     /**
+     * @return int
+     */
+    public function getRoleId();
+
+    /**
      * @return RoleIface
      */
     public function getRole();
