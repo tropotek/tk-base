@@ -289,6 +289,10 @@ body.theme-tropotek {
 		color: $primary-color;
 		border-color: $primary-color;
 	}
+	.table tbody > tr > td:first-child {
+		font-size: 0.875em;
+		font-weight: normal;
+	}
 	.pace .pace-progress {
 		background-color: #fff;
 	}

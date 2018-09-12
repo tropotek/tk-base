@@ -52,9 +52,19 @@
       text-decoration: underline;
     }
   }
-
   td, th {
     white-space: nowrap;
+  }
+
+  .table {
+    margin-top: 10px;
+
+    tbody > tr {
+      > td, > th {
+        //font-size: 0.875em;
+        padding: 8px;
+      }
+    }
   }
 
   .key {
@@ -90,7 +100,7 @@
     }
   }
   .tk-actions, .tk-table-actions {
-    margin: 5px 0 10px 0px;
+    //margin: 5px 0 10px 0px;
     .btn {
       margin-right: 5px;
     }

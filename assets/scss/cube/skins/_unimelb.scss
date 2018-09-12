@@ -184,6 +184,11 @@ $whblSidebarLinkColor: #484848;
 	.table a.table-link:hover {
 		color: #2980b9;
 	}
+	.table tbody > tr > td:first-child {
+		font-size: 0.875em;
+		font-weight: normal;
+	}
+
 	.pagination {
 		> li {
 			> a,
