@@ -186,6 +186,7 @@ class Edit extends \Bs\Controller\AdminIface
 
     /**
      * @return \Dom\Template
+     * @throws \Exception
      */
     public function show()
     {
