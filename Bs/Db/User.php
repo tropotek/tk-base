@@ -169,6 +169,14 @@ class User extends Model implements UserIface, \Tk\ValidInterface
         return $this->active;
     }
 
+    /**
+     * @return int
+     */
+    public function getRoleId()
+    {
+        return $this->roleId;
+    }
+
 
     /**
      * Get the path for all file associated to this object
