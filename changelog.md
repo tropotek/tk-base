@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 1.0.92 [2018-09-13]:
+-------------------------------
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+  - Remove Masquerade from App lib
+  - Preparing branch master for new release
+
+
 Ver 1.0.90 [2018-09-12]:
 -------------------------------
 
