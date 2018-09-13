@@ -38,15 +38,14 @@ class PageTemplateHandler implements Subscriber
         if ($this->getConfig()->get('site.title')) {
             $v = '';
             if ($config->isDebug()) {
-                $v = ' v' . $config->getVersion();
+                $v = ' <small>v' . $config->getVersion().'</small>';
             }
-            $template->insertText($config->get('template.var.page.site-short-title'), $this->getConfig()->get('site.short.title') . $v);
+            $template->insertHtml($config->get('template.var.page.site-short-title'), $this->getConfig()->get('site.short.title') . $v);
             $template->setAttr($config->get('template.var.page.site-short-title'), 'title', $this->getConfig()->get('site.title'));
             $template->insertText($config->get('template.var.page.site-title'), $this->getConfig()->get('site.title'));
             $template->setTitleText(trim($template->getTitleText() . ' - ' . $this->getConfig()->get('site.title'), '- '));
         }
 
-        // TODO: create a listener for this????
         $rel = \Tk\Uri::create()->getRelativePath();
         $siteUrl = $this->getConfig()->getSiteUrl();
         $dataUrl = $this->getConfig()->getDataUrl();

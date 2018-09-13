@@ -16,7 +16,8 @@ $whblSidebarLinkColor: #484848;
 		//background: linear-gradient(to bottom,  $primary-color 0%,#2980b9 100%) !important; /* W3C */
 		//filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$primary-color', endColorstr='#2980b9',GradientType=0 ) !important; /* IE6-9 */
 		//background-color: $primary-color;
-		a, a:link {
+
+		#logo {
 			color: $whblNavColBg;
 		}
 	}

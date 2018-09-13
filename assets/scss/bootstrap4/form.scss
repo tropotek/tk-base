@@ -68,6 +68,9 @@ $red-color: #F33 !default;
     padding-top: 20px;
   }
 
+  textarea.form-control {
+    min-height: 150px;
+  }
 
 }
 
