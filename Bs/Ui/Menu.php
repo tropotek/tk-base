@@ -11,65 +11,18 @@ use Tk\Ui\Link;
 class Menu extends \Tk\Ui\Menu\Menu
 {
 
-    /**
-     * @var string
-     */
-    protected $templateVar = 'nav';
 
     /**
-     * @var string
+     * @param string $name
+     * @param string|\Tk\Uri $url
+     * @param string $icon
      */
-    protected $roleType = 'public';
-
-
-
-
-    /**
-     * @param Link $link
-     */
-    public function __construct($link = null)
+    public function __construct($name = '', $url = null, $icon = null)
     {
-        parent::__construct($link);
+        parent::__construct($name, $url, $icon);
         $this->addCss('tk-ui-menu');
     }
 
-
-
-    /**
-     * @return string
-     */
-    public function getTemplateVar()
-    {
-        return $this->templateVar;
-    }
-
-    /**
-     * @param string $templateVar
-     * @return static
-     */
-    public function setTemplateVar($templateVar)
-    {
-        $this->templateVar = $templateVar;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRoleType()
-    {
-        return $this->roleType;
-    }
-
-    /**
-     * @param string $roleType
-     * @return static
-     */
-    public function setRoleType($roleType)
-    {
-        $this->roleType = $roleType;
-        return $this;
-    }
 
 
 }

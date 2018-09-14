@@ -11,12 +11,17 @@ use Tk\Db\Map\Model;
 class Role extends Model implements \Tk\ValidInterface, RoleIface
 {
 
+    // TODO: We need to deprecate these constants as they are influencing the app design
+
     const DEFAULT_TYPE_ADMIN = 1;
     const DEFAULT_TYPE_USER = 2;
 
     const TYPE_ADMIN    = 'admin';
     const TYPE_USER     = 'user';
     const TYPE_PUBLIC   = 'public';
+
+
+
 
     /**
      * @var int
@@ -68,11 +73,62 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
         $this->created = new \DateTime();
     }
 
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return bool|mixed
+     * @throws \Tk\Exception
+     * @todo: not sure if this is good design, feels like it will come back to haunt us see is()
+     */
+    public function __call(string $name , array $arguments)
+    {
+        // Allow us to do isStaff, isStudent, etc and use the name of the role as the comparitor
+        if (preg_match('/^is([a-zA-Z0-9_]+)/', $name, $regs)) {
+            $roleName = strtolower($regs[1]);
+            return $this->is($roleName);
+        }
+        throw new \Tk\Exception('Method does not exist: ' . $name . '()');
+    }
+
+    /**
+     * Case insensitive check of the roleName.
+     * An array of names can be supplied if one matches then true is returned.
+     *
+     * @param string|array $roleName
+     * @return bool
+     */
+    public function is($roleName)
+    {
+        if (!is_array($roleName)) $roleName = array($roleName);
+        foreach ($roleName as $r) {
+            if (strtolower($this->name) == strtolower($r))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param string|array $type
+     * @return bool
+     */
+    public function hasType($type)
+    {
+        if (!is_array($type)) $type = array($type);
+        foreach ($type as $r) {
+            if ($r == $this->getType()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Get a default ole ID from a Type
      *
      * @param string $type Use the constants self::TYPE_ADMIN|self:TYPE_USER
      * @return int
+     * @todo We need to remove the reliance on these constants as it influences class inheritance
      */
     public static function getDefaultRoleId($type)
     {
@@ -111,21 +167,6 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
         if (!$this->isStatic())
             return parent::delete();
         return 0;
-    }
-
-    /**
-     * @param string|array $type
-     * @return bool
-     */
-    public function hasType($type)
-    {
-        if (!is_array($type)) $type = array($type);
-        foreach ($type as $r) {
-            if ($r == $this->getType()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

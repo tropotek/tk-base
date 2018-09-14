@@ -723,16 +723,33 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @param string $templatePath
+     * @return Page
+     */
+    public function getPage($templatePath = '')
+    {
+        if (!$this->get('controller.page')) {
+            try {
+                $this->set('controller.page', new Page($templatePath));
+                // Add a template ClassPath adapter to the DomLoader
+                $this->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
+                    dirname($templatePath).'/xtpl',
+                    $this->get('template.xtpl.ext'),
+                    false
+                ));
+            } catch (\Exception $e) { \Tk\Log::error($e->__toString()); }
+        }
+        return $this->get('controller.page');
+    }
+
+    /**
      * @param string $templatePath (optional)
      * @return Page
+     * @deprecated Use $this->getPage()
      */
     public function createPage($templatePath = '')
     {
-        try {
-            return new Page($templatePath);
-        } catch (\Exception $e) {
-            \Tk\Log::error($e->__toString());
-        }
+        return $this->getPage($templatePath);
     }
 
 }

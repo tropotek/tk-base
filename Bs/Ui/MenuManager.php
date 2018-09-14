@@ -7,6 +7,7 @@ namespace Bs\Ui;
  * @created: 21/08/18
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Tropotek
+ * @todo: remove this over time it is not really needed
  */
 class MenuManager
 {
@@ -45,14 +46,11 @@ class MenuManager
 
     /**
      * @param string $name
-     * @param string $roleType
      * @return Menu
      */
-    public function createMenu($name, $roleType = 'public')
+    public function createMenu($name)
     {
         $menu = Menu::create($name);
-        $menu->setTemplateVar($name);
-        $menu->setRoleType($roleType);
         return $menu;
     }
 
@@ -61,16 +59,14 @@ class MenuManager
      * If a menu does not exist with the given name then one is created with a public role type
      *
      * @param string $name
-     * @param string $roleType
      * @return Menu
      */
-    public function getMenu($name, $roleType = 'public')
+    public function getMenu($name)
     {
-        $key = $roleType.'-'.$name;
-        if (empty($this->list[$key])) {
-            $this->list[$key] = $this->createMenu($name, $roleType);
+        if (empty($this->list[$name])) {
+            $this->list[$name] = $this->createMenu($name);
         }
-        return $this->list[$key];
+        return $this->list[$name];
     }
 
     /**
