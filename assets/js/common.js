@@ -10,6 +10,7 @@ jQuery(function ($) {
   project_core.initTkFormTabs();
   project_core.initGrowLikeAlerts();
   project_core.initDataConfirm();
+  project_core.initDataToggle();
   project_core.initTkPanel();
   project_core.initTableDeleteConfirm();
   project_core.initMasqueradeConfirm();

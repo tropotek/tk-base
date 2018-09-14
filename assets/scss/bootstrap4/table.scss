@@ -6,6 +6,35 @@
  * @license Copyright 2015 Michael Mifsud
  */
 
+/* Font awesome actions */
+.faa-add {
+  position: relative;
+  &:after {
+    display: block;
+    position: absolute;
+    content: "\f055";
+    font-size: 70%;
+    margin-top: -50%;
+    margin-left: 50%;
+    background-color: white;
+    border-radius: 100%;
+  }
+}
+.faa-del,
+.faa-remove {
+  position: relative;
+  &:after {
+    display: block;
+    position: absolute;
+    content: "\f056";
+    font-size: 70%;
+    margin-top: -50%;
+    margin-left: 50%;
+    background-color: white;
+    border-radius: 100%;
+  }
+}
+
 /**
  * \Tk\Table\Renderer\Dom\Table
  */
