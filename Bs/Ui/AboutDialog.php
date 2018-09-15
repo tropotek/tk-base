@@ -21,7 +21,7 @@ class AboutDialog extends \Tk\Ui\Dialog
     public function __construct()
     {
         $config = \Bs\Config::getInstance();
-        parent::__construct('aboutModal', 'About' . $config->get('site.title'));
+        parent::__construct('aboutModal', 'About ' . $config->get('site.title'));
     }
 
     /**
