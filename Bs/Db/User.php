@@ -337,6 +337,7 @@ class User extends Model implements UserIface, \Tk\ValidInterface
                 $errors['email'] = 'Please enter a valid email address';
             } else {
                 $dup = UserMap::create()->findByEmail($this->email);
+                vd($dup);
                 if ($dup && $dup->getId() != $this->getId()) {
                     $errors['email'] = 'This email is already in use';
                 }
