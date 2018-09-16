@@ -133,14 +133,7 @@ class Settings extends \Bs\Controller\AdminIface
         $xhtml = <<<HTML
 <div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <i class="fa fa-cog"></i> Site Settings
-    </div>
-    <div class="panel-body">
-      <div var="form"></div>
-    </div>
-  </div>
+  <div class="tk-panel" data-panel-icon="fa fa-cogs" var="form"></div>
 
 </div>
 HTML;
