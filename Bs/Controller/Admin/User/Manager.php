@@ -41,8 +41,6 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function doDefaultRole(\Tk\Request $request, $targetRole)
     {
         $this->targetRole = $targetRole;
-        if (!$this->editUrl)
-            $this->editUrl = \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html');
 
         $this->doDefault($request);
     }
@@ -61,6 +59,8 @@ class Manager extends \Bs\Controller\AdminManagerIface
                 $this->setPageTitle('User Manager');
                 break;
         }
+        if (!$this->editUrl)
+            $this->editUrl = \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html');
 
         $this->table = $this->getConfig()->createTable('user-list');
         $this->table->setRenderer($this->getConfig()->createTableRenderer($this->table));
@@ -81,6 +81,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
         $this->table->appendCell(new \Tk\Table\Cell\Checkbox('id'));
         $this->table->appendCell($actionsCell);
+        vd($this->editUrl);
         $this->table->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl($this->editUrl);
         $this->table->appendCell(new \Tk\Table\Cell\Text('username'));
         $this->table->appendCell(new \Tk\Table\Cell\Text('email'));
