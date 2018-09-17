@@ -81,7 +81,6 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
         $this->table->appendCell(new \Tk\Table\Cell\Checkbox('id'));
         $this->table->appendCell($actionsCell);
-        vd($this->editUrl);
         $this->table->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl($this->editUrl);
         $this->table->appendCell(new \Tk\Table\Cell\Text('username'));
         $this->table->appendCell(new \Tk\Table\Cell\Text('email'));
