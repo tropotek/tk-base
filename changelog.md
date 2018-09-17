@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 1.0.94 [2018-09-17]:
+-------------------------------
+  - Added an invoice edit/view page... cool stuff ;-)
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+  - Added invoice data
+
+
 Ver 1.0.92 [2018-09-13]:
 -------------------------------
   - Merge branch 'master' of https://github.com/tropotek/tk-base
