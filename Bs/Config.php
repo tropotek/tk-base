@@ -719,26 +719,25 @@ class Config extends \Tk\Config
     {
         if (!$this->get('controller.page')) {
             try {
-                $this->set('controller.page', new Page($templatePath));
-                // Add a template ClassPath adapter to the DomLoader
-                $this->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
-                    dirname($templatePath).'/xtpl',
-                    $this->get('template.xtpl.ext'),
-                    false
-                ));
+                $page = $this->createPage($templatePath);
             } catch (\Exception $e) { \Tk\Log::error($e->__toString()); }
+            // Add a template ClassPath adapter to the DomLoader
+            $this->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(dirname($page->getTemplatePath()).'/xtpl',
+                $this->get('template.xtpl.ext'), false
+            ));
+            $this->set('controller.page', $page);
         }
         return $this->get('controller.page');
     }
 
     /**
-     * @param string $templatePath (optional)
+     * @param string $templatePath
      * @return Page
-     * @deprecated Use $this->getPage()
+     * @throws \Exception
      */
     public function createPage($templatePath = '')
     {
-        return $this->getPage($templatePath);
+        return new Page($templatePath);
     }
 
 }

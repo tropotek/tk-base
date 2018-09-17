@@ -21,12 +21,12 @@ class Page extends \Tk\Controller\Page
 
         parent::__construct($templatePath);
 
-        // TODO: FIX THIS ! Could possibly add more than one if more than one page instance is created .... ???? !!!!!
-        $this->getConfig()->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
-            dirname($templatePath).'/xtpl',
-            $this->getConfig()->get('template.xtpl.ext'),
-            false
-        ));
+//        // TODO: FIX THIS ! Could possibly add more than one if more than one page instance is created .... ???? !!!!!
+//        $this->getConfig()->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
+//            dirname($templatePath).'/xtpl',
+//            $this->getConfig()->get('template.xtpl.ext'),
+//            false
+//        ));
     }
 
     /**
