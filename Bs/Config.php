@@ -8,8 +8,6 @@ namespace Bs;
  */
 class Config extends \Tk\Config
 {
-    const CSS_FW_BOOTSTRAP_3 = 'bootstrap3';
-    const CSS_FW_BOOTSTRAP_4 = 'bootstrap4';
 
 
     /**
@@ -56,15 +54,6 @@ class Config extends \Tk\Config
     public function getLibBasePath()
     {
         return $this->getSitePath() . rtrim($this->get('system.lib.base.path'), '/');
-    }
-
-    /**
-     * @return bool
-     */
-    public function isBootsrap4()
-    {
-        return !preg_match('|\/admin$|', $this->get('system.theme.path'));
-        //return ($this->get('template.css.framework') == \Bs\Config::CSS_FW_BOOTSTRAP_4);
     }
 
     /**

@@ -25,9 +25,9 @@ var project_core = function () {
       console.warn('tkFileInput plugin not available.');
       return;
     }
-    $('.tk-imageinput').tkImageInput({dataUrl: config.dataUrl});
-    $('.tk-multiinput').tkMultiInput({dataUrl: config.dataUrl});
-    $('.tk-fileinput:not(.tk-imageinput)').tkFileInput({});
+    $('.tk-imageinput').tkImageInput({dataUrl: config.dataUrl, isBootstrap4: config.isBootstrap4});
+    $('.tk-multiinput').tkMultiInput({dataUrl: config.dataUrl, isBootstrap4: config.isBootstrap4});
+    $('.tk-fileinput:not(.tk-imageinput)').tkFileInput({isBootstrap4: config.isBootstrap4});
 
   };
 

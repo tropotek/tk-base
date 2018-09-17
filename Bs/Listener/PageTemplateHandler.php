@@ -61,6 +61,7 @@ var config = {
   siteUrl : '$siteUrl',
   dataUrl : '$dataUrl',
   templateUrl: '$templateUrl',
+  isBootstrap4: true,
   role: '$role',
   jquery: {
     dateFormat: 'dd/mm/yy'    
