@@ -21,9 +21,9 @@ class Mirror extends Iface
     protected function configure()
     {
         $this->setName('mirror')
-            ->addOption('withData', 'd', InputOption::VALUE_NONE, 'Use scp to copy the data folder from the live site.')
-            ->addOption('deleteSqlFile', 'x', InputOption::VALUE_NONE, 'Delete the live temp sql file on exit.')
-            ->addOption('noSql', 'S', InputOption::VALUE_NONE, 'Do not execute the sql component of the mirror')
+            ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
+            ->addOption('no-sql', 'S', InputOption::VALUE_NONE, 'Do not execute the sql component of the mirror')
+            ->addOption('copy-data', 'd', InputOption::VALUE_NONE, 'Use scp to copy the data folder from the live site.')
             ->setDescription('Mirror the data and files from the Live site');
     }
 
@@ -55,36 +55,50 @@ class Mirror extends Iface
 
         $debugSqlFile = $config->getSitePath() . '/bin/assets/debug.sql';
         $thisSqlFile = $config->getTempPath() . '/tmpt.sql';
-        $liveSqlFile = $config->getTempPath() . '/tmpl.sql';
+        $liveSqlFile = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql';
+
+        // Delete live cached files
+        $list = glob($config->getTempPath().'/*-tmpl.sql');
+        foreach ($list as $file) {
+            if ($input->getOption('no-cache') || $file != $liveSqlFile) {
+                unlink($file);
+            }
+        }
+
         $liveBackup = \Tk\Util\SqlBackup::create($liveDb);
         $thisBackup = \Tk\Util\SqlBackup::create($thisDb);
         $exclude = array(\Tk\Session\Adapter\Database::$DB_TABLE);
 
 
         // Copy the data from the live DB
-        if (!$input->getOption('noSql')) {
-            $this->write('Backup live.DB to file');
-            $liveBackup->save($liveSqlFile, array('exclude' => $exclude));
+        if (!$input->getOption('no-sql')) {
+            if (!is_file($liveSqlFile) || $input->getOption('no-cache')) {
+                $this->writeComment('Download live.DB: ' . basename($liveSqlFile));
+                $liveBackup->save($liveSqlFile, array('exclude' => $exclude));
+            } else {
+                $this->writeComment('Using existing live.DB: ' . basename($liveSqlFile));
+            }
+
             // Prevent accidental writing to live DB
             $liveBackup = null;
-            $this->write('Backup this.DB to file');
+            $this->writeComment('Backup this.DB to file: ' . $thisSqlFile);
             $thisBackup->save($thisSqlFile, array('exclude' => $exclude));
+
             $this->write('Drop this.DB tables/views');
             $thisDb->dropAllTables(true, $exclude);
+
             $this->write('Import live.DB file to this.DB');
             $thisBackup->restore($liveSqlFile);
+
             $this->write('Apply dev sql updates');
             $thisBackup->restore($debugSqlFile);
 
-            if ($input->getOption('deleteSqlFile')) {
-                unlink($liveSqlFile);
-            }
             unlink($thisSqlFile);
 
         }
 
         // if withData, copy the data folder and its files
-        if ($input->getOption('withData')) {
+        if ($input->getOption('copy-data')) {
             if (!$config->get('live.data.path')) {
                 $this->writeError('Error: Cannot copy data files as the live.data.path is not configured.');
                 return;
@@ -136,7 +150,7 @@ class Mirror extends Iface
             }
         }
 
-        $this->write('Complete!!!');
+        //$this->write('Complete!!!');
 
     }
 
