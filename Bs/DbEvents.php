@@ -14,7 +14,7 @@ class DbEvents
      * Fired when a \Tk\Db\Map\Model object is inserted to the DB.
      * Called just before the DB query
      *
-     * @event \Tk\Event\DbEvent
+     * @event \Bs\Event\DbEvent
      */
     const MODEL_INSERT = 'db.model.insert';
 
@@ -22,7 +22,7 @@ class DbEvents
      * Fired when a \Tk\Db\Map\Model object is updated in the DB.
      * Called just before the DB query
      *
-     * @event \Tk\Event\DbEvent
+     * @event \Bs\Event\DbEvent
      */
     const MODEL_UPDATE = 'db.model.update';
 
@@ -31,7 +31,7 @@ class DbEvents
      * Also one th event of INSERT/UPDATE will be fired after the SAVE event
      * Called just before the DB query
      *
-     * @event \Tk\Event\DbEvent
+     * @event \Bs\Event\DbEvent
      */
     const MODEL_SAVE = 'db.model.save';
 
@@ -39,10 +39,9 @@ class DbEvents
      * Fired when a \Tk\Db\Map\Model object is deleted from the DB.
      * Called just before the DB query
      *
-     * @event \Tk\Event\DbEvent
+     * @event \Bs\Event\DbEvent
      */
     const MODEL_DELETE = 'db.model.delete';
-
 
 
 }
