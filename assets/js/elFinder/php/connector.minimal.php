@@ -1,7 +1,7 @@
 <?php
-$sitePath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+$sitePath = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))));
 $siteUrl = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['PHP_SELF']))))))));
-require $appPath . '/_prepend.php';
+require $sitePath . '/_prepend.php';
 
 //error_reporting(0); // Set E_ALL for debuging
 
@@ -143,7 +143,8 @@ $opts = array(
 			'trashHash'     => 't1_Lw',                         // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/',     // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                    // All Mimetypes not allowed to upload
-			'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
+			'uploadAllow'   => array('image', 'video', 'audio', 'text', 'model', 'font',
+                'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
 			'uploadOrder'   => array('deny', 'allow'),          // allowed Mimetype `image` and `text/plain` only
 			'accessControl' => 'access'                         // disable and hide dot starting files (OPTIONAL)
 		),
@@ -157,7 +158,8 @@ $opts = array(
 			//'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../files/.trash/.tmb/',
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/',     // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                    // Recomend the same settings as the original volume that uses the trash
-            'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
+            'uploadAllow'   => array('image', 'video', 'audio', 'text', 'model', 'font',
+                'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
 			'uploadOrder'   => array('deny', 'allow'),          // Same as above
 			'accessControl' => 'access',                        // Same as above
 		)
