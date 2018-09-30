@@ -15,15 +15,12 @@
 
 .tk-ribbon-box {
   position: relative;
-  &.tk-ribbon-sm {
-    font-size: 0.8em;
-  }
+  //&.tk-ribbon-sm {
+  //  font-size: 0.8em;
+  //}
 }
 
-
-@mixin ribbon($color) {
-  $lgt: saturate($color, 20);
-  $drk: darken($color, 25);
+.tk-ribbon {
 
   position: absolute;
   left: -5px !important;
@@ -33,6 +30,7 @@
   width: 75px;
   height: 75px;
   text-align: right;
+
   span {
     font-size: 10px;
     font-weight: bold;
@@ -49,8 +47,6 @@
     top: 19px;
     left: -21px;
     color: #FFF;
-    background: $color;
-    background: linear-gradient($lgt 0%, $drk 100%);
     a {
       color: #FFF;
     }
@@ -61,9 +57,6 @@
     z-index: -1;
     border-right: 3px solid transparent;
     border-bottom: 3px solid transparent;
-
-    border-left: 3px solid $drk;
-    border-top: 3px solid $drk;
   }
   span::after {
     content: "";
@@ -71,9 +64,6 @@
     z-index: -1;
     border-left: 3px solid transparent;
     border-bottom: 3px solid transparent;
-
-    border-right: 3px solid $drk;
-    border-top: 3px solid $drk;
   }
 
   &.tk-ribbon-sm {
@@ -92,6 +82,28 @@
     span::after {
       border-width: 2px;
     }
+  }
+
+}
+
+@mixin ribbon($color) {
+  $lgt: saturate($color, 20);
+  $drk: darken($color, 25);
+
+  span {
+    background: $color;
+    background: linear-gradient($lgt 0%, $drk 100%);
+    a {
+      color: #FFF;
+    }
+  }
+  span::before {
+    border-left: 3px solid $drk;
+    border-top: 3px solid $drk;
+  }
+  span::after {
+    border-right: 3px solid $drk;
+    border-top: 3px solid $drk;
   }
 }
 
