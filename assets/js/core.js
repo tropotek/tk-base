@@ -253,6 +253,7 @@ var project_core = function () {
           toolbar2: '',
           toolbar3: ''
         });
+        opts.height = el.data('height') ? el.data('height') : 200;
       } else if (el.hasClass('mce-med')) {
         opts = $.extend({}, opts, {
           //plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],

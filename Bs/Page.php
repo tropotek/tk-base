@@ -12,7 +12,6 @@ class Page extends \Tk\Controller\Page
 
     /**
      * @param string $templatePath
-     * @throws \Exception
      */
     public function __construct($templatePath = '')
     {

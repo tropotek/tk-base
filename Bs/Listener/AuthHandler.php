@@ -70,14 +70,12 @@ class AuthHandler implements Subscriber
         // --------------------------------------------------------
 
         $urlRole = \Bs\Uri::create()->getRoleType($config->getAvailableUserRoleTypes());
-        if ($urlRole && !$urlRole != 'public') {
-            $role = '';
-            if ($config->getUser()) {
-                $role = $config->getUser()->getRole()->getType();
-            }
+        //if ($urlRole && !$urlRole != 'public') {          // What happened here ?????
+        if ($urlRole && $urlRole != 'public') {
             if (!$config->getUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
+            $role = $config->getUser()->getRole()->getType();
             if ($role != $urlRole) {   // Finally check if the use has access to the url
                 \Tk\Alert::addWarning('You do not have access to the requested page.');
                 $config->getUserHomeUrl($config->getUser())->redirect();

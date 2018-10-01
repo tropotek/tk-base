@@ -21,8 +21,6 @@ class Config extends \Tk\Config
 
     /**
      * Load the site route config files
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Plugin\Exception
      */
     public function loadConfig()
     {
@@ -164,7 +162,6 @@ class Config extends \Tk\Config
      * getAuth
      *
      * @return \Tk\Auth
-     * @throws \Tk\Db\Exception
      */
     public function getAuth()
     {
@@ -252,8 +249,6 @@ class Config extends \Tk\Config
 
     /**
      * @param \Tk\Event\Dispatcher $dispatcher
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Exception
      */
     public function setupDispatcher($dispatcher)
     {
@@ -733,7 +728,6 @@ class Config extends \Tk\Config
     /**
      * @param string $templatePath
      * @return Page
-     * @throws \Exception
      */
     public function createPage($templatePath = '')
     {

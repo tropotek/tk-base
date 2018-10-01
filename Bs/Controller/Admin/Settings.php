@@ -50,6 +50,7 @@ class Settings extends \Bs\Controller\AdminIface
 
         $tab = 'Site';
         $this->form->appendField(new Field\Input('site.title'))->setTabGroup($tab)->setLabel('Site Title')->setRequired(true);
+        $this->form->appendField(new Field\Input('site.short.title'))->setTabGroup($tab)->setLabel('Site Short Title')->setRequired(true);
         $this->form->appendField(new Field\Input('site.email'))->setTabGroup($tab)->setLabel('Site Email')->setRequired(true);
 
         $tab = 'SEO';
