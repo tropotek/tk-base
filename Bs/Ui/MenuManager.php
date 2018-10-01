@@ -59,10 +59,11 @@ class MenuManager
      * If a menu does not exist with the given name then one is created with a public role type
      *
      * @param string $name
-     * @return Menu
+     * @return Menu|null
      */
     public function getMenu($name)
     {
+        if (!$name) return null;
         if (empty($this->list[$name])) {
             $this->list[$name] = $this->createMenu($name);
         }
