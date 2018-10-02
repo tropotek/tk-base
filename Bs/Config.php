@@ -335,8 +335,11 @@ class Config extends \Tk\Config
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
                     array(
                         'siteUrl' => $this->getSiteUrl(),
+                        //'sitePath' => $this->getSitePath(),
                         'dataUrl' => $this->getDataUrl(),
-                        'templateUrl' => $this->getTemplateUrl()
+                        //'dataPath' => $this->getDataPath(),
+                        'templateUrl' => $this->getTemplateUrl(),
+                        //'templatePath' => $this->getTemplatePath()
                     )
                 ));
                 $scss->setCompress(true);
