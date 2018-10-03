@@ -323,26 +323,20 @@ class Config extends \Tk\Config
             if (class_exists('Dom\Modifier\Filter\Less')) {
                 /** @var \Dom\Modifier\Filter\Less $less */
                 $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
-                    array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl())));
+                    array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl()) ));
                 $less->setCompress(true);
+                if ($this->isRefreshCacheRequest()) {
+                    $less->setCacheEnabled(false);
+                }
             }
             if (class_exists('Leafo\ScssPhp\Compiler')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
-//                if ($this->isDebug()) {
-//                    // Now use Ctrl+Shift+R in the browser to recompile scss files
-//                    \Dom\Modifier\Filter\Scss::$CACHE_TIMEOUT = 10;
-//                }
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
-                    array(
-                        'siteUrl' => $this->getSiteUrl(),
-                        //'sitePath' => $this->getSitePath(),
-                        'dataUrl' => $this->getDataUrl(),
-                        //'dataPath' => $this->getDataPath(),
-                        'templateUrl' => $this->getTemplateUrl(),
-                        //'templatePath' => $this->getTemplatePath()
-                    )
-                ));
+                    array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl()) ));
                 $scss->setCompress(true);
+                if ($this->isRefreshCacheRequest()) {
+                    $scss->setCacheEnabled(false);
+                }
             }
 
             if ($this->isDebug()) {
