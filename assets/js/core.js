@@ -56,6 +56,17 @@ var project_core = function () {
       minView: 2,
       maxView: 2
     });
+    $('.datetime').datetimepicker({
+      format: config.datepickerFormat + ' hh:ii',
+      minuteStep: 15,
+      showMeridian: false,
+      showSeconds: false,
+
+      autoclose: true,
+      todayBtn: true,
+      todayHighlight: true,
+      initialDate: new Date()
+    });
 
     $('.input-daterange').each(function () {
       // TODO we need to fix the initialDate bug when the date format has the time.
