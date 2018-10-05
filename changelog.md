@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.104 [2018-10-05]:
+-------------------------------
+  - Fixed elFinder Url paths
+
+
 Ver 1.0.102 [2018-10-05]:
 -------------------------------
   - Fixed google maps key handling
