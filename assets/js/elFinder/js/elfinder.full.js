@@ -1184,7 +1184,7 @@ var elFinder = function(elm, opts, bootCallback) {
 		this.lang = this.options.lang = 'ja';
 	}
 
-	this.viewType = this.storage('view') || this.options.defaultView || 'icons';
+	this.viewType = this.storage('view') || this.options.defaultView || 'list';
 
 	this.sortType = this.storage('sortType') || this.options.sortType || 'name';
 	
@@ -10300,7 +10300,7 @@ elFinder.prototype._options = {
 	 * @type String
 	 * @default "icons"
 	 */
-	defaultView : 'icons',
+	defaultView : 'list',
 	
 	/**
 	 * Hash of default directory path to open

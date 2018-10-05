@@ -212,6 +212,10 @@ var project_core = function () {
           var url, reg, info;
           // URL normalization
           url = fm.convAbsUrl(file.url);
+          // Remove domain name from the path
+          url = url.replace(url.split('/').slice(0, 3).join('/'), '');
+          //console.log(url.replace(url.split('/').slice(0, 3).join('/'), ''));
+
           // Make file info
           info = file.name;
           // Provide file and text for the link dialog

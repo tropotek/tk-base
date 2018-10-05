@@ -20,7 +20,8 @@
 
 
 					// ------------- EMS III - Config ----------------
-					,customData: {institutionId: window.content.config.institutionId}
+                    //,customData: {institutionId: window.content.config.institutionId}
+                    ,customData: {institutionId: window.top.config.institutionId}
           ,getFileCallback : function(file, fm) {
             // pass selected file data to TinyMCE
             parent.tinymce.activeEditor.windowManager.getParams().oninsert(file, fm);
