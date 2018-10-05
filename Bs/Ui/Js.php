@@ -19,8 +19,11 @@ class Js
     public static function includeGoogleMaps($template, $params = array())
     {
         $gmap = \Tk\Uri::create('//maps.googleapis.com/maps/api/js');
-        if (\Bs\Config::getInstance()->getGoogleMapKey()) {
-            $gmap->set('key', \Bs\Config::getInstance()->getGoogleMapKey());
+        $config = \Bs\Config::getInstance();
+        if ($config->get('google.map.apikey')) {
+            $gmap->set('key', $config->get('google.map.apikey'));
+        } else if ($config->getGoogleMapKey()) {
+            $gmap->set('key', $config->getGoogleMapKey());
         }
         foreach ($params as $k => $v) {
             $gmap->set($k, $v);
