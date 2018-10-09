@@ -6,6 +6,62 @@
 var project_core = function () {
   "use strict";
 
+
+  /**
+   * Creates bootstrap tabs around the \Tk\Form renderer output
+   */
+  var initTkFormTabs = function () {
+
+    function init() {
+      var form = $(this);
+      // if (arguments.length > 1) {
+      //   console.log('This is an init() event');
+      // } else {
+      //   console.log('This is on document load.');
+      // }
+
+      // create bootstrap tab elements around a tabbed form
+      form.find('.formTabs').each(function (id, tabContainer) {
+        var ul = $('<ul class="nav nav-tabs"></ul>');
+        var errorSet = false;
+
+        $(tabContainer).find('.tab-pane').each(function (i, tbox) {
+          var name = $(tbox).attr('data-name');
+          var li = $('<li class="nav-item"></li>');
+          var a = $('<a class="nav-link"></a>');
+          a.attr('href', '#' + tbox.id);
+          a.attr('data-toggle', 'tab');
+          a.text(name);
+          li.append(a);
+
+          // Check for errors
+          if ($(tbox).find('.has-error, .is-invalid').length) {
+            li.addClass('has-error');
+          }
+          if (i === 0) {
+            $(tbox).addClass('active');
+            li.addClass('active');
+            a.addClass('active');
+          }
+          ul.append(li);
+        });
+        $(tabContainer).prepend(ul);
+        $(tabContainer).find('li.has-error a');
+
+        //$(tabContainer).find('li.has-error a').tab('show'); // shows last error tab
+        $(tabContainer).find('li.has-error a').first().tab('show');   // shows first error tab
+      });
+
+      // Deselect tab
+      form.find('.formTabs li a').on('click', function (e) {
+        $(this).trigger('blur');
+      });
+    }
+    $('form').on('init', document, init).each(init);
+
+  };
+
+
   /**
    * Dual select list box renderer
    */
@@ -14,7 +70,12 @@ var project_core = function () {
       console.warn('DualListBox plugin not available.');
       return;
     }
-    $('select.tk-dualSelect, select.tk-dual-select').DualListBox();
+
+    function init() {
+      var form = $(this);
+      form.find('select.tk-dualSelect, select.tk-dual-select').DualListBox();
+    }
+    $('form').on('init', document, init).each(init);
   };
 
   /**
@@ -25,10 +86,14 @@ var project_core = function () {
       console.warn('tkFileInput plugin not available.');
       return;
     }
-    $('.tk-imageinput').tkImageInput({dataUrl: config.dataUrl, isBootstrap4: config.isBootstrap4});
-    $('.tk-multiinput').tkMultiInput({dataUrl: config.dataUrl, isBootstrap4: config.isBootstrap4});
-    $('.tk-fileinput:not(.tk-imageinput)').tkFileInput({isBootstrap4: config.isBootstrap4});
 
+    function init() {
+      var form = $(this);
+      form.find('.tk-imageinput').tkImageInput({dataUrl: config.dataUrl, isBootstrap4: config.isBootstrap4});
+      form.find('.tk-multiinput').tkMultiInput({dataUrl: config.dataUrl, isBootstrap4: config.isBootstrap4});
+      form.find('.tk-fileinput:not(.tk-imageinput)').tkFileInput({isBootstrap4: config.isBootstrap4});
+    }
+    $('form').on('init', document, init).each(init);
   };
 
   /**
@@ -46,113 +111,119 @@ var project_core = function () {
     if (!config.datepickerFormat)
       config.datepickerFormat = 'dd/mm/yyyy';
 
-    // single date
-    $('.date').datetimepicker({
-      format: config.datepickerFormat,
-      autoclose: true,
-      todayBtn: true,
-      todayHighlight: true,
-      initialDate: new Date(),
-      minView: 2,
-      maxView: 2
-    });
-    $('.datetime').datetimepicker({
-      format: config.datepickerFormat + ' hh:ii',
-      minuteStep: 15,
-      showMeridian: false,
-      showSeconds: false,
-
-      autoclose: true,
-      todayBtn: true,
-      todayHighlight: true,
-      initialDate: new Date()
-    });
-
-    $('.input-daterange').each(function () {
-      // TODO we need to fix the initialDate bug when the date format has the time.
-      var inputGroup = $(this);
-      var start = inputGroup.find('input').first();
-      var end = inputGroup.find('input').last();
-      start.datetimepicker({
-        todayHighlight: true,
+    function init() {
+      var form = $(this);
+      // single date
+      form.find('.date').datetimepicker({
         format: config.datepickerFormat,
         autoclose: true,
         todayBtn: true,
-        //initialDate: new Date(),
-        initialDate: start.val(),
+        todayHighlight: true,
+        initialDate: new Date(),
         minView: 2,
         maxView: 2
       });
-      end.datetimepicker({
-        todayHighlight: true,
-        format: config.datepickerFormat,
-        autoclose: true,
-        todayBtn: true,
-        //initialDate: new Date(),
-        initialDate: end.val(),
-        minView: 2,
-        maxView: 2
-      });
-
-      start.datetimepicker().on('changeDate', function (e) {
-        //end.datetimepicker('setStartDate', e.date);
-        var startDate = start.datetimepicker('getDate');
-        var endDate = end.datetimepicker('getDate');
-        if (startDate > endDate) {
-          end.datetimepicker('setDate', startDate);
-        }
-      });
-      end.datetimepicker().on('changeDate', function (e) {
-        //start.datetimepicker('setEndDate', e.date);
-        var startDate = start.datetimepicker('getDate');
-        var endDate = end.datetimepicker('getDate');
-        if (endDate < startDate) {
-          start.datetimepicker('setDate', endDate);
-        }
-      });
-    });
-
-
-    $('.input-datetimerange').each(function () {
-      var inputGroup = $(this);
-      var start = inputGroup.find('input').first();
-      var end = inputGroup.find('input').last();
-      start.datetimepicker({
-        todayHighlight: true,
+      form.find('.datetime').datetimepicker({
         format: config.datepickerFormat + ' hh:ii',
+        minuteStep: 15,
+        showMeridian: false,
+        showSeconds: false,
+
         autoclose: true,
         todayBtn: true,
-        //startDate: new Date(),
-        minuteStep: 5,
-        initialDate: start.val()
-      });
-      end.datetimepicker({
         todayHighlight: true,
-        format: 'dd/mm/yyyy hh:ii',
-        autoclose: true,
-        todayBtn: true,
-        //startDate: new Date(),
-        minuteStep: 5,
-        initialDate: end.val()
+        initialDate: new Date()
       });
 
-      start.datetimepicker().on('changeDate', function (e) {
-        //end.datetimepicker('setStartDate', e.date);
-        var startDate = start.datetimepicker('getDate');
-        var endDate = end.datetimepicker('getDate');
-        if (startDate > endDate) {
-          end.datetimepicker('setDate', startDate);
-        }
+      form.find('.input-daterange').each(function () {
+        // TODO we need to fix the initialDate bug when the date format has the time.
+        var inputGroup = $(this);
+        var start = inputGroup.find('input').first();
+        var end = inputGroup.find('input').last();
+        start.datetimepicker({
+          todayHighlight: true,
+          format: config.datepickerFormat,
+          autoclose: true,
+          todayBtn: true,
+          //initialDate: new Date(),
+          initialDate: start.val(),
+          minView: 2,
+          maxView: 2
+        });
+        end.datetimepicker({
+          todayHighlight: true,
+          format: config.datepickerFormat,
+          autoclose: true,
+          todayBtn: true,
+          //initialDate: new Date(),
+          initialDate: end.val(),
+          minView: 2,
+          maxView: 2
+        });
+
+        start.datetimepicker().on('changeDate', function (e) {
+          //end.datetimepicker('setStartDate', e.date);
+          var startDate = start.datetimepicker('getDate');
+          var endDate = end.datetimepicker('getDate');
+          if (startDate > endDate) {
+            end.datetimepicker('setDate', startDate);
+          }
+        });
+        end.datetimepicker().on('changeDate', function (e) {
+          //start.datetimepicker('setEndDate', e.date);
+          var startDate = start.datetimepicker('getDate');
+          var endDate = end.datetimepicker('getDate');
+          if (endDate < startDate) {
+            start.datetimepicker('setDate', endDate);
+          }
+        });
       });
-      end.datetimepicker().on('changeDate', function (e) {
-        //start.datetimepicker('setEndDate', e.date);
-        var startDate = start.datetimepicker('getDate');
-        var endDate = end.datetimepicker('getDate');
-        if (endDate < startDate) {
-          start.datetimepicker('setDate', endDate);
-        }
+
+
+      form.find('.input-datetimerange').each(function () {
+        var inputGroup = $(this);
+        var start = inputGroup.find('input').first();
+        var end = inputGroup.find('input').last();
+        start.datetimepicker({
+          todayHighlight: true,
+          format: config.datepickerFormat + ' hh:ii',
+          autoclose: true,
+          todayBtn: true,
+          //startDate: new Date(),
+          minuteStep: 5,
+          initialDate: start.val()
+        });
+        end.datetimepicker({
+          todayHighlight: true,
+          format: 'dd/mm/yyyy hh:ii',
+          autoclose: true,
+          todayBtn: true,
+          //startDate: new Date(),
+          minuteStep: 5,
+          initialDate: end.val()
+        });
+
+        start.datetimepicker().on('changeDate', function (e) {
+          //end.datetimepicker('setStartDate', e.date);
+          var startDate = start.datetimepicker('getDate');
+          var endDate = end.datetimepicker('getDate');
+          if (startDate > endDate) {
+            end.datetimepicker('setDate', startDate);
+          }
+        });
+        end.datetimepicker().on('changeDate', function (e) {
+          //start.datetimepicker('setEndDate', e.date);
+          var startDate = start.datetimepicker('getDate');
+          var endDate = end.datetimepicker('getDate');
+          if (endDate < startDate) {
+            start.datetimepicker('setDate', endDate);
+          }
+        });
       });
-    });
+
+    }
+
+    $('form').on('init', document, init).each(init);
 
   };
 
@@ -164,26 +235,28 @@ var project_core = function () {
       console.warn('CodeMirror plugin not available.');
       return;
     }
-    $('textarea.code').each(function () {
-      var el = this;
-      this.cm = CodeMirror.fromTextArea(this, $.extend({}, {
-        lineNumbers: true,
-        mode: 'javascript',
-        smartIndent: true,
-        indentUnit: 2,
-        tabSize: 2,
-        autoRefresh:true,
-        indentWithTabs: false,
-        dragDrop: false
-      }, $(this).data()) );
+    function init() {
+      var form = $(this);
+      form.find('textarea.code').each(function () {
+        var el = this;
+        this.cm = CodeMirror.fromTextArea(this, $.extend({}, {
+          lineNumbers: true,
+          mode: 'javascript',
+          smartIndent: true,
+          indentUnit: 2,
+          tabSize: 2,
+          autoRefresh: true,
+          indentWithTabs: false,
+          dragDrop: false
+        }, $(this).data()));
 
-      $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function() {
-        this.refresh();
-      }.bind(el.cm));
-    });
+        $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
+          this.refresh();
+        }.bind(el.cm));
+      });
+    }
+    $('form').on('init', document, init).each(init);
   };
-
-
 
   /**
    * Tiny MCE setup
@@ -257,40 +330,46 @@ var project_core = function () {
       browser_spellcheck: true,
       file_picker_callback: _elFinderPickerCallback
     };
-    $('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
-      var el = $(this);
-      var opts = $.extend({}, mceOpts, {});
-      if (el.hasClass('mce-min')) {
-        opts = $.extend({}, opts, {
-          plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
-          toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
-          '| bullist numlist | link unlink | removeformat code',
-          toolbar2: '',
-          toolbar3: ''
-        });
-        opts.height = el.data('height') ? el.data('height') : 200;
-      } else if (el.hasClass('mce-med')) {
-        opts = $.extend({}, opts, {
-          //plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
-          plugins: [
-            'advlist autolink autosave link image lists charmap print preview hr anchor',
-            'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
-            'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
-          ],
-          toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
-          '| bullist numlist | link unlink | removeformat',
-          toolbar2: '',
-          toolbar3: '',
-          menubar: true
-        });
 
-        opts.height = el.data('height') ? el.data('height') : 400;
-      } else {
-        opts.height = el.data('height') ? el.data('height') : 500;
-      }
-      el.tinymce(opts);
-    });
+    function init() {
+      var form = $(this);
+      form.find('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
+        var el = $(this);
+        var opts = $.extend({}, mceOpts, {});
+        if (el.hasClass('mce-min')) {
+          opts = $.extend({}, opts, {
+            plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
+            toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
+              '| bullist numlist | link unlink | removeformat code',
+            toolbar2: '',
+            toolbar3: ''
+          });
+          opts.height = el.data('height') ? el.data('height') : 200;
+        } else if (el.hasClass('mce-med')) {
+          opts = $.extend({}, opts, {
+            //plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
+            plugins: [
+              'advlist autolink autosave link image lists charmap print preview hr anchor',
+              'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
+              'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
+            ],
+            toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
+              '| bullist numlist | link unlink | removeformat',
+            toolbar2: '',
+            toolbar3: '',
+            menubar: true
+          });
+          opts.height = el.data('height') ? el.data('height') : 400;
+        } else {
+          opts.height = el.data('height') ? el.data('height') : 500;
+        }
+        el.tinymce(opts);
+      });
+    }
+    $('form').on('init', document, init).each(init);
   };
+
+
 
 
   /**
@@ -430,50 +509,6 @@ var project_core = function () {
 
 
     });
-  };
-
-
-  /**
-   * Creates bootstrap tabs around the \Tk\Form renderer output
-   */
-  var initTkFormTabs = function () {
-    // create bootstrap tab elements around a tabbed form
-    $('.formTabs').each(function (id, tabContainer) {
-      var ul = $('<ul class="nav nav-tabs"></ul>');
-      var errorSet = false;
-
-      $(tabContainer).find('.tab-pane').each(function (i, tbox) {
-        var name = $(tbox).attr('data-name');
-        var li = $('<li class="nav-item"></li>');
-        var a = $('<a class="nav-link"></a>');
-        a.attr('href', '#' + tbox.id);
-        a.attr('data-toggle', 'tab');
-        a.text(name);
-        li.append(a);
-
-        // Check for errors
-        if ($(tbox).find('.has-error, .is-invalid').length) {
-          li.addClass('has-error');
-        }
-        if (i === 0) {
-          $(tbox).addClass('active');
-          li.addClass('active');
-          a.addClass('active');
-        }
-        ul.append(li);
-      });
-      $(tabContainer).prepend(ul);
-      $(tabContainer).find('li.has-error a');
-
-      //$(tabContainer).find('li.has-error a').tab('show'); // shows last error tab
-      $(tabContainer).find('li.has-error a').first().tab('show');   // shows first error tab
-    });
-
-    // Deselect tab
-    $('.formTabs li a').on('click', function (e) {
-      $(this).trigger('blur');
-    });
-
   };
 
   /**
