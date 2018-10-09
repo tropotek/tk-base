@@ -44,6 +44,11 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
 ) ENGINE=InnoDB;
 
 
+INSERT INTO `user_permission` (`role_id`, `name`)
+VALUES
+   (1, 'perm.admin'),
+   (2, 'perm.user')
+;
 
 
 
