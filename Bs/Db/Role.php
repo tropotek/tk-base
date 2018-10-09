@@ -81,7 +81,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
      * @throws \Tk\Exception
      * @todo: not sure if this is good design, feels like it will come back to haunt us see is()
      */
-    public function __call(string $name , array $arguments)
+    public function __call($name, $arguments)
     {
         // Allow us to do isStaff, isStudent, etc and use the name of the role as the comparitor
         if (preg_match('/^is([a-zA-Z0-9_]+)/', $name, $regs)) {
@@ -111,6 +111,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
     /**
      * @param string|array $type
      * @return bool
+     * @deprecated removing roleType over time
      */
     public function hasType($type)
     {
@@ -129,6 +130,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
      * @param string $type Use the constants self::TYPE_ADMIN|self:TYPE_USER
      * @return int
      * @todo We need to remove the reliance on these constants as it influences class inheritance
+     * @deprecated removing roleType over time
      */
     public static function getDefaultRoleId($type)
     {
@@ -179,6 +181,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
 
     /**
      * @return string
+     * @deprecated removing roleType over time
      */
     public function getType()
     {

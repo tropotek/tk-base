@@ -10,16 +10,6 @@ use Tk\Db\Map\Model;
  */
 class User extends Model implements UserIface, \Tk\ValidInterface
 {
-    /**
-     * @deprecated Use Role::TYPE_ADMIN
-     */
-    const ROLE_ADMIN = 'admin';
-    /**
-     * @deprecated Use Role::TYPE_USER
-     */
-    const ROLE_USER = 'user';
-
-
 
 
     /**
@@ -249,6 +239,7 @@ class User extends Model implements UserIface, \Tk\ValidInterface
 
     /**
      * @return string
+     * @deprecated removing roleType over time
      */
     public function getRoleType()
     {
@@ -257,6 +248,7 @@ class User extends Model implements UserIface, \Tk\ValidInterface
 
     /**
      * @return boolean
+     * @deprecated use getRole()->hasType('..')
      */
     public function isAdmin()
     {
@@ -265,6 +257,7 @@ class User extends Model implements UserIface, \Tk\ValidInterface
 
     /**
      * @return boolean
+     * @deprecated use getRole()->hasType('..')
      */
     public function isUser()
     {
@@ -273,6 +266,7 @@ class User extends Model implements UserIface, \Tk\ValidInterface
 
     /**
      * @return boolean
+     * @deprecated use getRole()->hasType('..')
      */
     public function isPublic()
     {
