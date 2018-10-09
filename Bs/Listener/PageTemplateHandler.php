@@ -37,7 +37,7 @@ class PageTemplateHandler implements Subscriber
 
         if ($this->getConfig()->get('site.title')) {
             $v = '';
-            if ($config->isDebug()) {
+            if ($config->getVersion()) {
                 $v = ' <small>v' . $config->getVersion().'</small>';
             }
             $template->insertHtml($config->get('template.var.page.site-short-title'), $this->getConfig()->get('site.short.title') . $v);
