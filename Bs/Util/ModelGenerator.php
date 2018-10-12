@@ -599,9 +599,9 @@ class {classname} extends \Bs\FormIface
         \$this->get{classname}()->save();
 
         \Tk\Alert::addSuccess('Record saved!');
-        \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->get{classname}()->getId()));
-        if (\$form->getTriggeredEvent()->getName() == 'update') {
-            \$event->setRedirect(\$this->getBackUrl());
+        \$event->setRedirect(\$this->getBackUrl());
+        if (\$form->getTriggeredEvent()->getName() == 'save') {
+            \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->get{classname}()->getId()));
         }
     }
 
