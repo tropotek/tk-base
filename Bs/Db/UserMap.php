@@ -127,7 +127,7 @@ class UserMap extends Mapper
         }
 
         if (!empty($filter['roleId'])) {
-            $where .= sprintf('a.roleId = %s AND ', (int)$filter['roleId']);
+            $where .= sprintf('a.role_id = %s AND ', (int)$filter['roleId']);
         }
 
         if (!empty($filter['username'])) {

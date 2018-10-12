@@ -311,7 +311,7 @@ var project_core = function () {
     var mceOpts = {
       theme: 'modern',
       plugins: [
-        'advlist autolink autosave link image lists charmap print preview hr anchor',
+        'advlist autolink link image lists charmap print preview hr anchor',
         'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
         'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
       ],
@@ -332,6 +332,7 @@ var project_core = function () {
     };
 
     function init() {
+
       var form = $(this);
       form.find('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
         var el = $(this);
@@ -363,10 +364,13 @@ var project_core = function () {
         } else {
           opts.height = el.data('height') ? el.data('height') : 500;
         }
+        if (el.tinymce())
+            el.tinymce().remove();
         el.tinymce(opts);
       });
     }
     $('form').on('init', document, init).each(init);
+
   };
 
 
