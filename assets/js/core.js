@@ -339,7 +339,7 @@ var project_core = function () {
         var opts = $.extend({}, mceOpts, {});
         if (el.hasClass('mce-min')) {
           opts = $.extend({}, opts, {
-            plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
+            plugins: ['advlist autolink link image lists charmap hr anchor code textcolor colorpicker textpattern'],
             toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
               '| bullist numlist | link unlink | removeformat code',
             toolbar2: '',
@@ -348,9 +348,9 @@ var project_core = function () {
           opts.height = el.data('height') ? el.data('height') : 200;
         } else if (el.hasClass('mce-med')) {
           opts = $.extend({}, opts, {
-            //plugins: ['advlist autolink autosave link image lists charmap hr anchor code textcolor colorpicker textpattern'],
+            //plugins: ['advlist autolink link image lists charmap hr anchor code textcolor colorpicker textpattern'],
             plugins: [
-              'advlist autolink autosave link image lists charmap print preview hr anchor',
+              'advlist autolink link image lists charmap print preview hr anchor',
               'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
               'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
             ],
