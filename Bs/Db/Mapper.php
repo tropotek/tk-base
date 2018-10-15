@@ -138,4 +138,67 @@ abstract class Mapper extends \Tk\Db\Mapper
         return \Bs\Config::getInstance();
     }
 
+
+    /**
+     * This function creates a temporary table filled with dates
+     * This can be used in join querys for stats queries and ensures uniform date results
+     * even if there is no data on that date.
+     * <code>
+     *   SELECT calDay.date AS DATE, SUM(orders.quantity) AS total_sales
+     *     FROM orders RIGHT JOIN calDay ON (DATE(orders.order_date) = calDay.date)
+     *   GROUP BY DATE
+     *
+     * -- OR
+     *
+     * SELECT DATE($cal.`date`) as 'date', IFNULL(count($tbl.`id`), 0) as 'total'
+     * FROM `$tbl` RIGHT JOIN `$cal` ON (DATE($tbl.`created`) = DATE($cal.`date`) )
+     * WHERE ($cal.`date`
+     *     BETWEEN (SELECT MIN(DATE(`created`)) FROM `$tbl`)
+     *         AND (SELECT MAX(DATE(`created`)) FROM `$tbl`)
+     * )
+     * GROUP BY `date`
+     *
+     * </code>
+     *
+     * For interval info see ADDDATE() in the Mysql Manual.
+     * @see http://dev.mysql.com/doc/refman/5.6/en/date-and-time-functions.html#function_date-add
+     *
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     * @param string $tableName
+     * @param string $interval
+     * @throws \Tk\Db\Exception
+     * @see http://www.richnetapps.com/using-mysql-generate-daily-sales-reports-filled-gaps/
+     */
+    public function createDateTable(\DateTime $dateFrom, \DateTime $dateTo, $tableName = 'calDay', $interval = '1 DAY')
+    {
+        $df = $dateFrom->format('Y-m-d');
+        $dt = $dateTo->format('Y-m-d');
+
+        $sql = <<<SQL
+DROP TEMPORARY TABLE IF EXISTS `$tableName`;
+CREATE TEMPORARY TABLE `$tableName` (`date` DATE, `year` INT, `month` INT, `day` INT);
+DROP PROCEDURE IF EXISTS `fill_calendar`;
+SQL;
+        $this->getDb()->exec($sql);
+
+        $sql = <<<SQL
+CREATE PROCEDURE fill_calendar(start_date DATE, end_date DATE)
+BEGIN
+  DECLARE crt_date DATE;
+  SET crt_date=start_date;
+  WHILE crt_date < end_date DO
+    INSERT INTO `$tableName` VALUES(crt_date, YEAR(crt_date), MONTH(crt_date), DAY(crt_date));
+    SET crt_date = ADDDATE(crt_date, INTERVAL $interval);
+  END WHILE;
+END
+SQL;
+        $st = $this->getDb()->prepare($sql);
+        $st->execute();
+
+        $st = $this->getDb()->prepare('CALL fill_calendar(?, ?)');
+        $st->execute(array($df, $dt));
+
+    }
+
 }
