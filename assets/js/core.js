@@ -319,8 +319,9 @@ var project_core = function () {
       toolbar2: 'cut copy paste searchreplace | link unlink anchor image media | hr subscript superscript | forecolor backcolor blockquote',
       toolbar3: 'table | visualchars visualblocks ltr rtl | nonbreaking insertdatetime | charmap emoticons | print preview | removeformat fullscreen code codesample',
       content_css: [
-        '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i'
-        , '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'
+        '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+        '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+        config.siteUrl + '/vendor/ttek/tk-base/assets/js/tk-tinymce.css'
       ],
       menubar: false,
       toolbar_items_size: 'small',
@@ -336,7 +337,15 @@ var project_core = function () {
       var form = $(this);
       form.find('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
         var el = $(this);
-        var opts = $.extend({}, mceOpts, {});
+        var cfg = {statusbar: false};
+        var readonly = 0;
+        if (el.is('[readonly]') || el.is('[disabled]')) {
+          cfg.readonly = 1;
+          cfg.body_class = 'tk-disabled';
+          cfg.toolbar = false;
+          cfg.theme_advanced_disable = true;
+        }
+        var opts = $.extend({}, mceOpts, cfg);
         if (el.hasClass('mce-min')) {
           opts = $.extend({}, opts, {
             plugins: ['advlist autolink link image lists charmap hr anchor code textcolor colorpicker textpattern'],
