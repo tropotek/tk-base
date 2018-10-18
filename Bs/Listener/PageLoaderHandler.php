@@ -1,5 +1,5 @@
 <?php
-namespace App\Listener;
+namespace Bs\Listener;
 
 use Tk\Event\Subscriber;
 use Tk\Kernel\KernelEvents;
@@ -194,6 +194,25 @@ $(document).ready(function() {
   });
 });
 JS;
+
+//            $js = <<<JS
+//$(document).ready(function() {
+//  $('html').data('tkLoaderEnabled', true);
+//  $('body').addClass('loaded');
+//  $(window).on('beforeunload', function() {
+//    console.log($('html').data('tkLoaderEnabled'));
+//    if ($('html').data('tkLoaderEnabled')) {
+//      $('body').removeClass('loaded');
+//    }
+//  });
+//
+//  $('.btn-no-unload').on('click', document, function (e) {
+//    console.log($('html').data('tkLoaderEnabled'));
+//    $('html').data('tkLoaderEnabled', false);
+//    console.log($('html').data('tkLoaderEnabled'));
+//  });
+//});
+//JS;
 
             $template->appendJs($js);
 
