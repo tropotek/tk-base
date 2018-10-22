@@ -10,5 +10,14 @@ namespace Bs\Db;
 class Permission
 {
 
+    /**
+     * Default Administration permission
+     */
+    const TYPE_ADMIN = 'type.admin';
+
+    /**
+     * Default User permissions
+     */
+    const TYPE_USER = 'type.user';
 
 }
