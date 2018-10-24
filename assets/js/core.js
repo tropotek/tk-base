@@ -14,12 +14,6 @@ var project_core = function () {
 
     function init() {
       var form = $(this);
-      // if (arguments.length > 1) {
-      //   console.log('This is an init() event');
-      // } else {
-      //   console.log('This is on document load.');
-      // }
-
       // create bootstrap tab elements around a tabbed form
       form.find('.formTabs').each(function (id, tabContainer) {
         var ul = $('<ul class="nav nav-tabs"></ul>');
