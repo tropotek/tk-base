@@ -358,7 +358,7 @@ var project_core = function () {
               'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
             ],
             toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
-              '| bullist numlist | link unlink | removeformat',
+              '| bullist numlist | link unlink | removeformat code',
             toolbar2: '',
             toolbar3: '',
             menubar: true
