@@ -192,6 +192,12 @@ $(document).ready(function() {
   $(window).on('beforeunload', function() {
     $('body').removeClass('loaded');
   });
+  $(document).keyup(function(e) {
+    if (e.key === "Escape") { // escape key maps to keycode `27`
+      $('body').addClass('loaded');
+    }
+  });
+  
 });
 JS;
 
