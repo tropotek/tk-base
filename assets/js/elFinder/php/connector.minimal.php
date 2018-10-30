@@ -14,17 +14,9 @@ require dirname(__FILE__) . '/autoload.php';
 
 
 // ========== EMS III Setup =======================
-$config = \App\Config::getInstance();
 
-$dataPath = $config->getDataPath() . '/media';
-$dataUrl = $config->getDataUrl() . '/media';
-
-if (!is_dir($dataPath)) {
-    mkdir($dataPath, 0777, true);
-}
-if (!is_dir($dataPath . '/.trash/')) {
-    mkdir($dataPath . '/.trash/', 0777, true);
-}
+$config = \Bs\Config::getInstance();
+list($dataPath, $dataUrl) = $config->getElfinderPath();
 
 // ===============================================
 

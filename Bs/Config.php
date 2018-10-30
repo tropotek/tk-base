@@ -708,6 +708,26 @@ class Config extends \Tk\Config
         return $this->get('handler.crumbs');
     }
 
+
+    /**
+     * @return array
+     */
+    public function getElfinderPath()
+    {
+        $dataPath = $this->getDataPath() . '/media';
+        $dataUrl = $this->getDataUrl() . '/media';
+        if (!is_dir($dataPath)) {
+            mkdir($dataPath, 0777, true);
+        }
+        if (!is_dir($dataPath . '/.trash/')) {
+            mkdir($dataPath . '/.trash/', 0777, true);
+        }
+        return array($dataPath, $dataUrl);
+    }
+
+
+
+
     /**
      * @param string $templatePath
      * @return Page
