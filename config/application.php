@@ -53,6 +53,11 @@ $config['template.error']       = dirname($config['template.admin']) . '/error.h
 $config['template.xtpl.path']   = $config['system.template.path'] . '/app/xtpl';
 $config['template.xtpl.ext']    = '.xtpl';
 
+/*
+ * Does this html template use bootstrap4 markup
+ * Default: 'bs4'
+ */
+$config['css.framework']         = 'bs4';
 
 
 /**

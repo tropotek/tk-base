@@ -54,20 +54,23 @@ class PageTemplateHandler implements Subscriber
         if ($this->getConfig()->getUser()) {
             $role = $this->getConfig()->getUser()->getRole()->getType();
         }
+        $fw = $this->getConfig()->get('css.framework');
+        $bs4 = $this->isBootstrap4() ? 'true' : 'false';
 
         $js = <<<JS
 var config = {
   relativePath : '$rel',
-  siteUrl : '$siteUrl',
-  dataUrl : '$dataUrl',
-  templateUrl: '$templateUrl',
-  isBootstrap4: true,
-  role: '$role',
+  siteUrl :      '$siteUrl',
+  dataUrl :      '$dataUrl',
+  templateUrl:   '$templateUrl',
+  cssFramework:  '$fw',
+  isBootstrap4:  $bs4,               // deprecated Use 'cssFramework'
+  role:          '$role',
   jquery: {
-    dateFormat: 'dd/mm/yy'    
+    dateFormat:  'dd/mm/yy'    
   },
   bootstrap: {
-    dateFormat: 'dd/mm/yyyy'    
+    dateFormat:  'dd/mm/yyyy'    
   }
 };
 JS;
@@ -106,6 +109,14 @@ JS;
             $template->setChoice($config->get('template.var.page.login'));
         }
 
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBootstrap4()
+    {
+        return $this->getConfig()->get('css.framework') == 'bs4';
     }
 
     /**
