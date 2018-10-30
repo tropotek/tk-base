@@ -6,6 +6,17 @@
 var project_core = function () {
   "use strict";
 
+  /**
+   * enable the sugar utils
+   * @link https://sugarjs.com/
+   */
+  var initSugar = function () {
+    if (typeof Sugar === undefined) {
+      console.warn('Plugin not loaded: Sugar');
+      return;
+    }
+    Sugar.extend();
+  };
 
   /**
    * Creates bootstrap tabs around the \Tk\Form renderer output
@@ -61,7 +72,7 @@ var project_core = function () {
    */
   var initDualListBox = function () {
     if ($.fn.DualListBox === undefined) {
-      console.warn('DualListBox plugin not available.');
+      console.warn('Plugin not loaded: DualListBox');
       return;
     }
 
@@ -77,7 +88,7 @@ var project_core = function () {
    */
   var initTkFileInput = function () {
     if ($.fn.tkFileInput === undefined) {
-      console.warn('tkFileInput plugin not available.');
+      console.warn('Plugin not loaded: tkFileInput');
       return;
     }
 
@@ -98,7 +109,7 @@ var project_core = function () {
    */
   var initDatetimePicker = function () {
     if ($.fn.datetimepicker === undefined) {
-      console.warn('datetimepicker plugin not available.');
+      console.warn('Plugin not loaded: datetimepicker');
       return;
     }
 
@@ -107,6 +118,31 @@ var project_core = function () {
 
     function init() {
       var form = $(this);
+
+      // Single Year
+      form.find('.year').datetimepicker({
+        format: 'yyyy',
+        autoclose: true,
+        todayBtn: true,
+        todayHighlight: true,
+        initialDate: new Date(),
+        startView: 4,
+        minView: 4,
+        maxView: 4
+      });
+
+      // year Month
+      form.find('.yearmonth').datetimepicker({
+        format: 'mm/yyyy',
+        autoclose: true,
+        todayBtn: true,
+        todayHighlight: true,
+        initialDate: new Date(),
+        startView: 4,
+        minView: 3,
+        maxView: 4
+      });
+
       // single date
       form.find('.date').datetimepicker({
         format: config.datepickerFormat,
@@ -226,7 +262,7 @@ var project_core = function () {
    */
   var initCodemirror = function () {
     if (typeof CodeMirror === undefined) {
-      console.warn('CodeMirror plugin not available.');
+      console.warn('Plugin not loaded: CodeMirror');
       return;
     }
     function init() {
@@ -257,7 +293,7 @@ var project_core = function () {
    */
   var initTinymce = function () {
     if ($.fn.tinymce === undefined) {
-      console.warn('tinymce plugin not available.');
+      console.warn('Plugin not loaded: jquery.tinymce');
       return;
     }
 
@@ -554,7 +590,8 @@ var project_core = function () {
 
 
   return {
-    initDatetimePicker: initDatetimePicker
+    initSugar: initSugar
+    , initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
     , initTkFileInput: initTkFileInput
     , initDualListBox: initDualListBox

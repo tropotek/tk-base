@@ -6,6 +6,7 @@
 jQuery(function ($) {
 
   //
+  project_core.initSugar();
   project_core.initLinkBlur();
   project_core.initTkFormTabs();
   project_core.initGrowLikeAlerts();
