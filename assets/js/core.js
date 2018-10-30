@@ -11,7 +11,7 @@ var project_core = function () {
    * @link https://sugarjs.com/
    */
   var initSugar = function () {
-    if (typeof Sugar === undefined) {
+    if (typeof Sugar === 'undefined') {
       console.warn('Plugin not loaded: Sugar');
       return;
     }
@@ -261,7 +261,7 @@ var project_core = function () {
    * Code Mirror setup
    */
   var initCodemirror = function () {
-    if (typeof CodeMirror === undefined) {
+    if (typeof CodeMirror === 'undefined') {
       console.warn('Plugin not loaded: CodeMirror');
       return;
     }
