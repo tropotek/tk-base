@@ -119,6 +119,28 @@ class User extends Model implements UserIface, \Tk\ValidInterface
     }
 
     /**
+     * @return \Tk\Uri|string
+     * @throws \Exception
+     */
+    public function getImageUrl()
+    {
+        if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
+            $color = \Tk\Color::createRandom($this->getVolatileId());
+            $avatar = new \LasseRafn\InitialAvatarGenerator\InitialAvatar();
+            $img = $avatar->name($this->getName())
+                ->length(2)
+                ->fontSize(0.5)
+                ->size(96)// 48 * 2
+                ->background($color->toString(true))
+                ->color($color->getTextColor()->toString(true))
+                ->generate()
+                ->stream('png', 100);
+            return 'data:image/png;base64,' . base64_encode($img->getContents());
+        }
+        return \Tk\Uri::create('/html/app/img/user.png');
+    }
+
+    /**
      * @return string
      */
     public function getName()
