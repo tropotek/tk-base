@@ -8,7 +8,7 @@ use Tk\Db\Map\Model;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class User extends Model implements UserIface, \Tk\ValidInterface
+class User extends Model implements UserIface
 {
 
 
@@ -25,17 +25,17 @@ class User extends Model implements UserIface, \Tk\ValidInterface
     /**
      * @var string
      */
-    public $name = '';
+    public $name = 'Guest';
 
     /**
      * @var string
      */
-    public $email = '';
+    public $email = 'guest@noreply.com';
 
     /**
      * @var string
      */
-    public $username = '';
+    public $username = 'guest';
 
     /**
      * @var string
@@ -84,6 +84,11 @@ class User extends Model implements UserIface, \Tk\ValidInterface
 
 
     /**
+     * @var \Tk\Db\Data
+     */
+    private $data = null;
+
+    /**
      * @var RoleIface
      */
     private $role = null;
@@ -116,6 +121,29 @@ class User extends Model implements UserIface, \Tk\ValidInterface
             $this->hash = $this->getHash();
         }
         parent::save();
+    }
+
+    /**
+     * Get the data object
+     *
+     * @return \Tk\Db\Data
+     * @throws \Exception
+     */
+    public function getData()
+    {
+        if (!$this->data)
+            $this->data = \Tk\Db\Data::create(get_class($this), $this->getVolatileId(), 'user_data');
+        return $this->data;
+    }
+
+    /**
+     * Get the path for all file associated to this object
+     *
+     * @return string
+     */
+    public function getDataPath()
+    {
+        return sprintf('/user/%s', $this->getVolatileId());
     }
 
     /**
@@ -190,15 +218,6 @@ class User extends Model implements UserIface, \Tk\ValidInterface
     }
 
 
-    /**
-     * Get the path for all file associated to this object
-     *
-     * @return string
-     */
-    public function getDataPath()
-    {
-        return sprintf('/user/%s', $this->getVolatileId());
-    }
 
     /**
      * Get the user hash or generate one if needed
@@ -236,10 +255,11 @@ class User extends Model implements UserIface, \Tk\ValidInterface
      */
     public function setNewPassword($pwd = '')
     {
+        $config = \Bs\Config::getInstance();
         if (!$pwd) {
-            $pwd = \Tk\Config::createPassword(10);
+            $pwd = $config->createPassword(10);
         }
-        $this->password = \Bs\Config::getInstance()->hashPassword($pwd, $this);
+        $this->password = $config->hashPassword($pwd, $this);
         return $this;
     }
 

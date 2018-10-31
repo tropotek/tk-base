@@ -122,41 +122,6 @@ class Config extends \Tk\Config
         return $this->hash($pwd, $salt);
     }
 
-    /**
-     * Hash a string using the system config set algorithm
-     *
-     * @link http://php.net/manual/en/function.hash.php
-     * @param string $str
-     * @param string $salt (optional)
-     * @param string $algo Name of selected hashing algorithm (i.e. "md5", "sha256", "haval160,4", etc..)
-     *
-     * @return string
-     */
-    public function hash($str, $salt = '', $algo = 'md5')
-    {
-        if ($salt) $str .= $salt;
-        if ($this->get('hash.function'))
-            $algo = $this->get('hash.function');
-        return hash($algo, $str);
-    }
-
-    /**
-     * Create a random password
-     *
-     * @param int $length
-     * @return string
-     */
-    public function generatePassword($length = 8)
-    {
-        $chars = '234567890abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ';
-        $i = 0;
-        $password = '';
-        while ($i <= $length) {
-            $password .= $chars[mt_rand(0, strlen($chars) - 1)];
-            $i++;
-        }
-        return $password;
-    }
 
     /**
      * getAuth

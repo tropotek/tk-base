@@ -107,7 +107,7 @@ class Recover extends Iface
             return;
         }
 
-        $newPass = $this->getConfig()->generatePassword();
+        $newPass = $this->getConfig()->createPassword();
         $user->password = $this->getConfig()->hashPassword($newPass, $user);
         $user->save();
 

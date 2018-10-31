@@ -6,7 +6,7 @@ namespace Bs\Db;
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Michael Mifsud
  */
-interface UserIface
+interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
 {
 
     /**
