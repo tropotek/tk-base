@@ -233,13 +233,18 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
      * Note: Be sure to check the active status of this role
      *       and return false if this is a non active role.
      *
-     * @param string $name
+     * @param string|string[] $name
      * @return bool
      */
     public function hasPermission($name)
     {
         if (!$this->isActive()) return false;
-        return $this->getMapper()->hasPermission($this->getid(), $name);
+        if (!is_array($name)) $name = array($name);
+        foreach ($name as $p) {
+            if ($this->getMapper()->hasPermission($this->getId(), $p))
+                return true;
+        }
+        return false;
     }
 
     /**

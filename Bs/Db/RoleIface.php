@@ -63,7 +63,7 @@ interface RoleIface extends \Tk\Db\ModelInterface, \Tk\ValidInterface
      * Note: Be sure to check the active status of this role
      *       and return false if this is a non active role.
      *
-     * @param string $name
+     * @param string|string[] $name
      * @return bool
      */
     public function hasPermission($name);
