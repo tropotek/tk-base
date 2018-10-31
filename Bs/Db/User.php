@@ -25,12 +25,7 @@ class User extends Model implements UserIface
     /**
      * @var string
      */
-    public $name = 'Guest';
-
-    /**
-     * @var string
-     */
-    public $email = 'guest@noreply.com';
+    public $uid = '';
 
     /**
      * @var string
@@ -45,7 +40,32 @@ class User extends Model implements UserIface
     /**
      * @var string
      */
+    public $name = 'Guest';
+
+    /**
+     * @var string
+     */
+    public $email = 'guest@noreply.com';
+
+    /**
+     * @var string
+     */
+    public $phone = '';
+
+    /**
+     * @var string
+     */
+    public $image = '';
+
+    /**
+     * @var string
+     */
     public $notes = '';
+
+    /**
+     * @var bool
+     */
+    public $active = true;
 
     /**
      * @var \DateTime
@@ -56,16 +76,6 @@ class User extends Model implements UserIface
      * @var string
      */
     public $sessionId = '';
-
-    /**
-     * @var string
-     */
-    public $ip = '';
-
-    /**
-     * @var bool
-     */
-    public $active = true;
 
     /**
      * @var string
@@ -81,6 +91,12 @@ class User extends Model implements UserIface
      * @var \DateTime
      */
     public $created = null;
+
+
+    /**
+     * @var string
+     */
+    public $ip = '';
 
 
     /**
@@ -117,9 +133,8 @@ class User extends Model implements UserIface
      */
     public function save()
     {
-        if (!$this->hash) {
-            $this->hash = $this->getHash();
-        }
+        $this->getHash();
+        $this->getData()->save();
         parent::save();
     }
 
@@ -152,7 +167,9 @@ class User extends Model implements UserIface
      */
     public function getImageUrl()
     {
-        if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
+        if ($this->image) {
+            return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->getDataPath() . $this->image);
+        } else if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
             $color = \Tk\Color::createRandom($this->getVolatileId());
             $avatar = new \LasseRafn\InitialAvatarGenerator\InitialAvatar();
             $img = $avatar->name($this->getName())
@@ -166,6 +183,40 @@ class User extends Model implements UserIface
             return 'data:image/png;base64,' . base64_encode($img->getContents());
         }
         return \Tk\Uri::create('/html/app/img/user.png');
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getRoleId()
+    {
+        return $this->roleId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUid()
+    {
+        return $this->uid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * Return the users hashed password
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
@@ -187,18 +238,17 @@ class User extends Model implements UserIface
     /**
      * @return string
      */
-    public function getUsername()
+    public function getPhone()
     {
-        return $this->username;
+        return $this->phone;
     }
 
     /**
-     * Return the users hashed password
      * @return string
      */
-    public function getPassword()
+    public function getImage()
     {
-        return $this->password;
+        return $this->image;
     }
 
     /**
@@ -210,11 +260,11 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @return int
+     * @return \DateTime|null
      */
-    public function getRoleId()
+    public function getLastLogin()
     {
-        return $this->roleId;
+        return $this->lastLogin;
     }
 
 
@@ -279,6 +329,54 @@ class User extends Model implements UserIface
         return $this->role;
     }
 
+
+    /**
+     * Validate this object's current state and return an array
+     * with error messages. This will be useful for validating
+     * objects for use within forms.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function validate()
+    {
+        $errors = array();
+
+        if (!$this->roleId) {
+            $errors['roleId'] = 'Invalid field roleId value';
+        }
+
+        if (!$this->username) {
+            $errors['username'] = 'Invalid field username value';
+        } else {
+            $dup = UserMap::create()->findByUsername($this->username);
+            if ($dup && $dup->getId() != $this->getId()) {
+                $errors['username'] = 'This username is already in use';
+            }
+        }
+        if ($this->email) {
+            if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = 'Please enter a valid email address';
+            } else {
+                $dup = UserMap::create()->findByEmail($this->email);
+                vd($dup);
+                if ($dup && $dup->getId() != $this->getId()) {
+                    $errors['email'] = 'This email is already in use';
+                }
+            }
+        }
+        return $errors;
+    }
+
+
+
+
+
+
+
+
+
+
     /**
      * @return string
      * @deprecated removing roleType over time
@@ -330,55 +428,5 @@ class User extends Model implements UserIface
             }
         }
         return false;
-    }
-
-    /**
-     * Return the users home|dashboard relative url
-     *
-     * @return \Tk\Uri
-     * @deprecated Use \Bs\Config::getInstance()->getUserHomeUrl($user)
-     */
-    public function getHomeUrl()
-    {
-        return \Bs\Config::getInstance()->getUserHomeUrl($this);
-    }
-
-
-    /**
-     * Validate this object's current state and return an array
-     * with error messages. This will be useful for validating
-     * objects for use within forms.
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public function validate()
-    {
-        $errors = array();
-
-        if (!$this->roleId) {
-            $errors['roleId'] = 'Invalid field roleId value';
-        }
-
-        if (!$this->username) {
-            $errors['username'] = 'Invalid field username value';
-        } else {
-            $dup = UserMap::create()->findByUsername($this->username);
-            if ($dup && $dup->getId() != $this->getId()) {
-                $errors['username'] = 'This username is already in use';
-            }
-        }
-        if ($this->email) {
-            if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = 'Please enter a valid email address';
-            } else {
-                $dup = UserMap::create()->findByEmail($this->email);
-                vd($dup);
-                if ($dup && $dup->getId() != $this->getId()) {
-                    $errors['email'] = 'This email is already in use';
-                }
-            }
-        }
-        return $errors;
     }
 }

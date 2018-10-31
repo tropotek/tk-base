@@ -24,13 +24,17 @@ class UserMap extends Mapper
             $this->dbMap = new \Tk\DataMap\DataMap();
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
             $this->dbMap->addPropertyMap(new Db\Integer('roleId', 'role_id'));
-            $this->dbMap->addPropertyMap(new Db\Text('name'));
-            $this->dbMap->addPropertyMap(new Db\Text('email'));
+            $this->dbMap->addPropertyMap(new Db\Text('uid'));
             $this->dbMap->addPropertyMap(new Db\Text('username'));
             $this->dbMap->addPropertyMap(new Db\Text('password'));
-            $this->dbMap->addPropertyMap(new Db\Date('lastLogin', 'last_login'));
+            $this->dbMap->addPropertyMap(new Db\Text('name'));
+            $this->dbMap->addPropertyMap(new Db\Text('email'));
+            $this->dbMap->addPropertyMap(new Db\Text('phone'));
+            $this->dbMap->addPropertyMap(new Db\Text('image'));
             $this->dbMap->addPropertyMap(new Db\Text('notes'));
             $this->dbMap->addPropertyMap(new Db\Boolean('active'));
+            $this->dbMap->addPropertyMap(new Db\Date('lastLogin', 'last_login'));
+            $this->dbMap->addPropertyMap(new Db\Text('sessionId', 'session_id'));
             $this->dbMap->addPropertyMap(new Db\Text('hash'));
             $this->dbMap->addPropertyMap(new Db\Date('modified'));
             $this->dbMap->addPropertyMap(new Db\Date('created'));
@@ -49,10 +53,13 @@ class UserMap extends Mapper
             $this->formMap = new \Tk\DataMap\DataMap();
             $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
             $this->formMap->addPropertyMap(new Form\Integer('roleId'));
-            $this->formMap->addPropertyMap(new Form\Text('name'));
-            $this->formMap->addPropertyMap(new Form\Text('email'));
+            $this->formMap->addPropertyMap(new Form\Text('uid'));
             $this->formMap->addPropertyMap(new Form\Text('username'));
             $this->formMap->addPropertyMap(new Form\Text('password'));
+            $this->formMap->addPropertyMap(new Form\Text('name'));
+            $this->formMap->addPropertyMap(new Form\Text('email'));
+            $this->formMap->addPropertyMap(new Form\Text('phone'));
+            $this->formMap->addPropertyMap(new Form\Text('image'));
             $this->formMap->addPropertyMap(new Form\Text('notes'));
             $this->formMap->addPropertyMap(new Form\Boolean('active'));
         }
@@ -114,9 +121,11 @@ class UserMap extends Mapper
         if (!empty($filter['keywords'])) {
             $kw = '%' . $this->escapeString($filter['keywords']) . '%';
             $w = '';
+            $w .= sprintf('a.uid LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.username LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.phone LIKE %s OR ', $this->quote($kw));
             if (is_numeric($filter['keywords'])) {
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
@@ -132,7 +141,7 @@ class UserMap extends Mapper
 
         if (!empty($filter['username'])) {
             $where .= sprintf('a.username = %s AND ', $this->getDb()->quote($filter['username']));
-            if (!empty($filter['password'])) {
+            if (!empty($filter['password'])) { // ??? Is this insecure ???
                 $where .= sprintf('a.password = %s AND ', $this->getDb()->quote($filter['password']));
             }
         }

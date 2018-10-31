@@ -9,20 +9,16 @@ namespace Bs\Db;
 interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
 {
 
+
     /**
      * @return int
      */
-    public function getId();
+    public function getRoleId();
 
     /**
-     * @return string
+     * @return int
      */
-    public function getHash();
-
-    /**
-     * @return string
-     */
-    public function getName();
+    public function getUid();
 
     /**
      * @return string
@@ -38,12 +34,37 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     /**
      * @return string
      */
+    public function getName();
+
+    /**
+     * @return string
+     */
     public function getEmail();
 
     /**
-     * @return int
+     * @return string
      */
-    public function getRoleId();
+    public function getPhone();
+
+    /**
+     * @return string
+     */
+    public function getImage();
+
+    /**
+     * @return string
+     */
+    public function getImageUrl();
+
+    /**
+     * @return bool
+     */
+    public function isActive();
+
+    /**
+     * @return string
+     */
+    public function getHash();
 
     /**
      * @return RoleIface
@@ -51,16 +72,17 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     public function getRole();
 
     /**
-     * NOTE: All old $user->getRole() calls changed to $user->getRoleType() or $user->getRole()->getType()
-     * @return string
+     * @return \DateTime|null
      */
-    public function getRoleType();
+    public function getLastLogin();
+
+
 
     /**
-     * @return bool
+     * NOTE: All old $user->getRole() calls changed to $user->getRoleType() or $user->getRole()->getType()
+     * @return string
+     * @deprecated I want to eventually use the permission system not this function
      */
-    public function isActive();
-
-
+    public function getRoleType();
 
 }
