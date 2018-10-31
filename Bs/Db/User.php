@@ -340,6 +340,31 @@ class User extends Model implements UserIface
 
 
     /**
+     * @return boolean
+     */
+    public function isAdmin()
+    {
+        return $this->getRole()->hasPermission(Permission::TYPE_ADMIN);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUser()
+    {
+        return $this->getRole()->hasPermission(Permission::TYPE_USER);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPublic()
+    {
+        return !$this->getRole();
+    }
+
+
+    /**
      * Validate this object's current state and return an array
      * with error messages. This will be useful for validating
      * objects for use within forms.
@@ -385,36 +410,6 @@ class User extends Model implements UserIface
     }
 
 
-
-
-    /**
-     * @return boolean
-     * @deprecated use getRole()->hasType('..')
-     */
-    public function isAdmin()
-    {
-        return $this->getRole()->hasPermission(Permission::TYPE_ADMIN);
-        //return $this->getRole()->hasType(Role::TYPE_ADMIN);
-    }
-
-    /**
-     * @return boolean
-     * @deprecated use getRole()->hasType('..')
-     */
-    public function isUser()
-    {
-        return $this->getRole()->hasPermission(Permission::TYPE_USER);
-        //return $this->getRole()->hasType(Role::TYPE_USER);
-    }
-
-    /**
-     * @return boolean
-     * @deprecated use getRole()->hasType('..')
-     */
-    public function isPublic()
-    {
-        return (!$this->getRole() || !$this->getRole()->getType() || $this->getRole()->hasType(Role::TYPE_PUBLIC));
-    }
 
 
 

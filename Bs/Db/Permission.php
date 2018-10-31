@@ -20,4 +20,5 @@ class Permission
      */
     const TYPE_USER = 'type.user';
 
+
 }
