@@ -155,10 +155,12 @@ class User extends Model implements UserIface
 
     /**
      * @param string|string[] $permission
+     * @return bool
      */
     public function hasPermission($permission)
     {
-
+        if (!$this->getRole()) return false;
+        return $this->getRole()->hasPermission($permission);
     }
 
     /**
