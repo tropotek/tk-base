@@ -126,7 +126,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
     /**
      * @param string|array $type
      * @return bool
-     * @deprecated removing roleType over time
+     * @deprecated removing roleType over time Use hasPermission
      */
     public function hasType($type)
     {
@@ -230,17 +230,16 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
     }
 
     /**
-     * Note: Be sure to check the active status of this role
-     *       and return false if this is a non active role.
+     * Check if this Role has the requested permission
      *
-     * @param string|string[] $name
+     * @param string|string[] $permission
      * @return bool
      */
-    public function hasPermission($name)
+    public function hasPermission($permission)
     {
         if (!$this->isActive()) return false;
-        if (!is_array($name)) $name = array($name);
-        foreach ($name as $p) {
+        if (!is_array($permission)) $permission = array($permission);
+        foreach ($permission as $p) {
             if ($this->getMapper()->hasPermission($this->getId(), $p))
                 return true;
         }

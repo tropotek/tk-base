@@ -138,6 +138,30 @@ class User extends Model implements UserIface
     }
 
     /**
+     * @return RoleIface
+     */
+    public function getRole()
+    {
+        if (!$this->role) {
+            try {
+                $this->role = \Bs\Config::getInstance()->getRoleMapper()->find($this->roleId);
+            } catch (\Exception $e) {
+                \Tk\Log::warning('No valid role found for UID: ' . $this->getId());
+                $this->role = new Role();
+            }
+        }
+        return $this->role;
+    }
+
+    /**
+     * @param string|string[] $permission
+     */
+    public function hasPermission($permission)
+    {
+
+    }
+
+    /**
      * Get the data object
      *
      * @return \Tk\Db\Data
@@ -312,22 +336,6 @@ class User extends Model implements UserIface
         return $this;
     }
 
-    /**
-     * @return RoleIface
-     */
-    public function getRole()
-    {
-        if (!$this->role) {
-            try {
-                $this->role = \Bs\Config::getInstance()->getRoleMapper()->find($this->roleId);
-            } catch (\Exception $e) {
-                \Tk\Log::warning('No valid role found for UID: ' . $this->getId());
-                $this->role = new Role();
-            }
-        }
-        return $this->role;
-    }
-
 
     /**
      * Validate this object's current state and return an array
@@ -341,8 +349,16 @@ class User extends Model implements UserIface
     {
         $errors = array();
 
+
         if (!$this->roleId) {
-            $errors['roleId'] = 'Invalid field roleId value';
+            $errors['roleId'] = 'Invalid field role value';
+        } else {
+            try {
+                $role = $this->getRole();
+                if (!$role) throw new \Tk\Exception('Please select a valid role.');
+            } catch (\Exception $e) {
+                $errors['roleId'] = $e->getMessage();
+            }
         }
 
         if (!$this->username) {
@@ -365,6 +381,9 @@ class User extends Model implements UserIface
         }
         return $errors;
     }
+
+
+
 
     /**
      * @return boolean
