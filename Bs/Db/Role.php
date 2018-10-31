@@ -12,15 +12,11 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
 {
 
     // TODO: We need to deprecate these constants as they are influencing the app design
-
     const DEFAULT_TYPE_ADMIN = 1;
     const DEFAULT_TYPE_USER = 2;
-
     const TYPE_ADMIN    = 'admin';
     const TYPE_USER     = 'user';
     const TYPE_PUBLIC   = 'public';
-
-
 
 
     /**
@@ -73,6 +69,25 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
         $this->created = new \DateTime();
     }
 
+    /**
+     * Get a default ole ID from a Type
+     *
+     * @param string $type Use the constants self::TYPE_ADMIN|self:TYPE_USER
+     * @return int
+     * @todo We need to remove the reliance on these constants as it influences class inheritance
+     * @deprecated removing roleType over time
+     */
+    public static function getDefaultRoleId($type)
+    {
+        switch($type) {
+            case self::TYPE_ADMIN:
+                return self::DEFAULT_TYPE_ADMIN;
+            case self::TYPE_USER:
+                return self::DEFAULT_TYPE_USER;
+        }
+        return 0;
+    }
+
 
     /**
      * @param string $name
@@ -122,25 +137,6 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
             }
         }
         return false;
-    }
-
-    /**
-     * Get a default ole ID from a Type
-     *
-     * @param string $type Use the constants self::TYPE_ADMIN|self:TYPE_USER
-     * @return int
-     * @todo We need to remove the reliance on these constants as it influences class inheritance
-     * @deprecated removing roleType over time
-     */
-    public static function getDefaultRoleId($type)
-    {
-        switch($type) {
-            case self::TYPE_ADMIN:
-                return self::DEFAULT_TYPE_ADMIN;
-            case self::TYPE_USER:
-                return self::DEFAULT_TYPE_USER;
-        }
-        return 0;
     }
 
     /**

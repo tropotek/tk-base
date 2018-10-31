@@ -372,7 +372,7 @@ class User extends Model implements UserIface
      */
     public function isAdmin()
     {
-        return $this->getRole()->hasPermission(Permission::PERM_ADMIN);
+        return $this->getRole()->hasPermission(Permission::TYPE_ADMIN);
         //return $this->getRole()->hasType(Role::TYPE_ADMIN);
     }
 
