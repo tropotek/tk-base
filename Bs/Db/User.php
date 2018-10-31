@@ -92,7 +92,6 @@ class User extends Model implements UserIface
      */
     public $created = null;
 
-
     /**
      * @var string
      */
@@ -359,7 +358,6 @@ class User extends Model implements UserIface
                 $errors['email'] = 'Please enter a valid email address';
             } else {
                 $dup = UserMap::create()->findByEmail($this->email);
-                vd($dup);
                 if ($dup && $dup->getId() != $this->getId()) {
                     $errors['email'] = 'This email is already in use';
                 }
@@ -367,11 +365,6 @@ class User extends Model implements UserIface
         }
         return $errors;
     }
-
-
-
-
-
 
 
 
@@ -392,6 +385,7 @@ class User extends Model implements UserIface
      */
     public function isAdmin()
     {
+        //return $this->getRole()->hasPermission(Permission::PERM_ADMIN);
         return $this->getRole()->hasType(Role::TYPE_ADMIN);
     }
 
@@ -401,6 +395,7 @@ class User extends Model implements UserIface
      */
     public function isUser()
     {
+        //return $this->getRole()->hasPermission(Permission::TYPE_USER);
         return $this->getRole()->hasType(Role::TYPE_USER);
     }
 

@@ -110,6 +110,19 @@ class UserMap extends Mapper
     /**
      * @param array $filter
      * @param Tool $tool
+     * @return ArrayObject|User[]
+     * @throws \Exception
+     */
+    public function findFiltered($filter = array(), $tool = null)
+    {
+        $this->makeQuery($filter, $tool, $where, $from);
+        $res = $this->selectFrom($from, $where, $tool);
+        return $res;
+    }
+
+    /**
+     * @param array $filter
+     * @param Tool $tool
      * @param string $where
      * @param string $from
      * @return $this
@@ -178,19 +191,6 @@ class UserMap extends Mapper
         }
 
         return $this;
-    }
-
-    /**
-     * @param array $filter
-     * @param Tool $tool
-     * @return ArrayObject|User[]
-     * @throws \Exception
-     */
-    public function findFiltered($filter = array(), $tool = null)
-    {
-        $this->makeQuery($filter, $tool, $where, $from);
-        $res = $this->selectFrom($from, $where, $tool);
-        return $res;
     }
 
 }
