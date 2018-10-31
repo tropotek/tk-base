@@ -366,27 +366,14 @@ class User extends Model implements UserIface
         return $errors;
     }
 
-
-
-
-
-    /**
-     * @return string
-     * @deprecated removing roleType over time
-     */
-    public function getRoleType()
-    {
-        return $this->getRole()->getType();
-    }
-
     /**
      * @return boolean
      * @deprecated use getRole()->hasType('..')
      */
     public function isAdmin()
     {
-        //return $this->getRole()->hasPermission(Permission::PERM_ADMIN);
-        return $this->getRole()->hasType(Role::TYPE_ADMIN);
+        return $this->getRole()->hasPermission(Permission::PERM_ADMIN);
+        //return $this->getRole()->hasType(Role::TYPE_ADMIN);
     }
 
     /**
@@ -395,8 +382,8 @@ class User extends Model implements UserIface
      */
     public function isUser()
     {
-        //return $this->getRole()->hasPermission(Permission::TYPE_USER);
-        return $this->getRole()->hasType(Role::TYPE_USER);
+        return $this->getRole()->hasPermission(Permission::TYPE_USER);
+        //return $this->getRole()->hasType(Role::TYPE_USER);
     }
 
     /**
@@ -409,6 +396,19 @@ class User extends Model implements UserIface
     }
 
 
+
+
+
+    /**
+     * @return string
+     * @deprecated removing roleType over time
+     */
+    public function getRoleType()
+    {
+        \Tk\Log::warning('Deprecated: User::getRoleType()');
+        return $this->getRole()->getType();
+    }
+
     /**
      * @param string|array $role
      * @return boolean
@@ -416,6 +416,7 @@ class User extends Model implements UserIface
      */
     public function hasRole($role)
     {
+        \Tk\Log::warning('Deprecated: User::hasRole($role)');
         if (!is_array($role)) $role = array($role);
         foreach ($role as $r) {
             if ($r == $this->getRoleType() || preg_match('/'.preg_quote($r).'/', $this->getRoleType())) {
