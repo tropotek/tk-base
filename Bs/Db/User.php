@@ -132,6 +132,7 @@ class User extends Model implements UserIface
      */
     public function save()
     {
+        if ($this->isPublic()) return;
         $this->getHash();
         $this->getData()->save();
         parent::save();
@@ -151,16 +152,6 @@ class User extends Model implements UserIface
             }
         }
         return $this->role;
-    }
-
-    /**
-     * @param string|string[] $permission
-     * @return bool
-     */
-    public function hasPermission($permission)
-    {
-        if (!$this->getRole()) return false;
-        return $this->getRole()->hasPermission($permission);
     }
 
     /**
@@ -338,6 +329,16 @@ class User extends Model implements UserIface
         return $this;
     }
 
+    /**
+     * @param string|string[] $permission
+     * @return bool
+     */
+    public function hasPermission($permission)
+    {
+        if (!$this->getRole()) return false;
+        return $this->getRole()->hasPermission($permission);
+    }
+
 
     /**
      * @return boolean
@@ -426,15 +427,15 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string|array $role
+     * @param string|array $roleType
      * @return boolean
      * @deprecated Use getRole()->hasType() or getRoleType()
      */
-    public function hasRole($role)
+    public function hasRole($roleType)
     {
         \Tk\Log::warning('Deprecated: User::hasRole($role)');
-        if (!is_array($role)) $role = array($role);
-        foreach ($role as $r) {
+        if (!is_array($roleType)) $roleType = array($roleType);
+        foreach ($roleType as $r) {
             if ($r == $this->getRoleType() || preg_match('/'.preg_quote($r).'/', $this->getRoleType())) {
                 return true;
             }
