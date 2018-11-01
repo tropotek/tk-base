@@ -421,7 +421,7 @@ class User extends Model implements UserIface
      */
     public function getRoleType()
     {
-        \Tk\Log::warning('Deprecated: User::getRoleType()');
+        //\Tk\Log::warning('Deprecated: User::getRoleType()');
         return $this->getRole()->getType();
     }
 

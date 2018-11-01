@@ -588,6 +588,7 @@ class Config extends \Tk\Config
      */
     public function getAvailableUserRoleTypes()
     {
+
         return \Tk\ObjectUtil::getClassConstants($this->createRole(), 'TYPE');
     }
 
