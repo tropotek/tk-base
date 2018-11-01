@@ -75,9 +75,9 @@ class AuthHandler implements Subscriber
             if (!$config->getUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
-            $role = $config->getUser()->getRole()->getType();
+            $role = $config->getUser()->getRoleType();
             if ($role != $urlRole) {   // Finally check if the use has access to the url
-                \Tk\Alert::addWarning('You do not have access to the requested page.');
+                \Tk\Alert::addWarning('1000: You do not have access to the requested page.');
                 $config->getUserHomeUrl($config->getUser())->redirect();
             }
         }
@@ -120,7 +120,6 @@ class AuthHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         $result = $event->getResult();
-
         if (!$result || !$result->isValid()) return;
 
         /* @var \Bs\Db\User $user */

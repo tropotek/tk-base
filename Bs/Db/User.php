@@ -345,7 +345,7 @@ class User extends Model implements UserIface
      */
     public function isAdmin()
     {
-        return $this->getRole()->hasPermission(Permission::TYPE_ADMIN);
+        return $this->hasPermission(Permission::TYPE_ADMIN);
     }
 
     /**
@@ -353,7 +353,7 @@ class User extends Model implements UserIface
      */
     public function isUser()
     {
-        return $this->getRole()->hasPermission(Permission::TYPE_USER);
+        return $this->hasPermission(Permission::TYPE_USER);
     }
 
     /**
@@ -423,6 +423,7 @@ class User extends Model implements UserIface
     public function getRoleType()
     {
         //\Tk\Log::warning('Deprecated: User::getRoleType()');
+        if (!$this->getRole()) return '';
         return $this->getRole()->getType();
     }
 
