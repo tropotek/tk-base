@@ -581,7 +581,6 @@ class Config extends \Tk\Config
     public function getAvailableUserRoleTypes()
     {
         $a = $this->getRoleMapper()->findAllTypes();
-        vd($a);
         return $a;
     }
 
