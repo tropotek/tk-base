@@ -410,12 +410,12 @@ class Config extends \Tk\Config
      * @return string
      * @deprecated
      */
-    public function getPageRole()
-    {
-        $role = $this->getRequest()->getAttribute('role');
-        if (is_array($role)) $role = current($role);
-        return $role;
-    }
+//    public function getPageRole()
+//    {
+//        $role = $this->getRequest()->getAttribute('role');
+//        if (is_array($role)) $role = current($role);
+//        return $role;
+//    }
 
     /**
      * @param string $formId
