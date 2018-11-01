@@ -46,7 +46,6 @@ class Page extends \Tk\Controller\Page
      * Create the default template path using the url role if available (see Config)
      *
      * @return string
-     * @todo Would like to deprecate this method to remove the role.type value from the internals of the system
      */
     protected function makeDefaultTemplatePath()
     {
