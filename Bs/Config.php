@@ -664,7 +664,7 @@ class Config extends \Tk\Config
         }
         return $this->get('handler.crumbs');
     }
-    
+
     /**
      * @return array
      */
