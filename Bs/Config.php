@@ -574,7 +574,6 @@ class Config extends \Tk\Config
         return \Tk\Uri::create('/');
     }
 
-
     /**
      * @return array
      */
@@ -665,8 +664,7 @@ class Config extends \Tk\Config
         }
         return $this->get('handler.crumbs');
     }
-
-
+    
     /**
      * @return array
      */
@@ -682,9 +680,6 @@ class Config extends \Tk\Config
         }
         return array($dataPath, $dataUrl);
     }
-
-
-
 
     /**
      * @param string $templatePath
