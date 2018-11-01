@@ -574,21 +574,15 @@ class Config extends \Tk\Config
         return \Tk\Uri::create('/');
     }
 
-    /**
-     * @return array
-     * @deprecated use getAvailableUserRoleTypes()
-     */
-    public function getAvailableUserRoles()
-    {
-        return $this->getAvailableUserRoleTypes();
-    }
 
     /**
      * @return array
      */
     public function getAvailableUserRoleTypes()
     {
-        return \Tk\ObjectUtil::getClassConstants($this->createRole(), 'TYPE');
+        $a = $this->getRoleMapper()->findAllTypes();
+        vd($a);
+        return $a;
     }
 
     /**

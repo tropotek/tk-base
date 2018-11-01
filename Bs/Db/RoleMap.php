@@ -51,6 +51,36 @@ class RoleMap extends Mapper
         return $this->formMap;
     }
 
+    /**
+     * Get a list of all the available roleTypes from the role table
+     */
+    public function findAllTypes()
+    {
+        $arr = array();
+        try {
+            $sql = sprintf('SELECT DISTINCT type FROM %s', $this->quoteTable($this->getTable()));
+            $stm = $this->getDb()->query($sql);
+            $arr = $stm->fetchAll(\PDO::FETCH_ASSOC | \PDO::FETCH_COLUMN);
+        } catch (\Exception $e) { \Tk\Log::warning($e->getMessage()); }
+        return $arr;
+    }
+
+    /**
+     * @param array $filter
+     * @param Tool $tool
+     * @return ArrayObject|Role[]
+     * @throws \Exception
+     */
+    public function findFiltered($filter = array(), $tool = null)
+    {
+        $this->makeQuery($filter, $tool, $where, $from);
+        if ($where) {
+            $where = rtrim($where, 'AND ');
+        }
+        $res = $this->selectFrom($from, $where, $tool);
+        return $res;
+    }
+
 
     /**
      * @param array $filter
@@ -112,22 +142,6 @@ class RoleMap extends Mapper
         return $this;
     }
 
-    /**
-     * @param array $filter
-     * @param Tool $tool
-     * @return ArrayObject|Role[]
-     * @throws \Exception
-     */
-    public function findFiltered($filter = array(), $tool = null)
-    {
-        $this->makeQuery($filter, $tool, $where, $from);
-        if ($where) {
-            $where = rtrim($where, 'AND ');
-        }
-        $res = $this->selectFrom($from, $where, $tool);
-        return $res;
-    }
-
     // --------------------------------------------
 
 
@@ -138,6 +152,7 @@ class RoleMap extends Mapper
      * @param int $roleId
      * @param string $name
      * @return bool
+     * @throws \Exception
      */
     public function hasPermission($roleId, $name)
     {
@@ -149,6 +164,7 @@ class RoleMap extends Mapper
     /**
      * @param int $roleId
      * @param string $name
+     * @throws \Exception
      */
     public function addPermission($roleId, $name)
     {
@@ -161,6 +177,7 @@ class RoleMap extends Mapper
     /**
      * @param int $roleId
      * @param string $name
+     * @throws \Exception
      */
     public function removePermission($roleId, $name = null)
     {
@@ -178,6 +195,7 @@ class RoleMap extends Mapper
     /**
      * @param int $roleId
      * @return array
+     * @throws \Exception
      */
     public function getPermissions($roleId)
     {
