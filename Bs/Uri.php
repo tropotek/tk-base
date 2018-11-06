@@ -25,14 +25,13 @@ class Uri extends \Tk\Uri
     {
         if ($spec instanceof \Tk\Uri)
             return clone $spec;
-
+        $home = '';
         if (is_string($user))
             $home = $user;
         if (!$user)
             $user = Config::getInstance()->getUser();
         if ($user instanceof \Bs\Db\UserIface)
             $home = '/' . $user->getRoleType();
-
         return new static($home . '/' . trim($spec,'/'));
     }
 
