@@ -18,7 +18,7 @@ class Uri extends \Tk\Uri
      * </code>
      *
      * @param null|string|\Tk\Uri $spec
-     * @param null|\Bs\Db\User $user
+     * @param null|\Bs\Db\User|string $user
      * @return string|\Tk\Uri|static
      */
     public static function createHomeUrl($spec = null, $user = null)
@@ -26,18 +26,13 @@ class Uri extends \Tk\Uri
         if ($spec instanceof \Tk\Uri)
             return clone $spec;
 
-        $home = $user;
-        if (!$user) {
+        if (is_string($user))
+            $home = $user;
+        if (!$user)
             $user = Config::getInstance()->getUser();
-        }
-        if ($user instanceof \Bs\Db\UserIface) {
-            $home = '/'.$user->getRoleType();
-//            $home = Config::getInstance()->getUserHomeUrl($user);
-//            if($home instanceof \Tk\Uri) {
-//                $home = $home->getRelativePath();
-//            }
-//            $home = rtrim(dirname($home), '/');
-        }
+        if ($user instanceof \Bs\Db\UserIface)
+            $home = '/' . $user->getRoleType();
+
         return new static($home . '/' . trim($spec,'/'));
     }
 

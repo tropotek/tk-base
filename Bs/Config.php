@@ -565,13 +565,7 @@ class Config extends \Tk\Config
     public function getUserHomeUrl($user = null)
     {
         if (!$user) $user = $this->getUser();
-        if ($user) {
-            if ($user->isAdmin())
-                return \Tk\Uri::create('/admin/index.html');
-            if ($user->isUser())
-                return \Tk\Uri::create('/user/index.html');
-        }
-        return \Tk\Uri::create('/');
+        return \Bs\Uri::createHomeUrl('/index.html', $user);
     }
 
     /**

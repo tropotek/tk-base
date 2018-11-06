@@ -138,11 +138,12 @@ class MasqueradeHandler implements Subscriber
         // Simulates an AuthAdapter authenticate() method
         $config->getAuth()->getStorage()->write($config->getUserIdentity($msqUser));
 
-        // Trigger the login success event for corect redirect
+        // Trigger the login success event for correct redirect
+        $url = $config->getUserHomeUrl($msqUser);
         $e = new AuthEvent();
         $result = new \Tk\Auth\Result(\Tk\Auth\Result::SUCCESS, $config->getUserIdentity($msqUser));
         $e->setResult($result);
-        $e->setRedirect($config->getUserHomeUrl($msqUser));
+        $e->setRedirect($url);
         $config->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e);
         if ($e->getRedirect())
             $e->getRedirect()->redirect();
