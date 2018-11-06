@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.116 [2018-11-07]:
+-------------------------------
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+  - Rearanged a lot of javascript files to make it more maintainable
+
+
 Ver 1.0.114 [2018-10-26]:
 -------------------------------
   - Merge branch 'master' of https://github.com/tropotek/tk-base
