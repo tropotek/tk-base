@@ -3,23 +3,23 @@ $sitePath = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FI
 $siteUrl = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname($_SERVER['PHP_SELF']))))))));
 require $sitePath . '/_prepend.php';
 
-//error_reporting(0); // Set E_ALL for debuging
-
-// load composer autoload before load elFinder autoload If you need composer
-//require './vendor/autoload.php';
+//error_reporting(0); // Set E_ALL for debugging
 
 // elFinder autoload
-//require './autoload.php';
 require dirname(__FILE__) . '/autoload.php';
 
 
 // ========== EMS III Setup =======================
 
 $config = \Bs\Config::getInstance();
-list($dataPath, $dataUrl) = $config->getElfinderPath();
+$customDataPath = '';
+if (isset($_REQUEST['path'])) {
+    $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
+}
+list($dataPath, $dataUrl) = $config->getElfinderPath($customDataPath);
 
 // ===============================================
-
+//vd($_REQUEST, $dataPath, $dataUrl);
 
 
 

@@ -660,12 +660,13 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @param string $customDataPath
      * @return array
      */
-    public function getElfinderPath()
+    public function getElfinderPath($customDataPath = '/media')
     {
-        $dataPath = $this->getDataPath() . '/media';
-        $dataUrl = $this->getDataUrl() . '/media';
+        $dataPath = $this->getDataPath() . $customDataPath;
+        $dataUrl = $this->getDataUrl() . $customDataPath;
         if (!is_dir($dataPath)) {
             mkdir($dataPath, 0777, true);
         }

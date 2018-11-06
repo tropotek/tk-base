@@ -303,13 +303,13 @@ var project_core = function () {
      * @private
      */
     var _elFinderPickerCallback = function (callback, value, meta) {
+      tinymce.activeEditor.elfinderConfig = $.extend({}, config, $(tinymce.activeEditor.getElement()).data());
       tinymce.activeEditor.windowManager.open({
         file: config.siteUrl + '/vendor/ttek/tk-base/assets/js/elFinder/elfinder.html', // use an absolute path!
         title: 'File Manager',
         width: 900,
         height: 430,
-        resizable: false,
-        config: config
+        resizable: false
       }, {
         oninsert: function (file, fm) {
           var url, reg, info;
@@ -378,9 +378,9 @@ var project_core = function () {
         var opts = $.extend({}, mceOpts, cfg);
         if (el.hasClass('mce-min')) {
           opts = $.extend({}, opts, {
-            plugins: ['advlist autolink link image lists charmap hr anchor code textcolor colorpicker textpattern'],
+            plugins: ['lists advlist autolink link image media code'],
             toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
-              '| bullist numlist | link unlink | removeformat code',
+              '| bullist numlist | link unlink image media | removeformat code',
             toolbar2: '',
             toolbar3: ''
           });
@@ -394,7 +394,7 @@ var project_core = function () {
               'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
             ],
             toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
-              '| bullist numlist | link unlink | removeformat code',
+              '| bullist numlist | link unlink image media  | removeformat code',
             toolbar2: '',
             toolbar3: '',
             menubar: true
