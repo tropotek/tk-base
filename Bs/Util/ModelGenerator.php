@@ -592,12 +592,17 @@ class {classname} extends \Bs\FormIface
         // Load the object with form data
         \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
 
-        \$form->addFieldErrors(\$this->get{classname}()->validate());
+        // Do Custom Validations
 
+        \$form->addFieldErrors(\$this->get{classname}()->validate());
         if (\$form->hasErrors()) {
             return;
         }
+        
+        \$isNew = (bool)\$this->get{classname}()->getId();
         \$this->get{classname}()->save();
+
+        // Do Custom data saving
 
         \Tk\Alert::addSuccess('Record saved!');
         \$event->setRedirect(\$this->getBackUrl());
