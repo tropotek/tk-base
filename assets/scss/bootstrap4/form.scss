@@ -32,6 +32,10 @@ $red-color: #F33 !default;
       display: inline-block;
     }
   }
+  
+  .form-control.form-control-static {
+    background: #EEE;
+  }
 
   .form-group {
 
