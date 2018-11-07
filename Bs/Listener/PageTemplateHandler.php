@@ -21,18 +21,20 @@ class PageTemplateHandler implements Subscriber
         $config = \Bs\Config::getInstance();
         $template = $controller->getPage()->getTemplate();
 
+
+
         if ($this->getConfig()->get('site.meta.keywords')) {
-            $template->appendMetaTag('keywords', $this->getConfig()->get('site.meta.keywords'));
+            $template->appendMetaTag('keywords', $this->substitution($this->getConfig()->get('site.meta.keywords')));
         }
         if ($this->getConfig()->get('site.meta.description')) {
-            $template->appendMetaTag('description', $this->getConfig()->get('site.meta.description'));
+            $template->appendMetaTag('description', $this->substitution($this->getConfig()->get('site.meta.description')));
         }
 
         if ($this->getConfig()->get('site.global.js')) {
-            $template->appendJs($this->getConfig()->get('site.global.js'));
+            $template->appendJs($this->substitution($this->getConfig()->get('site.global.js')));
         }
         if ($this->getConfig()->get('site.global.css')) {
-            $template->appendCss($this->getConfig()->get('site.global.css'));
+            $template->appendCss($this->substitution($this->getConfig()->get('site.global.css')));
         }
 
         if ($this->getConfig()->get('site.title')) {
@@ -110,6 +112,17 @@ JS;
         }
 
     }
+
+    protected function substitution($str)
+    {
+        $data = array();
+
+        $r = preg_match_all('/{{(.*)}}/', $str, $regs);
+        vd($r, $regs);
+
+        return $str;
+    }
+
 
     /**
      * @return bool
