@@ -11,6 +11,25 @@ use Tk\Event\Subscriber;
 class PageTemplateHandler implements Subscriber
 {
 
+    protected function substitution($str)
+    {
+        $data = array();
+        $user = $this->getConfig()->getUser();
+        if ($user) {
+            $data['user.id'] = $user->getId();
+            $data['user.name'] = $user->getName();
+            $data['user.email'] = $user->getEmail();
+            $data['user.hash'] = $user->getHash();
+        }
+
+        $r = preg_replace_callback('/{{([a-zA-Z0-9_\-\.]*)}}/', function ($regs) use ($data) {
+            if (isset($data[$regs[1]]))
+                return $data[$regs[1]];
+            return '';
+        }, $str);
+        return $r;
+    }
+
     /**
      * @param \Tk\Event\Event $event
      */
@@ -21,8 +40,6 @@ class PageTemplateHandler implements Subscriber
         $config = \Bs\Config::getInstance();
         $template = $controller->getPage()->getTemplate();
 
-
-
         if ($this->getConfig()->get('site.meta.keywords')) {
             $template->appendMetaTag('keywords', $this->substitution($this->getConfig()->get('site.meta.keywords')));
         }
@@ -31,7 +48,7 @@ class PageTemplateHandler implements Subscriber
         }
 
         if ($this->getConfig()->get('site.global.js')) {
-            $template->appendJs($this->substitution($this->getConfig()->get('site.global.js')));
+            $template->appendJs($this->substitution($this->getConfig()->get('site.global.js')), array('data-jsl-priority' => -900));
         }
         if ($this->getConfig()->get('site.global.css')) {
             $template->appendCss($this->substitution($this->getConfig()->get('site.global.css')));
@@ -52,9 +69,9 @@ class PageTemplateHandler implements Subscriber
         $siteUrl = $this->getConfig()->getSiteUrl();
         $dataUrl = $this->getConfig()->getDataUrl();
         $templateUrl = $this->getConfig()->getTemplateUrl();
-        $role = '';
+        $roleType = '';
         if ($this->getConfig()->getUser()) {
-            $role = $this->getConfig()->getUser()->getRoleType();
+            $roleType = $this->getConfig()->getUser()->getRoleType();
         }
         $fw = $this->getConfig()->get('css.framework');
         $bs4 = $this->isBootstrap4() ? 'true' : 'false';
@@ -67,7 +84,7 @@ var config = {
   templateUrl:   '$templateUrl',
   cssFramework:  '$fw',
   isBootstrap4:  $bs4,               // deprecated Use 'cssFramework'
-  role:          '$role',
+  roleType:      '$roleType',
   jquery: {
     dateFormat:  'dd/mm/yy'    
   },
@@ -111,16 +128,6 @@ JS;
             $template->setChoice($config->get('template.var.page.login'));
         }
 
-    }
-
-    protected function substitution($str)
-    {
-        $data = array();
-
-        $r = preg_match_all('/{{(.*)}}/', $str, $regs);
-        vd($r, $regs);
-
-        return $str;
     }
 
 
