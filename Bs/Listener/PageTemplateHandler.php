@@ -40,17 +40,17 @@ class PageTemplateHandler implements Subscriber
         $config = \Bs\Config::getInstance();
         $template = $controller->getPage()->getTemplate();
 
-        if ($this->getConfig()->get('site.meta.keywords')) {
+        if (trim($this->getConfig()->get('site.meta.keywords'))) {
             $template->appendMetaTag('keywords', $this->substitution($this->getConfig()->get('site.meta.keywords')));
         }
-        if ($this->getConfig()->get('site.meta.description')) {
+        if (trim($this->getConfig()->get('site.meta.description'))) {
             $template->appendMetaTag('description', $this->substitution($this->getConfig()->get('site.meta.description')));
         }
 
-        if ($this->getConfig()->get('site.global.js')) {
+        if (trim($this->getConfig()->get('site.global.js'))) {
             $template->appendJs($this->substitution($this->getConfig()->get('site.global.js')), array('data-jsl-priority' => -900));
         }
-        if ($this->getConfig()->get('site.global.css')) {
+        if (trim($this->getConfig()->get('site.global.css'))) {
             $template->appendCss($this->substitution($this->getConfig()->get('site.global.css')));
         }
 
