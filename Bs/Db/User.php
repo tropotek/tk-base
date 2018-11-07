@@ -183,8 +183,9 @@ class User extends Model implements UserIface
      */
     public function getImageUrl()
     {
-        if ($this->image) {
-            return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->getDataPath() . $this->image);
+        if ($this->image && file_exists($this->getConfig()->getDataPath() . $this->image)) {
+            //return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->getDataPath() . $this->image);
+            return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->image);
         } else if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
             $color = \Tk\Color::createRandom($this->getVolatileId());
             $avatar = new \LasseRafn\InitialAvatarGenerator\InitialAvatar();
