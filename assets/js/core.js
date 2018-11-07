@@ -303,7 +303,7 @@ var project_core = function () {
      * @private
      */
     var _elFinderPickerCallback = function (callback, value, meta) {
-      tinymce.activeEditor.elfinderConfig = $.extend({}, config, $(tinymce.activeEditor.getElement()).data());
+      tinymce.activeEditor.tkConfig = $.extend({}, config, $(tinymce.activeEditor.getElement()).data());
       tinymce.activeEditor.windowManager.open({
         file: config.siteUrl + '/vendor/ttek/tk-base/assets/js/elFinder/elfinder.html', // use an absolute path!
         title: 'File Manager',

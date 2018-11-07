@@ -19,12 +19,9 @@
 					url : 'php/connector.minimal.php' // connector URL (REQUIRED)
 
 					// ------------- EMS III - Config ----------------
-          //,customData: {institutionId: window.content.config.institutionId}
           ,customData: {
-            // institutionId: window.top.config.institutionId,
-            // path: window.top.config.elfinder.elfinderPath
-            institutionId: parent.tinymce.activeEditor.elfinderConfig.institutionId,
-            path: parent.tinymce.activeEditor.elfinderConfig.elfinderPath
+            institutionId: parent.tinymce.activeEditor.tkConfig.institutionId,
+            path: parent.tinymce.activeEditor.tkConfig.elfinderPath
 					}
           ,getFileCallback : function(file, fm) {
             // pass selected file data to TinyMCE
