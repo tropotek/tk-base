@@ -64,10 +64,10 @@ class Settings extends \Bs\Controller\AdminIface
             ->setCheckboxLabel('Enable Client registrations to be submitted');
 
         $tab = 'Global';
-        $this->form->appendField(new Field\Textarea('site.global.css'))->setAttr('id', 'site-global-css')->setTabGroup($tab)->setLabel('Custom Styles')
-            ->setNotes('You can omit the &lt;style&gt; tags here')->addCss('code')->setAttr('data-mode', 'css');
         $this->form->appendField(new Field\Textarea('site.global.js'))->setAttr('id', 'site-global-js')->setTabGroup($tab)->setLabel('Custom JS')
             ->setNotes('You can omit the &lt;script&gt; tags here')->addCss('code')->setAttr('data-mode', 'javascript');
+        $this->form->appendField(new Field\Textarea('site.global.css'))->setAttr('id', 'site-global-css')->setTabGroup($tab)->setLabel('Custom CSS Styles')
+            ->setNotes('You can omit the &lt;style&gt; tags here')->addCss('code')->setAttr('data-mode', 'css');
 
 
         $this->form->appendField(new Event\Submit('update', array($this, 'doSubmit')));
