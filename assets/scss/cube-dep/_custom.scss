@@ -139,6 +139,9 @@ form.tk-form .form-group label {
 // Form
 .tk-form {
 
+  .form-control.form-control-static.form-control-plaintext {
+    background: #f8f9fa;
+  }
   .nav-tabs {
     > li.nav-item.has-error {
       > a.active,
