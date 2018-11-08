@@ -162,7 +162,8 @@ class AuthHandler implements Subscriber
         }
         $auth->clearIdentity();
         if (!$config->getMasqueradeHandler()->isMasquerading()) {
-            $config->getSession()->destroy();     // Screws with masquerading code
+            \Tk\Log::warning('Destroying Session');
+            $config->getSession()->destroy();
         }
     }
 
