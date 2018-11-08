@@ -88,7 +88,7 @@ class MasqueradeHandler implements Subscriber
         // Get the users role precedence order index
         $userRoleIdx = $this->getRolePrecedenceIdx($user);
         $msqRoleIdx = $this->getRolePrecedenceIdx($msqUser);
-
+vd($userRoleIdx, $msqRoleIdx);
         // If not admin their role must be higher in precedence see \Uni\Db\User::$roleOrder
         if ($user->isAdmin() || $userRoleIdx < $msqRoleIdx) {
             return true;
