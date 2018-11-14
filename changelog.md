@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.130 [2018-11-15]:
+-------------------------------
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+  - Fixed individual entry percent grade
+
+
 Ver 1.0.128 [2018-11-15]:
 -------------------------------
   - Fixed table results and limit renderers
