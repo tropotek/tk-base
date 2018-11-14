@@ -536,8 +536,14 @@ var project_core = function () {
         panelTemplate: config.tkPanel.template
       };
       var settings = $.extend({}, defaults, element.data());
-      if (settings.panelTitle === undefined && $('.page-header').length)
-        settings.panelTitle = $('.page-header').text();
+      if (settings.panelTitle === undefined && $('.page-header').length) {
+        if ($('.page-header .page-title').length) {
+          settings.panelTitle = $('.page-header .page-title').text();
+        } else {
+          settings.panelTitle = $('.page-header').text();
+        }
+      }
+
 
       var tpl = $(settings.panelTemplate);
       tpl.addClass(element.attr('class'));
