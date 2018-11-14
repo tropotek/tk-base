@@ -47,7 +47,7 @@ class MakeTable extends Iface
         $phpFile = $config->getSitePath() . '/src/App/Table/' . $gen->getClassName() . '.php';
         if (!$input->getOption('overwrite'))
             $phpFile = $this->makeUniquePhpFilename($phpFile);
-        $tableContent = $gen->makeTable();
+        $tableCode = $gen->makeTable();
 
         if (!is_dir(dirname($phpFile))) {
             $this->writeComment('Creating Path: ' . dirname($phpFile));
@@ -55,7 +55,7 @@ class MakeTable extends Iface
         }
 
         $this->writeComment('Writing: ' . $phpFile);
-        file_put_contents($phpFile, $tableContent);
+        file_put_contents($phpFile, $tableCode);
 
     }
 

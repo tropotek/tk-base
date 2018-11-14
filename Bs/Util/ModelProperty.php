@@ -305,13 +305,20 @@ TPL;
     /**
      * @param string $className
      * @param string $namespace
+     * @param bool $isModelForm
      * @return string
      */
-    public function getFormField($className, $namespace)
+    public function getFormField($className, $namespace, $isModelForm = false)
     {
+
         $tpl = <<<TPL
         \$this->appendField(new %s(%s%s))%s;
 TPL;
+        if ($isModelForm) {
+            $tpl = <<<TPL
+        \$this->getForm()->appendField(new %s(%s%s))%s;
+TPL;
+        }
 
         $mapClass = 'Field\Input';
         $argAppend = '';
@@ -332,7 +339,6 @@ TPL;
 
         return sprintf($tpl, $mapClass, $propertyName, $argAppend, $append);
     }
-
 
 
     /**

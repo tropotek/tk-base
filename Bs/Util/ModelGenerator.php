@@ -123,7 +123,7 @@ class ModelGenerator
      * @param string $className
      * @return static
      */
-    public function setClassName(string $className)
+    public function setClassName($className)
     {
         $this->className = $className;
         return $this;
@@ -133,7 +133,7 @@ class ModelGenerator
      * @param string $namespace
      * @return static
      */
-    public function setNamespace(string $namespace)
+    public function setNamespace($namespace)
     {
         $this->namespace = $namespace;
         return $this;
@@ -276,7 +276,7 @@ STR;
             if ($mp->getType() == ModelProperty::TYPE_DATE || $mp->get('Type') == 'text') continue;
             $data['filter-queries'] .= $mp->getFilterQuery() . "\n";
             if ($this->table != $this->tableFromClass()) {
-                $data['set-table'] = "\n" . sprintf("            $this->setTable('%s');", $this->table) . "\n";
+                $data['set-table'] = "\n" . sprintf("            \$this->setTable('%s');", $this->table) . "\n";
             }
         }
         return $data;
@@ -504,17 +504,20 @@ STR;
      */
     public function makeForm($params = array())
     {
-        $tpl = $this->createFormTemplate();
+        $tpl = $this->createFormIfaceTemplate();
+        if (!empty($params['modelForm']))
+            $tpl = $this->createModelFormTemplate();
         $data = $this->getDefaultData();
-        $classData = $this->processForm();
+        $classData = $this->processForm(!empty($params['modelForm']));
         $data = array_merge($data, $classData, $params);
         return $tpl->parse($data);
     }
 
     /**
+     * @param bool $isModelForm
      * @return array
      */
-    protected function processForm()
+    protected function processForm($isModelForm = false)
     {
         $data = array(
             'property-name' => lcfirst($this->className),
@@ -524,7 +527,7 @@ STR;
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create($col);
             if ($mp->getName() == 'del' || $mp->getName() == 'modified' || $mp->getName() == 'created' || $mp->getName() == 'id') continue;
-            $data['field-list'] .= $mp->getFormField($this->getClassName(), $this->getNamespace()) . "\n";
+            $data['field-list'] .= $mp->getFormField($this->getClassName(), $this->getNamespace(), $isModelForm) . "\n";
         }
         return $data;
     }
@@ -532,7 +535,7 @@ STR;
     /**
      * @return \Tk\CurlyTemplate
      */
-    protected function createFormTemplate()
+    protected function createFormIfaceTemplate()
     {
         $classTpl = <<<STR
 <?php
@@ -579,6 +582,112 @@ class {classname} extends \Bs\FormIface
     public function execute(\$request = null)
     {
         \$this->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
+        parent::execute(\$request);
+    }
+
+    /**
+     * @param Form \$form
+     * @param Event\Iface \$event
+     * @throws \Exception
+     */
+    public function doSubmit(\$form, \$event)
+    {
+        // Load the object with form data
+        \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
+
+        // Do Custom Validations
+
+        \$form->addFieldErrors(\$this->get{classname}()->validate());
+        if (\$form->hasErrors()) {
+            return;
+        }
+        
+        \$isNew = (bool)\$this->get{classname}()->getId();
+        \$this->get{classname}()->save();
+
+        // Do Custom data saving
+
+        \Tk\Alert::addSuccess('Record saved!');
+        \$event->setRedirect(\$this->getBackUrl());
+        if (\$form->getTriggeredEvent()->getName() == 'save') {
+            \$event->setRedirect(\Tk\Uri::create()->set('{property-name}Id', \$this->get{classname}()->getId()));
+        }
+    }
+
+    /**
+     * @return \Tk\Db\ModelInterface|\{namespace}\{classname}
+     */
+    public function get{classname}()
+    {
+        return \$this->getModel();
+    }
+
+    /**
+     * @param \{namespace}\{classname} \${property-name}
+     * @return \$this
+     */
+    public function set{classname}(\${property-name})
+    {
+        return \$this->setModel(\${property-name});
+    }
+    
+}
+STR;
+        $tpl = \Tk\CurlyTemplate::create($classTpl);
+        return $tpl;
+    }
+
+    /**
+     * @return \Tk\CurlyTemplate
+     */
+    protected function createModelFormTemplate()
+    {
+        $classTpl = <<<STR
+<?php
+namespace App\Form;
+
+use Tk\Form\Field;
+use Tk\Form\Event;
+use Tk\Form;
+
+/**
+ * Example:
+ * <code>
+ *   \$form = new {classname}::create();
+ *   \$form->setModel(\$obj);
+ *   \$formTemplate = \$form->getRenderer()->show();
+ *   \$template->appendTemplate('form', \$formTemplate);
+ * </code>
+ * 
+ * @author {author-name}
+ * @created {date}
+ * @link {author-www}
+ * @license Copyright {year} {author-biz}
+ * @note Use this if you want to pass the form in rather than inherit the form
+ */
+class {classname} extends \Bs\ModelForm
+{
+
+    /**
+     * @throws \Exception
+     */
+    public function init()
+    {
+        
+{field-list}
+        \$this->getForm()->appendField(new Event\Submit('update', array(\$this, 'doSubmit')));
+        \$this->getForm()->appendField(new Event\Submit('save', array(\$this, 'doSubmit')));
+        \$this->getForm()->appendField(new Event\Link('cancel', \$this->getBackUrl()));
+
+    }
+
+    /**
+     * @param \Tk\Request \$request
+     * @throws \Exception
+     */
+    public function execute(\$request = null)
+    {
+        \$this->getForm()->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
         parent::execute(\$request);
     }
 

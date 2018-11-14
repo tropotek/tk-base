@@ -22,6 +22,7 @@ class MakeForm extends Iface
         $this->setName('make-form')
             ->addArgument('table', InputArgument::REQUIRED, 'The name of the table to generate the class file from.')
             ->addOption('overwrite', 'o', InputOption::VALUE_NONE, 'Overwrite existing class files.')
+            ->addOption('modelForm', 'm', InputOption::VALUE_NONE, 'Generate a ModelForm object instead')       // This object is deprecated
             ->setAliases(array('mf'))
             ->setDescription('Create a PHP Form Edit Class from the DB schema');
     }
@@ -47,7 +48,8 @@ class MakeForm extends Iface
         $phpFile = $config->getSitePath() . '/src/App/Form/' . $gen->getClassName() . '.php';
         if (!$input->getOption('overwrite'))
             $phpFile = $this->makeUniquePhpFilename($phpFile);
-        $tableContent = $gen->makeForm();
+
+        $formCode = $gen->makeForm($input->getOptions());
 
         if (!is_dir(dirname($phpFile))) {
             $this->writeComment('Creating Path: ' . dirname($phpFile));
@@ -55,7 +57,7 @@ class MakeForm extends Iface
         }
 
         $this->writeComment('Writing: ' . $phpFile);
-        file_put_contents($phpFile, $tableContent);
+        file_put_contents($phpFile, $formCode);
 
     }
 
