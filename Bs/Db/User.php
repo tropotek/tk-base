@@ -178,11 +178,12 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @return \Tk\Uri|string
+     * @return \Tk\Uri
      * @throws \Exception
      */
     public function getImageUrl()
     {
+        //return \Tk\Uri::create('/html/app/img/user.png');
         if ($this->image && file_exists($this->getConfig()->getDataPath() . $this->image)) {
             //return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->getDataPath() . $this->image);
             return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->image);
@@ -197,7 +198,7 @@ class User extends Model implements UserIface
                 ->color($color->getTextColor()->toString(true))
                 ->generate()
                 ->stream('png', 100);
-            return 'data:image/png;base64,' . base64_encode($img->getContents());
+            return \Tk\Uri::create('data:image/png;base64,' . base64_encode($img->getContents()));
         }
         return \Tk\Uri::create('/html/app/img/user.png');
     }
