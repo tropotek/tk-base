@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 1.0.128 [2018-11-15]:
+-------------------------------
+  - Fixed table results and limit renderers
+  - Added Uri.js to the tk-base lib
+
+
 Ver 1.0.126 [2018-11-08]:
 -------------------------------
   - Merge branch 'master' of https://github.com/tropotek/tk-base
