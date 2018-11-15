@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.132 [2018-11-15]:
+-------------------------------
+  - Added Student Lookup for staff accounts
+
+
 Ver 1.0.130 [2018-11-15]:
 -------------------------------
   - Merge branch 'master' of https://github.com/tropotek/tk-base
