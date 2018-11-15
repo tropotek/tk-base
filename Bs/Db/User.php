@@ -183,8 +183,9 @@ class User extends Model implements UserIface
      */
     public function getImageUrl()
     {
+        $url = \Tk\Uri::create('/html/app/img/user.png');
         if ($this->image && file_exists($this->getConfig()->getDataPath() . $this->image)) {
-            return \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->image);
+            $url = \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->image);
         } else if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
             $color = \Tk\Color::createRandom($this->getVolatileId());
             $avatar = new \LasseRafn\InitialAvatarGenerator\InitialAvatar();
@@ -196,9 +197,10 @@ class User extends Model implements UserIface
                 ->color($color->getTextColor()->toString(true))
                 ->generate()
                 ->stream('png', 100);
-            return \Tk\Uri::create('data:image/png;base64,' . base64_encode($img->getContents()));
+            $b64 = base64_encode($img->getContents());
+            $url = \Tk\Uri::create('data:image/png;base64,' . $b64);
         }
-        return \Tk\Uri::create('/html/app/img/user.png');
+        return $url;
     }
 
 
