@@ -12,7 +12,7 @@ require dirname(__FILE__) . '/autoload.php';
 // ========== EMS III Setup =======================
 
 $config = \Bs\Config::getInstance();
-$customDataPath = '';
+$customDataPath = '/media';
 if (isset($_REQUEST['path'])) {
     $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
 }
