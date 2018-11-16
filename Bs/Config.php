@@ -673,7 +673,6 @@ class Config extends \Tk\Config
         if (!is_dir($dataPath . '/.trash/')) {
             mkdir($dataPath . '/.trash/', 0777, true);
         }
-        vd($dataPath, $dataUrl);
         return array($dataPath, $dataUrl);
     }
 
