@@ -10,12 +10,12 @@ trait EditTrait
 {
 
     /**
-     * @var \Tk\Form
+     * @var \Tk\Form|\Bs\FormIface
      */
     protected $form = null;
 
     /**
-     * @return \Tk\Form
+     * @return \Tk\Form|\Bs\FormIface
      */
     public function getForm()
     {
@@ -23,7 +23,7 @@ trait EditTrait
     }
 
     /**
-     * @param \Tk\Form $form
+     * @param \Tk\Form|\Bs\FormIface $form
      * @return EditTrait
      */
     protected function setForm($form)

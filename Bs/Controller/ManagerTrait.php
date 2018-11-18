@@ -9,7 +9,7 @@ namespace Bs\Controller;
 trait ManagerTrait
 {
     /**
-     * @var \Tk\Table
+     * @var \Tk\Table|\Bs\TableIface
      */
     protected $table = null;
 
