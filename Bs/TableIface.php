@@ -13,7 +13,10 @@ use Dom\Template;
 class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
 {
 
-
+    /**
+     * @var \Tk\Table\Cell\Actions
+     */
+    protected $actionCell = null;
 
     /**
      * @param string $tableId
@@ -35,6 +38,17 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
         $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));
         $obj->setDispatcher(\Bs\Config::getInstance()->getEventDispatcher());
         return $obj;
+    }
+
+    /**
+     * @return \Tk\Table\Cell\Actions
+     */
+    public function getActionCell()
+    {
+        if (!$this->actionCell) {
+            $this->actionCell = new \Tk\Table\Cell\Actions();
+        }
+        return $this->actionCell;
     }
 
     /**

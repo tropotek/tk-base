@@ -104,20 +104,20 @@ abstract class FormIface extends \Tk\Form
     }
 
     /**
+     * @return Db\User
+     */
+    public function getUser()
+    {
+        return $this->getConfig()->getUser();
+    }
+
+    /**
      * @return \Tk\Uri
      * @throws \Exception
      */
     public function getBackUrl()
     {
         return $this->getConfig()->getBackUrl();
-    }
-
-    /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->getConfig()->getUser();
     }
 
 

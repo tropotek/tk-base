@@ -28,7 +28,7 @@ trait ManagerTrait
     }
 
     /**
-     * @return \Tk\Table
+     * @return \Tk\Table|\Bs\TableIface
      */
     public function getTable()
     {
@@ -36,7 +36,7 @@ trait ManagerTrait
     }
 
     /**
-     * @param \Tk\Table $table
+     * @param \Tk\Table|\Bs\TableIface $table
      */
     public function setTable($table)
     {

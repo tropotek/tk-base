@@ -43,8 +43,8 @@ class User extends \Bs\FormIface
             $this->appendField(new Field\Html('username'))->setTabGroup($tab);
         }
         $this->appendField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
-        if ($this->getConfig()->getUser()->getId() != 1)
-            $this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
+        $this->appendField(new Field\Input('phone'))->setTabGroup($tab);
+        $this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
 
         $tab = 'Password';
         $this->setAttr('autocomplete', 'off');
@@ -58,6 +58,10 @@ class User extends \Bs\FormIface
             ->setNotes('Change this users password.')->setTabGroup($tab);
         if (!$this->getConfig()->getUser()->getId())
             $f->setRequired(true);
+
+        if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId()) {
+            $this->remove('active');
+        }
 
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->appendField(new Event\Submit('save', array($this, 'doSubmit')));
@@ -91,7 +95,12 @@ class User extends \Bs\FormIface
                 $form->addFieldError('newPassword', 'Passwords do not match.');
                 $form->addFieldError('confPassword');
             }
+        } else {
+            if (!$this->getUser()->getId()) {
+                $form->addFieldError('newPassword', 'Please enter a password for this new user.');
+            }
         }
+
 
         // Just a small check to ensure the user down not change their own role
         if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId() && $this->getUser()->getRoleType() != $this->getConfig()->getUser()->getRoleType()) {

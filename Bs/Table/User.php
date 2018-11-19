@@ -31,7 +31,7 @@ class User extends \Bs\TableIface
     /**
      * @return \Tk\Uri
      */
-    public function getEditUrl(): \Tk\Uri
+    public function getEditUrl()
     {
         return $this->editUrl;
     }
@@ -40,7 +40,7 @@ class User extends \Bs\TableIface
      * @param \Tk\Uri $editUrl
      * @return User
      */
-    public function setEditUrl(\Tk\Uri $editUrl): User
+    public function setEditUrl($editUrl)
     {
         $this->editUrl = $editUrl;
         return $this;
@@ -52,7 +52,7 @@ class User extends \Bs\TableIface
      */
     public function init()
     {
-        $actionsCell = \Tk\Table\Cell\Actions::create('actions');
+        $actionsCell = $this->getActionCell();
         $actionsCell->addButton(\Tk\Table\Cell\ActionButton::create('Masquerade', \Tk\Uri::create(),
             'fa fa-user-secret', 'tk-masquerade'))->setAttr('data-confirm', 'You are about to masquerade as the selected user?')
             ->setOnShow(function ($cell, $obj, $button) {
@@ -78,6 +78,7 @@ class User extends \Bs\TableIface
                 $value = $obj->getRole()->getName();
             return $value;
         });
+        $this->appendCell(new \Tk\Table\Cell\Text('uid'))->setLabel('UID');
         $this->appendCell(new \Tk\Table\Cell\Boolean('active'));
         $this->appendCell(new \Tk\Table\Cell\Date('created'));
 
