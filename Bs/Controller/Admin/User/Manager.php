@@ -55,7 +55,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
         }
         $editUrl = \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html');
 
-        $this->table = \Bs\Table\User::create('user-list')->setEditUrl($editUrl)->init();
+        $this->table = \Bs\Table\User::create()->setEditUrl($editUrl)->init();
         $this->table->setList($this->table->findList(array()));
 
     }
