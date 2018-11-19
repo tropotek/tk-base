@@ -159,7 +159,7 @@ $opts = array(
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
             'uploadOrder'   => array('deny', 'allow'),
-            
+
 		)
 	)
 );
