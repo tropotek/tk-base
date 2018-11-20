@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.142 [2018-11-20]:
+-------------------------------
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+
+
 Ver 1.0.140 [2018-11-19]:
 -------------------------------
 
