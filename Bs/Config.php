@@ -290,18 +290,16 @@ class Config extends \Tk\Config
                 $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
                     array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl()) ));
                 $less->setCompress(true);
-                if ($this->isRefreshCacheRequest()) {
-                    $less->setCacheEnabled(false);
-                }
+                $less->setCacheEnabled(!$this->isRefreshCacheRequest());
+
             }
             if (class_exists('Leafo\ScssPhp\Compiler')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
                     array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl()) ));
                 $scss->setCompress(true);
-                if ($this->isRefreshCacheRequest()) {
-                    $scss->setCacheEnabled(false);
-                }
+                $scss->setCacheEnabled(!$this->isRefreshCacheRequest());
+
             }
 
             if ($this->isDebug()) {
