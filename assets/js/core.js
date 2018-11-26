@@ -350,15 +350,17 @@ var project_core = function () {
         'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
         'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
       ],
-      toolbar1: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | styleselect | bullist numlist | outdent indent',
-      toolbar2: 'cut copy paste searchreplace | link unlink anchor image media | hr subscript superscript | forecolor backcolor blockquote',
-      toolbar3: 'table | visualchars visualblocks ltr rtl | nonbreaking insertdatetime | charmap emoticons | print preview | removeformat fullscreen code codesample',
+      toolbar1: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | '+
+                'bullist numlist | outdent indent | forecolor backcolor styleselect formatselect fontselect fontsizeselect',
+      toolbar2: 'cut copy paste searchreplace | link unlink anchor image media hr | table  | '+
+                'nonbreaking insertdatetime | charmap emoticons | print preview | removeformat fullscreen code codesample',
+      //toolbar3: '',
       content_css: [
         '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
         '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
         config.siteUrl + '/vendor/ttek/tk-base/assets/js/tk-tinymce.css'
       ],
-      menubar: false,
+      menubar: true,
       toolbar_items_size: 'small',
       image_advtab: true,
       content_style: 'body {padding: 10px}',
@@ -396,7 +398,7 @@ var project_core = function () {
             plugins: [
               'advlist autolink link image lists charmap print preview hr anchor',
               'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
-              'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
+              'table directionality emoticons template paste textcolor colorpicker fontsizeselect textpattern visualchars visualblocks'
             ],
             toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
               '| bullist numlist | link unlink image media  | removeformat code',
