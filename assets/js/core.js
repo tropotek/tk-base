@@ -373,6 +373,8 @@ var project_core = function () {
 
       var form = $(this);
       form.find('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
+
+
         var el = $(this);
         var cfg = {statusbar: false};
         var readonly = 0;
@@ -398,9 +400,9 @@ var project_core = function () {
             plugins: [
               'advlist autolink link image lists charmap print preview hr anchor',
               'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
-              'table directionality emoticons template paste textcolor colorpicker fontsizeselect textpattern visualchars visualblocks'
+              'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
             ],
-            toolbar1: 'bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright ' +
+            toolbar1: 'bold italic underline strikethrough | forecolor backcolor fontsizeselect | alignleft aligncenter alignright ' +
               '| bullist numlist | link unlink image media  | removeformat code',
             toolbar2: '',
             toolbar3: '',

@@ -285,21 +285,27 @@ class Config extends \Tk\Config
             $dm = new \Dom\Modifier\Modifier();
             $dm->add(new \Dom\Modifier\Filter\UrlPath($this->getSiteUrl()));
             $dm->add(new \Dom\Modifier\Filter\JsLast());
+
             if (class_exists('Dom\Modifier\Filter\Less')) {
                 /** @var \Dom\Modifier\Filter\Less $less */
-                $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
-                    array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl()) ));
+                $vars = array(
+                    'siteUrl' => \Tk\Uri::create($this->getSiteUrl())->toString(),
+                    'dataUrl' => \Tk\Uri::create($this->getDataUrl())->toString(),
+                    'templateUrl' => \Tk\Uri::create($this->getTemplateUrl())->toString());
+                $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars ));
                 $less->setCompress(true);
                 $less->setCacheEnabled(!$this->isRefreshCacheRequest());
-
             }
+
             if (class_exists('Leafo\ScssPhp\Compiler')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
-                $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(),
-                    array('siteUrl' => $this->getSiteUrl(), 'dataUrl' => $this->getDataUrl(), 'templateUrl' => $this->getTemplateUrl()) ));
+                $vars = array(
+                    'siteUrl' => \Tk\Uri::create($this->getSiteUrl())->toString(),
+                    'dataUrl' => \Tk\Uri::create($this->getDataUrl())->toString(),
+                    'templateUrl' => \Tk\Uri::create($this->getTemplateUrl())->toString());
+                $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars));
                 $scss->setCompress(true);
                 $scss->setCacheEnabled(!$this->isRefreshCacheRequest());
-
             }
 
             if ($this->isDebug()) {
