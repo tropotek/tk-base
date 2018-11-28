@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.150 [2018-11-29]:
+-------------------------------
+  - Added user COA to plugin
+
+
 Ver 1.0.148 [2018-11-27]:
 -------------------------------
   - Fixed all tinymce elfinder paths
