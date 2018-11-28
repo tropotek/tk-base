@@ -40,8 +40,20 @@ class Uri extends \Tk\Uri
      *
      * @param bool $b
      * @return static
+     * @deprecated use noCrumb()
      */
     public function ignoreCrumb($b = true)
+    {
+        return $this->noCrumb($b);
+    }
+
+    /**
+     * Call this to ensure the breadcrumb system ignores this URL
+     *
+     * @param bool $b
+     * @return static
+     */
+    public function noCrumb($b = true)
     {
         if ($b)
             $this->set(\Tk\Crumbs::CRUMB_IGNORE);
