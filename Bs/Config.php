@@ -467,7 +467,7 @@ class Config extends \Tk\Config
 
     /**
      * @param \Tk\Table $table
-     * @return \Tk\Table\Renderer\Dom\Table
+     * @return \Tk\Table\Renderer\Dom\Table|\Tk\Table\Renderer\Iface
      */
     public function createTableRenderer($table)
     {

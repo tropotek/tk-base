@@ -13,8 +13,6 @@ use Dom\Template;
 abstract class ModelForm extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
 
-
-
     /**
      * @var \Tk\Form
      */
