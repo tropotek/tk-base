@@ -300,9 +300,9 @@ class Config extends \Tk\Config
             if (class_exists('Leafo\ScssPhp\Compiler')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
                 $vars = array(
-                    'siteUrl' => \Tk\Uri::create($this->getSiteUrl())->toString(),
-                    'dataUrl' => \Tk\Uri::create($this->getDataUrl())->toString(),
-                    'templateUrl' => \Tk\Uri::create($this->getTemplateUrl())->toString());
+                    'siteUrl' => rtrim(\Tk\Uri::create($this->getSiteUrl())->getPath(), '/'),
+                    'dataUrl' => rtrim(\Tk\Uri::create($this->getDataUrl())->getPath(), '/'),
+                    'templateUrl' => rtrim(\Tk\Uri::create($this->getTemplateUrl())->getPath(), '/') );
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars));
                 $scss->setCompress(true);
                 $scss->setCacheEnabled(!$this->isRefreshCacheRequest());
