@@ -350,11 +350,11 @@ var project_core = function () {
         'searchreplace code fullscreen insertdatetime media nonbreaking codesample',
         'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
       ],
-      toolbar1: 'cut copy paste searchreplace | undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | '+
-                'bullist numlist | outdent indent',
-      toolbar2: 'forecolor backcolor styleselect formatselect fontselect fontsizeselect',
-      toolbar3: 'link unlink anchor image media hr | table  | '+
-        'nonbreaking insertdatetime | charmap emoticons | print preview | removeformat fullscreen code codesample',
+      toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | '+
+                'bullist numlist | outdent indent | forecolor backcolor fontselect fontsizeselect',
+      toolbar2: 'table | charmap emoticons | link unlink anchor image media | '+
+        'hr nonbreaking insertdatetime | print preview | searchreplace removeformat fullscreen code codesample',
+      toolbar3: '',
       content_css: [
         '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
         '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
