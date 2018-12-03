@@ -289,9 +289,9 @@ class Config extends \Tk\Config
             if (class_exists('Dom\Modifier\Filter\Less')) {
                 /** @var \Dom\Modifier\Filter\Less $less */
                 $vars = array(
-                    'siteUrl' => \Tk\Uri::create($this->getSiteUrl())->toString(),
-                    'dataUrl' => \Tk\Uri::create($this->getDataUrl())->toString(),
-                    'templateUrl' => \Tk\Uri::create($this->getTemplateUrl())->toString());
+                    'siteUrl' => rtrim(\Tk\Uri::create($this->getSiteUrl())->getPath(), '/'),
+                    'dataUrl' => rtrim(\Tk\Uri::create($this->getDataUrl())->getPath(), '/'),
+                    'templateUrl' => rtrim(\Tk\Uri::create($this->getTemplateUrl())->getPath(), '/') );
                 $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars ));
                 $less->setCompress(true);
                 $less->setCacheEnabled(!$this->isRefreshCacheRequest());
@@ -460,9 +460,9 @@ class Config extends \Tk\Config
      */
     public function createTable($id)
     {
-        $form = \Tk\Table::create($id);
-        $form->setDispatcher($this->getEventDispatcher());
-        return $form;
+        $table = \Tk\Table::create($id);
+        $table->setDispatcher($this->getEventDispatcher());
+        return $table;
     }
 
     /**
@@ -471,6 +471,7 @@ class Config extends \Tk\Config
      */
     public function createTableRenderer($table)
     {
+        $table->addCss('table table-bordered table-striped table-hover');
         $obj = \Tk\Table\Renderer\Dom\Table::create($table);
         return $obj;
     }

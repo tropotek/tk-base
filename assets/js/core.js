@@ -174,7 +174,7 @@ var project_core = function () {
         // TODO we need to fix the initialDate bug when the date format has the time.
         var inputGroup = $(this);
         var start = inputGroup.find('input').first();
-        var end = inputGroup.find('input').last();
+        var end = inputGroup.find('input').eq(1);
         start.datetimepicker({
           todayHighlight: true,
           format: config.datepickerFormat,
