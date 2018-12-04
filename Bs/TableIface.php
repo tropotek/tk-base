@@ -105,4 +105,17 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
     {
         $this->getRenderer()->setTemplate($template);
     }
+
+
+    /**
+     * @param array $filter
+     * @param null|\Tk\Db\Tool $tool
+     * @return \Tk\Db\Map\ArrayObject|array|null
+     * @throws \Exception
+     */
+    public function findList($filter = array(), $tool = null)
+    {
+        return array();
+    }
+
 }

@@ -34,26 +34,32 @@ var SATURDAY = 6;
  * Return a date from a string in the format of dd/mm/yyyy
  *
  * @returns Date
+ * @todo Would be good to have a method of parsing a date based on its local
  */
 String.prototype.toDate = function() {
   var arr = this.match( /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/ );
-  if (!arr) {
-      if (console) console.log('Cannot create Date');
-      return null;
+  if (arr) {
+    return new Date(arr[3], arr[2], arr[1]);
   }
-  return new Date(arr[3], arr[2], arr[1]);
+  if (console) console.log('Cannot create Date from string: ' + this);
 };
 
 
 
+
+/**
+ * Return the timestamp in a format for php
+ * @returns {number}
+ */
+Date.prototype.getPhpTime = function() {
+  return Math.round(this.getTime() / 1000);
+};
 Date.prototype.getCivilianHours = function() {
   return (this.getHours() < 12) ? this.getHours() : this.getHours() - 12;
 };
 Date.prototype.getMeridiem = function() {
   return (this.getHours() < 12) ? "AM" : "PM";
 };
-
-Date.prototype.to_s = Date.prototype.toString;
 
 // Non-destructive instance methods
 Date.prototype.addMilliseconds = function(ms) {
@@ -92,11 +98,10 @@ Date.prototype.addYears = function(y) {
 /**
  * Get a months long name.
  * 
- * @param int -
- *          (optional) The month to get name for.
+ * @param int (optional) The month to get name for.
  */
 Date.prototype.getMonthName = function() {
-  var index = (0 == arguments.length) ? this.getMonth() : arguments[0];
+  var index = (0 === arguments.length) ? this.getMonth() : arguments[0];
   switch (index) {
   case JANUARY:
     return "January";
@@ -130,11 +135,10 @@ Date.prototype.getMonthName = function() {
 /**
  * Get a months Abbreviated name.
  * 
- * @param int -
- *          (optional) The month to get name for.
+ * @param int (optional) The month to get name for.
  */
 Date.prototype.getMonthAbbreviation = function() {
-  var index = (0 == arguments.length) ? this.getMonth() : arguments[0];
+  var index = (0 === arguments.length) ? this.getMonth() : arguments[0];
   switch (index) {
   case JANUARY:
     return "Jan";
@@ -168,11 +172,10 @@ Date.prototype.getMonthAbbreviation = function() {
 /**
  * Get a day name.
  * 
- * @param int -
- *          (optional) The day to get name for.
+ * @param int (optional) The day to get name for.
  */
 Date.prototype.getDayName = function() {
-  var index = (0 == arguments.length) ? this.getDay() : arguments[0];
+  var index = (0 === arguments.length) ? this.getDay() : arguments[0];
   switch (index) {
   case SUNDAY:
     return "Sunday";
@@ -196,11 +199,10 @@ Date.prototype.getDayName = function() {
 /**
  * Get a day Abbreviated name.
  * 
- * @param int -
- *          (optional) The day to get name for.
+ * @param int (optional) The day to get name for.
  */
 Date.prototype.getDayAbbreviation = function() {
-  var index = (0 == arguments.length) ? this.getDay() : arguments[0];
+  var index = (0 === arguments.length) ? this.getDay() : arguments[0];
   switch (index) {
   case SUNDAY:
     return "Sun";
@@ -224,8 +226,7 @@ Date.prototype.getDayAbbreviation = function() {
 /**
  * Get the number of days in this month or given month.
  * 
- * @param int -
- *          (optional) The month to get value for
+ * @param int (optional) The month to get value for
  */
 Date.prototype.getDaysInMonth = function() {
   var index = arguments[0] != null ? arguments[0] : this.getMonth();
@@ -262,14 +263,13 @@ Date.prototype.getDaysInMonth = function() {
 
 /**
  * Test if this month is a leap year.
- * 
  */
 Date.prototype.isLeapYear = function() {
-  if (0 == this.getFullYear() % 400)
+  if (0 === this.getFullYear() % 400)
     return true;
-  if (0 == this.getFullYear() % 100)
+  if (0 === this.getFullYear() % 100)
     return false;
-  return (0 == this.getFullYear() % 4) ? true : false;
+  return (0 === this.getFullYear() % 4);
 };
 
 /**
@@ -338,6 +338,7 @@ Date.prototype.diff = function(date) {
   return parseInt((this.getTime() - date.getTime()) / 1000);
 };
 
+//Date.prototype.to_s = Date.prototype.toString;
 /**
  * Ultra-flexible date formatting
  * 
@@ -369,64 +370,66 @@ Date.prototype.diff = function(date) {
  *   '%YYYY-%MM-%DD' = '2003-25-02'
  *   '%HH:%mm::%ss' = '12:22:25'
  *
- * @param string fs - A string to format the date
- * @return string
+ * @param format
+ * @return string|{*}
  */
-Date.prototype.format = function(fs) {
+Date.prototype.format = function(format) {
 
-  fs = fs.replace(/%YYYY/, this.getFullYear().toString());
-  fs = fs.replace(/%YY/, this.getFullYear().toString().substr(2, 2));
+  format = format.replace(/%YYYY/, this.getFullYear().toString());
+  format = format.replace(/%YY/, this.getFullYear().toString().substr(2, 2));
 
-  fs = fs.replace(/%MMMM/, this.getMonthName(this.getMonth()).toString());
-  fs = fs
+  format = format.replace(/%MMMM/, this.getMonthName(this.getMonth()).toString());
+  format = format
       .replace(/%MMM/, this.getMonthAbbreviation(this.getMonth()).toString());
-  fs = fs.replace(/%MM/, (this.getMonth() + 1) > 9 ? (this.getMonth() + 1)
+  format = format.replace(/%MM/, (this.getMonth() + 1) > 9 ? (this.getMonth() + 1)
       .toString() : "0" + (this.getMonth() + 1).toString());
-  fs = fs.replace(/%M/, (this.getMonth() + 1).toString());
+  format = format.replace(/%M/, (this.getMonth() + 1).toString());
 
-  fs = fs.replace(/%DDDD/, this.getDayName(this.getDay()).toString());
-  fs = fs.replace(/%DDD/, this.getDayAbbreviation(this.getDay()).toString());
-  fs = fs.replace(/%DD/, this.getDate() > 9 ? this.getDate().toString() : "0"
+  format = format.replace(/%DDDD/, this.getDayName(this.getDay()).toString());
+  format = format.replace(/%DDD/, this.getDayAbbreviation(this.getDay()).toString());
+  format = format.replace(/%DD/, this.getDate() > 9 ? this.getDate().toString() : "0"
       + this.getDate().toString());
-  fs = fs.replace(/%D/, this.getDate().toString());
+  format = format.replace(/%D/, this.getDate().toString());
 
-  fs = fs.replace(/%HH/, this.getHours() > 9 ? this.getHours().toString() : "0"
+  format = format.replace(/%HH/, this.getHours() > 9 ? this.getHours().toString() : "0"
       + this.getHours().toString());
-  fs = fs.replace(/%H/, this.getHours().toString());
-  fs = fs.replace(/%hh/, this.getCivilianHours() > 9 ? this.getCivilianHours()
+  format = format.replace(/%H/, this.getHours().toString());
+  format = format.replace(/%hh/, this.getCivilianHours() > 9 ? this.getCivilianHours()
       .toString() : "0" + this.getCivilianHours().toString());
-  fs = fs.replace(/%h/, this.getCivilianHours());
+  format = format.replace(/%h/, this.getCivilianHours());
 
-  fs = fs.replace(/%mm/, this.getMinutes() > 9 ? this.getMinutes().toString()
+  format = format.replace(/%mm/, this.getMinutes() > 9 ? this.getMinutes().toString()
       : "0" + this.getMinutes().toString());
-  fs = fs.replace(/%m/, this.getMinutes().toString());
+  format = format.replace(/%m/, this.getMinutes().toString());
 
-  fs = fs.replace(/%ss/, this.getSeconds() > 9 ? this.getSeconds().toString()
+  format = format.replace(/%ss/, this.getSeconds() > 9 ? this.getSeconds().toString()
       : "0" + this.getSeconds().toString());
-  fs = fs.replace(/%s/, this.getSeconds().toString());
+  format = format.replace(/%s/, this.getSeconds().toString());
 
-  fs = fs.replace(/%nnn/, this.getMilliseconds().toString());
-  fs = fs.replace(/%p/, this.getMeridiem());
-  return fs;
+  format = format.replace(/%nnn/, this.getMilliseconds().toString());
+  format = format.replace(/%p/, this.getMeridiem());
+  return format;
 };
-
-// Give toString more flexibility
-// Date.prototype.toString = function() {
-//   if (0 == arguments.length || 1 < arguments.length)
-//     return this.to_s();
-//   return this.format(arguments[0].toString());
-// };
 
 
 /**
+ * Create a javascript date from a PHP timestamp
  *
+ * @param phpTimestamp int
+ * @returns {Date}
+ */
+Date.createPhpDate = function(phpTimestamp) {
+  return new Date(phpTimestamp * 1000);
+};
+
+/**
  * @param dateFrom
  * @param dateTo
  * @param unitLabel
  * @return Number
  */
-Date.getUnitValueFromDates = function(dateFrom, dateTo, unitLabel)
-{
+Date.getUnitValueFromDates = function(dateFrom, dateTo, unitLabel) {
+
   var units = 0;
   if (!dateFrom) return 0;
   dateFrom = dateFrom.floor();

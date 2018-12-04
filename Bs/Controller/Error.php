@@ -80,28 +80,28 @@ class Error extends Iface
         }
         $template->setAttr('home-url', 'href', $url);
 
+        if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND || $this->e instanceof \Tk\NotFoundHttpException) {
+            $title = '404 Error Page Not Found';
+            $template->setTitleText($title);
+            $template->insertText('class', $title);
+        } else {
+            $title = '500 Error Internal Server Error';
+            $template->setTitleText($title);
+            $template->insertText('class', $title);
+        }
+
         if ($this->getConfig()->isDebug()) {
-            $template->setTitleText('Error: ' . $this->params['class']);
             $template->insertText('class', $this->params['class']);
             $template->appendHtml('message', htmlentities($this->params['message']) . ' ' . $this->params['extra']);
             if ($this->params['trace']) {
                 $template->appendHtml('trace', $this->params['trace']);
-                $template->setChoice('trace');
+                $template->show('trace');
             }
             if ($this->params['log']) {
                 $template->appendHtml('log', $this->params['log']);
-                $template->setChoice('log');
+                $template->show('log');
             }
-        } else if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND || $this->e instanceof \Tk\NotFoundHttpException) {
-            $title = '404 Error Page Not Found';
-            $template->setTitleText('Error: ' . $title);
-            $template->insertText('class', $title);
-            $template->appendHtml('message', 'Page not found!');
-        } else {
-            $title = '500 Error Internal Server Error';
-            $template->setTitleText('Error: ' . $title);
-            $template->insertText('class', $title);
-            $template->appendHtml('message', 'Something went very wrong.');
+            $template->show('debug');
         }
 
         return $template;
@@ -117,21 +117,34 @@ class Error extends Iface
     public function __makeTemplate()
     {
         try {
-            if (is_file($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'))) {
-                return \Dom\Template::loadFile($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'));
+            if ($this->getConfig()->get('template.error')) {
+                $errorPath = $this->getConfig()->getSitePath() . dirname($this->getConfig()->get('template.error'));
+                if (is_file($errorPath . '/' . $this->e->getCode() . '.html')) {
+                    return \Dom\Template::loadFile($errorPath . '/' . $this->e->getCode() . '.html');
+                }
+                if (is_file($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'))) {
+                    return \Dom\Template::loadFile($this->getConfig()->getSitePath() . $this->getConfig()->get('template.error'));
+                }
             }
             // TODO: Delete later, this method should be deprecated
             if (is_file($this->getConfig()->get('template.xtpl.path') . '/error.html')) {
                 return \Dom\Template::loadFile($this->getConfig()->get('template.xtpl.path') . '/error.html');
             }
-        } catch (\Exception $e) { \Tk\Log::warning('No Error template available using default.'); }
+        } catch (\Exception $e) {
+            \Tk\Log::warning('No Error template available using default.');
+            if ($this->getConfig()->isDebug()) {
+                \Tk\Log::warning($e->__toString());
+            }
+        }
 
         $html = <<<HTML
 <html lang="en">
 <head>
-  <base href="/" var="base-url" />
+  
   <meta charset="utf-8"/>
-  <title>Server Error</title></head>
+  <title>Server Error</title>
+  
+</head>
 <body>
 
 <h1 var="class"></h1>
