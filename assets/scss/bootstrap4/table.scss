@@ -50,6 +50,10 @@
  * \Tk\Table\Renderer\Dom\Table
  */
 .tk-table {
+  .table-responsive {
+    overflow-x: auto;
+    min-height: 0.01%;
+  }
 
   th {
     //@fa-var-sort-alpha-asc: "\f15d";
