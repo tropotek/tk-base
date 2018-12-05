@@ -68,7 +68,7 @@ class MasqueradeHandler implements Subscriber
     /**
      * Check if this user can masquerade as the supplied msqUser
      *
-     * @param User $user
+     * @param User $user The current User
      * @param User $msqUser
      * @return bool
      */
@@ -85,15 +85,25 @@ class MasqueradeHandler implements Subscriber
                 if ($data['userId'] == $msqUser->id) return false;
             }
         }
-        // Get the users role precedence order index
-        $userRoleIdx = $this->getRolePrecedenceIdx($user);
-        $msqRoleIdx = $this->getRolePrecedenceIdx($msqUser);
 
         // If not admin their role must be higher in precedence see \Uni\Db\User::$roleOrder
-        if ($user->isAdmin() || $userRoleIdx < $msqRoleIdx) {
+        if ($user->isAdmin() || $this->hasPrecedence($user, $msqUser)) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param User $user The current User
+     * @param User $msqUser
+     * @return bool
+     */
+    protected function hasPrecedence($user, $msqUser)
+    {
+        // Get the users role precedence order index
+        $userRoleIdx = $this->getRolePrecedenceIdx($user);
+        $msqRoleIdx = $this->getRolePrecedenceIdx($msqUser);
+        return ($userRoleIdx < $msqRoleIdx);
     }
 
     /**
