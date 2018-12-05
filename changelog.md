@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.0.160 [2018-12-05]:
+-------------------------------
+  - Fixed mce media path for projects
+
+
 Ver 1.0.158 [2018-12-05]:
 -------------------------------
   - Fixed a number of minor issues
