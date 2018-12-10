@@ -10,7 +10,7 @@ namespace Bs;
 abstract class FormIface extends \Tk\Form
 {
     /**
-     * @var null|\Tk\Db\ModelInterface
+     * @var null|\Tk\Db\ModelInterface|\Tk\Collection
      */
     protected $model = null;
 
@@ -67,7 +67,7 @@ abstract class FormIface extends \Tk\Form
     }
 
     /**
-     * @return null|\Tk\Db\ModelInterface
+     * @return null|\Tk\Db\ModelInterface|\Tk\Collection
      */
     public function getModel()
     {
@@ -75,7 +75,7 @@ abstract class FormIface extends \Tk\Form
     }
 
     /**
-     * @param null|\Tk\Db\ModelInterface $model
+     * @param null|\Tk\Db\ModelInterface|\Tk\Collection $model
      * @return static
      */
     public function setModel($model)
