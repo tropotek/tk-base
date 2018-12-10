@@ -353,7 +353,7 @@ var project_core = function () {
       toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | '+
                 'bullist numlist | outdent indent | forecolor backcolor fontselect fontsizeselect',
       toolbar2: 'table | charmap emoticons | link unlink anchor image media | '+
-        'hr nonbreaking insertdatetime | print preview | searchreplace removeformat fullscreen code codesample',
+        'hr nonbreaking insertdatetime | print preview | searchreplace removeformat fullscreen preview code codesample',
       toolbar3: '',
       content_css: [
         '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
@@ -387,9 +387,9 @@ var project_core = function () {
         var opts = $.extend({}, mceOpts, cfg);
         if (el.hasClass('mce-min')) {
           opts = $.extend({}, opts, {
-            plugins: ['lists advlist autolink link image media code'],
+            plugins: ['lists advlist autolink link image media code preview fullscreen'],
             toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
-              '| bullist numlist | link unlink image media | removeformat code',
+              '| bullist numlist | link unlink image media | removeformat fullscreen preview code',
             toolbar2: '',
             toolbar3: ''
           });
@@ -403,7 +403,7 @@ var project_core = function () {
               'table directionality emoticons template paste textcolor colorpicker textpattern visualchars visualblocks'
             ],
             toolbar1: 'bold italic underline strikethrough | forecolor backcolor fontsizeselect | alignleft aligncenter alignright ' +
-              '| bullist numlist | link unlink image media  | removeformat code',
+              '| bullist numlist | link unlink image media  | removeformat preview code',
             toolbar2: '',
             toolbar3: '',
             menubar: true

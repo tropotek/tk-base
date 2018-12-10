@@ -10,7 +10,6 @@ $gray-color-dark: #999 !default;
 $red-color: #F33 !default;
 
 
-
 /**
  * \Tk\Form\Renderer\Dom\Form
  */
@@ -77,4 +76,12 @@ $red-color: #F33 !default;
   }
 
 }
+
+
+/* MCE fullscreen with bootstrap nav fix */
+div.mce-fullscreen {
+  z-index: 1050;
+}
+
+
 
