@@ -80,15 +80,20 @@ class Error extends Iface
         }
         $template->setAttr('home-url', 'href', $url);
 
-        if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND || $this->e instanceof \Tk\NotFoundHttpException) {
-            $title = '404 Error Page Not Found';
-            $template->setTitleText($title);
-            $template->insertText('class', $title);
-        } else {
-            $title = '500 Error Internal Server Error';
-            $template->setTitleText($title);
-            $template->insertText('class', $title);
-        }
+
+        $title = $this->e->getCode() . ' ' . \Tk\Response::$messages[$this->e->getCode()];
+        $template->setTitleText($title);
+        $template->insertText('title', $title);
+
+//        if ($this->e->getCode() == \Tk\Response::HTTP_NOT_FOUND || $this->e instanceof \Tk\NotFoundHttpException) {
+//            $title = '404 Error Page Not Found';
+//            $template->setTitleText($title);
+//            $template->insertText('title', $title);
+//        } else {
+//            $title = '500 Error Internal Server Error';
+//            $template->setTitleText($title);
+//            $template->insertText('title', $title);
+//        }
 
         if ($this->getConfig()->isDebug()) {
             $template->insertText('class', $this->params['class']);
