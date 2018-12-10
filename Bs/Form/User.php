@@ -21,6 +21,11 @@ use Tk\Form;
  */
 class User extends \Bs\FormIface
 {
+    /**
+     * Setup the controller to work with users of this role
+     * @var string
+     */
+    protected $targetRole = '';
 
     /**
      * @throws \Exception
@@ -33,7 +38,7 @@ class User extends \Bs\FormIface
             $list = \Bs\Db\RoleMap::create()->findFiltered(array());
             $this->appendField(new Field\Select('roleId', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
         } else {
-            $this->appendField(new Field\Html('roleId', $this->getConfig()->getUser()->getRole()->getName()))->setTabGroup($tab);
+            $this->appendField(new Field\Html('roleId', $this->getUser()->getRole()->getName()))->setTabGroup($tab);
         }
 
         $this->appendField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
@@ -51,12 +56,12 @@ class User extends \Bs\FormIface
         $f = $this->appendField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setTabGroup($tab);
-        if (!$this->getConfig()->getUser()->getId())
+        if (!$this->getUser()->getId())
             $f->setRequired(true);
         $f = $this->appendField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setNotes('Change this users password.')->setTabGroup($tab);
-        if (!$this->getConfig()->getUser()->getId())
+        if (!$this->getUser()->getId())
             $f->setRequired(true);
 
         if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId()) {
@@ -151,6 +156,24 @@ class User extends \Bs\FormIface
     public function setUser($user)
     {
         return $this->setModel($user);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTargetRole()
+    {
+        return $this->targetRole;
+    }
+
+    /**
+     * @param string $targetRole
+     * @return User
+     */
+    public function setTargetRole($targetRole)
+    {
+        $this->targetRole = $targetRole;
+        return $this;
     }
     
 }
