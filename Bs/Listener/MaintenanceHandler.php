@@ -12,6 +12,23 @@ use Tk\Kernel\KernelEvents;
 class MaintenanceHandler implements Subscriber
 {
 
+    // TODO:
+    // TODO:
+    // TODO:   We need this to render and display the page so the URL remains the same
+    // TODO:
+    // TODO:   Then the user can just reload the page when the site is running again....>>>
+    // TODO:
+    // TODO:
+    // TODO:
+    // TODO:
+    // TODO:
+    // TODO:
+    // TODO:
+
+
+
+
+
     /**
      * kernel.controller
      * @param \Tk\Event\ControllerEvent $event
