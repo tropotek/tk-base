@@ -28,6 +28,7 @@ class Upgrade extends Iface
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|null|void
+     * @throws \Tk\Db\Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -42,7 +43,10 @@ class Upgrade extends Iface
 
         // TODO: create a backup of the database before executing this.....
 
+
         
+        \Bs\Listener\MaintenanceHandler::enableMaintenanceMode(true);
+
         $cmdList = array(
             'git reset --hard',
             'git checkout master',
@@ -93,6 +97,16 @@ class Upgrade extends Iface
             }
         }
 
+    }
+
+    public function run(InputInterface $input, OutputInterface $output)
+    {
+        try {
+            $r = parent::run($input, $output);
+        } finally {
+            \Bs\Listener\MaintenanceHandler::enableMaintenanceMode(false);
+        }
+        return $r;
     }
 
 }

@@ -59,5 +59,4 @@ class Maintenance extends Iface
 
         $this->write();
     }
-
 }
