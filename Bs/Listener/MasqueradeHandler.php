@@ -208,7 +208,7 @@ class MasqueradeHandler implements Subscriber
     /**
      * Get the user who is masquerading, ignoring any nested masqueraded users
      *
-     * @return \Bs\Db\UserIface|null
+     * @return \Bs\Db\User|\Bs\Db\UserIface|null
      * @throws \Exception
      */
     public function getMasqueradingUser()
@@ -217,7 +217,7 @@ class MasqueradeHandler implements Subscriber
         $user = null;
         if ($config->getSession()->has(static::SID)) {
             $msqArr = current($config->getSession()->get(static::SID));
-            /** @var \Uni\Db\User $user */
+            /** @var \Bs\Db\User $user */
             $user = $config->getUserMapper()->find($msqArr['userId']);
         }
         return $user;

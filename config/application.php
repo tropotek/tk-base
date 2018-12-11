@@ -42,10 +42,14 @@ $config['template.user']        = $config['system.theme.admin'] . '/admin.html';
 $config['template.public']      = $config['system.theme.public'] . '/public.html';
 
 /*
- * Set the error page template, this has minimum system requirements
- * for parsing and is usually a separate file.
+ * Set the error page template
  */
 $config['template.error']       = dirname($config['template.admin']) . '/error.html';
+
+/*
+ * Set the maintenance page template
+ */
+$config['template.error']       = dirname($config['template.admin']) . '/maintenance.html';
 
 /*
  * This path is where designers can place templates that override the system default templates for Dom\Renderer objects.

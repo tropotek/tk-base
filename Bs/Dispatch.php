@@ -121,6 +121,8 @@ class Dispatch
         if ($config->getCrumbsHandler())
             $dispatcher->addSubscriber($config->getCrumbsHandler());
 
+        $dispatcher->addSubscriber(new \Bs\Listener\MaintenanceHandler());
+
     }
 
 }

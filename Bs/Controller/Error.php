@@ -80,8 +80,10 @@ class Error extends Iface
         }
         $template->setAttr('home-url', 'href', $url);
 
-
-        $title = $this->e->getCode() . ' ' . \Tk\Response::$messages[$this->e->getCode()];
+        $title = '500 Error Internal Server Error';
+        if (!empty(\Tk\Response::$messages[$this->e->getCode()])) {
+            $title = $this->e->getCode() . ' ' . \Tk\Response::$messages[$this->e->getCode()];
+        }
         $template->setTitleText($title);
         $template->insertText('title', $title);
 

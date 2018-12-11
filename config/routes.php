@@ -28,6 +28,8 @@ $routes->add('register', new \Tk\Routing\Route('/register.html', 'Bs\Controller\
 $routes->add('recover', new \Tk\Routing\Route('/recover.html', 'Bs\Controller\Recover::doDefault'));
 $routes->add('logout', new \Tk\Routing\Route('/logout.html', 'Bs\Controller\Logout::doDefault'));
 
+$routes->add('maintenance', new \Tk\Routing\Route('/maintenance.html', 'Bs\Controller\Maintenance::doDefault'));
+
 
 // Admin Pages
 //$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault'));

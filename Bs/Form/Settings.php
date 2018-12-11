@@ -50,10 +50,9 @@ class Settings extends \Bs\FormIface
             ->setNotes('You can omit the &lt;style&gt; tags here')->addCss('code')->setAttr('data-mode', 'css');
 
         $tab = 'Maintenance';
-        $this->appendField(new Field\Checkbox('site.maintenance.enabled'))->setLabel('')->setTabGroup($tab)->setCheckboxLabel('Maintenance Mode Enabled');
-        $this->appendField(new Field\Input('site.maintenance.allow.ip'))->setTabGroup($tab)->setLabel('Allowed IP/Subnet');
-        $this->appendField(new Field\Input('site.maintenance.allow.role'))->setTabGroup($tab)->setLabel('Allowed roles');
+        $this->appendField(new Field\Checkbox('site.maintenance.enabled'))->addCss('check-enable')->setLabel('')->setTabGroup($tab)->setCheckboxLabel('Maintenance Mode Enabled');
         $this->appendField(new Field\Textarea('site.maintenance.message'))->addCss('mce-min')->setTabGroup($tab)->setLabel('Message');
+
 
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->appendField(new Event\Submit('save', array($this, 'doSubmit')));

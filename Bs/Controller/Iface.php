@@ -14,7 +14,7 @@ abstract class Iface extends \Tk\Controller\Iface
      *
      * NOTE: This is the default, override to load your own page objects
      *
-     * @return /Bs/Page
+     * @return \Tk\Controller\Page|\Bs\Page
      * @todo: this is very confusing and hard to trace,  we need a better method to instantiate a page object
      */
     public function getPage()
