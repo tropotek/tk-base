@@ -38,6 +38,7 @@ class PageTemplateHandler implements Subscriber
         /** @var \Bs\Controller\Iface $controller */
         $controller = $event->get('controller');
         $config = \Bs\Config::getInstance();
+
         $template = $controller->getPage()->getTemplate();
 
         if (trim($this->getConfig()->get('site.meta.keywords'))) {
@@ -171,7 +172,7 @@ JS;
     public static function getSubscribedEvents()
     {
         return array(
-            \Tk\PageEvents::CONTROLLER_SHOW => 'showPage'
+            \Tk\PageEvents::CONTROLLER_SHOW => array('showPage', 10)
         );
     }
 

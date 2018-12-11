@@ -12,23 +12,6 @@ use Tk\Kernel\KernelEvents;
 class MaintenanceHandler implements Subscriber
 {
 
-    // TODO:
-    // TODO:
-    // TODO:   We need this to render and display the page so the URL remains the same
-    // TODO:
-    // TODO:   Then the user can just reload the page when the site is running again....>>>
-    // TODO:
-    // TODO:
-    // TODO:
-    // TODO:
-    // TODO:
-    // TODO:
-    // TODO:
-
-
-
-
-
     /**
      * kernel.controller
      * @param \Tk\Event\ControllerEvent $event
@@ -37,15 +20,15 @@ class MaintenanceHandler implements Subscriber
     public function onController(\Tk\Event\ControllerEvent $event)
     {
         /** @var \Tk\Controller\Iface $controller */
-        $controller = $event->getController();
+        $controller = $event->getControllerObject();
         if (!$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('site.maintenance.enabled')) {
             if ($this->getConfig()->getUser()) {
                 if ($this->getConfig()->getUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
                 if ($this->getConfig()->getMasqueradeHandler()->getMasqueradingUser() && $this->getConfig()->getMasqueradeHandler()->getMasqueradingUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
             }
-            \Tk\Uri::create('/maintenance.html')->redirect();
+            $maintController = new \Bs\Controller\Maintenance();
+            $event->setController(array($maintController, 'doDefault'));
         }
-
     }
 
     /**
@@ -67,7 +50,6 @@ HTML;
             $template->prependHtml($template->getBodyElement(), $html);
             $template->addCss($template->getBodyElement() ,'tk-ribbon-box');
         }
-
     }
 
     /**
@@ -91,12 +73,10 @@ HTML;
     }
 
 
-
-
     public static function getSubscribedEvents()
     {
         return array(
-            KernelEvents::CONTROLLER =>  array('onController', 1),
+            KernelEvents::CONTROLLER =>  array('onController', 15),
             \Tk\PageEvents::CONTROLLER_SHOW => 'showPage'
         );
     }

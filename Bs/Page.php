@@ -9,38 +9,15 @@ namespace Bs;
 class Page extends \Tk\Controller\Page
 {
 
-
     /**
      * @param string $templatePath
      */
     public function __construct($templatePath = '')
     {
-        if (!$templatePath)    // set
+        if (!$templatePath)
             $templatePath = $this->makeDefaultTemplatePath();
-
         parent::__construct($templatePath);
-
-//        // TODO: FIX THIS ! Could possibly add more than one if more than one page instance is created .... ???? !!!!!
-//        $this->getConfig()->getDomLoader()->addAdapter(new \Dom\Loader\Adapter\ClassPath(
-//            dirname($templatePath).'/xtpl',
-//            $this->getConfig()->get('template.xtpl.ext'),
-//            false
-//        ));
     }
-
-    /**
-     * Create the default template path using the url role if available (see Config)
-     *
-     *  // Theme Path
-     *  $config['system.theme.path'] = $config['system.template.path'] . '/cube/admin.html';
-     *
-     * @return string
-     * @todo This should be the site default
-     */
-//    protected function makeDefaultTemplatePath()
-//    {
-//        return $this->getConfig()->getSitePath() . $this->getConfig()->get('system.theme.path');
-//    }
 
     /**
      * Create the default template path using the url role if available (see Config)

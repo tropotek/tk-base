@@ -337,7 +337,6 @@ class Config extends \Tk\Config
     {
         if (!$this->get('dom.loader')) {
             $dl = \Dom\Loader::getInstance()->setParams($this->all());
-            //$dl->addAdapter(new \Dom\Loader\Adapter\DefaultLoader());      \\ Used by default now
             $dl->addAdapter(new \Dom\Loader\Adapter\ClassPath($this->getSitePath() . $this['template.xtpl.path'], $this['template.xtpl.ext']));
             $this->set('dom.loader', $dl);
         }

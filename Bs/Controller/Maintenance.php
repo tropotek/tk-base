@@ -33,9 +33,6 @@ class Maintenance extends \Bs\Controller\Iface
                 \Tk\Uri::create($this->getConfig()->get('url.auth.home'))->redirect();
             }
         }
-
-
-
     }
 
     /**
@@ -53,7 +50,6 @@ class Maintenance extends \Bs\Controller\Iface
         } else {
             $tpl->show('default-message');
         }
-
         return $template;
     }
 
@@ -65,7 +61,7 @@ class Maintenance extends \Bs\Controller\Iface
     {
         if (!$this->page) {
             $this->page = $this->getConfig()->getPage($this->getConfig()->getSitePath() . $this->getConfig()->get('template.maintenance'));
-            //$this->page->setController($this);
+            $this->page->setController($this);
         }
         return parent::getPage();
     }
@@ -78,9 +74,7 @@ class Maintenance extends \Bs\Controller\Iface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-  
-</div>
+<div></div>
 HTML;
 
         return \Dom\Loader::load($xhtml);
