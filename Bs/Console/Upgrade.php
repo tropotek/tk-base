@@ -44,7 +44,7 @@ class Upgrade extends Iface
         // TODO: create a backup of the database before executing this.....
 
 
-        
+
         \Bs\Listener\MaintenanceHandler::enableMaintenanceMode(true);
 
         $cmdList = array(
