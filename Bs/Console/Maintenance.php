@@ -23,7 +23,6 @@ class Maintenance extends Iface
         $config = \Bs\Config::getInstance();
         $enabled = ($config->get('site.maintenance.enabled') == 'site.maintenance.enabled');
 
-
         $this->setName('maintenance')
             ->setDescription('Enable/Disable the sites maintenance mode. Current: ' . ($enabled ? 'Enabled' : 'Disabled'));
     }
