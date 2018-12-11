@@ -32,6 +32,8 @@ class Settings extends \Bs\FormIface
         $this->appendField(new Field\Input('site.title'))->setTabGroup($tab)->setLabel('Site Title')->setRequired(true);
         $this->appendField(new Field\Input('site.short.title'))->setTabGroup($tab)->setLabel('Site Short Title')->setRequired(true);
         $this->appendField(new Field\Input('site.email'))->setTabGroup($tab)->setLabel('Site Email')->setRequired(true);
+        $this->appendField(new Field\Textarea('site.email.sig'))->setTabGroup($tab)->setLabel('Email Signature')
+            ->setNotes('Set the email signature to appear at the foot of all system emails.')->addCss('mce-min');
 
         $tab = 'SEO';
         $this->appendField(new Field\Input('site.meta.keywords'))->setTabGroup($tab)->setLabel('SEO Keywords');
