@@ -41,13 +41,20 @@ class Settings extends \Bs\Controller\AdminEditIface
     }
 
     /**
+     * init the action panel
+     */
+    public function initActionPanel()
+    {
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Plugins', \Bs\Uri::createHomeUrl('/plugins.html'), 'fa fa-plug'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Users', \Bs\Uri::createHomeUrl('/userManager.html'), 'fa fa-users'));
+    }
+
+    /**
      * @return \Dom\Template
      */
     public function show()
     {
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Plugins', \Bs\Uri::createHomeUrl('/plugins.html'), 'fa fa-plug'));
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Users', \Bs\Uri::createHomeUrl('/userManager.html'), 'fa fa-users'));
-
+        $this->initActionPanel();
         $template = parent::show();
         
         // Render the form
