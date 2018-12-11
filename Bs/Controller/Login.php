@@ -76,6 +76,7 @@ class Login extends Iface
         $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
         $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
             ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
+
         if ($this->getConfig()->get('site.client.registration')) {
             $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
                 ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
@@ -128,6 +129,7 @@ class Login extends Iface
 
         } catch (\Exception $e) {
             $form->addError($e->getMessage());
+            $form->addError('Login Error: ' . $e->getMessage());
         }
     }
 
@@ -144,8 +146,8 @@ class Login extends Iface
         }
 
         if ($this->getConfig()->get('site.client.registration')) {
-            $template->setChoice('register');
-            $this->getPage()->getTemplate()->setChoice('register');
+            $template->show('register');
+            $this->getPage()->getTemplate()->show('register');
         }
 
         $js = <<<JS
