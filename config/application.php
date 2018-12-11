@@ -49,7 +49,7 @@ $config['template.error']       = dirname($config['template.admin']) . '/error.h
 /*
  * Set the maintenance page template
  */
-$config['template.error']       = dirname($config['template.admin']) . '/maintenance.html';
+$config['template.maintenance']       = dirname($config['template.admin']) . '/maintenance.html';
 
 /*
  * This path is where designers can place templates that override the system default templates for Dom\Renderer objects.
