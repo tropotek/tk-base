@@ -55,13 +55,12 @@ class Edit extends \Bs\Controller\AdminEditIface
     {
         $this->init($request);
 
-        $this->setForm(\Bs\Form\User::create()->setModel($this->user));
 
         $this->getForm()->execute();
     }
 
     /**
-     * @param Request $request
+     * @param \Tk\Request $request
      * @throws \Exception
      */
     public function init($request)
@@ -71,6 +70,8 @@ class Edit extends \Bs\Controller\AdminEditIface
         if ($request->get('userId')) {
             $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
         }
+
+        $this->setForm(\Bs\Form\User::create()->setModel($this->user));
     }
 
     /**
