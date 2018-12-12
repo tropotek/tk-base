@@ -35,9 +35,17 @@ class Settings extends \Bs\Controller\AdminEditIface
     {
         $this->data = \Tk\Db\Data::create();
 
-        $this->setForm(\Bs\Form\Settings::create()->setModel($this->data));
+        $this->init();
         $this->getForm()->execute();
 
+    }
+
+    /**
+     * init the form and other stuff before form->execute()
+     */
+    public function init()
+    {
+        $this->setForm(\Bs\Form\Settings::create()->setModel($this->data));
     }
 
     /**
