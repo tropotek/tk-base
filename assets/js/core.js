@@ -296,7 +296,7 @@ var project_core = function () {
   /**
    * Tiny MCE setup
    */
-  var initTinymce = function () {
+  var initTinymce = function (extOpts) {
     if ($.fn.tinymce === undefined) {
       console.warn('Plugin not loaded: jquery.tinymce');
       return;
@@ -308,6 +308,7 @@ var project_core = function () {
      * @private
      */
     var _elFinderPickerCallback = function (callback, value, meta) {
+
       tinymce.activeEditor.tkConfig = $.extend({}, config, $(tinymce.activeEditor.getElement()).data());
       tinymce.activeEditor.windowManager.open({
         file: config.siteUrl + '/vendor/ttek/tk-base/assets/js/elFinder/elfinder.html', // use an absolute path!
@@ -373,18 +374,16 @@ var project_core = function () {
 
       var form = $(this);
       form.find('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
-
-
         var el = $(this);
         var cfg = {statusbar: false};
-        var readonly = 0;
+        //var readonly = 0;
         if (el.is('[readonly]') || el.is('[disabled]')) {
           cfg.readonly = 1;
           cfg.body_class = 'tk-disabled';
           cfg.toolbar = false;
           cfg.theme_advanced_disable = true;
         }
-        var opts = $.extend({}, mceOpts, cfg);
+        var opts = $.extend({}, mceOpts, cfg, extOpts);
         if (el.hasClass('mce-min')) {
           opts = $.extend({}, opts, {
             plugins: ['lists advlist autolink link image media code preview fullscreen'],
@@ -415,6 +414,13 @@ var project_core = function () {
         if (el.tinymce())
             el.tinymce().remove();
         el.tinymce(opts);
+      });
+
+      // Prevent Bootstrap dialog from blocking focusing
+      $(document).on('focusin', function(e) {
+        if ($(e.target).closest('.mce-window').length) {
+          e.stopImmediatePropagation();
+        }
       });
     }
     $('form').on('init', document, init).each(init);
