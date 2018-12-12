@@ -156,9 +156,7 @@ class Error extends Iface
 
 <h1 var="class"></h1>
 <p class="message"><strong var="message"></strong></p>
-<p>&nbsp;</p>
 <pre class="trace" var="trace" choice="trace"></pre>
-<p>&nbsp;</p>
 <div class="log-dump" var="log" choice="log"></div>
 
 </body>
