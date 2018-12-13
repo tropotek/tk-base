@@ -1,5 +1,13 @@
 #CHANGELOG#
 
+Ver 1.1.4 [2018-12-13]:
+-------------------------------
+  - Updated teh code to use the newest libs
+  - Applied maintenance mode and updated setting page
+  - Merge branch 'master' of https://github.com/tropotek/tk-base
+  - Added maintenance mode to site settings
+
+
 Ver 1.1.2 [2018-12-10]:
 -------------------------------
 
