@@ -647,6 +647,27 @@ class Config extends \Tk\Config
     {
         if (!$this->get('system.console')) {
             $app = new \Symfony\Component\Console\Application($this->get('site.title'), $this->get('system.info.version'));
+
+            $log = null;
+            if ($this->get('event.dispatcher.log')) {
+                $log = $this->getLog();
+            }
+            $dispatcher = new \Tk\Sym\EventDispatcher($log);
+            $this->set('event.dispatcher', $dispatcher);
+            $this->setupDispatcher($dispatcher);
+            $app->setDispatcher($dispatcher);
+
+            // Setup Global Console Commands
+            $app->add(new \Bs\Console\Upgrade());
+            $app->add(new \Bs\Console\Maintenance());
+            if ($this->isDebug()) {
+                $app->add(new \Bs\Console\MakeModel());
+                $app->add(new \Bs\Console\MakeTable());
+                $app->add(new \Bs\Console\MakeForm());
+                $app->add(new \Bs\Console\Debug());
+                $app->add(new \Bs\Console\Mirror());
+            }
+
             $this->set('system.console', $app);
         }
         return $this->get('system.console');
