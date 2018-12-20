@@ -197,7 +197,7 @@ class Config extends \Tk\Config
     /**
      * getEventDispatcher
      *
-     * @return \Tk\Event\Dispatcher
+     * @return \Tk\Event\Dispatcher|\Tk\Sym\EventDispatcher
      */
     public function getEventDispatcher()
     {
@@ -206,7 +206,8 @@ class Config extends \Tk\Config
             if ($this->get('event.dispatcher.log')) {
                 $log = $this->getLog();
             }
-            $obj = new \Tk\Event\Dispatcher($log);
+            //$obj = new \Tk\Event\Dispatcher($log);
+            $obj = new \Tk\Sym\EventDispatcher($log);
             $this->set('event.dispatcher', $obj);
         }
         return $this->get('event.dispatcher');
@@ -648,18 +649,14 @@ class Config extends \Tk\Config
         if (!$this->get('system.console')) {
             $app = new \Symfony\Component\Console\Application($this->get('site.title'), $this->get('system.info.version'));
 
-            $log = null;
-            if ($this->get('event.dispatcher.log')) {
-                $log = $this->getLog();
-            }
-            $dispatcher = new \Tk\Sym\EventDispatcher($log);
-            $this->set('event.dispatcher', $dispatcher);
+            $dispatcher = $this->getEventDispatcher();
             $this->setupDispatcher($dispatcher);
             $app->setDispatcher($dispatcher);
 
             // Setup Global Console Commands
             $app->add(new \Bs\Console\Upgrade());
             $app->add(new \Bs\Console\Maintenance());
+            $app->add(new \Bs\Console\DbBackup());
             if ($this->isDebug()) {
                 $app->add(new \Bs\Console\MakeModel());
                 $app->add(new \Bs\Console\MakeTable());
