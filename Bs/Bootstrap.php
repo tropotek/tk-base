@@ -38,8 +38,23 @@ class Bootstrap
 
         // This maybe should be created in a Factory or DI Container....
         if (is_writable($config->getLogPath())) {
+            $sessionLog = $config->get('log.session');
+
             if (!$config->getRequest()->has('nolog')) {
-                $logger = new Logger('system');
+                $processors = array();
+                if (is_writable(dirname($sessionLog))) {
+                    file_put_contents($sessionLog, ''); // Refresh log for this session
+                    $processors[] = function ($record) use ($sessionLog) {
+                        // create a session logger file
+                        if (isset($record['message'])) {
+                            $str = $record['message'] . "\n";
+                            file_put_contents($sessionLog, $str, FILE_APPEND | LOCK_EX);
+                        }
+                        return $record;
+                    };
+                }
+                //$logger = new Logger('system');
+                $logger = new Logger('system', array(), $processors);
                 $handler = new StreamHandler($config->getLogPath(), $config->getLogLevel());
                 $formatter = new \Tk\Log\MonologLineFormatter();
                 $formatter->setScriptTime($config->getScriptTime());

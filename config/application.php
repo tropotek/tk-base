@@ -83,6 +83,7 @@ $config['upload.profile.imagesize'] = 1028*1028*2;
 
 /*
  * The session log allows us to add the log to exception emails
+ * See the log init script in the Bootstrap object
  */
 $config['log.session'] = $config->getTempPath().'/session.log';
 
