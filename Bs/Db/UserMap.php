@@ -148,8 +148,14 @@ class UserMap extends Mapper
             }
         }
 
+//        if (!empty($filter['roleId'])) {
+//            $where .= sprintf('a.role_id = %s AND ', (int)$filter['roleId']);
+//        }
         if (!empty($filter['roleId'])) {
-            $where .= sprintf('a.role_id = %s AND ', (int)$filter['roleId']);
+            $w = $this->makeMultiQuery($filter['roleId'], 'a.role_id');
+            if ($w) {
+                $where .= '('. $w . ') AND ';
+            }
         }
 
         if (!empty($filter['username'])) {
