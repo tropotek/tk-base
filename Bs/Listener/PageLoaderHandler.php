@@ -189,9 +189,19 @@ CSS;
             $js = <<<JS
 $(document).ready(function() {
   $('body').addClass('loaded');
-  $(window).on('beforeunload', function() {
+  $(window).on('beforeunload', function(e) {
+    // Do not fire loader for some links... Add class="no-loader" for links that you want to force to not use the loader
+    if (e.target && e.target.activeElement &&  
+        ((e.target.activeElement.href && e.target.activeElement.href.indexOf(config.dataUrl) >= 0) || $(e.target.activeElement).hasClass('no-loader')) ) {
+      $('body').addClass('loaded');
+      return;
+    }
     $('body').removeClass('loaded');
   });
+  // .on('blur', function () {
+  //   $('body').removeClass('loaded');
+  // });
+  
   $(document).keyup(function(e) {
     if (e.key === "Escape") { // escape key maps to keycode `27`
       $('body').addClass('loaded');
@@ -212,7 +222,7 @@ JS;
 //    }
 //  });
 //
-//  $('.btn-no-unload').on('click', document, function (e) {
+//  $('.no-loader').on('click', document, function (e) {
 //    console.log($('html').data('tkLoaderEnabled'));
 //    $('html').data('tkLoaderEnabled', false);
 //    console.log($('html').data('tkLoaderEnabled'));
