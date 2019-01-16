@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.1.16 [2019-01-17]:
+-------------------------------
+  - Added public company search and view pages
+
+
 Ver 1.1.14 [2019-01-16]:
 -------------------------------
   - fixed the PageLoadHandler to not fire for data files and csv downloads.
