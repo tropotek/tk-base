@@ -43,12 +43,16 @@ class Bootstrap
             if (!$config->getRequest()->has('nolog')) {
                 $processors = array();
                 if (is_writable(dirname($sessionLog))) {
-                    file_put_contents($sessionLog, ''); // Refresh log for this session
+                    if (!is_file($sessionLog) || is_writable($sessionLog))
+                        file_put_contents($sessionLog, ''); // Refresh log for this session
+
                     $processors[] = function ($record) use ($sessionLog) {
                         // create a session logger file
                         if (isset($record['message'])) {
                             $str = $record['message'] . "\n";
-                            file_put_contents($sessionLog, $str, FILE_APPEND | LOCK_EX);
+                            if (is_writable($sessionLog)) {
+                                file_put_contents($sessionLog, $str, FILE_APPEND | LOCK_EX);
+                            }
                         }
                         return $record;
                     };
