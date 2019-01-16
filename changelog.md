@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 1.1.14 [2019-01-16]:
+-------------------------------
+  - fixed the PageLoadHandler to not fire for data files and csv downloads.
+
+
 Ver 1.1.12 [2019-01-16]:
 -------------------------------
   - In the project Edit and View add the "Add Member" dialog as there is no functionality there a
