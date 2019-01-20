@@ -307,6 +307,7 @@ class Config extends \Tk\Config
                 $scss = $dm->add(new \Dom\Modifier\Filter\Scss($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars));
                 $scss->setCompress(true);
                 $scss->setCacheEnabled(!$this->isRefreshCacheRequest());
+                $scss->setTimeout(\Tk\Date::DAY*14);
             }
 
             if ($this->isDebug()) {
