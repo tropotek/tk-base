@@ -367,7 +367,12 @@ var project_core = function () {
       content_style: 'body {padding: 10px}',
       convert_urls: false,
       browser_spellcheck: true,
-      file_picker_callback: _elFinderPickerCallback
+      file_picker_callback: _elFinderPickerCallback,
+      setup: function (ed) {
+        ed.on('focus', function(e) {
+          $(document).trigger('mceFocus');
+        });
+      }
     };
 
     function init() {
