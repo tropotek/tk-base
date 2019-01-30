@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 1.1.22 [2019-01-30]:
+-------------------------------
+
+
 Ver 1.1.20 [2019-01-23]:
 -------------------------------
   - Added a document.mceFocus event to attached mce events to...
