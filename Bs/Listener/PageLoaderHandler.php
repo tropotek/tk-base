@@ -2,7 +2,8 @@
 namespace Bs\Listener;
 
 use Tk\Event\Subscriber;
-use Tk\Kernel\KernelEvents;
+
+
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -11,6 +12,9 @@ use Tk\Kernel\KernelEvents;
  */
 class PageLoaderHandler implements Subscriber
 {
+
+    const NO_LOADER = 'no-loader';
+
 
     /**
      * @param \Tk\Event\Event $event
@@ -29,6 +33,34 @@ class PageLoaderHandler implements Subscriber
             if ($uri->getRoleType(\Tk\ObjectUtil::getClassConstants($this->getConfig()->createRole(), 'TYPE')) == '') {
                 return;
             }
+
+
+            $js = <<<JS
+$(document).ready(function() {
+  $('body').addClass('loaded');
+  $(window).on('beforeunload', function(e) {
+    // Do not fire loader for some links... Add class="no-loader" for links that you want to force to not use the loader
+    if (e.target && e.target.activeElement &&  
+        ((e.target.activeElement.href && e.target.activeElement.href.indexOf(config.dataUrl) >= 0) || $(e.target.activeElement).hasClass('no-loader')) ) {
+      $('body').addClass('loaded');
+      return;
+    }
+    $('body').removeClass('loaded');
+  });
+  // .on('blur', function () {
+  //   $('body').removeClass('loaded');
+  // });
+  
+  $(document).keyup(function(e) {
+    if (e.key === 'Escape') { // escape key maps to keycode `27`
+      $('body').addClass('loaded');
+    }
+  });
+  
+});
+JS;
+            $template->appendJs($js);
+
 
 
             $template->prependHtml($template->getBodyElement(), '<div id="loader-wrapper">
@@ -184,34 +216,6 @@ class PageLoaderHandler implements Subscriber
 }
 CSS;
             $template->appendCss($css);
-
-
-            $js = <<<JS
-$(document).ready(function() {
-  $('body').addClass('loaded');
-  $(window).on('beforeunload', function(e) {
-    // Do not fire loader for some links... Add class="no-loader" for links that you want to force to not use the loader
-    if (e.target && e.target.activeElement &&  
-        ((e.target.activeElement.href && e.target.activeElement.href.indexOf(config.dataUrl) >= 0) || $(e.target.activeElement).hasClass('no-loader')) ) {
-      $('body').addClass('loaded');
-      return;
-    }
-    $('body').removeClass('loaded');
-  });
-  // .on('blur', function () {
-  //   $('body').removeClass('loaded');
-  // });
-  
-  $(document).keyup(function(e) {
-    if (e.key === "Escape") { // escape key maps to keycode `27`
-      $('body').addClass('loaded');
-    }
-  });
-  
-});
-JS;
-
-            $template->appendJs($js);
 
 
 
