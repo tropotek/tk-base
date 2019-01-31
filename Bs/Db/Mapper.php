@@ -169,6 +169,92 @@ abstract class Mapper extends \Tk\Db\Mapper
      * @param string $interval
      * @throws \Tk\Db\Exception
      * @see http://www.richnetapps.com/using-mysql-generate-daily-sales-reports-filled-gaps/
+     *
+     * @TODO: _not_working_because_of_temp_table
+     * @TODO: we need to use CONCAT() see https://forums.mysql.com/read.php?98,495352
+     */
+    public function createDateTable_bugger(\DateTime $dateFrom, \DateTime $dateTo, $tableName = 'temp_cal', $interval = '1 DAY')
+    {
+        $df = $dateFrom->format('Y-m-d');
+        $dt = $dateTo->format('Y-m-d');
+
+        $sql = <<<SQL
+DROP PROCEDURE IF EXISTS procFillCal;
+
+-- DELIMITER //
+
+CREATE PROCEDURE procFillCal(pTableName VARCHAR(32), pStartDate DATE, pEndDate DATE, pInterval VARCHAR(8), pIntervalUnit INTEGER)
+BEGIN
+  DECLARE pDate DATE;
+  
+  -- This will not work for external use I think???????? Cannot find the table when used in an external query
+--  DROP TEMPORARY TABLE IF EXISTS pTableName;
+  CREATE TEMPORARY TABLE pTableName (`date` DATE );
+  TRUNCATE pTableName;
+
+  SET pDate = pStartDate;
+  WHILE pDate < pEndDate DO
+    
+    INSERT INTO pTableName VALUES(pDate);
+    
+    CASE UPPER(pInterval)
+      WHEN 'DAY' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit DAY);
+      WHEN 'WEEK' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit WEEK);
+      WHEN 'MONTH' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit MONTH);
+      WHEN 'YEAR' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit YEAR);
+    END CASE;
+    
+  END WHILE;
+  
+ END;
+-- DELIMITER ;
+SQL;
+        $st = $this->getDb()->prepare($sql);
+        $st->execute();
+
+        list($iUnit, $iType) = explode(' ', $interval);
+
+        $st = $this->getDb()->prepare('CALL procFillCal(?, ?, ?, ?, ?)');
+
+        $st->execute(array($tableName, $df, $dt, $iType, $iUnit));
+
+        vd($st->getPdo()->getLastQuery());
+        vd($st->getPdo()->errorInfo());
+
+    }
+
+
+
+    /**
+     * This function creates a temporary table filled with dates
+     * This can be used in join querys for stats queries and ensures uniform date results
+     * even if there is no data on that date.
+     * <code>
+     *   SELECT calDay.date AS DATE, SUM(orders.quantity) AS total_sales
+     *     FROM orders RIGHT JOIN calDay ON (DATE(orders.order_date) = calDay.date)
+     *   GROUP BY DATE
+     *
+     * -- OR
+     *
+     * SELECT DATE($cal.`date`) as 'date', IFNULL(count($tbl.`id`), 0) as 'total'
+     * FROM `$tbl` RIGHT JOIN `$cal` ON (DATE($tbl.`created`) = DATE($cal.`date`) )
+     * WHERE ($cal.`date`
+     *     BETWEEN (SELECT MIN(DATE(`created`)) FROM `$tbl`)
+     *         AND (SELECT MAX(DATE(`created`)) FROM `$tbl`)
+     * )
+     * GROUP BY `date`
+     *
+     * </code>
+     *
+     * For interval info see ADDDATE() in the Mysql Manual.
+     * @see http://dev.mysql.com/doc/refman/5.6/en/date-and-time-functions.html#function_date-add
+     *
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     * @param string $tableName
+     * @param string $interval
+     * @throws \Tk\Db\Exception
+     * @see http://www.richnetapps.com/using-mysql-generate-daily-sales-reports-filled-gaps/
      */
     public function createDateTable(\DateTime $dateFrom, \DateTime $dateTo, $tableName = 'calDay', $interval = '1 DAY')
     {
@@ -198,7 +284,6 @@ SQL;
 
         $st = $this->getDb()->prepare('CALL fill_calendar(?, ?)');
         $st->execute(array($df, $dt));
-
     }
 
 }
