@@ -14,6 +14,8 @@ use Symfony\Component\Console\Input\InputOption;
 class Upgrade extends Iface
 {
 
+    private $orgMaint = false;
+
     /**
      *
      */
@@ -43,6 +45,7 @@ class Upgrade extends Iface
 
         // TODO: create a backup of the database before executing this.....
 
+        $this->orgMaint = (bool)$config->get('site.maintenance.enabled');
 
 
         \Bs\Listener\MaintenanceHandler::enableMaintenanceMode(true);
@@ -104,7 +107,7 @@ class Upgrade extends Iface
         try {
             $r = parent::run($input, $output);
         } finally {
-            \Bs\Listener\MaintenanceHandler::enableMaintenanceMode(false);
+            \Bs\Listener\MaintenanceHandler::enableMaintenanceMode($this->orgMaint);
         }
         return $r;
     }
