@@ -21,7 +21,6 @@ class MaintenanceHandler implements Subscriber
     {
         /** @var \Tk\Controller\Iface $controller */
         $controller = $event->getControllerObject();
-        vd($controller, $controller->getRequest()->getUri()->basename());
         if ($controller->getRequest()->getUri()->basename() != 'login.html' && !$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('site.maintenance.enabled')) {
             if ($this->getConfig()->getUser()) {
                 if ($this->getConfig()->getUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
