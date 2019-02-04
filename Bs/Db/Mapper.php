@@ -255,6 +255,9 @@ SQL;
      * @param string $interval
      * @throws \Tk\Db\Exception
      * @see http://www.richnetapps.com/using-mysql-generate-daily-sales-reports-filled-gaps/
+     *
+     * @TODO: We need a better way to handle this, temp tables generate too many issues with multiple sessions.
+     * @TODO: One solution may be to creat a global lookup _cal_day, _cal_month table??????
      */
     public function createDateTable(\DateTime $dateFrom, \DateTime $dateTo, $tableName = 'calDay', $interval = '1 DAY')
     {

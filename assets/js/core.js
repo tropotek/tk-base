@@ -4,9 +4,13 @@
  */
 
 // Include the Uri js object for all pages
-document.write('<script src="'+config.siteUrl+'/vendor/ttek/tk-base/assets/js/sugar.min.js"></script>');
+//document.write('<script src="'+config.siteUrl+'/vendor/ttek/tk-base/assets/js/sugar.min.js"></script>');
+//document.write('<script src="'+config.siteUrl+'/vendor/ttek/tk-base/assets/js/Uri.js"></script>');
+// TODO: Add the following to the site instead.
 
-document.write('<script src="'+config.siteUrl+'/vendor/ttek/tk-base/assets/js/Uri.js"></script>');
+// <script src="/vendor/ttek/tk-base/assets/js/sugar.min.js"></script>
+// <script src="/vendor/ttek/tk-base/assets/js/Uri.js"></script>
+
 
 var project_core = function () {
   "use strict";
