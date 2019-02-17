@@ -42,7 +42,8 @@ class User extends \Bs\FormIface
         }
 
         $this->appendField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
-        if ($this->getUser()->getId() != 1 && $this->getConfig()->getUser()->isAdmin()) {
+        //if ($this->getUser()->getId() != 1 && $this->getConfig()->getUser()->isAdmin()) {
+        if ($this->getConfig()->getUser()->isAdmin() || !$this->getUser()->getId()) {
             $this->appendField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
         } else {
             $this->appendField(new Field\Html('username'))->setTabGroup($tab);
