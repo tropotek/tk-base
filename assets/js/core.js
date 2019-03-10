@@ -382,7 +382,7 @@ var project_core = function () {
     function init() {
 
       var form = $(this);
-      form.find('textarea.mce, textarea.mce-med, textarea.mce-min').each(function () {
+      form.find('textarea.mce, textarea.mce-med, textarea.mce-min, textarea.mce-micro').each(function () {
         var el = $(this);
         var cfg = {statusbar: false};
         //var readonly = 0;
@@ -393,7 +393,17 @@ var project_core = function () {
           cfg.theme_advanced_disable = true;
         }
         var opts = $.extend({}, mceOpts, cfg, extOpts);
-        if (el.hasClass('mce-min')) {
+        if (el.hasClass('mce-micro')) {
+          opts = $.extend({}, opts, {
+            plugins: ['lists advlist autolink link image media code'],
+            toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
+              '| link unlink | removeformat code',
+            toolbar2: '',
+            toolbar3: '',
+            menubar: false
+          });
+          opts.height = el.data('height') ? el.data('height') : 200;
+        } else if (el.hasClass('mce-min')) {
           opts = $.extend({}, opts, {
             plugins: ['lists advlist autolink link image media code preview fullscreen'],
             toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
