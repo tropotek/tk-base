@@ -40,8 +40,6 @@ $(document).ready(function() {
   $('body').addClass('loaded');
   $(window).on('beforeunload', function(e) {
     // Do not fire loader for some links... Add class="no-loader" for links that you want to force to not use the loader
-    console.log(e);
-    console.log(e.target.activeElement.href);
     if (e.target && e.target.activeElement &&  
         ((e.target.activeElement.href && (e.target.activeElement.href.indexOf(config.dataUrl) >= 0 || e.target.activeElement.href.indexOf('mailto:') >= 0)) || $(e.target.activeElement).hasClass('no-loader')) ) {
       $('body').addClass('loaded');
