@@ -573,7 +573,6 @@ var project_core = function () {
         }
       }
 
-
       var tpl = $(settings.panelTemplate);
       tpl.addClass(element.attr('class'));
 
@@ -584,12 +583,15 @@ var project_core = function () {
       if (settings.panelTitle !== undefined) {
         tpl.find('.tp-title').text(settings.panelTitle);
       }
+      if (element.find('.tk-panel-title-right')) {
+        element.find('.tk-panel-title-right').addClass('pull-right float-right');
+        tpl.find('.tp-title').parent().append(element.find('.tk-panel-title-right'));
+      }
       element.before(tpl);
       element.detach();
       tpl.find('.tp-body').append(element);
       element.show();
       tpl.show();
-
 
     });
   };
