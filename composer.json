@@ -7,9 +7,9 @@
         "tropotek",
         "base"
     ],
-    "time": "2018-11-08",
+    "time": "2019-04-10",
     "license": "MIT",
-    "version": "1.0.122",
+    "version": "1.2.6",
     "authors":  [
          {
             "name": "Michael Mifsud",
@@ -27,6 +27,7 @@
     },
     "extra":  {
         "branch-alias":  {
-            "dev-master": "1.2.x-dev"        }
+            "dev-master": "1.2.x-dev"
+        }
     }
 }
