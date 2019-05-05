@@ -68,6 +68,7 @@ class User extends \Bs\TableIface
     
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell($actionsCell);
+        vd($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('username'));
         $this->appendCell(new \Tk\Table\Cell\Text('email'));
