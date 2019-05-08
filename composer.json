@@ -2,14 +2,10 @@
     "name": "ttek/tk-base",
     "type": "library",
     "description": "Base site library for the Tk lib",
-    "keywords":  [
-        "tk",
-        "tropotek",
-        "base"
-    ],
-    "time": "2018-11-08",
+    "keywords":  ["tk", "tropotek", "base"],
+    "time": "2019-04-09",
     "license": "MIT",
-    "version": "1.0.122",
+    "version": "3.0.0",
     "authors":  [
          {
             "name": "Michael Mifsud",
@@ -23,10 +19,11 @@
         }
     },
     "require":  {
-        "ttek/tk-framework": "~2.0"
+        "ttek/tk-framework": "~3.0"
     },
     "extra":  {
         "branch-alias":  {
-            "dev-master": "1.2.x-dev"        }
+            "dev-master": "3.0.x-dev"
+        }
     }
 }
