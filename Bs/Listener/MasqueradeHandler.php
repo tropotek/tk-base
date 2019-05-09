@@ -2,8 +2,7 @@
 namespace Bs\Listener;
 
 use Tk\Event\Subscriber;
-use Tk\Kernel\KernelEvents;
-use Tk\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Bs\Db\User;
 use Bs\Db\Role;
 use Tk\Event\AuthEvent;
@@ -40,13 +39,13 @@ class MasqueradeHandler implements Subscriber
     /**
      * Add any headers to the final response.
      *
-     * @param GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      */
-    public function onMasquerade(GetResponseEvent $event)
+    public function onMasquerade(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
     {
         $request = $event->getRequest();
         $config = \Bs\Config::getInstance();
-        if (!$request->has(static::MSQ)) return;
+        if (!$request->request->has(static::MSQ)) return;
 
         try {
             /** @var User $user */
@@ -154,7 +153,7 @@ class MasqueradeHandler implements Subscriber
         $result = new \Tk\Auth\Result(\Tk\Auth\Result::SUCCESS, $config->getUserIdentity($msqUser));
         $e->setResult($result);
         $e->setRedirect($url);
-        $config->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e);
+        $config->getEventDispatcher()->dispatch($e, AuthEvents::LOGIN_SUCCESS);
         if ($e->getRedirect())
             $e->getRedirect()->redirect();
 

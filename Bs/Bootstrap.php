@@ -29,11 +29,6 @@ class Bootstrap
      */
     public function init()
     {
-        if (version_compare(phpversion(), '5.3.0', '<')) {
-            // php version must be high enough to support traits
-            throw new \Exception('Your PHP5 version must be greater than 5.3.0 [Curr Ver: ' . phpversion() . ']. (Recommended: php 7.0+)');
-        }
-
         $config = \Bs\Config::getInstance();
 
         // This maybe should be created in a Factory or DI Container....

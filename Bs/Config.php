@@ -1,6 +1,8 @@
 <?php
 namespace Bs;
 
+use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -145,7 +147,7 @@ class Config extends \Tk\Config
     public function getRequest()
     {
         if (!parent::getRequest()) {
-            $obj = \Tk\Request::create();
+            $obj = \Tk\Request::createFromGlobals();
             parent::setRequest($obj);
         }
         return parent::getRequest();
@@ -197,24 +199,22 @@ class Config extends \Tk\Config
     /**
      * getEventDispatcher
      *
-     * @return \Tk\Event\Dispatcher|\Tk\Sym\EventDispatcher
+     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     public function getEventDispatcher()
     {
         if (!$this->get('event.dispatcher')) {
-            $log = new \Psr\Log\NullLogger();
+            $obj = new \Tk\EventDispatcher\EventDispatcher();
             if ($this->get('event.dispatcher.log')) {
-                $log = $this->getLog();
+                $obj->setLogger($this->getLog());
             }
-            //$obj = new \Tk\Event\Dispatcher($log);
-            $obj = new \Tk\Sym\EventDispatcher($log);
             $this->set('event.dispatcher', $obj);
         }
         return $this->get('event.dispatcher');
     }
 
     /**
-     * @param \Tk\Event\Dispatcher $dispatcher
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
      */
     public function setupDispatcher($dispatcher)
     {
@@ -224,7 +224,7 @@ class Config extends \Tk\Config
     /**
      * getResolver
      *
-     * @return \Tk\Controller\Resolver
+     * @return ControllerResolverInterface
      */
     public function getResolver()
     {
@@ -239,12 +239,12 @@ class Config extends \Tk\Config
     /**
      * getSiteRoutes
      *
-     * @return \Tk\Routing\RouteCollection
+     * @return \Symfony\Component\Routing\RouteCollection
      */
     public function getRouteCollection()
     {
         if (!$this->get('route.collection')) {
-            $obj = new \Tk\Routing\RouteCollection();
+            $obj = new \Symfony\Component\Routing\RouteCollection();
             $this->set('route.collection', $obj);
         }
         return parent::get('route.collection');
@@ -592,21 +592,12 @@ class Config extends \Tk\Config
     public function getFrontController()
     {
         if (!$this->get('front.controller')) {
+
+            $this->setupDispatcher($this->getEventDispatcher());
             $obj = new \Bs\FrontController($this->getEventDispatcher(), $this->getResolver());
             $this->set('front.controller', $obj);
         }
         return parent::get('front.controller');
-    }
-
-    /**
-     * @return \Bs\Listener\AuthHandler
-     */
-    public function getAuthHandler()
-    {
-        if (!$this->get('auth.handler')) {
-            $this->set('auth.handler', new \Bs\Listener\AuthHandler());
-        }
-        return $this->get('auth.handler');
     }
 
     /**

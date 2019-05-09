@@ -2,6 +2,23 @@
 namespace Bs;
 
 
+use Bs\Listener\MailHandler;
+use Bs\Listener\MaintenanceHandler;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Routing;
+use Symfony\Component\HttpKernel;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Tk\Listener\ActionPanelHandler;
+use Tk\Listener\ExceptionEmailListener;
+use Tk\Listener\ExceptionListener;
+use Tk\Listener\JsonExceptionListener;
+use Tk\Listener\LogExceptionListener;
+use Tk\Listener\PageHandler;
+use Tk\Listener\ResponseHandler;
+use Tk\Listener\ShutdownHandler;
+use Tk\Listener\StartupHandler;
+
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -10,13 +27,13 @@ namespace Bs;
 class Dispatch
 {
     /**
-     * @var \Tk\Event\Dispatcher
+     * @var EventDispatcherInterface
      */
     protected $dispatcher = null;
 
 
     /**
-     * @param \Tk\Event\Dispatcher $dispatcher
+     * @param  EventDispatcherInterface $dispatcher
      */
     public function __construct($dispatcher)
     {
@@ -25,7 +42,7 @@ class Dispatch
     }
 
     /**
-     * @param \Tk\Event\Dispatcher $dispatcher
+     * @param  EventDispatcherInterface $dispatcher
      * @return Dispatch
      */
     public static function create($dispatcher)
@@ -35,7 +52,7 @@ class Dispatch
     }
 
     /**
-     * @return \Tk\Event\Dispatcher
+     * @return  EventDispatcherInterface
      */
     public function getDispatcher()
     {
@@ -43,11 +60,11 @@ class Dispatch
     }
 
     /**
-     * @return \Bs\Config
+     * @return Config
      */
     public function getConfig()
     {
-        return \Bs\Config::getInstance();
+        return Config::getInstance();
     }
 
     /**
@@ -68,7 +85,7 @@ class Dispatch
     public function init()
     {
 
-        $config = \Bs\Config::getInstance();
+        $config = Config::getInstance();
         $logger = $config->getLog();
         $request = $config->getRequest();
         $dispatcher = $this->getDispatcher();
@@ -77,18 +94,23 @@ class Dispatch
 
         // TODO: Maybe we no longer need the cli check, have a look
         if (!$config->isCli()) {
-            $matcher = new \Tk\Routing\UrlMatcher($config->getRouteCollection());
-            $dispatcher->addSubscriber(new \Tk\Listener\RouteListener($matcher));
-            $dispatcher->addSubscriber(new \Tk\Listener\PageHandler($dispatcher));
-            $dispatcher->addSubscriber(new \Tk\Listener\ResponseHandler($config->getDomModifier()));
+
+            $context = new Routing\RequestContext();
+            $matcher = new Routing\Matcher\UrlMatcher($config->getRouteCollection(), $context);
+            $requestStack = new RequestStack();
+            $dispatcher->addSubscriber(new HttpKernel\EventListener\RouterListener($matcher, $requestStack));
+            //$dispatcher->addSubscriber(new \Tk\Listener\RouteListener($matcher));
+
+            $dispatcher->addSubscriber(new PageHandler($dispatcher));
+            $dispatcher->addSubscriber(new ResponseHandler($config->getDomModifier()));
         }
 
         // Tk Listeners
-        $dispatcher->addSubscriber(new \Tk\Listener\StartupHandler($logger, $request, $config->getSession()));
+        $dispatcher->addSubscriber(new StartupHandler($logger, $request, $config->getSession()));
 
 
         if ($config->get('system.email.exception')) {
-            $dispatcher->addSubscriber(new \Tk\Listener\ExceptionEmailListener(
+            $dispatcher->addSubscriber(new ExceptionEmailListener(
                 $config->getEmailGateway(),
                 $config->get('system.email.exception'),
                 $config->get('site.title')
@@ -96,21 +118,23 @@ class Dispatch
         }
 
         // Exception Handling, log first so we can grab the session log
-        $dispatcher->addSubscriber(new \Tk\Listener\LogExceptionListener($logger, true));
+        $dispatcher->addSubscriber(new LogExceptionListener($logger, true));
 
-        if (preg_match('|^/ajax/.+|', $request->getUri()->getRelativePath())) { // If ajax request
-            $dispatcher->addSubscriber(new \Tk\Listener\JsonExceptionListener($config->isDebug()));
+
+
+        if (preg_match('|^/ajax/.+|', $request->getTkUri()->getRelativePath())) { // If ajax request
+            $dispatcher->addSubscriber(new JsonExceptionListener($config->isDebug()));
         } else {
-            $dispatcher->addSubscriber(new \Tk\Listener\ExceptionListener($config->isDebug(), 'Bs\Controller\Error'));
+            $dispatcher->addSubscriber(new ExceptionListener($config->isDebug(), 'Bs\Controller\Error'));
         }
 
-        $sh = new \Tk\Listener\ShutdownHandler($logger, $config->getScriptTime());
+        $sh = new ShutdownHandler($logger, $config->getScriptTime());
         $sh->setPageBytes($config->getDomFilterPageBytes());
         $dispatcher->addSubscriber($sh);
 
         // App Listeners
-        $dispatcher->addSubscriber(new \Tk\Listener\ActionPanelHandler());
-        $dispatcher->addSubscriber(new \Bs\Listener\MailHandler());
+        $dispatcher->addSubscriber(new ActionPanelHandler());
+        $dispatcher->addSubscriber(new MailHandler());
 
         if ($config->getAuthHandler())
             $dispatcher->addSubscriber($config->getAuthHandler());
@@ -121,7 +145,7 @@ class Dispatch
         if ($config->getCrumbsHandler())
             $dispatcher->addSubscriber($config->getCrumbsHandler());
 
-        $dispatcher->addSubscriber(new \Bs\Listener\MaintenanceHandler());
+        $dispatcher->addSubscriber(new MaintenanceHandler());
 
     }
 

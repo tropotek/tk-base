@@ -105,7 +105,7 @@ class Login extends Iface
             // Fire the login event to allow developing of misc auth plugins
             $e = new AuthEvent();
             $e->replace($form->getValues());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
+            $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::LOGIN);
 
             // Use the event to process the login like below....
             $result = $e->getResult();
@@ -123,7 +123,7 @@ class Login extends Iface
             $e2->replace($e->all());
             $e2->setResult($e->getResult());
             $e2->setRedirect($e->getRedirect());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e2);
+            $this->getConfig()->getEventDispatcher()->dispatch($e2, AuthEvents::LOGIN_SUCCESS);
             if ($e2->getRedirect())
                 $e2->getRedirect()->redirect();
 

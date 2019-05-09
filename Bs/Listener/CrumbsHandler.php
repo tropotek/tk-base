@@ -1,9 +1,7 @@
 <?php
 namespace Bs\Listener;
 
-use Tk\Event\Subscriber;
-use Tk\Kernel\KernelEvents;
-use Tk\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -15,9 +13,9 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
     /**
      * Init the crumbs for this app
      *
-     * @param GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      */
-    public function onSystemInit(GetResponseEvent $event)
+    public function onSystemInit(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
     {
         $config = \Bs\Config::getInstance();
         $user = $config->getUser();

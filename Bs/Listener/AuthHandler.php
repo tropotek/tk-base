@@ -2,8 +2,7 @@
 namespace Bs\Listener;
 
 use Tk\Event\Subscriber;
-use Tk\Kernel\KernelEvents;
-use Tk\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
 
@@ -16,10 +15,10 @@ class AuthHandler implements Subscriber
 {
 
     /**
-     * @param GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      * @throws \Exception
      */
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
     {
         // if a user is in the session add them to the global config
         // Only the identity details should be in the auth session not the full user object, to save space and be secure.
@@ -53,16 +52,16 @@ class AuthHandler implements Subscriber
 
 
     /**
-     * @param GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      * @throws \Exception
      */
-    public function validatePageAccess(GetResponseEvent $event)
+    public function validatePageAccess(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
     {
         $config = \Bs\Config::getInstance();
 
         // --------------------------------------------------------
         // Deprecated remove when role is no longer used as a route attribute
-        $role = $event->getRequest()->getAttribute('role');
+        $role = $event->getRequest()->attributes->get('role');
         if ($role) {
             \Tk\Log::notice('Using legacy page permission system');
             return;

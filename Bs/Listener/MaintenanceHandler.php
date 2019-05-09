@@ -2,7 +2,7 @@
 namespace Bs\Listener;
 
 use Tk\Event\Subscriber;
-use Tk\Kernel\KernelEvents;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -14,13 +14,13 @@ class MaintenanceHandler implements Subscriber
 
     /**
      * kernel.controller
-     * @param \Tk\Event\ControllerEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\ControllerEvent $event
      * @throws \Exception
      */
-    public function onController(\Tk\Event\ControllerEvent $event)
+    public function onController(\Symfony\Component\HttpKernel\Event\ControllerEvent $event)
     {
         /** @var \Tk\Controller\Iface $controller */
-        $controller = $event->getControllerObject();
+        $controller = $event->getController();
         if (\Tk\Uri::create()->basename() != 'login.html' && !$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('site.maintenance.enabled')) {
             if ($this->getConfig()->getUser()) {
                 if ($this->getConfig()->getUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
