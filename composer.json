@@ -2,7 +2,7 @@
     "name": "ttek/tk-base",
     "type": "library",
     "description": "Base site library for the Tk lib",
-    "keywords":  ["tk", "tropotek", "base"],
+    "keywords":  ["tk", "tropotek", "tkbase"],
     "time": "2019-04-09",
     "license": "MIT",
     "version": "3.0.0",
@@ -19,7 +19,19 @@
         }
     },
     "require":  {
-        "ttek/tk-framework": "~3.0"
+        "ttek/tk-framework": "~3.0",
+        "ttek/tk-mvc": "~3.0",
+        "ttek/tk-auth": "~3.0",
+        "ttek/tk-mail": "~3.0",
+        "ttek/tk-plugin": "~3.0",
+        "ttek/tk-database": "~3.0",
+        "ttek/tk-domtemplate": "~3.0",
+        "ttek/tk-form": "~3.0",
+        "ttek/tk-table": "~3.0",
+        "ttek/tk-ui": "~3.0",
+
+        "sensiolabs/ansi-to-html": "~1.0",
+        "lasserafn/php-initial-avatar-generator": "dev-master"
     },
     "extra":  {
         "branch-alias":  {
