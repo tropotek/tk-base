@@ -40,6 +40,7 @@ abstract class FormIface extends \Tk\Form
     {
         /** @var FormIface $obj */
         $obj = parent::create($formId);
+        $obj->setDispatcher(\Bs\Config::getInstance()->getEventDispatcher());
         $obj->setRenderer(\Bs\Config::getInstance()->createFormRenderer($obj));
         return $obj;
     }

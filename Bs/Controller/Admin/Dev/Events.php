@@ -46,7 +46,9 @@ class Events extends \Bs\Controller\AdminIface
 
         $this->table->appendAction(\Tk\Table\Action\Csv::create());
 
-        $list = $this->convertEventData($this->getConfig()->getEventDispatcher()->getAvailableEvents(\App\Config::getInstance()->getSitePath()));
+        /** @var \Tk\EventDispatcher\EventDispatcher $dispatcher */
+        $dispatcher = $this->getConfig()->getEventDispatcher();
+        $list = $this->convertEventData($dispatcher->getAvailableEvents(\App\Config::getInstance()->getSitePath()));
         $this->table->setList($list);
 
     }
