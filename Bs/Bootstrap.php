@@ -29,6 +29,7 @@ class Bootstrap
      */
     public function init()
     {
+
         $config = \Bs\Config::getInstance();
 
         // This maybe should be created in a Factory or DI Container....

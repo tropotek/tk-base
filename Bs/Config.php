@@ -586,7 +586,7 @@ class Config extends \Tk\Config
     /**
      * getFrontController
      *
-     * @return \Tk\Kernel\HttpKernel
+     * @return \Symfony\Component\HttpKernel\HttpKernel
      * @throws \Exception
      */
     public function getFrontController()
@@ -598,6 +598,17 @@ class Config extends \Tk\Config
             $this->set('front.controller', $obj);
         }
         return parent::get('front.controller');
+    }
+
+    /**
+     * @return \Bs\Listener\AuthHandler
+     */
+    public function getAuthHandler()
+    {
+        if (!$this->get('auth.handler')) {
+            $this->set('auth.handler', new \Bs\Listener\AuthHandler());
+        }
+        return $this->get('auth.handler');
     }
 
     /**

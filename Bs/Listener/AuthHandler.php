@@ -20,6 +20,7 @@ class AuthHandler implements Subscriber
      */
     public function onRequest(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
     {
+
         // if a user is in the session add them to the global config
         // Only the identity details should be in the auth session not the full user object, to save space and be secure.
         $config = \Bs\Config::getInstance();
@@ -32,10 +33,9 @@ class AuthHandler implements Subscriber
                 $config->setUser($user);
             }
         }
-
         // ---------------- deprecated  ---------------------
         // The following is deprecated in preference of the validatePageAccess() method below
-        $role = $event->getRequest()->getAttribute('role');
+        $role = $event->getRequest()->attributes->get('role');
         // no role means page is publicly accessible
         if (!$role || empty($role)) return;
         if ($user) {

@@ -111,6 +111,9 @@ $config['log.session'] = $config->getTempPath().'/session.log';
 $config['system.form.required.attr.enabled'] = true;
 
 
+\Symfony\Component\HttpFoundation\Request::setFactory(function (array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null) {
+    return new \Tk\Request($query, array_merge($query, $request), $attributes, $cookies, $files, $server, $content);
+});
 
 /*  
  * ---- AUTH CONFIG ----
