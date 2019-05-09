@@ -1,7 +1,6 @@
 # Tk base site lib
 
-__Project:__ [ttek/tk-base](http://packagist.org/packages/ttek/tk-base)  
-__Published:__ 01 Nov 2015
+__Project:__ [ttek/tk-base](http://packagist.org/packages/ttek/tk-base)
 __Web:__ <http://www.tropotek.com/>  
 __Authors:__ Michael Mifsud <http://www.tropotek.com/>  
 __Reference:__ <https://getcomposer.org/doc/articles/custom-installers.md>  
@@ -26,7 +25,7 @@ composer require ttek/tk-base
 Or add the following to your composer.json file:
 
 ```json
-"ttek/tk-base": "~1.0"
+"ttek/tk-base": "~3.0"
 ```
 
 If you do not use Composer, you can grab the code from GitHub, and use any
