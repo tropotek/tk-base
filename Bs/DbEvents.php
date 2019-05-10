@@ -42,6 +42,5 @@ class DbEvents
      * @event \Bs\Event\DbEvent
      */
     const MODEL_DELETE = 'db.model.delete';
-
-
+    
 }
