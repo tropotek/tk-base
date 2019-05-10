@@ -36,7 +36,7 @@ class PageTemplateHandler implements Subscriber
     public function showPage(\Tk\Event\Event $event)
     {
         /** @var \Bs\Controller\Iface $controller */
-        $controller = $event->get('controller');
+        $controller = \Tk\Event\Event::findControllerObject($event);
         $config = \Bs\Config::getInstance();
 
         $template = $controller->getPage()->getTemplate();

@@ -22,7 +22,8 @@ class PageLoaderHandler implements Subscriber
      */
     public function showPage(\Tk\Event\Event $event)
     {
-        $controller = $event->get('controller');
+
+        $controller = \Tk\Event\Event::findControllerObject($event);
         if ($controller instanceof \Bs\Controller\Iface) {
             $page = $controller->getPage();
             if (!$page) return;

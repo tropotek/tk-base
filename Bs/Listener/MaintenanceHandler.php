@@ -20,7 +20,7 @@ class MaintenanceHandler implements Subscriber
     public function onController(\Symfony\Component\HttpKernel\Event\ControllerEvent $event)
     {
         /** @var \Tk\Controller\Iface $controller */
-        $controller = $event->getController();
+        $controller = \Tk\Event\Event::findControllerObject($event);
         if (\Tk\Uri::create()->basename() != 'login.html' && !$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('site.maintenance.enabled')) {
             if ($this->getConfig()->getUser()) {
                 if ($this->getConfig()->getUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
@@ -38,7 +38,7 @@ class MaintenanceHandler implements Subscriber
     public function showPage(\Tk\Event\Event $event)
     {
         if (!$this->getConfig()->get('site.maintenance.enabled')) return;
-        $controller = $event->get('controller');
+        $controller = \Tk\Event\Event::findControllerObject($event);
         if ($controller instanceof \Bs\Controller\Iface && !$controller instanceof \Bs\Controller\Maintenance) {
             $page = $controller->getPage();
             if (!$page) return;
