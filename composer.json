@@ -31,7 +31,7 @@
         "ttek/tk-ui": "~3.0",
 
         "sensiolabs/ansi-to-html": "~1.0",
-        "lasserafn/php-initial-avatar-generator": "dev-master"
+        "lasserafn/php-initial-avatar-generator": "~2.0"
     },
     "extra":  {
         "branch-alias":  {
