@@ -205,7 +205,6 @@ class RoleMap extends Mapper
         foreach ($stm as $row) {
             $arr[] = $row->name;
         }
-        vd($this->getDb()->getLastQuery(), $roleId, $arr);
         return $arr;
     }
 }
