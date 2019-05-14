@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.4 [2019-05-15]:
+-------------------------------
+  - Merge branch 'master' of ssh://github.com/tropotek/tk-base
+
+
 Ver 3.0.2 [2019-05-13]:
 -------------------------------
 
