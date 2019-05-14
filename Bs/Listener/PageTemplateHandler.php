@@ -33,7 +33,7 @@ class PageTemplateHandler implements Subscriber
     /**
      * @param \Tk\Event\Event $event
      */
-    public function showPage($event)
+    public function showPage(\Tk\Event\Event $event)
     {
         /** @var \Bs\Controller\Iface $controller */
         $controller = \Tk\Event\Event::findControllerObject($event);

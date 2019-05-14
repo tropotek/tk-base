@@ -86,7 +86,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function onLogin($event)
+    public function onLogin(AuthEvent $event)
     {
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
@@ -115,7 +115,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function onLoginSuccess($event)
+    public function onLoginSuccess(AuthEvent $event)
     {
         $config = \Bs\Config::getInstance();
         $result = $event->getResult();
@@ -136,7 +136,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function updateUser($event)
+    public function updateUser(AuthEvent $event)
     {
         $config = \Bs\Config::getInstance();
         if ($config->getMasqueradeHandler()->isMasquerading()) return;
@@ -151,7 +151,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function onLogout($event)
+    public function onLogout(AuthEvent $event)
     {
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
@@ -174,7 +174,7 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function onRegister($event)
+    public function onRegister(\Tk\Event\Event $event)
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
@@ -205,7 +205,7 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function onRegisterConfirm($event)
+    public function onRegisterConfirm(\Tk\Event\Event $event)
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
@@ -236,7 +236,7 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function onRecover($event)
+    public function onRecover(\Tk\Event\Event $event)
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
