@@ -137,7 +137,7 @@ class Register extends Iface
         $e = new \Tk\Event\Event();
         $e->set('form', $form);
         $e->set('user', $this->user);
-        $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::REGISTER);
+        $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::REGISTER, $e);
 
 
         // Redirect with message to check their email
@@ -170,7 +170,7 @@ class Register extends Iface
 
         $event = new \Tk\Event\Event();
         $event->set('user', $user);
-        $this->getConfig()->getEventDispatcher()->dispatch($event, AuthEvents::REGISTER_CONFIRM);
+        $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::REGISTER_CONFIRM, $event);
 
         \Tk\Alert::addSuccess('Account Activation Successful.');
         \Tk\Uri::create($this->getConfig()->get('url.auth.login'))->redirect();

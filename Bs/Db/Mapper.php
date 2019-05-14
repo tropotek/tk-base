@@ -42,7 +42,7 @@ abstract class Mapper extends \Tk\Db\Mapper
         $stop = false;
         if ($this->getDispatcher()) {
             $e = new DbEvent($obj, $this);
-            $this->getDispatcher()->dispatch($e, DbEvents::MODEL_INSERT);
+            $this->getDispatcher()->dispatch(DbEvents::MODEL_INSERT, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
@@ -62,7 +62,7 @@ abstract class Mapper extends \Tk\Db\Mapper
         $stop = false;
         if ($this->getDispatcher()) {
             $e = new DbEvent($obj, $this);
-            $this->getDispatcher()->dispatch($e, DbEvents::MODEL_UPDATE);
+            $this->getDispatcher()->dispatch(DbEvents::MODEL_UPDATE, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
@@ -83,7 +83,7 @@ abstract class Mapper extends \Tk\Db\Mapper
         $stop = false;
         if ($this->getDispatcher()) {
             $e = new DbEvent($obj, $this);
-            $this->getDispatcher()->dispatch($e, DbEvents::MODEL_SAVE);
+            $this->getDispatcher()->dispatch(DbEvents::MODEL_SAVE, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
@@ -102,7 +102,7 @@ abstract class Mapper extends \Tk\Db\Mapper
         $stop = false;
         if ($this->getDispatcher()) {
             $e = new DbEvent($obj, $this);
-            $this->getDispatcher()->dispatch($e ,DbEvents::MODEL_DELETE);
+            $this->getDispatcher()->dispatch(DbEvents::MODEL_DELETE, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
