@@ -18,7 +18,7 @@ class AuthHandler implements Subscriber
      * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      * @throws \Exception
      */
-    public function onRequest(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
+    public function onRequest($event)
     {
 
         // if a user is in the session add them to the global config
@@ -55,7 +55,7 @@ class AuthHandler implements Subscriber
      * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      * @throws \Exception
      */
-    public function validatePageAccess(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
+    public function validatePageAccess($event)
     {
         $config = \Bs\Config::getInstance();
 
@@ -86,7 +86,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function onLogin(AuthEvent $event)
+    public function onLogin($event)
     {
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
@@ -115,7 +115,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function onLoginSuccess(AuthEvent $event)
+    public function onLoginSuccess($event)
     {
         $config = \Bs\Config::getInstance();
         $result = $event->getResult();
@@ -136,7 +136,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function updateUser(AuthEvent $event)
+    public function updateUser($event)
     {
         $config = \Bs\Config::getInstance();
         if ($config->getMasqueradeHandler()->isMasquerading()) return;
@@ -151,7 +151,7 @@ class AuthHandler implements Subscriber
      * @param AuthEvent $event
      * @throws \Exception
      */
-    public function onLogout(AuthEvent $event)
+    public function onLogout($event)
     {
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
@@ -174,7 +174,7 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function onRegister(\Tk\Event\Event $event)
+    public function onRegister($event)
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
@@ -205,7 +205,7 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function onRegisterConfirm(\Tk\Event\Event $event)
+    public function onRegisterConfirm($event)
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
@@ -236,7 +236,7 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function onRecover(\Tk\Event\Event $event)
+    public function onRecover($event)
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');

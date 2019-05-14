@@ -41,7 +41,7 @@ class MasqueradeHandler implements Subscriber
      *
      * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      */
-    public function onMasquerade(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
+    public function onMasquerade($event)
     {
         $request = $event->getRequest();
         $config = \Bs\Config::getInstance();

@@ -18,7 +18,7 @@ class MailHandler implements Subscriber
      *
      * @param \Tk\Mail\MailEvent $event
      */
-    public function preSend(\Tk\Mail\MailEvent $event)
+    public function preSend($event)
     {
         $message = $event->getMessage();
         $config = \Bs\Config::getInstance();

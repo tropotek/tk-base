@@ -17,7 +17,7 @@ class MaintenanceHandler implements Subscriber
      * @param \Symfony\Component\HttpKernel\Event\ControllerEvent $event
      * @throws \Exception
      */
-    public function onController(\Symfony\Component\HttpKernel\Event\ControllerEvent $event)
+    public function onController($event)
     {
         /** @var \Tk\Controller\Iface $controller */
         $controller = \Tk\Event\Event::findControllerObject($event);
@@ -35,7 +35,7 @@ class MaintenanceHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function showPage(\Tk\Event\Event $event)
+    public function showPage($event)
     {
         if (!$this->getConfig()->get('site.maintenance.enabled')) return;
         $controller = \Tk\Event\Event::findControllerObject($event);

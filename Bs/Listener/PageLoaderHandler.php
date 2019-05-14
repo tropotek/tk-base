@@ -20,7 +20,7 @@ class PageLoaderHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
-    public function showPage(\Tk\Event\Event $event)
+    public function showPage($event)
     {
 
         $controller = \Tk\Event\Event::findControllerObject($event);

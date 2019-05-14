@@ -15,7 +15,7 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
      *
      * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
      */
-    public function onSystemInit(\Symfony\Component\HttpKernel\Event\RequestEvent $event)
+    public function onSystemInit($event)
     {
         $config = \Bs\Config::getInstance();
         $user = $config->getUser();
