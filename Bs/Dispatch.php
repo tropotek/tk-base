@@ -13,11 +13,14 @@ use Tk\Listener\ExceptionEmailListener;
 use Tk\Listener\ExceptionListener;
 use Tk\Listener\JsonExceptionListener;
 use Tk\Listener\LogExceptionListener;
+use Tk\Listener\NotFoundLogListener;
 use Tk\Listener\PageHandler;
 use Tk\Listener\ResponseHandler;
 use Tk\Listener\ShutdownHandler;
 use Tk\Listener\StartupHandler;
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -81,6 +84,7 @@ class Dispatch
     }
 
     /**
+     * @throws \Exception
      */
     public function init()
     {
@@ -120,7 +124,17 @@ class Dispatch
         // Exception Handling, log first so we can grab the session log
         $dispatcher->addSubscriber(new LogExceptionListener($logger, true));
 
-
+        // Log not found URI's for future inspections
+        if ($config->getLogPath()) {
+            $notFoundLogPath = dirname($config->getLogPath()) . '/404.log';
+            if (!is_file($notFoundLogPath)) {
+                file_put_contents($notFoundLogPath, '');
+            }
+            $log = new Logger('notfound');
+            $handler = new StreamHandler($notFoundLogPath, Logger::NOTICE);
+            $log->pushHandler($handler);
+            $dispatcher->addSubscriber(new NotFoundLogListener($log));
+        }
 
         if (preg_match('|^/ajax/.+|', $request->getTkUri()->getRelativePath())) { // If ajax request
             $dispatcher->addSubscriber(new JsonExceptionListener($config->isDebug()));

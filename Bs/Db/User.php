@@ -11,6 +11,7 @@ use Tk\Db\Map\Model;
 class User extends Model implements UserIface
 {
 
+    use Traits\TimestampTrait;
 
     /**
      * @var int
@@ -111,11 +112,11 @@ class User extends Model implements UserIface
 
     /**
      * User constructor.
+     * @throws \Exception
      */
     public function __construct()
     {
-        $this->modified = new \DateTime();
-        $this->created = new \DateTime();
+        $this->_TimestampTrait();
         $this->ip = \Bs\Config::getInstance()->getRequest()->getIp();
     }
 

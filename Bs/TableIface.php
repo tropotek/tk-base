@@ -19,12 +19,15 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
     protected $actionCell = null;
 
     /**
+     * @var null|\Tk\Uri
+     */
+    protected $editUrl = null;
+
+    /**
      * @param string $tableId
      */
     public function __construct($tableId = '')
     {
-        if (!$tableId)
-            $tableId = trim(strtolower(preg_replace('/[A-Z]/', '_$0', \Tk\ObjectUtil::basename(get_class($this)))), '_');
         parent::__construct($tableId);
     }
 
@@ -35,10 +38,41 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
     public static function create($id = '')
     {
         $obj = parent::create($id);
-        $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));
-        $obj->setDispatcher(\Bs\Config::getInstance()->getEventDispatcher());
+        if (!$obj->getRenderer())
+            $obj->setRenderer(\Bs\Config::getInstance()->createTableRenderer($obj));
+        if (!$obj->getDispatcher())
+            $obj->setDispatcher(\Bs\Config::getInstance()->getEventDispatcher());
         return $obj;
     }
+
+
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    public function init()
+    {
+        $this->initCells();
+        $this->initFilters();
+        $this->initActions();
+        return $this;
+    }
+
+    /**
+     * append cells to the table
+     */
+    protected function initCells() { }
+
+    /**
+     * Append any filters to the table
+     */
+    protected function initFilters() { }
+
+    /**
+     * Append any actions to the table
+     */
+    protected function initActions() { }
+
 
     /**
      * @return \Tk\Table\Cell\Actions
@@ -49,6 +83,24 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
             $this->actionCell = new \Tk\Table\Cell\Actions();
         }
         return $this->actionCell;
+    }
+
+    /**
+     * @return null|\Tk\Uri
+     */
+    public function getEditUrl()
+    {
+        return $this->editUrl;
+    }
+
+    /**
+     * @param null|\Tk\Uri $editUrl
+     * @return $this
+     */
+    public function setEditUrl($editUrl)
+    {
+        $this->editUrl = $editUrl;
+        return $this;
     }
 
     /**
