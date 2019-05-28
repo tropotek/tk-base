@@ -76,6 +76,7 @@ class PageTemplateHandler implements Subscriber
         }
         $fw = $this->getConfig()->get('css.framework');
         $bs4 = $this->isBootstrap4() ? 'true' : 'false';
+        $isDebug = $this->getConfig()->isDebug() ? 'true' : 'false';
 
         $js = <<<JS
 var config = {
@@ -85,6 +86,7 @@ var config = {
   templateUrl:   '$templateUrl',
   cssFramework:  '$fw',
   isBootstrap4:  $bs4,               // deprecated Use 'cssFramework'
+  debug:         $isDebug,
   roleType:      '$roleType',
   jquery: {
     dateFormat:  'dd/mm/yy'    
