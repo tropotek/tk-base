@@ -401,7 +401,7 @@ class Config extends \Tk\Config
     {
         $replace = array('admin-', 'user-');
         /** @var \Tk\Request $request */
-        $routeName = $this->getRequest()->getAttribute('_route');
+        $routeName = $this->getRequest()->attributes->get('_route');
         if ($routeName) {
             $routeName = str_replace($replace, '', $routeName);
             return ucwords(trim(str_replace('-', ' ', $routeName)));
@@ -528,8 +528,6 @@ class Config extends \Tk\Config
     {
         return new Db\User();
     }
-
-
 
 
 
