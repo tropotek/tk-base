@@ -170,4 +170,19 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
         return array();
     }
 
+    /**
+     * This is only here to avoid legacy code errors.
+     * Do not use this method intentionally ;-/
+     *
+     * @return $this
+     * @deprecated
+     */
+    public function getTable()
+    {
+        \Tk\Log::notice('[Deprecated] Calling getTable() method on a table object, please update:  '
+            . \Tk\Debug\StackTrace::dumpLine(1));
+        return $this;
+    }
+
+
 }
