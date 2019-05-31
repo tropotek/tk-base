@@ -4,7 +4,6 @@ namespace Bs\Db\Traits;
 
 
 use DateTime;
-use Exception;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -18,13 +17,13 @@ trait TimestampTrait
     /**
      * TimestampTrait constructor
      * Call this in parent object constructor
-     *
-     * @throws Exception
      */
     protected function _TimestampTrait()
     {
-        $this->modified = new \DateTime();
-        $this->_CreatedTrait();
+        try {
+            $this->modified = new \DateTime();
+            $this->_CreatedTrait();
+        } catch (\Exception $e) {}
     }
 
     /**
@@ -37,7 +36,7 @@ trait TimestampTrait
 
     /**
      * @param DateTime $modified
-     * @return TimestampTrait
+     * @return $this
      */
     public function setModified(DateTime $modified)
     {

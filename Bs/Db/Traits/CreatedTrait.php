@@ -2,7 +2,6 @@
 namespace Bs\Db\Traits;
 
 use DateTime;
-use Exception;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -16,12 +15,12 @@ trait CreatedTrait
     /**
      * TimestampTrait constructor
      * Call this in parent object constructor
-     *
-     * @throws Exception
      */
     protected function _CreatedTrait()
     {
-        $this->created = new \DateTime();
+        try {
+            $this->created = new \DateTime();
+        } catch (\Exception $e) {}
     }
 
     /**
@@ -34,7 +33,7 @@ trait CreatedTrait
 
     /**
      * @param DateTime $created
-     * @return TimestampTrait
+     * @return $this
      */
     public function setCreated(DateTime $created)
     {
