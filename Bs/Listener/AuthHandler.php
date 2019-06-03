@@ -27,7 +27,8 @@ class AuthHandler implements Subscriber
         $user = null;                       // public user
         if ($auth->getIdentity()) {         // Check if user is logged in
             $user = $config->getUserMapper()->findByAuthIdentity($auth->getIdentity());
-            if ($user && $user->isActive()) {  // We set the user here for each page load
+            if ($user && $user->isActive()) {
+                // We set the user here for each page load
                 $config->setUser($user);
             }
         }
@@ -47,7 +48,7 @@ class AuthHandler implements Subscriber
             if (!$config->getUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
-            // Finally check if the use has access to the url
+            // Finally check if the user has access to the url
             if (!$config->getUser()->hasPermission('type.'.$urlRole)) {
                 \Tk\Alert::addWarning('1000: You do not have access to the requested page.');
                 $config->getUserHomeUrl($config->getUser())->redirect();
@@ -140,7 +141,8 @@ class AuthHandler implements Subscriber
     }
 
 
-
+    // TODO: For all emails lets try to bring it back to the default mail template
+    // TODO:  make it configurable so we could add it back in the future????
 
     /**
      * @param \Tk\Event\Event $event
