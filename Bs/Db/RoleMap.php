@@ -74,10 +74,7 @@ class RoleMap extends Mapper
     public function findFiltered($filter = array(), $tool = null)
     {
         $this->makeQuery($filter, $tool, $where, $from);
-        if ($where) {
-            $where = rtrim($where, 'AND ');
-        }
-        $res = $this->selectFrom($from, $where, $tool);
+        $res = $this->selectFrom($from, rtrim($where, 'AND '), $tool);
         return $res;
     }
 
