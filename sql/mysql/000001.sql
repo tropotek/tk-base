@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
 INSERT INTO `user_permission` (`role_id`, `name`)
 VALUES
    (1, 'type.admin'),
+   (1, 'type.user'),
    (2, 'type.user')
 ;
 
