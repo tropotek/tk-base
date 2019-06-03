@@ -35,18 +35,18 @@ class AuthHandler implements Subscriber
         }
         // ---------------- deprecated  ---------------------
         // The following is deprecated in preference of the validatePageAccess() method below
-        $role = $event->getRequest()->attributes->get('role');
-        // no role means page is publicly accessible
-        if (!$role || empty($role)) return;
-        if ($user) {
-            if (!$user->getRole()->hasType($role)) {
-                // Could redirect to a authentication error page.
-                \Tk\Alert::addWarning('You do not have access to the requested page.');
-                $config->getUserHomeUrl($user)->redirect();
-            }
-        } else {
-            $this->getLoginUrl()->redirect();
-        }
+//        $role = $event->getRequest()->attributes->get('role');
+//        // no role means page is publicly accessible
+//        if (!$role || empty($role)) return;
+//        if ($user) {
+//            if (!$user->getRole()->hasType($role)) {
+//                // Could redirect to a authentication error page.
+//                \Tk\Alert::addWarning('You do not have access to the requested page.');
+//                $config->getUserHomeUrl($user)->redirect();
+//            }
+//        } else {
+//            $this->getLoginUrl()->redirect();
+//        }
         //-----------------------------------------------------
     }
 
@@ -61,21 +61,22 @@ class AuthHandler implements Subscriber
 
         // --------------------------------------------------------
         // Deprecated remove when role is no longer used as a route attribute
-        $role = $event->getRequest()->attributes->get('role');
-        if ($role) {
-            \Tk\Log::notice('Using legacy page permission system');
-            return;
-        }
+//        $role = $event->getRequest()->attributes->get('role');
+//        if ($role) {
+//            \Tk\Log::notice('Using legacy page permission system');
+//            return;
+//        }
         // --------------------------------------------------------
 
         $urlRole = \Bs\Uri::create()->getRoleType($config->getAvailableUserRoleTypes());
-        //if ($urlRole && !$urlRole != 'public') {          // What happened here ?????
         if ($urlRole && $urlRole != 'public') {
             if (!$config->getUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
-            $role = $config->getUser()->getRoleType();
-            if ($role != $urlRole) {   // Finally check if the use has access to the url
+
+            //$role = $config->getUser()->getRoleType();
+            //if ($role != $urlRole) {   // Finally check if the use has access to the url
+            if (!$config->getUser()->hasPermission('type.'.$urlRole)) {
                 \Tk\Alert::addWarning('1000: You do not have access to the requested page.');
                 $config->getUserHomeUrl($config->getUser())->redirect();
             }
