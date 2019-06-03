@@ -20,7 +20,6 @@ class AuthHandler implements Subscriber
      */
     public function onRequest($event)
     {
-
         // if a user is in the session add them to the global config
         // Only the identity details should be in the auth session not the full user object, to save space and be secure.
         $config = \Bs\Config::getInstance();

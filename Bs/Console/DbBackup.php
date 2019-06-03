@@ -34,7 +34,8 @@ class DbBackup extends \Tk\Console\Console
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
+        $this->setInput($input);
+        $this->setOutput($output);
 
         $config = \App\Config::getInstance();
         $db = $config->getDb();
