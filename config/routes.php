@@ -50,7 +50,8 @@ $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Con
 
 
 // Admin Dev Pages
-$routes->add('admin-dev-event-handlers', new \Tk\Routing\Route('/admin/dev/dispatcherEvents.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
+$routes->add('admin-dev-event-handlers',
+    new \Tk\Routing\Route('/admin/dev/dispatcherEvents.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
 
 
 // Examples

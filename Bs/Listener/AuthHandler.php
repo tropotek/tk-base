@@ -20,7 +20,6 @@ class AuthHandler implements Subscriber
      */
     public function onRequest($event)
     {
-
         // if a user is in the session add them to the global config
         // Only the identity details should be in the auth session not the full user object, to save space and be secure.
         $config = \Bs\Config::getInstance();
@@ -35,18 +34,18 @@ class AuthHandler implements Subscriber
         }
         // ---------------- deprecated  ---------------------
         // The following is deprecated in preference of the validatePageAccess() method below
-        $role = $event->getRequest()->attributes->get('role');
-        // no role means page is publicly accessible
-        if (!$role || empty($role)) return;
-        if ($user) {
-            if (!$user->getRole()->hasType($role)) {
-                // Could redirect to a authentication error page.
-                \Tk\Alert::addWarning('You do not have access to the requested page.');
-                $config->getUserHomeUrl($user)->redirect();
-            }
-        } else {
-            $this->getLoginUrl()->redirect();
-        }
+//        $role = $event->getRequest()->attributes->get('role');
+//        // no role means page is publicly accessible
+//        if (!$role || empty($role)) return;
+//        if ($user) {
+//            if (!$user->getRole()->hasType($role)) {
+//                // Could redirect to a authentication error page.
+//                \Tk\Alert::addWarning('You do not have access to the requested page.');
+//                $config->getUserHomeUrl($user)->redirect();
+//            }
+//        } else {
+//            $this->getLoginUrl()->redirect();
+//        }
         //-----------------------------------------------------
     }
 
@@ -61,11 +60,11 @@ class AuthHandler implements Subscriber
 
         // --------------------------------------------------------
         // Deprecated remove when role is no longer used as a route attribute
-        $role = $event->getRequest()->attributes->get('role');
-        if ($role) {
-            \Tk\Log::notice('Using legacy page permission system');
-            return;
-        }
+//        $role = $event->getRequest()->attributes->get('role');
+//        if ($role) {
+//            \Tk\Log::notice('Using legacy page permission system');
+//            return;
+//        }
         // --------------------------------------------------------
 
         $urlRole = \Bs\Uri::create()->getRoleType($config->getAvailableUserRoleTypes());
