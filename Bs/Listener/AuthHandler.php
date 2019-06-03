@@ -24,11 +24,10 @@ class AuthHandler implements Subscriber
         // Only the identity details should be in the auth session not the full user object, to save space and be secure.
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
-        $user = null;                       // public user
+        $user = null;                       // public user if null
         if ($auth->getIdentity()) {         // Check if user is logged in
             $user = $config->getUserMapper()->findByAuthIdentity($auth->getIdentity());
-            if ($user && $user->isActive()) {
-                // We set the user here for each page load
+            if ($user && $user->isActive()) {  // We set the user here for each page load
                 $config->setUser($user);
             }
         }
