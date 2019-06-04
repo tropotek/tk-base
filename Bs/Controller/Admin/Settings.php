@@ -53,8 +53,14 @@ class Settings extends \Bs\Controller\AdminEditIface
      */
     public function initActionPanel()
     {
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Plugins', \Bs\Uri::createHomeUrl('/plugins.html'), 'fa fa-plug'));
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Users', \Bs\Uri::createHomeUrl('/userManager.html'), 'fa fa-users'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Plugins',
+            \Bs\Uri::createHomeUrl('/plugins.html'), 'fa fa-plug'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Users',
+            \Bs\Uri::createHomeUrl('/userManager.html'), 'fa fa-users'));
+        if ($this->getConfig()->isDebug()) {
+            $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Roles {D}',
+                \Bs\Uri::createHomeUrl('/roleManager.html'), 'fa fa-group'));
+        }
     }
 
     /**
