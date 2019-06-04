@@ -11,8 +11,8 @@ try {
         $sql = sprintf('alter table subject add publish TINYINT(1) default 1 not null after date_end;');
         $db->exec($sql);
     }
-    if (!in_array('notifications', $subjectInfo)) {
-        $sql = sprintf('alter table subject add notifications TINYINT(1) default 1 not null after date_end;');
+    if (!in_array('notify', $subjectInfo)) {
+        $sql = sprintf('alter table subject add notify TINYINT(1) default 1 not null after date_end;');
         $db->exec($sql);
     }
 //    if (!in_array('email', $subjectInfo)) {
