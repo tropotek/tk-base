@@ -42,7 +42,6 @@ trait UserTrait
      *
      * @return UserIface|null
      * @throws \Exception
-     * @deprecated Use getUserObj()
      */
     public function getUser()
     {
@@ -51,6 +50,9 @@ trait UserTrait
 
     /**
      * Find this institutions owner user
+     *
+     * Note: This is use as an alias incases where get{Object}()
+     *   is already used in the main object for another reason
      *
      * @return UserIface|null
      * @throws \Exception

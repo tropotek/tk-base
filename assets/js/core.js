@@ -572,7 +572,6 @@ var project_core = function () {
           settings.panelTitle = $('.page-header').text();
         }
       }
-
       var tpl = $(settings.panelTemplate);
       tpl.addClass(element.attr('class'));
 

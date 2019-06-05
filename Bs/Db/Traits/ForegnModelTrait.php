@@ -40,9 +40,12 @@ trait ForegnModelTrait
 
 
     /**
+     *
+     * Note: This is use as an alias incases where set{Object}()
+     *   is already used in the main object for another reason
+     *
      * @param Model|ModelInterface $model
      * @return ForegnKeyTrait
-     * @deprecated use setModelObj()
      */
     public function setModel($model)
     {
@@ -52,9 +55,11 @@ trait ForegnModelTrait
 
     /**
      *
+     * Note: This is use as an alias incases where get{Object}()
+     *   is already used in the main object for another reason
+     *
      * @return null|Model|ModelInterface
      * @throws \Exception
-     * @deprecated use setModelObj()
      */
     public function getModel()
     {
