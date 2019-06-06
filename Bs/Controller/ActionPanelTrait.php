@@ -27,4 +27,13 @@ trait ActionPanelTrait
         return $this->actionPanel;
     }
 
+
+    /**
+     * Init your action panel stuf in here
+     */
+    public function initActionPanel()
+    {
+
+    }
+
 }
