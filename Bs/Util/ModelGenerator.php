@@ -297,6 +297,7 @@ use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
 use Bs\Db\Mapper;
+use Tk\Db\Filter;
 
 /**
  * @author {author-name}
@@ -332,28 +333,26 @@ class {classname}Map extends Mapper
     }
 
     /**
-     * @param array \$filter
+     * @param array|Filter \$filter
      * @param Tool \$tool
      * @return ArrayObject|{classname}[]
      * @throws \Exception
      */
-    public function findFiltered(\$filter = array(), \$tool = null)
+    public function findFiltered(\$filter, \$tool = null)
     {
-        \$this->makeQuery(\$filter, \$tool, \$where, \$from);
-        \$res = \$this->selectFrom(\$from, \$where, \$tool);
+        \$filter = \Tk\Db\Filter::create(\$filter, \$tool);
+        \$this->makeQuery(\$filter);
+        \$res = \$this->selectFrom(\$filter->getFrom(), rtrim(\$filter->getWhere(), 'AND '), \$tool);
         return \$res;
     }
 
     /**
-     * @param array \$filter
-     * @param Tool \$tool
-     * @param string \$where
-     * @param string \$from
-     * @return ArrayObject|{classname}[]
+     * @param Filter \$filter
+     * @return \$this
      */
-    public function makeQuery(\$filter = array(), \$tool = null, &\$where = '', &\$from = '')
+    public function makeQuery(Filter \$filter)
     {
-        \$from .= sprintf('%s a ', \$this->quoteParameter(\$this->getTable()));
+        \$filter->appendFrom('%s a ', \$this->quoteParameter(\$this->getTable()));
 
         if (!empty(\$filter['keywords'])) {
             \$kw = '%' . \$this->escapeString(\$filter['keywords']) . '%';
@@ -363,27 +362,20 @@ class {classname}Map extends Mapper
                 \$id = (int)\$filter['keywords'];
                 \$w .= sprintf('a.id = %d OR ', \$id);
             }
-            if (\$w) \$where .= '(' . substr(\$w, 0, -3) . ') AND ';
-
+            if (\$w) \$filter->appendWhere('(%s) AND ', substr(\$w, 0, -3));
         }
 
 {filter-queries}
 
         if (!empty(\$filter['exclude'])) {
             \$w = \$this->makeMultiQuery(\$filter['exclude'], 'a.id', 'AND', '!=');
-            if (\$w) \$where .= '('. \$w . ') AND ';
-
+            if (\$w) \$filter->appendWhere('(%s) AND ', \$w);
         }
 
-        if (\$where) {
-            \$where = substr(\$where, 0, -4);
-        }
-
-        return \$where;
+        return \$this;
     }
 
 }
-
 STR;
         $tpl = \Tk\CurlyTemplate::create($classTpl);
         return $tpl;

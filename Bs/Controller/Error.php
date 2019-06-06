@@ -102,13 +102,13 @@ class Error extends Iface
             $template->appendHtml('message', htmlentities($this->params['message']) . ' ' . $this->params['extra']);
             if ($this->params['trace']) {
                 $template->appendHtml('trace', $this->params['trace']);
-                $template->show('trace');
+                $template->setVisible('trace');
             }
             if ($this->params['log']) {
                 $template->appendHtml('log', $this->params['log']);
-                $template->show('log');
+                $template->setVisible('log');
             }
-            $template->show('debug');
+            $template->setVisible('debug');
         }
 
         return $template;

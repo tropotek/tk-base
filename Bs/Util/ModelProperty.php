@@ -247,7 +247,7 @@ TPL;
     {
         $tpl = <<<TPL
         if (!empty(\$filter['%s'])) {
-            \$where .= sprintf('a.%s = %%s AND ', %s);
+            \$filter->appendWhere('a.%s = %%s AND ', %s);
         }
 TPL;
 
@@ -296,7 +296,8 @@ TPL;
         $append = '';
         if ($this->getName() == 'name' || $this->getName() == 'title') {
             $append .= sprintf('->addCss(\'key\')');
-            $append .= sprintf('->setUrl(\Bs\Uri::createHomeUrl(\'/%sEdit.html\'))', lcfirst($className));
+            $append .= sprintf('->setUrl($this->getEditUrl())', lcfirst($className));
+            //$append .= sprintf('->setUrl(\Bs\Uri::createHomeUrl(\'/%sEdit.html\'))', lcfirst($className));
         }
 
         return sprintf($tpl, $mapClass, $propertyName, $append);

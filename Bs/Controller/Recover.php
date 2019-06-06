@@ -134,7 +134,7 @@ class Recover extends Iface
         }
 
         if ($this->getConfig()->get('site.client.registration')) {
-            $template->setChoice('register');
+            $template->setVisible('register');
         }
 
         return $template;

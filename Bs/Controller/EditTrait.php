@@ -32,4 +32,10 @@ trait EditTrait
         return $this;
     }
 
+
+    /**
+     * Use this to init the form before execute is called
+     * @param \Tk\Request $request
+     */
+    public function initForm(\Tk\Request $request) { }
 }

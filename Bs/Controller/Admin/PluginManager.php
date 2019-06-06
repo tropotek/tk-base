@@ -251,7 +251,7 @@ class ActionsCell extends \Tk\Table\Cell\Text
 
         if ($pluginFactory->isActive($pluginName)) {
             $plugin = $pluginFactory->getPlugin($pluginName);
-            $template->setChoice('active');
+            $template->setVisible('active');
             $template->setAttr('deact', 'href', \Tk\Uri::create()->reset()->set('deact', $pluginName));
             $this->getRow()->addCss('plugin-active');
 
@@ -262,7 +262,7 @@ class ActionsCell extends \Tk\Table\Cell\Text
                 $template->addCss('setup', 'disabled');
             }
         } else {
-            $template->setChoice('inactive');
+            $template->setVisible('inactive');
             $template->setAttr('act', 'href', \Tk\Uri::create()->reset()->set('act', $pluginName));
             $this->getRow()->addCss('plugin-inactive');
 

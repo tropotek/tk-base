@@ -102,18 +102,18 @@ JS;
         if ($controller->getPageTitle() && $controller->isShowTitle()) {
             $template->setTitleText(trim($controller->getPageTitle() . ' - ' . $template->getTitleText(), '- '));
             $template->insertText($config->get('template.var.page.page-header'), $controller->getPageTitle());
-            $template->setChoice($config->get('template.var.page.page-header'));
+            $template->setVisible($config->get('template.var.page.page-header'));
         }
 
         if ($this->getConfig()->isDebug()) {
             $template->setTitleText(trim('DEBUG: ' . $template->getTitleText(), '- '));
-            $template->setChoice('debug');
+            $template->setVisible('debug');
         }
 
         // ---- tk-base specific calls ----
         if (\Tk\AlertCollection::hasMessages()) {
             $template->appendTemplate($config->get('template.var.page.alerts'), \Tk\AlertCollection::getInstance()->show());
-            $template->setChoice($config->get('template.var.page.alerts'));
+            $template->setVisible($config->get('template.var.page.alerts'));
         }
 
         if ($this->getConfig()->getUser()) {
@@ -125,10 +125,10 @@ JS;
             }
 
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
-            $template->setChoice($config->get('template.var.page.logout'));
+            $template->setVisible($config->get('template.var.page.logout'));
             $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRoleType());
         } else {
-            $template->setChoice($config->get('template.var.page.login'));
+            $template->setVisible($config->get('template.var.page.login'));
         }
 
     }

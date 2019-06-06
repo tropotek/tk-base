@@ -185,14 +185,14 @@ class Register extends Iface
         $template = parent::show();
 
         if ($this->getConfig()->get('site.client.registration')) {
-            $template->setChoice('register');
+            $template->setVisible('register');
         }
 
         if ($this->getConfig()->getSession()->getOnce('h')) {
-            $template->setChoice('success');
+            $template->setVisible('success');
 
         } else {
-            $template->setChoice('form');
+            $template->setVisible('form');
             // Render the form
             $template->insertTemplate('form', $this->form->getRenderer()->show());
         }
