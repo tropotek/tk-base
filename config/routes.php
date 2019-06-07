@@ -34,16 +34,17 @@ $routes->add('maintenance', new \Tk\Routing\Route('/maintenance.html', 'Bs\Contr
 // Admin Pages
 //$routes->add('admin-dashboard', new \Tk\Routing\Route('/admin/index.html', 'Bs\Controller\Admin\Dashboard::doDefault'));
 //$routes->add('admin-dashboard-base', new \Tk\Routing\Route('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault'));
-$routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault'));
+
+$routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault'));
+$routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html', 'Bs\Controller\Admin\PluginManager::doDefault'));
 
 $routes->add('admin-role-manager', new \Tk\Routing\Route('/admin/roleManager.html', 'Bs\Controller\Role\Manager::doDefault'));
 $routes->add('admin-role-edit', new \Tk\Routing\Route('/admin/roleEdit.html', 'Bs\Controller\Role\Edit::doDefault'));
 
 $routes->add('admin-user-manager', new \Tk\Routing\Route('/admin/userManager.html', 'Bs\Controller\Admin\User\Manager::doDefault'));
 $routes->add('admin-user-edit', new \Tk\Routing\Route('/admin/userEdit.html', 'Bs\Controller\Admin\User\Edit::doDefault'));
+$routes->add('admin-user-profile', new \Tk\Routing\Route('/admin/profile.html', 'Bs\Controller\Admin\User\Profile::doDefault'));
 
-$routes->add('admin-settings', new \Tk\Routing\Route('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault'));
-$routes->add('admin-plugin-manager', new \Tk\Routing\Route('/admin/plugins.html', 'Bs\Controller\Admin\PluginManager::doDefault'));
 
 
 // User Pages
@@ -53,8 +54,9 @@ $routes->add('user-profile', new \Tk\Routing\Route('/user/profile.html', 'Bs\Con
 
 
 // Admin Dev Pages
-$routes->add('admin-dev-event-handlers',
-    new \Tk\Routing\Route('/admin/dev/dispatcherEvents.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
+$routes->add('admin-dev-system-events',
+    new \Tk\Routing\Route('/admin/systemEvents.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
+$routes->add('admin-tail-log', new \Tk\Routing\Route('/admin/tailLog.html', 'Bs\Controller\Admin\Dev\Tail\Log::doDefault'));
 
 
 // Examples

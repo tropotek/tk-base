@@ -81,6 +81,7 @@ class User extends \Bs\TableIface
         });
         $this->appendCell(new \Tk\Table\Cell\Text('uid'))->setLabel('UID');
         $this->appendCell(new \Tk\Table\Cell\Boolean('active'));
+        $this->appendCell(new \Tk\Table\Cell\Date('lastLogin'));
         $this->appendCell(new \Tk\Table\Cell\Date('created'));
 
         // Filters
