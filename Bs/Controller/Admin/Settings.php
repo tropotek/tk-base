@@ -85,11 +85,7 @@ class Settings extends \Bs\Controller\AdminEditIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-
-  <div class="tk-panel" data-panel-icon="fa fa-cogs" var="form"></div>
-
-</div>
+<div class="tk-panel" data-panel-icon="fa fa-cogs" var="form"></div>
 HTML;
 
         return \Dom\Loader::load($xhtml);
