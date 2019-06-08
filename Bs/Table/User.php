@@ -90,7 +90,7 @@ class User extends \Bs\TableIface
         // Actions
         //$this->appendAction(\Tk\Table\Action\Link::create('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
         //$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
-        $this->appendAction(\Tk\Table\Action\Delete::create());
+        $this->appendAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array('1')));
         //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
         $this->appendAction(\Tk\Table\Action\Csv::create());
 

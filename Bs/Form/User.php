@@ -38,7 +38,7 @@ class User extends \Bs\FormIface
             $list = \Bs\Db\RoleMap::create()->findFiltered(array());
             $this->appendField(new Field\Select('roleId', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
         } else {
-            $this->appendField(new Field\Html('roleId', $this->getUser()->getRole()->getName()))->setTabGroup($tab);
+            $this->appendField(new Field\Html('roleId', $this->getUser()->getRole()->getName()))->setAttr('disabled')->addCss('form-control disabled')->setAttr('disabled')->addCss('form-control disabled')->setTabGroup($tab);
         }
 
         $this->appendField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
@@ -46,10 +46,11 @@ class User extends \Bs\FormIface
         if ($this->getConfig()->getUser()->isAdmin() || !$this->getUser()->getId()) {
             $this->appendField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
         } else {
-            $this->appendField(new Field\Html('username'))->setTabGroup($tab);
+            vd();
+            $this->appendField(new Field\Html('username'))->setAttr('disabled')->addCss('form-control disabled')->setTabGroup($tab);
         }
         $this->appendField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
-        $this->appendField(new Field\Input('phone'))->setTabGroup($tab);
+        $this->appendField(new Field\Input('phone'))->setTabGroup($tab)->setNotes('Enter a phone number that you can be contacted on directly.');
         $this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
 
         $tab = 'Password';

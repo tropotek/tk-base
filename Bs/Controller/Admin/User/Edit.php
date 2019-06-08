@@ -18,7 +18,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     protected $targetRole = 'user';
 
     /**
-     * @var \Bs\Db\User
+     * @var \Bs\Db\User|\Bs\Db\UserIface
      */
     protected $user = null;
 
@@ -29,6 +29,21 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function __construct()
     {
         $this->setPageTitle('User Edit');
+    }
+
+
+    /**
+     * @param \Tk\Request $request
+     * @throws \Exception
+     */
+    public function init($request)
+    {
+        $this->user = $this->getConfig()->createUser();
+        $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_USER;
+        if ($request->get('userId')) {
+            $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
+        }
+
     }
 
     /**
@@ -55,23 +70,8 @@ class Edit extends \Bs\Controller\AdminEditIface
     {
         $this->init($request);
 
-
-        $this->getForm()->execute();
-    }
-
-    /**
-     * @param \Tk\Request $request
-     * @throws \Exception
-     */
-    public function init($request)
-    {
-        $this->user = $this->getConfig()->createUser();
-        $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_USER;
-        if ($request->get('userId')) {
-            $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
-        }
-
         $this->setForm(\Bs\Form\User::create()->setModel($this->user));
+        $this->getForm()->execute();
     }
 
     /**
@@ -89,10 +89,10 @@ class Edit extends \Bs\Controller\AdminEditIface
         $template = parent::show();
         
         // Render the form
-        $template->appendTemplate('form', $this->form->show());
+        $template->appendTemplate('panel', $this->form->show());
         
         if ($this->user->id)
-            $template->setAttr('form', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
+            $template->setAttr('panel', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
         
         return $template;
     }
@@ -106,11 +106,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-
-  <div class="tk-panel" data-panel-icon="fa fa-user" var="form"></div>
-    
-</div>
+<div class="tk-panel" data-panel-icon="fa fa-user" var="panel"></div>
 HTML;
 
         return \Dom\Loader::load($xhtml);

@@ -12,16 +12,11 @@ use Tk\Form\Event;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class Profile extends \Bs\Controller\AdminIface
+class Profile extends \Bs\Controller\AdminEditIface
 {
 
     /**
-     * @var Form
-     */
-    protected $form = null;
-
-    /**
-     * @var \Bs\Db\User
+     * @var \Bs\Db\User|\Bs\Db\UserIface
      */
     protected $user = null;
 
@@ -36,99 +31,42 @@ class Profile extends \Bs\Controller\AdminIface
     }
 
     /**
-     *
-     * @param Request $request
+     * @param \Tk\Request $request
      * @throws \Exception
      */
-    public function doDefault(Request $request)
+    public function init($request)
     {
-        $this->user = $this->getUser();
-
-        $this->form = $this->getConfig()->createForm('user-edit');
-        $this->form->setRenderer($this->getConfig()->createFormRenderer($this->form));
-
-        $this->form->appendField(new Field\Html('username'))->setRequired(true);
-        $this->form->appendField(new Field\Input('email'))->setRequired(true);
-        $this->form->appendField(new Field\Input('name'))->setRequired(true);
-
-        $this->form->setAttr('autocomplete', 'off');
-        $f = $this->form->appendField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
-            ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');");
-        if (!$this->user->getId())
-            $f->setRequired(true);
-        $f = $this->form->appendField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
-            ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
-            ->setNotes('Change this users password.');
-        if (!$this->user->getId())
-            $f->setRequired(true);
-
-
-        $this->form->appendField(new Event\Submit('update', array($this, 'doSubmit')));
-        $this->form->appendField(new Event\Submit('save', array($this, 'doSubmit')));
-        $this->form->appendField(new Event\Link('cancel', $this->getConfig()->getBackUrl()));
-
-        $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
-        
-        $this->form->execute();
-
+        $this->user = $this->getConfig()->getUser();
     }
 
     /**
-     * @param \Tk\Form $form
-     * @param \Tk\Form\Event\Iface $event
+     * @param \Tk\Request $request
      * @throws \Exception
      */
-    public function doSubmit($form, $event)
+    public function doDefault(\Tk\Request $request)
     {
-        // Load the object with data from the form using a helper object
-        $this->getConfig()->getUserMapper()->mapForm($form->getValues(), $this->user);
+        $this->init($request);
 
-        // Password validation needs to be here
-        if ($this->form->getFieldValue('newPassword')) {
-            if ($this->form->getFieldValue('newPassword') != $this->form->getFieldValue('confPassword')) {
-                $form->addFieldError('newPassword', 'Passwords do not match.');
-                $form->addFieldError('confPassword');
-            }
-        }
-        $form->addFieldErrors($this->user->validate());
-        
-        // Just a small check to ensure the user down not change their own role
-        if ($this->user->getId() == $this->getUser()->getId() && $this->user->getRoleType() != $this->getUser()->getRoleType()) {
-            $form->addError('You cannot change your own role information as this will make the system unstable.');
-        }
-        if ($this->user->getId() == $this->getUser()->getId() && !$this->user->isActive()) {
-            $form->addError('You cannot change your own active status as this will make the system unstable.');
-        }
-        
-        if ($form->hasErrors()) {
-            return;
-        }
-
-        if ($this->form->getFieldValue('newPassword')) {
-            $this->user->setNewPassword($this->form->getFieldValue('newPassword'));
-        }
-
-        $this->user->save();
-
-        \Tk\Alert::addSuccess('Record saved!');
-        $event->setRedirect(\Tk\Uri::create());
-        if ($form->getTriggeredEvent()->getName() == 'update') {
-            $event->setRedirect($this->getConfig()->getBackUrl());
-        }
+        $this->setForm(\Bs\Form\User::create()->setModel($this->user));
+        $this->getForm()->removeField('active');
+        $this->getForm()->getField('username')->setAttr('disabled')->addCss('form-control disabled');
+        $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled');
+        $this->getForm()->execute();
     }
 
     /**
      * @return \Dom\Template
-     * @throws \Dom\Exception
+     * @throws \Exception
      */
     public function show()
     {
         $template = parent::show();
-        
+
         // Render the form
-        $template->insertTemplate('form', $this->form->getRenderer()->show());
-        $template->setAttr('form', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
-        
+        $template->appendTemplate('panel', $this->form->show());
+        if ($this->user->id)
+            $template->setAttr('panel', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
+
         return $template;
     }
 
@@ -141,11 +79,7 @@ class Profile extends \Bs\Controller\AdminIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-
-  <div class="tk-panel" data-panel-icon="fa fa-user" var="form"></div>
-  
-</div>
+<div class="tk-panel" data-panel-icon="fa fa-user" var="panel"></div>
 HTML;
 
         return \Dom\Loader::load($xhtml);
