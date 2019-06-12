@@ -82,7 +82,6 @@ abstract class FormIface extends \Tk\Form
     public function setModel($model)
     {
         $this->model = $model;
-
         if (!$this->initDone) {
             $this->init();
             $this->initDone = true;
