@@ -340,19 +340,16 @@ class {classname}Map extends Mapper
      */
     public function findFiltered(\$filter, \$tool = null)
     {
-        \$filter = \Tk\Db\Filter::create(\$filter);
-        \$this->makeQuery(\$filter);
-        \$res = \$this->selectFrom(\$filter->getFrom(), rtrim(\$filter->getWhere(), 'AND '), \$tool);
-        return \$res;
+        return \$this->selectFromFilter(\$this->makeQuery(\Tk\Db\Filter::create(\$filter)), \$tool);
     }
 
     /**
      * @param Filter \$filter
-     * @return \$this
+     * @return Filter
      */
     public function makeQuery(Filter \$filter)
     {
-        \$filter->appendFrom('%s a ', \$this->quoteParameter(\$this->getTable()));
+        \$filter->appendFrom('%s a', \$this->quoteParameter(\$this->getTable()));
 
         if (!empty(\$filter['keywords'])) {
             \$kw = '%' . \$this->escapeString(\$filter['keywords']) . '%';
@@ -372,7 +369,7 @@ class {classname}Map extends Mapper
             if (\$w) \$filter->appendWhere('(%s) AND ', \$w);
         }
 
-        return \$this;
+        return \$filter;
     }
 
 }

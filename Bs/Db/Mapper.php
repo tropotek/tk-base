@@ -218,8 +218,8 @@ SQL;
 
         $st->execute(array($tableName, $df, $dt, $iType, $iUnit));
 
-        vd($st->getPdo()->getLastQuery());
-        vd($st->getPdo()->errorInfo());
+//        vd($st->getPdo()->getLastQuery());
+//        vd($st->getPdo()->errorInfo());
 
     }
 

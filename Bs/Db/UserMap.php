@@ -13,8 +13,8 @@ use Tk\DataMap\Form;
  */
 class UserMap extends Mapper
 {
+
     /**
-     *
      * @return \Tk\DataMap\DataMap
      */
     public function getDbMap()
@@ -44,7 +44,6 @@ class UserMap extends Mapper
     }
 
     /**
-     *
      * @return \Tk\DataMap\DataMap
      */
     public function getFormMap()
@@ -83,8 +82,7 @@ class UserMap extends Mapper
      */
     public function findByUsername($username)
     {
-        $result = $this->select('username = ' . $this->getDb()->quote($username) );
-        return $result->current();
+        return $this->findFiltered(array('username' => $username))->current();
     }
 
     /**
@@ -94,7 +92,7 @@ class UserMap extends Mapper
      */
     public function findByEmail($email)
     {
-        return $this->select('email = ' . $this->getDb()->quote($email))->current();
+        return $this->findFiltered(array('email' => $email))->current();
     }
 
     /**
@@ -104,35 +102,31 @@ class UserMap extends Mapper
      */
     public function findByHash($hash)
     {
-        return $this->select('hash = ' . $this->getDb()->quote($hash))->current();
+        return $this->findFiltered(array('hash' => $hash))->current();
     }
 
+
     /**
-     * @param array $filter
+     * @param array|\Tk\Db\Filter $filter
      * @param Tool $tool
-     * @return ArrayObject|User[]
+     * @return ArrayObject|Role[]
      * @throws \Exception
      */
-    public function findFiltered($filter = array(), $tool = null)
+    public function findFiltered($filter, $tool = null)
     {
-        $this->makeQuery($filter, $tool, $where, $from);
-        $res = $this->selectFrom($from, $where, $tool);
-        return $res;
+        return $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
     }
 
     /**
-     * @param array $filter
-     * @param Tool $tool
-     * @param string $where
-     * @param string $from
-     * @return $this
+     * @param \Tk\Db\Filter $filter
+     * @return \Tk\Db\Filter
      */
-    public function makeQuery($filter = array(), $tool = null, &$where = '', &$from = '')
+    public function makeQuery(\Tk\Db\Filter $filter)
     {
-        $from .= sprintf('%s a ', $this->quoteParameter($this->getTable()));
+        $filter->appendFrom('%s a', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['keywords'])) {
-            $kw = '%' . $this->escapeString($filter['keywords']) . '%';
+            $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
             $w = '';
             $w .= sprintf('a.uid LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
@@ -144,59 +138,67 @@ class UserMap extends Mapper
                 $w .= sprintf('a.id = %d OR ', $id);
             }
             if ($w) {
-                $where .= '(' . substr($w, 0, -3) . ') AND ';
+                $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
             }
         }
 
-//        if (!empty($filter['roleId'])) {
-//            $where .= sprintf('a.role_id = %s AND ', (int)$filter['roleId']);
-//        }
         if (!empty($filter['roleId'])) {
             $w = $this->makeMultiQuery($filter['roleId'], 'a.role_id');
             if ($w) {
-                $where .= '('. $w . ') AND ';
+                $filter->appendWhere('(%s) AND ', $w);
             }
+        }
+
+        if (!empty($filter['uid'])) {
+            $filter->appendWhere('a.uid = %s AND ', $this->getDb()->quote($filter['uid']));
         }
 
         if (!empty($filter['username'])) {
-            $where .= sprintf('a.username = %s AND ', $this->getDb()->quote($filter['username']));
+            $filter->appendWhere('a.username = %s AND ', $this->getDb()->quote($filter['username']));
             if (!empty($filter['password'])) { // ??? Is this insecure ???
-                $where .= sprintf('a.password = %s AND ', $this->getDb()->quote($filter['password']));
+                $filter->appendWhere('a.password = %s AND ', $this->getDb()->quote($filter['password']));
             }
         }
 
-        if (!empty($filter['active'])) {
-            $where .= sprintf('a.active = %s AND ', (int)$filter['active']);
-        }
-
         if (!empty($filter['email'])) {
-            $where .= sprintf('a.email = %s AND ', $this->quote($filter['email']));
+            $filter->appendWhere('a.email = %s AND ', $this->quote($filter['email']));
         }
 
+        if (!empty($filter['phone'])) {
+            $filter->appendWhere('a.phone = %s AND ', $this->getDb()->quote($filter['phone']));
+        }
+
+        if (!empty($filter['hash'])) {
+            $filter->appendWhere('a.hash = %s AND ', $this->getDb()->quote($filter['hash']));
+        }
+
+        if (isset($filter['active']) && $filter['active'] !== '' && $filter['active'] !== null) {
+            $filter->appendWhere('a.active = %s AND ', (int)$filter['active']);
+        }
+
+        if (!empty($filter['hasSession'])) {
+            $filter->appendWhere('a.session_id != "" AND a.session_id IS NOT NULL AND ');
+        }
 
         if (!empty($filter['role']) && empty($filter['type'])) {
             $filter['type'] = $filter['role'];
         }
         if (!empty($filter['type'])) {
-            $from .= sprintf(', user_role d');
+            $filter->appendFrom(', user_role d');
             $w = $this->makeMultiQuery($filter['type'], 'd.type');
             if ($w) {
-                $where .= 'a.role_id = d.id AND ('. $w . ') AND ';
+                $filter->appendWhere('a.role_id = d.id AND (%s) AND ', $w);
             }
         }
 
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) {
-                $where .= '('. $w . ') AND ';
+                $filter->appendWhere('(%s) AND ', $w);
             }
         }
-        
-        if ($where) {
-            $where = substr($where, 0, -4);
-        }
 
-        return $this;
+        return $filter;
     }
 
 }

@@ -1,10 +1,13 @@
 <?php
 namespace Bs\Db;
 
+use Tk\Date;
 use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
+use Uni\Db\Role;
+use Uni\Db\SubjectMap;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -65,79 +68,81 @@ class RoleMap extends Mapper
         return $arr;
     }
 
+
+
+
     /**
-     * @param array $filter
+     * @param array|\Tk\Db\Filter $filter
      * @param Tool $tool
      * @return ArrayObject|Role[]
      * @throws \Exception
      */
-    public function findFiltered($filter = array(), $tool = null)
+    public function findFiltered($filter, $tool = null)
     {
-        $this->makeQuery($filter, $tool, $where, $from);
-        $res = $this->selectFrom($from, rtrim($where, 'AND '), $tool);
-        return $res;
+        return $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
     }
 
-
     /**
-     * @param array $filter
-     * @param Tool $tool
-     * @param string $where
-     * @param string $from
-     * @return $this
+     * @param \Tk\Db\Filter $filter
+     * @return \Tk\Db\Filter
      */
-    public function makeQuery($filter = array(), $tool = null, &$where = '', &$from = '')
+    public function makeQuery(\Tk\Db\Filter $filter)
     {
-        $from .= sprintf('%s a ', $this->quoteParameter($this->getTable()));
+        $filter->appendFrom('%s a', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['keywords'])) {
-            $kw = '%' . $this->escapeString($filter['keywords']) . '%';
+            $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
             $w = '';
-            $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.name LIKE %s OR ', $this->getDb()->quote($kw));
             $w .= sprintf('a.type LIKE %s OR ', $this->quote($kw));
             if (is_numeric($filter['keywords'])) {
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
             }
             if ($w) {
-                $where .= '(' . substr($w, 0, -3) . ') AND ';
+                $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
             }
         }
 
+
         if (!empty($filter['name'])) {
-            $where .= sprintf('a.name = %s AND ', $this->getDb()->quote($filter['name']));
+            $filter->appendWhere('a.name = %s AND ', $this->getDb()->quote($filter['name']));
         }
 
         if (!empty($filter['username'])) {
-            $where .= sprintf('a.username = %s AND ', $this->getDb()->quote($filter['username']));
+            $filter->appendWhere('a.username = %s AND ', $this->getDb()->quote($filter['username']));
             if (!empty($filter['password'])) {
-                $where .= sprintf('a.password = %s AND ', $this->getDb()->quote($filter['password']));
+                $filter->appendWhere('a.password = %s AND ', $this->getDb()->quote($filter['password']));
             }
         }
 
         if (!empty($filter['active'])) {
-            $where .= sprintf('a.active = %s AND ', (int)$filter['active']);
+            $filter->appendWhere('a.active = %s AND ', (int)$filter['active']);
         }
 
         if (!empty($filter['static'])) {
-            $where .= sprintf('a.static = %s AND ', (int)$filter['static']);
+            $filter->appendWhere('a.static = %s AND ', (int)$filter['static']);
         }
 
         if (!empty($filter['type'])) {
             $w = $this->makeMultiQuery($filter['type'], 'a.type');
             if ($w) {
-                $where .= '('. $w . ') AND ';
+                $filter->appendWhere('(%s) AND ', $w);
             }
         }
 
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) {
-                $where .= '('. $w . ') AND ';
+                $filter->appendWhere('(%s) AND ', $w);
             }
         }
-        return $this;
+
+        return $filter;
     }
+
+
+
 
     // --------------------------------------------
 

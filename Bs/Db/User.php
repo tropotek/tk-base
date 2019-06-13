@@ -112,7 +112,6 @@ class User extends Model implements UserIface
 
     /**
      * User constructor.
-     * @throws \Exception
      */
     public function __construct()
     {
@@ -159,7 +158,6 @@ class User extends Model implements UserIface
      * Get the data object
      *
      * @return \Tk\Db\Data
-     * @throws \Exception
      */
     public function getData()
     {
@@ -212,85 +210,236 @@ class User extends Model implements UserIface
     /**
      * @return int
      */
-    public function getRoleId()
+    public function getRoleId(): int
     {
         return $this->roleId;
     }
 
     /**
-     * @return int
+     * @param int $roleId
+     * @return User
      */
-    public function getUid()
+    public function setRoleId(int $roleId): User
+    {
+        $this->roleId = $roleId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUid(): string
     {
         return $this->uid;
     }
 
     /**
+     * @param string $uid
+     * @return User
+     */
+    public function setUid(string $uid): User
+    {
+        $this->uid = $uid;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
     /**
-     * Return the users hashed password
+     * @param string $username
+     * @return User
+     */
+    public function setUsername(string $username): User
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
 
     /**
+     * @param string $password
+     * @return User
+     */
+    public function setPassword(string $password): User
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
+     * @param string $name
+     * @return User
+     */
+    public function setName(string $name): User
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     /**
+     * @param string $email
+     * @return User
+     */
+    public function setEmail(string $email): User
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getPhone()
+    public function getPhone(): string
     {
         return $this->phone;
     }
 
     /**
+     * @param string $phone
+     * @return User
+     */
+    public function setPhone(string $phone): User
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getImage()
+    public function getImage(): string
     {
         return $this->image;
     }
 
     /**
+     * @param string $image
+     * @return User
+     */
+    public function setImage(string $image): User
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotes(): string
+    {
+        return $this->notes;
+    }
+
+    /**
+     * @param string $notes
+     * @return User
+     */
+    public function setNotes(string $notes): User
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
 
     /**
-     * @return \DateTime|null
+     * @param bool $active
+     * @return User
      */
-    public function getLastLogin()
+    public function setActive(bool $active): User
+    {
+        $this->active = $active;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastLogin(): \DateTime
     {
         return $this->lastLogin;
     }
 
+    /**
+     * @param \DateTime $lastLogin
+     * @return User
+     */
+    public function setLastLogin(\DateTime $lastLogin): User
+    {
+        $this->lastLogin = $lastLogin;
+        return $this;
+    }
 
+    /**
+     * @return string
+     */
+    public function getSessionId(): string
+    {
+        return $this->sessionId;
+    }
+
+    /**
+     * @param string $sessionId
+     * @return User
+     */
+    public function setSessionId(string $sessionId): User
+    {
+        $this->sessionId = $sessionId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param string $ip
+     * @return User
+     */
+    public function setIp(string $ip): User
+    {
+        $this->ip = $ip;
+        return $this;
+    }
 
     /**
      * Get the user hash or generate one if needed
@@ -416,9 +565,6 @@ class User extends Model implements UserIface
         }
         return $errors;
     }
-
-
-
 
 
 

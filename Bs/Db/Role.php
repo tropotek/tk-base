@@ -19,6 +19,8 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
     const TYPE_PUBLIC   = 'public';
 
 
+    use Traits\TimestampTrait;
+
     /**
      * @var int
      */
@@ -65,8 +67,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
      */
     public function __construct()
     {
-        $this->modified = new \DateTime();
-        $this->created = new \DateTime();
+        $this->_TimestampTrait();
     }
 
     /**
@@ -87,7 +88,6 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
         }
         return 0;
     }
-
 
     /**
      * @param string $name
@@ -167,12 +167,23 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
         return 0;
     }
 
+
     /**
      * @return string
      */
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return Role
+     */
+    public function setName(string $name): Role
+    {
+        $this->name = $name;
+        return $this;
     }
 
     /**
@@ -185,28 +196,81 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
     }
 
     /**
+     * @param string $type
+     * @return Role
+     */
+    public function setType(string $type): Role
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return Role
+     */
+    public function setDescription(string $description): Role
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     * @return Role
+     */
+    public function setActive(bool $active): Role
+    {
+        $this->active = $active;
+        return $this;
     }
 
     /**
      * If true this role is readonly
      * @return bool
      */
-    public function isStatic()
+    public function isStatic(): bool
     {
         return $this->static;
     }
+
+    /**
+     * @param bool $static
+     * @return Role
+     */
+    public function setStatic(bool $static): Role
+    {
+        $this->static = $static;
+        return $this;
+    }
+
+
 
     /**
      * @return array
      */
     public function getPermissions()
     {
-        return $this->getMapper()->getPermissions($this->getId());
+        try {
+            return $this->getMapper()->getPermissions($this->getId());
+        } catch (\Exception $e) {}
+        return false;
     }
 
     /**
@@ -215,7 +279,10 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
      */
     public function addPermission($name)
     {
-        $this->getMapper()->addPermission($this->getId(), $name);
+        try {
+            $this->getMapper()->addPermission($this->getId(), $name);
+        } catch (\Exception $e) {
+        }
         return $this;
     }
 
@@ -225,7 +292,10 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
      */
     public function removePermission($name = null)
     {
-        $this->getMapper()->removePermission($this->getId(), $name);
+        try {
+            $this->getMapper()->removePermission($this->getId(), $name);
+        } catch (\Exception $e) {
+        }
         return $this;
     }
 
@@ -240,8 +310,10 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
         if (!$this->isActive()) return false;
         if (!is_array($permission)) $permission = array($permission);
         foreach ($permission as $p) {
-            if ($this->getMapper()->hasPermission($this->getId(), $p))
-                return true;
+            try {
+                if ($this->getMapper()->hasPermission($this->getId(), $p))
+                    return true;
+            } catch (\Exception $e) {}
         }
         return false;
     }
