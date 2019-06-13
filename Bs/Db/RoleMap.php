@@ -69,8 +69,6 @@ class RoleMap extends Mapper
     }
 
 
-
-
     /**
      * @param array|\Tk\Db\Filter $filter
      * @param Tool $tool
