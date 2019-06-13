@@ -93,12 +93,8 @@ class Events extends \Bs\Controller\AdminIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-
-  <div class="tk-panel" data-panel-icon="fa fa-empire" var="table">
-    <p>The events are available for use with plugins or when adding to the system codebase.</p>
-  </div>
-
+<div class="tk-panel" data-panel-icon="fa fa-empire" var="table">
+  <p>The events are available for use with plugins or when adding to the system codebase.</p>
 </div>
 HTML;
 

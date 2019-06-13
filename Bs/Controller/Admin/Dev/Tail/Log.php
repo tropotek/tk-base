@@ -92,8 +92,8 @@ class Log extends \Bs\Controller\AdminIface
     public function show()
     {
         $template = parent::show();
-        $template->setAttr('tail', 'data-src', \App\Uri::create()->nolog()->set('refresh'));
-        $template->appendJsUrl(\App\Uri::create('/vendor/ttek/tk-base/Bs/Controller/Admin/Dev/Tail/jquery.tkTail.js'));
+        $template->setAttr('tail', 'data-src', \Bs\Uri::create()->nolog()->set('refresh'));
+        $template->appendJsUrl(\Bs\Uri::create('/vendor/ttek/tk-base/Bs/Controller/Admin/Dev/Tail/jquery.tkTail.js'));
         $js = <<<JS
 jQuery(function($) {
   $('#tail').tail({
@@ -128,19 +128,8 @@ CSS;
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div>
-
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title"><i class="fa fa-road"></i> Tail Log</h4>
-    </div>
-    <div class="panel-body">
-      
-      <div class="tk-tail" id="tail" data-src="" var="tail"></div>
-      
-    </div>
-  </div>
-
+<div class="tk-panel" data-panel-icon="fa fa-road" var="panel">
+  <div class="tk-tail" id="tail" data-src="" var="tail"></div>
 </div>
 HTML;
 
