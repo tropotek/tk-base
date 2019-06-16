@@ -40,7 +40,7 @@ class Settings extends \Bs\FormIface
         $this->appendField(new Field\Input('site.meta.description'))->setTabGroup($tab)->setLabel('SEO Description');
 
         $tab = 'Setup';
-        $this->appendField(new Field\Input('site.google.map.key'))->setTabGroup($tab)->setLabel('Google API Key')
+        $this->appendField(new Field\Input('google.map.apikey'))->setTabGroup($tab)->setLabel('Google API Key')
             ->setNotes('<a href="https://cloud.google.com/maps-platform/" target="_blank">Get Google Maps Api Key</a> And be sure to enable `Maps Javascript API`, `Maps Embed API` and `Places API for Web` for this site.');
         $this->appendField(new Field\Checkbox('site.client.registration'))->setTabGroup($tab)->setLabel('Client Registration')
             ->setCheckboxLabel('Enable user site registration.');
