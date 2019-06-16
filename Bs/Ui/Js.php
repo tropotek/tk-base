@@ -28,7 +28,6 @@ class Js
         foreach ($params as $k => $v) {
             $gmap->set($k, $v);
         }
-        vd($gmap);
         $template->appendJsUrl($gmap, array('data-jsl-priority' => -1000));
     }
     
