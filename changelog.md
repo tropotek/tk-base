@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.20 [2019-06-17]:
+-------------------------------
+  - Fixed gmaps key in site settings
+
+
 Ver 3.0.18 [2019-06-17]:
 -------------------------------
   - Upgraded all DB model mapper filter queries to use new Filter object
