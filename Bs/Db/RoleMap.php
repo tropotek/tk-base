@@ -97,11 +97,8 @@ class RoleMap extends Mapper
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
             }
-            if ($w) {
-                $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
-            }
+            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
-
 
         if (!empty($filter['name'])) {
             $filter->appendWhere('a.name = %s AND ', $this->getDb()->quote($filter['name']));
@@ -124,16 +121,12 @@ class RoleMap extends Mapper
 
         if (!empty($filter['type'])) {
             $w = $this->makeMultiQuery($filter['type'], 'a.type');
-            if ($w) {
-                $filter->appendWhere('(%s) AND ', $w);
-            }
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
-            if ($w) {
-                $filter->appendWhere('(%s) AND ', $w);
-            }
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         return $filter;

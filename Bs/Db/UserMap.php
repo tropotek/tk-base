@@ -137,16 +137,12 @@ class UserMap extends Mapper
                 $id = (int)$filter['keywords'];
                 $w .= sprintf('a.id = %d OR ', $id);
             }
-            if ($w) {
-                $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
-            }
+            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
         if (!empty($filter['roleId'])) {
             $w = $this->makeMultiQuery($filter['roleId'], 'a.role_id');
-            if ($w) {
-                $filter->appendWhere('(%s) AND ', $w);
-            }
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['uid'])) {
@@ -186,16 +182,12 @@ class UserMap extends Mapper
         if (!empty($filter['type'])) {
             $filter->appendFrom(', user_role d');
             $w = $this->makeMultiQuery($filter['type'], 'd.type');
-            if ($w) {
-                $filter->appendWhere('a.role_id = d.id AND (%s) AND ', $w);
-            }
+            if ($w) $filter->appendWhere('a.role_id = d.id AND (%s) AND ', $w);
         }
 
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
-            if ($w) {
-                $filter->appendWhere('(%s) AND ', $w);
-            }
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         return $filter;
