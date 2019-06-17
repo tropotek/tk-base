@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.22 [2019-06-17]:
+-------------------------------
+  - Fixed Student edit links and Skills PDF values
+
+
 Ver 3.0.20 [2019-06-17]:
 -------------------------------
   - Fixed gmaps key in site settings
