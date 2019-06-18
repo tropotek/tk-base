@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.0.24 [2019-06-18]:
+-------------------------------
+
+
 Ver 3.0.22 [2019-06-17]:
 -------------------------------
   - Fixed Student edit links and Skills PDF values
