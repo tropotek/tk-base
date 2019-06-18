@@ -31,7 +31,6 @@ class Manager extends \Bs\Controller\AdminManagerIface
     {
         $this->setPageTitle('Role Manager');
 
-
         $this->setTable(\Bs\Table\Role::create()->setEditUrl(\Bs\Uri::createHomeUrl('/roleEdit.html'))->init());
 
         $filter = array();
