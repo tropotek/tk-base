@@ -46,9 +46,9 @@ class Maintenance extends \Bs\Controller\Iface
 
         if ($this->getConfig()->get('site.maintenance.message')) {
             $tpl->appendHtml('message', $this->getConfig()->get('site.maintenance.message'));
-            $tpl->show('message');
+            $tpl->setVisible('message');
         } else {
-            $tpl->show('default-message');
+            $tpl->setVisible('default-message');
         }
         return $template;
     }

@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Ui;
 
-use Tk\Ui\Link;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>

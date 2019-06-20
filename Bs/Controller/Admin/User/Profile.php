@@ -27,7 +27,7 @@ class Profile extends \Bs\Controller\AdminEditIface
     public function __construct()
     {
         $this->setPageTitle('My Profile');
-        $this->getCrumbs()->reset();
+        //$this->getCrumbs()->reset();
     }
 
     /**

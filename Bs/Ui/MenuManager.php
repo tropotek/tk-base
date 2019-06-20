@@ -46,14 +46,13 @@ class MenuManager
 
     /**
      * @param string $name
-     * @return Menu
+     * @return Menu|\Tk\Ui\Menu\Menu
      */
     public function createMenu($name)
     {
         $menu = Menu::create($name);
         return $menu;
     }
-
 
     /**
      * If a menu does not exist with the given name then one is created with a public role type
@@ -77,8 +76,5 @@ class MenuManager
     {
         return $this->list;
     }
-
-
-
 
 }
