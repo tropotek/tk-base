@@ -48,9 +48,13 @@ class Profile extends \Bs\Controller\AdminEditIface
         $this->init($request);
 
         $this->setForm(\Bs\Form\User::create()->setModel($this->user));
-        $this->getForm()->removeField('active');
-        $this->getForm()->getField('username')->setAttr('disabled')->addCss('form-control disabled');
-        $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled');
+
+        if ($this->getForm()->getField('active'))
+            $this->getForm()->removeField('active');
+        if ($this->getForm()->getField('username'))
+            $this->getForm()->getField('username')->setAttr('disabled')->addCss('form-control disabled');
+        if ($this->getForm()->getField('uid'))
+            $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled');
         $this->getForm()->execute();
     }
 
