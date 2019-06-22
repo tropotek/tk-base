@@ -18,7 +18,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     protected $targetRole = 'user';
 
     /**
-     * @var \Bs\Db\User|\Bs\Db\UserIface
+     * @var \Bs\Db\User
      */
     protected $user = null;
 
@@ -29,21 +29,6 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function __construct()
     {
         $this->setPageTitle('User Edit');
-    }
-
-
-    /**
-     * @param \Tk\Request $request
-     * @throws \Exception
-     */
-    public function init($request)
-    {
-        $this->user = $this->getConfig()->createUser();
-        $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_USER;
-        if ($request->get('userId')) {
-            $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
-        }
-
     }
 
     /**
@@ -68,10 +53,27 @@ class Edit extends \Bs\Controller\AdminEditIface
      */
     public function doDefault(\Tk\Request $request)
     {
-        $this->init($request);
+        $this->user = $this->getConfig()->createUser();
+        $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_USER;
+        if ($request->get('userId')) {
+            $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
+        }
 
         $this->setForm(\Bs\Form\User::create()->setModel($this->user));
-        $this->getForm()->execute();
+        $this->initForm($request);
+        $this->getForm()->execute($request);
+    }
+
+    /**
+     *
+     */
+    public function initActionPanel()
+    {
+        if ($this->user->getId() && $this->getConfig()->getMasqueradeHandler()->canMasqueradeAs($this->getUser(), $this->user)) {
+            $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Masquerade',
+                \Bs\Uri::create()->reset()->set(\Bs\Listener\MasqueradeHandler::MSQ, $this->user->getHash()), 'fa fa-user-secret'))
+                ->setAttr('data-confirm', 'You are about to masquerade as the selected user?')->addCss('tk-masquerade');
+        }
     }
 
     /**
@@ -80,19 +82,14 @@ class Edit extends \Bs\Controller\AdminEditIface
      */
     public function show()
     {
-        if ($this->user->getId() && $this->getConfig()->getMasqueradeHandler()->canMasqueradeAs($this->getUser(), $this->user)) {
-            $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Masquerade',
-                \Bs\Uri::create()->reset()->set(\Bs\Listener\MasqueradeHandler::MSQ, $this->user->getHash()), 'fa fa-user-secret'))
-                ->setAttr('data-confirm', 'You are about to masquerade as the selected user?')->addCss('tk-masquerade');
-        }
-
+        $this->initActionPanel();
         $template = parent::show();
         
         // Render the form
-        $template->appendTemplate('panel', $this->form->show());
+        $template->appendTemplate('form', $this->form->show());
         
         if ($this->user->id)
-            $template->setAttr('panel', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
+            $template->setAttr('form', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
         
         return $template;
     }
@@ -106,7 +103,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function __makeTemplate()
     {
         $xhtml = <<<HTML
-<div class="tk-panel" data-panel-icon="fa fa-user" var="panel"></div>
+<div class="tk-panel" data-panel-icon="fa fa-user" var="form"></div>
 HTML;
 
         return \Dom\Loader::load($xhtml);

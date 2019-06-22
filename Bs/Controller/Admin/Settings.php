@@ -35,17 +35,10 @@ class Settings extends \Bs\Controller\AdminEditIface
     {
         $this->data = \Tk\Db\Data::create();
 
-        $this->init();
-        $this->getForm()->execute();
+        $this->setForm(\Bs\Form\Settings::create()->setModel($this->getData()));
+        $this->initForm($request);
+        $this->getForm()->execute($request);
 
-    }
-
-    /**
-     * init the form and other stuff before form->execute()
-     */
-    public function init()
-    {
-        $this->setForm(\Bs\Form\Settings::create()->setModel($this->data));
     }
 
     /**
@@ -72,7 +65,7 @@ class Settings extends \Bs\Controller\AdminEditIface
         $template = parent::show();
         
         // Render the form
-        $template->appendTemplate('form', $this->form->getRenderer()->show());
+        $template->appendTemplate('form', $this->getForm()->show());
 
         return $template;
     }
@@ -89,5 +82,9 @@ class Settings extends \Bs\Controller\AdminEditIface
 HTML;
 
         return \Dom\Loader::load($xhtml);
+    }
+    public function getData()
+    {
+        return $this->data;
     }
 }
