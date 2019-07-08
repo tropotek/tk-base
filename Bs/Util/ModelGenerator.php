@@ -697,7 +697,7 @@ class {classname} extends \Bs\ModelForm
             return;
         }
         
-        \$isNew = (bool)\$this->get{classname}()->getId();
+        \$isNew = !(bool)\$this->get{classname}()->getId();
         \$this->get{classname}()->save();
 
         // Do Custom data saving
