@@ -46,7 +46,6 @@ class User extends \Bs\FormIface
         if ($this->getConfig()->getUser()->isAdmin() || !$this->getUser()->getId()) {
             $this->appendField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
         } else {
-            vd();
             $this->appendField(new Field\Html('username'))->setAttr('disabled')->addCss('form-control disabled')->setTabGroup($tab);
         }
         $this->appendField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
@@ -97,17 +96,18 @@ class User extends \Bs\FormIface
         $this->getConfig()->getUserMapper()->mapForm($form->getValues(), $this->getUser());
 
         // Password validation needs to be here
-        if ($form->getFieldValue('newPassword')) {
-            if ($form->getFieldValue('newPassword') != $form->getFieldValue('confPassword')) {
-                $form->addFieldError('newPassword', 'Passwords do not match.');
-                $form->addFieldError('confPassword');
-            }
-        } else {
-            if (!$this->getUser()->getId()) {
-                $form->addFieldError('newPassword', 'Please enter a password for this new user.');
+        if ($form->getField('newPassword')) {
+            if ($form->getFieldValue('newPassword')) {
+                if ($form->getFieldValue('newPassword') != $form->getFieldValue('confPassword')) {
+                    $form->addFieldError('newPassword', 'Passwords do not match.');
+                    $form->addFieldError('confPassword');
+                }
+            } else {
+                if (!$this->getUser()->getId()) {
+                    $form->addFieldError('newPassword', 'Please enter a password for this new user.');
+                }
             }
         }
-
 
         // Just a small check to ensure the user down not change their own role
         if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId() && $this->getUser()->getRoleType() != $this->getConfig()->getUser()->getRoleType()) {
