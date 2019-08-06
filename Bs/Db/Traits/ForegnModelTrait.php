@@ -101,7 +101,7 @@ trait ForegnModelTrait
     public function validateModelId($errors = [])
     {
         $errors = $this->validateFkey($errors);
-        if (!$this->getFid()) {
+        if ($this->getFid() === '' || $this->getFid() === null) {
             $errors['fid'] = 'Invalid value: fid';
         }
         return $errors;

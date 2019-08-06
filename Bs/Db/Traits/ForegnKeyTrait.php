@@ -24,7 +24,7 @@ trait ForegnKeyTrait
     }
 
     /**
-     * @param strin $fkey
+     * @param string $fkey
      * @return $this
      */
     public function setFkey($fkey)
@@ -102,7 +102,7 @@ trait ForegnKeyTrait
      */
     public function validateFkey($errors = [])
     {
-        if (!$this->fkey) {
+        if (!$this->getFkey()) {
             $errors['fkey'] = 'Invalid value: fkey';
         }
         return $errors;
