@@ -50,7 +50,6 @@ class Edit extends \Bs\Controller\AdminEditIface
 
     }
 
-
     /**
      * @return \Dom\Template
      * @throws \Exception
