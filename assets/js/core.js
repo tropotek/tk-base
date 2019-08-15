@@ -427,7 +427,9 @@ var project_core = function () {
             menubar: true
           });
           opts.height = el.data('height') ? el.data('height') : 400;
+          opts.statusbar = true;
         } else {
+          opts.statusbar = true;
           opts.height = el.data('height') ? el.data('height') : 500;
         }
         if (el.tinymce())
