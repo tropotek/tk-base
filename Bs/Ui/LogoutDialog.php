@@ -3,24 +3,19 @@ namespace Bs\Ui;
 
 
 /**
- * Add the following to a URL to open the dialog:
- *
- * <a href="#" data-toggle="modal" data-target="#logoutModal"><i class="fa fa-info-circle"></i>About</a>
- *
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class LogoutDialog extends \Tk\Ui\Dialog
+class LogoutDialog extends \Tk\Ui\Dialog\Dialog
 {
 
-
     /**
+     * LogoutDialog constructor.
      */
     public function __construct()
     {
-        parent::__construct('logoutModal', 'Ready To Leave');
+        parent::__construct('Ready To Leave');
         $config = \Bs\Config::getInstance();
         $this->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')
             ->addCss('btn-primary')
@@ -32,15 +27,15 @@ class LogoutDialog extends \Tk\Ui\Dialog
      */
     public function doShow()
     {
-        $template = $this->getTemplate();
-
+        $this->setContent($this->__makeDialogTemplate());
+        $template = parent::show();
         return $template;
     }
 
     /**
      * @return \Dom\Template
      */
-    public function __makeTemplate()
+    public function __makeDialogTemplate()
     {
         $html = <<<HTML
 <div>

@@ -12,7 +12,7 @@ namespace Bs\Ui;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class AboutDialog extends \Tk\Ui\Dialog
+class AboutDialog extends \Tk\Ui\Dialog\Dialog
 {
 
     /**
@@ -21,7 +21,7 @@ class AboutDialog extends \Tk\Ui\Dialog
     public function __construct()
     {
         $config = \Bs\Config::getInstance();
-        parent::__construct('aboutModal', 'About ' . $config->get('site.title'));
+        parent::__construct('About ' . $config->get('site.title'));
     }
 
     /**
@@ -29,16 +29,18 @@ class AboutDialog extends \Tk\Ui\Dialog
      */
     public function doShow()
     {
-        /** @var \Dom\Template $template */
-        $template = $this->getTemplate();
+        /** @var \Dom\Template $dialogTemplate */
+        $dialogTemplate = $this->getTemplate();
         $config = \Bs\Config::getInstance();
+        $dialogTemplate->insertText('title', $config->get('site.title'));
+        $dialogTemplate->insertText('version', $config->get('system.info.version'));
+        $dialogTemplate->insertText('authors', $config->get('system.info.authors'));
+        $dialogTemplate->insertText('released', $config->get('system.info.released'));
+        $dialogTemplate->insertText('licence', $config->get('system.info.licence'));
+        $dialogTemplate->insertText('description', $config->get('system.info.description'));
+        $this->setContent($dialogTemplate);
 
-        $template->insertText('title', $config->get('site.title'));
-        $template->insertText('version', $config->get('system.info.version'));
-        $template->insertText('authors', $config->get('system.info.authors'));
-        $template->insertText('released', $config->get('system.info.released'));
-        $template->insertText('licence', $config->get('system.info.licence'));
-        $template->insertText('description', $config->get('system.info.description'));
+        $template = parent::show();
 
         return $template;
     }
@@ -46,7 +48,7 @@ class AboutDialog extends \Tk\Ui\Dialog
     /**
      * @return \Dom\Template
      */
-    public function __makeTemplate()
+    public function __makeDialogTemplate()
     {
         $html = <<<HTML
 <div>
