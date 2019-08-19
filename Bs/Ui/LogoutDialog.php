@@ -15,7 +15,7 @@ class LogoutDialog extends \Tk\Ui\Dialog\Dialog
      */
     public function __construct()
     {
-        parent::__construct('Ready To Leave');
+        parent::__construct('Ready To Leave', 'logoutModal');
         $config = \Bs\Config::getInstance();
         $this->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')
             ->addCss('btn-primary')
@@ -25,7 +25,7 @@ class LogoutDialog extends \Tk\Ui\Dialog\Dialog
     /**
      * @return \Dom\Template
      */
-    public function doShow()
+    public function show()
     {
         $this->setContent($this->__makeDialogTemplate());
         $template = parent::show();

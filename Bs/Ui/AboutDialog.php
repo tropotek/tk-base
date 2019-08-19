@@ -21,16 +21,16 @@ class AboutDialog extends \Tk\Ui\Dialog\Dialog
     public function __construct()
     {
         $config = \Bs\Config::getInstance();
-        parent::__construct('About ' . $config->get('site.title'));
+        parent::__construct('About ' . $config->get('site.title'), 'aboutModal');
     }
 
     /**
      * @return \Dom\Template
      */
-    public function doShow()
+    public function show()
     {
         /** @var \Dom\Template $dialogTemplate */
-        $dialogTemplate = $this->getTemplate();
+        $dialogTemplate = $this->__makeDialogTemplate();
         $config = \Bs\Config::getInstance();
         $dialogTemplate->insertText('title', $config->get('site.title'));
         $dialogTemplate->insertText('version', $config->get('system.info.version'));
