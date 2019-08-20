@@ -83,8 +83,7 @@ abstract class FormIface extends \Tk\Form
     {
         $this->model = $model;
         if (!$this->initDone) {
-            //$this->init();  // Not sure this is corect
-            $this->initForm();
+            $this->init();  // Not sure this is correct, look into init() being called in the final instance???
             $this->initDone = true;
         }
         return $this;
