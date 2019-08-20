@@ -237,7 +237,7 @@ class User extends Model implements UserIface
      * @param string $uid
      * @return User
      */
-    public function setUid(string $uid): User
+    public function setUid(?string $uid): User
     {
         $this->uid = $uid;
         return $this;
@@ -255,7 +255,7 @@ class User extends Model implements UserIface
      * @param string $username
      * @return User
      */
-    public function setUsername(string $username): User
+    public function setUsername(?string $username): User
     {
         $this->username = $username;
         return $this;
@@ -291,7 +291,7 @@ class User extends Model implements UserIface
      * @param string $name
      * @return User
      */
-    public function setName(string $name): User
+    public function setName(?string $name): User
     {
         $this->name = $name;
         return $this;
@@ -309,7 +309,7 @@ class User extends Model implements UserIface
      * @param string $email
      * @return User
      */
-    public function setEmail(string $email): User
+    public function setEmail(?string $email): User
     {
         $this->email = $email;
         return $this;
@@ -327,7 +327,7 @@ class User extends Model implements UserIface
      * @param string $phone
      * @return User
      */
-    public function setPhone(string $phone): User
+    public function setPhone(?string $phone): User
     {
         $this->phone = $phone;
         return $this;
@@ -345,7 +345,7 @@ class User extends Model implements UserIface
      * @param string $image
      * @return User
      */
-    public function setImage(string $image): User
+    public function setImage(?string $image): User
     {
         $this->image = $image;
         return $this;
@@ -360,10 +360,10 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string $notes
+     * @param string|null $notes
      * @return User
      */
-    public function setNotes(string $notes): User
+    public function setNotes(?string $notes): User
     {
         $this->notes = $notes;
         return $this;
@@ -399,7 +399,7 @@ class User extends Model implements UserIface
      * @param \DateTime $lastLogin
      * @return User
      */
-    public function setLastLogin(\DateTime $lastLogin): User
+    public function setLastLogin(?\DateTime $lastLogin): User
     {
         $this->lastLogin = $lastLogin;
         return $this;
@@ -417,7 +417,7 @@ class User extends Model implements UserIface
      * @param string $sessionId
      * @return User
      */
-    public function setSessionId(string $sessionId): User
+    public function setSessionId(?string $sessionId): User
     {
         $this->sessionId = $sessionId;
         return $this;
@@ -435,7 +435,7 @@ class User extends Model implements UserIface
      * @param string $ip
      * @return User
      */
-    public function setIp(string $ip): User
+    public function setIp(?string $ip): User
     {
         $this->ip = $ip;
         return $this;
