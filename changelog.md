@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.40 [2019-09-10]:
+-------------------------------
+  - Added notes to company and supervisor when adding/removing supervisor from companies
+
+
 Ver 3.0.38 [2019-08-21]:
 -------------------------------
   - UPdated the system to use the new dialog box suite
