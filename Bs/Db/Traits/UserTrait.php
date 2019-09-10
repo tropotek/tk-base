@@ -49,6 +49,19 @@ trait UserTrait
     }
 
     /**
+     * Set the author of this notice
+     *
+     * @param int|UserIface $user
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        if ($user instanceof UserIface) $user = $user->getId();
+        $this->userId = (int)$user;
+        return $this;
+    }
+
+    /**
      * Find this institutions owner user
      *
      * Note: This is use as an alias incases where get{Object}()
