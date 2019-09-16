@@ -98,6 +98,17 @@ var config = {
 JS;
         $template->appendJs($js, array('data-jsl-priority' => -1000));
 
+        // Add a unique class to the page body tag for page/js based scripts
+        //  eg for the relative path "user/dashboard.html" or "user/dashboard" the class would be "user-dashboard"
+        $relativePath = trim(\Tk\Uri::create()->getRelativePath(), '/\\');
+        if (!$relativePath) $relativePath = trim($config->get('url.auth.home'), '/\\');
+        $relativePath = substr($relativePath, 0, strrpos($relativePath, "."));
+        $cssClass = preg_replace('/[^0-9a-z_-]/i', '-', $relativePath);
+        if ($template->getBodyElement()) {
+            $template->addCss($template->getBodyElement(), 'pg-'.$cssClass);
+        }
+
+
         // Set page title
         if ($controller->getPageTitle() && $controller->isShowTitle()) {
             $template->setTitleText(trim($controller->getPageTitle() . ' - ' . $template->getTitleText(), '- '));
@@ -126,7 +137,7 @@ JS;
 
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
             $template->setVisible($config->get('template.var.page.logout'));
-            $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRoleType());
+//            $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRoleType());
         } else {
             $template->setVisible($config->get('template.var.page.login'));
         }
