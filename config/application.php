@@ -17,8 +17,6 @@ include_once(__DIR__ . '/session.php');
 
 $config['site.title'] = 'Base Template';
 $config['site.email'] = 'user@example.com';
-$config['site.client.registration'] = false;
-$config['site.client.activation'] = true;
 
 /*
  * Setup what paths to check when migrating SQL
@@ -110,14 +108,19 @@ $config['log.session'] = $config->getTempPath().'/session.log';
  */
 $config['system.form.required.attr.enabled'] = true;
 
-
-//\Symfony\Component\HttpFoundation\Request::setFactory(function (array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null) {
-//    return new \Tk\Request($query, array_merge($query, $request), $attributes, $cookies, $files, $server, $content);
-//});
-
 /*  
  * ---- AUTH CONFIG ----
  */
+
+/*
+ * Can users create an account on this site
+ */
+$config['site.client.registration'] = false;
+
+/*
+ * Are user created account automatically activated?
+ */
+$config['site.client.activation'] = true;
 
 /*
  * The hash function to use for passwords and general hashing

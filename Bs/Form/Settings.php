@@ -35,21 +35,23 @@ class Settings extends \Bs\FormIface
         $this->appendField(new Field\Textarea('site.email.sig'))->setTabGroup($tab)->setLabel('Email Signature')
             ->setNotes('Set the email signature to appear at the foot of all system emails.')->addCss('mce-min');
 
-        $tab = 'SEO';
-        $this->appendField(new Field\Input('site.meta.keywords'))->setTabGroup($tab)->setLabel('SEO Keywords');
-        $this->appendField(new Field\Input('site.meta.description'))->setTabGroup($tab)->setLabel('SEO Description');
-
         $tab = 'Setup';
         $this->appendField(new Field\Input('google.map.apikey'))->setTabGroup($tab)->setLabel('Google API Key')
             ->setNotes('<a href="https://cloud.google.com/maps-platform/" target="_blank">Get Google Maps Api Key</a> And be sure to enable `Maps Javascript API`, `Maps Embed API` and `Places API for Web` for this site.');
         $this->appendField(new Field\Checkbox('site.client.registration'))->setTabGroup($tab)->setLabel('Client Registration')
             ->setCheckboxLabel('Enable user site registration.');
+        $this->appendField(new Field\Checkbox('site.client.activation'))->setTabGroup($tab)->setLabel('Account Activation')
+            ->setCheckboxLabel('Enable automatic activation of registered user accounts.')->setNotes('If not checked you must manually activate new user accounts.');
 
         $tab = 'Global';
         $this->appendField(new Field\Textarea('site.global.js'))->setAttr('id', 'site-global-js')->setTabGroup($tab)->setLabel('Custom JS')
             ->setNotes('You can omit the &lt;script&gt; tags here')->addCss('code')->setAttr('data-mode', 'javascript');
         $this->appendField(new Field\Textarea('site.global.css'))->setAttr('id', 'site-global-css')->setTabGroup($tab)->setLabel('Custom CSS Styles')
             ->setNotes('You can omit the &lt;style&gt; tags here')->addCss('code')->setAttr('data-mode', 'css');
+
+        $tab = 'SEO';
+        $this->appendField(new Field\Input('site.meta.keywords'))->setTabGroup($tab)->setLabel('SEO Keywords');
+        $this->appendField(new Field\Input('site.meta.description'))->setTabGroup($tab)->setLabel('SEO Description');
 
         $tab = 'Maintenance';
         $this->appendField(new Field\Checkbox('site.maintenance.enabled'))->addCss('check-enable')->setLabel('')->setTabGroup($tab)->setCheckboxLabel('Maintenance Mode Enabled');

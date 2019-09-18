@@ -77,6 +77,7 @@ class Login extends Iface
         $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
             ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
 
+vd($this->getConfig()->get('site.client.registration'));
         if ($this->getConfig()->get('site.client.registration')) {
             $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
                 ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
