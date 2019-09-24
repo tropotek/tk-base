@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.42 [2019-09-24]:
+-------------------------------
+  - Added font-awesome to the webpack
+
+
 Ver 3.0.40 [2019-09-10]:
 -------------------------------
   - Added notes to company and supervisor when adding/removing supervisor from companies
