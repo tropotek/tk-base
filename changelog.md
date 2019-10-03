@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 3.0.46 [2019-10-03]:
+-------------------------------
+  - Fixed edit student page
+  - Added Enrollment button to student manager
+
+
 Ver 3.0.44 [2019-10-01]:
 -------------------------------
 
