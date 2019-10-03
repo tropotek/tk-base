@@ -70,7 +70,7 @@ class User extends \Bs\TableIface
         $this->appendCell($actionsCell);
 
         $this->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl($this->getEditUrl());
-        $this->appendCell(new \Tk\Table\Cell\Text('username'));
+        $this->appendCell(new \Tk\Table\Cell\Text('username'))->setUrl($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('email'));
         $this->appendCell(new \Tk\Table\Cell\Text('phone'));
         $this->appendCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
