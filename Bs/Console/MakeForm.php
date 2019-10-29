@@ -34,23 +34,23 @@ class MakeForm extends MakerIface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
+        $this->makeForm();
 
-        $config = \Bs\Config::getInstance();
-
-        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getFormNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
-        //$phpFile = $config->getSitePath() . '/src/App/Form/' . $gen->getClassName() . '.php';
-        if (!$input->getOption('overwrite'))
-            $phpFile = $this->makeUniquePhpFilename($phpFile);
-
-        $formCode = $this->getGen()->makeForm($input->getOptions());
-
-        if (!is_dir(dirname($phpFile))) {
-            $this->writeComment('Creating Path: ' . dirname($phpFile));
-            mkdir(dirname($phpFile), 0777, true);
-        }
-
-        $this->writeComment('Writing: ' . $phpFile);
-        file_put_contents($phpFile, $formCode);
+//        $config = \Bs\Config::getInstance();
+//        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getFormNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
+//        //$phpFile = $config->getSitePath() . '/src/App/Form/' . $gen->getClassName() . '.php';
+//        if (!$input->getOption('overwrite'))
+//            $phpFile = $this->makeUniquePhpFilename($phpFile);
+//
+//        $formCode = $this->getGen()->makeForm($input->getOptions());
+//
+//        if (!is_dir(dirname($phpFile))) {
+//            $this->writeComment('Creating Path: ' . dirname($phpFile));
+//            mkdir(dirname($phpFile), 0777, true);
+//        }
+//
+//        $this->writeComment('Writing: ' . $phpFile);
+//        file_put_contents($phpFile, $formCode);
 
     }
 }

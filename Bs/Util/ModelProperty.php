@@ -178,10 +178,13 @@ TPL;
     }
 
     /**
+     * @param string $classname
      * @return string
      */
-    public function getMutator()
+    public function getMutator($classname = '')
     {
+        if (!$classname)
+            $classname = '$this';
         $param = $this->getName();
 
         $tpl = <<<TPL
@@ -197,8 +200,8 @@ TPL;
 TPL;
         // ...
 
-        return sprintf($tpl, $this->getType(), $param, $this->get('classname', '$this'), ucfirst($this->getName()),
-            $param, $this->getType(), $this->getName(), $param
+        return sprintf($tpl, $this->getType(), $param, $classname, ucfirst($this->getName()),
+            $param, $classname, $this->getName(), $param
         );
     }
 

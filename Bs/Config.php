@@ -665,6 +665,7 @@ class Config extends \Tk\Config
                 $app->add(new \Bs\Console\MakeManager());
                 $app->add(new \Bs\Console\MakeForm());
                 $app->add(new \Bs\Console\MakeEdit());
+                $app->add(new \Bs\Console\MakeAll());
                 $app->add(new \Bs\Console\Debug());
                 $app->add(new \Bs\Console\Mirror());
             }

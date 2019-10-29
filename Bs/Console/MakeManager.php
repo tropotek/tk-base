@@ -34,22 +34,22 @@ class MakeManager extends MakerIface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
+        $this->makeManager();
 
-        $config = \Bs\Config::getInstance();
-
-        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Manager.php';
-        if (!$input->getOption('overwrite'))
-            $phpFile = $this->makeUniquePhpFilename($phpFile);
-
-        $formCode = $this->getGen()->makeManager($input->getOptions());
-
-        if (!is_dir(dirname($phpFile))) {
-            $this->writeComment('Creating Path: ' . dirname($phpFile));
-            mkdir(dirname($phpFile), 0777, true);
-        }
-
-        $this->writeComment('Writing: ' . $phpFile);
-        file_put_contents($phpFile, $formCode);
+//        $config = \Bs\Config::getInstance();
+//        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Manager.php';
+//        if (!$input->getOption('overwrite'))
+//            $phpFile = $this->makeUniquePhpFilename($phpFile);
+//
+//        $formCode = $this->getGen()->makeManager($input->getOptions());
+//
+//        if (!is_dir(dirname($phpFile))) {
+//            $this->writeComment('Creating Path: ' . dirname($phpFile));
+//            mkdir(dirname($phpFile), 0777, true);
+//        }
+//
+//        $this->writeComment('Writing: ' . $phpFile);
+//        file_put_contents($phpFile, $formCode);
 
     }
 

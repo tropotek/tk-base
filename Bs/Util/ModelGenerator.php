@@ -235,7 +235,7 @@ class ModelGenerator
             $data['properties'] .= "\n" . $mp->getDefinition() . "\n";
 
             if ($mp->getName() != 'id')
-                $data['accessors'] .= "\n" . $mp->getMutator() . "\n\n" . $mp->getAccessor() . "\n";
+                $data['accessors'] .= "\n" . $mp->getMutator($this->getClassName()) . "\n\n" . $mp->getAccessor() . "\n";
 
             if ($mp->getType() == '\DateTime' && $mp->get('Null') == 'NO')
                 $data['construct'] .= $mp->getInitaliser() . "\n";
@@ -691,7 +691,7 @@ STR;
     {
         $classTpl = <<<STR
 <?php
-namespace {controller-namespace};
+namespace {controller-namespace}\{classname};
 
 use App\Controller\AdminEditIface;
 use Dom\Template;

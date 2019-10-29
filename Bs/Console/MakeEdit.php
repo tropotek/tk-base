@@ -34,21 +34,23 @@ class MakeEdit extends MakerIface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $config = \Bs\Config::getInstance();
+        $this->makeEdit();
 
-        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Edit.php';
-        if (!$input->getOption('overwrite'))
-            $phpFile = $this->makeUniquePhpFilename($phpFile);
 
-        $formCode = $this->getGen()->makeEdit($input->getOptions());
-
-        if (!is_dir(dirname($phpFile))) {
-            $this->writeComment('Creating Path: ' . dirname($phpFile));
-            mkdir(dirname($phpFile), 0777, true);
-        }
-
-        $this->writeComment('Writing: ' . $phpFile);
-        file_put_contents($phpFile, $formCode);
+//        $config = \Bs\Config::getInstance();
+//        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Edit.php';
+//        if (!$input->getOption('overwrite'))
+//            $phpFile = $this->makeUniquePhpFilename($phpFile);
+//
+//        $formCode = $this->getGen()->makeEdit($input->getOptions());
+//
+//        if (!is_dir(dirname($phpFile))) {
+//            $this->writeComment('Creating Path: ' . dirname($phpFile));
+//            mkdir(dirname($phpFile), 0777, true);
+//        }
+//
+//        $this->writeComment('Writing: ' . $phpFile);
+//        file_put_contents($phpFile, $formCode);
 
     }
 
