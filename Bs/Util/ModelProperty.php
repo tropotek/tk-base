@@ -159,8 +159,6 @@ TPL;
     }
 
     /**
-     * TODO: Finish this off (See the old object generators)
-     *
      * @return string
      */
     public function getAccessor()
@@ -180,13 +178,11 @@ TPL;
     }
 
     /**
-     * TODO: Finish this off (See the old object generators)
-     *
      * @return string
      */
     public function getMutator()
     {
-        $param = 'param';  // TODO:
+        $param = $this->getName();
 
         $tpl = <<<TPL
     /**
