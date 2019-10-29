@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class MakeTable extends MakerIface
+class MakeEdit extends MakerIface
 {
 
     /**
@@ -19,9 +19,9 @@ class MakeTable extends MakerIface
      */
     protected function configure()
     {
-        $this->setName('make-table')
-            ->setAliases(array('mt'))
-            ->setDescription('Create a PHP Manager Table Class from the DB schema');
+        $this->setName('make-edit')
+            ->setAliases(array('me'))
+            ->setDescription('Create a PHP Controller Edit Class from the DB schema');
         parent::configure();
     }
 
@@ -34,14 +34,13 @@ class MakeTable extends MakerIface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-
         $config = \Bs\Config::getInstance();
 
-        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getTableNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
-        //$phpFile = $config->getSitePath() . '/src/App/Table/' . $gen->getClassName() . '.php';
+        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Edit.php';
         if (!$input->getOption('overwrite'))
             $phpFile = $this->makeUniquePhpFilename($phpFile);
-        $tableCode = $this->getGen()->makeTable();
+
+        $formCode = $this->getGen()->makeEdit($input->getOptions());
 
         if (!is_dir(dirname($phpFile))) {
             $this->writeComment('Creating Path: ' . dirname($phpFile));
@@ -49,7 +48,8 @@ class MakeTable extends MakerIface
         }
 
         $this->writeComment('Writing: ' . $phpFile);
-        file_put_contents($phpFile, $tableCode);
+        file_put_contents($phpFile, $formCode);
 
     }
+
 }

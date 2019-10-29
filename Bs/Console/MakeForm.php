@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class MakeForm extends Iface
+class MakeForm extends MakerIface
 {
 
     /**
@@ -20,11 +20,9 @@ class MakeForm extends Iface
     protected function configure()
     {
         $this->setName('make-form')
-            ->addArgument('table', InputArgument::REQUIRED, 'The name of the table to generate the class file from.')
-            ->addOption('overwrite', 'o', InputOption::VALUE_NONE, 'Overwrite existing class files.')
-            ->addOption('modelForm', 'm', InputOption::VALUE_NONE, 'Generate a ModelForm object instead')       // This object is deprecated
             ->setAliases(array('mf'))
             ->setDescription('Create a PHP Form Edit Class from the DB schema');
+        parent::configure();
     }
 
     /**
@@ -38,18 +36,13 @@ class MakeForm extends Iface
         parent::execute($input, $output);
 
         $config = \Bs\Config::getInstance();
-        $db = $config->getDb();
-        $table = $input->getArgument('table');
-        if (!$config->isDebug()) {
-            throw new \Exception('Error: Only run this command in a debug environment.');
-        }
 
-        $gen = \Bs\Util\ModelGenerator::create($db, $table);
-        $phpFile = $config->getSitePath() . '/src/App/Form/' . $gen->getClassName() . '.php';
+        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getFormNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
+        //$phpFile = $config->getSitePath() . '/src/App/Form/' . $gen->getClassName() . '.php';
         if (!$input->getOption('overwrite'))
             $phpFile = $this->makeUniquePhpFilename($phpFile);
 
-        $formCode = $gen->makeForm($input->getOptions());
+        $formCode = $this->getGen()->makeForm($input->getOptions());
 
         if (!is_dir(dirname($phpFile))) {
             $this->writeComment('Creating Path: ' . dirname($phpFile));
@@ -60,22 +53,4 @@ class MakeForm extends Iface
         file_put_contents($phpFile, $formCode);
 
     }
-
-    /**
-     * @param string$path
-     * @return string
-     */
-    public function makeUniquePhpFilename($path)
-    {
-        $i = 1;
-        while (is_file($path)) {
-            $path = preg_replace('/((\.[0-9]+)?\.php)$/', '.'.$i++.'.php', $path);
-        };
-        return $path;
-    }
-
-
-
-
-
 }

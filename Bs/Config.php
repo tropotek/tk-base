@@ -662,7 +662,9 @@ class Config extends \Tk\Config
             if ($this->isDebug()) {
                 $app->add(new \Bs\Console\MakeModel());
                 $app->add(new \Bs\Console\MakeTable());
+                $app->add(new \Bs\Console\MakeManager());
                 $app->add(new \Bs\Console\MakeForm());
+                $app->add(new \Bs\Console\MakeEdit());
                 $app->add(new \Bs\Console\Debug());
                 $app->add(new \Bs\Console\Mirror());
             }

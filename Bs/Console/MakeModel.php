@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @see http://www.tropotek.com/
  * @license Copyright 2017 Michael Mifsud
  */
-class MakeModel extends Iface
+class MakeModel extends MakerIface
 {
 
     /**
@@ -20,10 +20,9 @@ class MakeModel extends Iface
     protected function configure()
     {
         $this->setName('make-model')
-            ->addArgument('table', InputArgument::REQUIRED, 'The name of the table to build the class files from.')
-            ->addOption('overwrite', 'o', InputOption::VALUE_NONE, 'Overwrite existing class files.')
             ->setAliases(array('mm'))
             ->setDescription('Create a PHP Model Class from the DB schema');
+        parent::configure();
     }
 
     /**
@@ -37,22 +36,16 @@ class MakeModel extends Iface
         parent::execute($input, $output);
 
         $config = \Bs\Config::getInstance();
-        $db = $config->getDb();
-        $table = $input->getArgument('table');
-        if (!$config->isDebug()) {
-            throw new \Exception('Error: Only run this command in a debug environment.');
-        }
 
-        $gen = \Bs\Util\ModelGenerator::create($db, $table);
-        $modelPath = $config->getSitePath() . '/src/' . str_replace('\\', '/', $gen->getNamespace()) . '/' . $gen->getClassName() . '.php';
+        $modelPath = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getDbNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
         if (!$input->getOption('overwrite'))
             $modelPath = $this->makeUniquePhpFilename($modelPath);
-        $modelContent = $gen->makeModel();
+        $modelContent = $this->getGen()->makeModel();
 
-        $mapPath = $config->getSitePath() . '/src/' . str_replace('\\', '/', $gen->getNamespace()) . '/' . $gen->getClassName() . 'Map.php';
+        $mapPath = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getDbNamespace()) . '/' . $this->getGen()->getClassName() . 'Map.php';
         if (!$input->getOption('overwrite'))
             $mapPath = $this->makeUniquePhpFilename($mapPath);
-        $mapContent = $gen->makeMapper();
+        $mapContent = $this->getGen()->makeMapper();
 
         if (!is_dir(dirname($modelPath))) {
             $this->writeComment('Creating Db path: ' . dirname($modelPath));
@@ -66,22 +59,5 @@ class MakeModel extends Iface
         file_put_contents($mapPath, $mapContent);
 
     }
-
-    /**
-     * @param string$path
-     * @return string
-     */
-    public function makeUniquePhpFilename($path)
-    {
-        $i = 1;
-        while (is_file($path)) {
-            $path = preg_replace('/((\.[0-9]+)?\.php)$/', '.'.$i++.'.php', $path);
-        };
-        return $path;
-    }
-
-
-
-
 
 }

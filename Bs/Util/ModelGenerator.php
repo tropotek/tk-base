@@ -29,7 +29,7 @@ class ModelGenerator
     /**
      * @var string
      */
-    protected $namespace = 'App\Db';
+    protected $namespace = '';
 
     /**
      * @var array
@@ -40,28 +40,41 @@ class ModelGenerator
     /**
      * @param \Tk\Db\Pdo $db
      * @param string $table
-     * @throws \Exception
+     * @param string $namespace
+     * @param string $className
+     * @throws \Tk\Db\Exception
      */
-    protected function __construct($db, $table)
+    protected function __construct($db, $table, $namespace = 'App', $className = '')
     {
         $this->db = $db;
         $this->table = $table;
+        $this->setNamespace($namespace);
+        $this->setClassName($className);
+
         if (!$db->hasTable($table)) {   // Check the DB for the table
             throw new \Exception('Table `' . $table . '` not found in the DB `' . $db->getDatabaseName().'`');
         }
-        $this->className = $this->makeClassname($table);
+
+        // Setup default namespace and classname
+        if (!$this->getNamespace())
+            $this->setNamespace('App');
+        if (!$this->getClassName())
+            $this->setClassName($this->makeClassname($table));
+
         $this->tableInfo = $db->getTableInfo($table);
     }
 
     /**
      * @param \Tk\Db\Pdo $db
      * @param string $table
+     * @param string $namespace
+     * @param string $className
      * @return ModelGenerator
      * @throws \Exception
      */
-    public static function create($db, $table)
+    public static function create($db, $table, $namespace = 'App', $className = '')
     {
-        $obj = new static($db, $table);
+        $obj = new static($db, $table, $namespace, $className);
         return $obj;
     }
 
@@ -90,9 +103,28 @@ class ModelGenerator
             'date' => $now->format(\Tk\Date::FORMAT_ISO_DATE),
             'year' => $now->format('Y'),
             'classname' => $this->getClassName(),
+            'name' => trim(preg_replace('/[A-Z]/', ' $0', $this->getClassName())) ,
             'table' => $this->getTable(),
-            'namespace' => $this->getNamespace()
+            //'namespace' => '\\' . trim(substr($this->getNamespace(), 0, strpos($this->getNamespace(), '\\', 1)), '\\'),
+            'namespace' => $this->getNamespace(),
+            'db-namespace' => $this->getDbNamespace(),
+            'table-namespace' => $this->getTableNamespace(),
+            'form-namespace' => $this->getFormNamespace(),
+            'controller-namespace' => $this->getControllerNamespace(),
+            'property-name' => lcfirst($this->getClassName()),
+            'namespace-url' => str_replace('_', '/', $this->getTable()),
+            'table-id' => str_replace('_', '-', $this->getTable())
         );
+    }
+
+    /**
+     * @param string $namespace
+     * @return static
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = trim($namespace, '\\');
+        return $this;
     }
 
     /**
@@ -101,6 +133,39 @@ class ModelGenerator
     public function getNamespace()
     {
         return $this->namespace;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getDbNamespace()
+    {
+        return $this->namespace . '\Db';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableNamespace()
+    {
+        return $this->namespace . '\Table';
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormNamespace()
+    {
+        return $this->namespace . '\Form';
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerNamespace()
+    {
+        return $this->namespace . '\Controller';
     }
 
     /**
@@ -125,17 +190,7 @@ class ModelGenerator
      */
     public function setClassName($className)
     {
-        $this->className = $className;
-        return $this;
-    }
-
-    /**
-     * @param string $namespace
-     * @return static
-     */
-    public function setNamespace($namespace)
-    {
-        $this->namespace = $namespace;
+        $this->className = trim($className, '\\');
         return $this;
     }
 
@@ -144,7 +199,7 @@ class ModelGenerator
      */
     protected function tableFromClass()
     {
-        return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $this->className)), '_');
+        return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $this->getClassName())), '_');
     }
 
 
@@ -173,12 +228,15 @@ class ModelGenerator
             'construct' => '',
             'validators' => '',
             'accessors' => '',
-            'mutators' => ''
         );
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create($col);
             if ($mp->getName() == 'del') continue;
             $data['properties'] .= "\n" . $mp->getDefinition() . "\n";
+
+            if ($mp->getName() != 'id')
+                $data['accessors'] .= "\n" . $mp->getMutator() . "\n\n" . $mp->getAccessor() . "\n";
+
             if ($mp->getType() == '\DateTime' && $mp->get('Null') == 'NO')
                 $data['construct'] .= $mp->getInitaliser() . "\n";
             if (
@@ -200,7 +258,7 @@ class ModelGenerator
     {
         $classTpl = <<<STR
 <?php
-namespace {namespace};
+namespace {db-namespace};
 
 /**
  * @author {author-name}
@@ -219,19 +277,14 @@ class {classname} extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     {
 {construct}
     }
-    
-{accessors}
-{mutators}
-    
+    {accessors}    
     /**
      * @return array
      */
     public function validate()
     {
         \$errors = array();
-
 {validators}
-        
         return \$errors;
     }
 
@@ -275,8 +328,8 @@ STR;
             $data['form-maps'] .= $mp->getFormMap() . "\n";
             if ($mp->getType() == ModelProperty::TYPE_DATE || $mp->get('Type') == 'text') continue;
             $data['filter-queries'] .= $mp->getFilterQuery() . "\n";
-            if ($this->table != $this->tableFromClass()) {
-                $data['set-table'] = "\n" . sprintf("            \$this->setTable('%s');", $this->table) . "\n";
+            if ($this->getTable() != $this->tableFromClass()) {
+                $data['set-table'] = "\n" . sprintf("            \$this->setTable('%s');", $this->getTable()) . "\n";
             }
         }
         return $data;
@@ -290,7 +343,7 @@ STR;
     {
         $classTpl = <<<STR
 <?php
-namespace {namespace};
+namespace {db-namespace};
 
 use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
@@ -394,14 +447,26 @@ STR;
     }
 
     /**
+     * @param array $params any overrides for the curly template
+     * @return string
+     * @throws \Exception
+     */
+    public function makeManager($params = array())
+    {
+        $tpl = $this->createTableManagerTemplate();
+        $data = $this->getDefaultData();
+//        $classData = $this->processTable();
+//        $data = array_merge($data, $classData, $params);
+        return $tpl->parse($data);
+    }
+
+    /**
      * @return array
      */
     protected function processTable()
     {
         $data = array(
-            'cell-list' => '',
-            'property-name' => lcfirst($this->className),
-            'table-id' => str_replace('_', '-', $this->getTable())
+            'cell-list' => ''
         );
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create($col);
@@ -415,11 +480,97 @@ STR;
     /**
      * @return \Tk\CurlyTemplate
      */
+    protected function createTableManagerTemplate()
+    {
+        $classTpl = <<<STR
+<?php 
+namespace {controller-namespace}\{classname};
+
+use App\Controller\AdminManagerIface;
+use Dom\Template;
+use Tk\Request;
+
+/**
+ * TODO: Add Route to routes.php:
+ *      \$routes->add('{table-id}-manager', Route::create('/staff/{namespace-url}Manager.html', '{controller-namespace}\{classname}\Manager::doDefault'));
+ *
+ * @author {author-name}
+ * @created {date}
+ * @link {author-www}
+ * @license Copyright {year} {author-biz}
+ */
+class Manager extends AdminManagerIface
+{
+
+    /**
+     * Manager constructor.
+     */
+    public function __construct()
+    {
+        \$this->setPageTitle('{name} Manager');
+    }
+
+    /**
+     * @param Request \$request
+     * @throws \Exception
+     */
+    public function doDefault(Request \$request)
+    {
+        \$this->setTable(\{table-namespace}\{classname}::create());
+        \$this->getTable()->setEditUrl(\Bs\Uri::createHomeUrl('/{namespace-url}Edit.html'));
+        \$this->getTable()->init();
+
+        \$filter = array();
+        \$this->getTable()->setList(\$this->getTable()->findList(\$filter));
+    }
+
+    /**
+     * Add actions here
+     */
+    public function initActionPanel()
+    {
+        \$this->getActionPanel()->append(\Tk\Ui\Link::createBtn('New {name}',
+            \$this->getTable()->getEditUrl(), 'fa fa-book fa-add-action'));
+    }
+
+    /**
+     * @return \Dom\Template
+     */
+    public function show()
+    {
+        \$this->initActionPanel();
+        \$template = parent::show();
+
+        \$template->appendTemplate('panel', \$this->getTable()->show());
+
+        return \$template;
+    }
+
+    /**
+     * @return Template
+     */
+    public function __makeTemplate()
+    {
+        \$xhtml = <<<HTML
+<div class="tk-panel" data-panel-title="{name}s" data-panel-icon="fa fa-book" var="panel"></div>
+HTML;
+        return \Dom\Loader::load(\$xhtml);
+    }
+    
+}
+STR;
+        $tpl = \Tk\CurlyTemplate::create($classTpl);
+        return $tpl;
+    }
+
+    /**
+     * @return \Tk\CurlyTemplate
+     */
     protected function createTableTemplate()
     {
         $classTpl = <<<STR
 <?php
-namespace App\Table;
+namespace {table-namespace};
 
 use Tk\Form\Field;
 use Tk\Table\Cell;
@@ -455,7 +606,7 @@ class {classname} extends \Bs\TableIface
         \$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-        //\$this->appendAction(\Tk\Table\Action\Link::create('New {classname}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{property-name}Edit.html')));
+        //\$this->appendAction(\Tk\Table\Action\Link::create('New {name}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{namespace-url}Edit.html')));
         //\$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
         \$this->appendAction(\Tk\Table\Action\Delete::create());
         \$this->appendAction(\Tk\Table\Action\Csv::create());
@@ -469,14 +620,14 @@ class {classname} extends \Bs\TableIface
     /**
      * @param array \$filter
      * @param null|\Tk\Db\Tool \$tool
-     * @return \Tk\Db\Map\ArrayObject|\{namespace}\{classname}[]
+     * @return \Tk\Db\Map\ArrayObject|\{db-namespace}\{classname}[]
      * @throws \Exception
      */
     public function findList(\$filter = array(), \$tool = null)
     {
         if (!\$tool) \$tool = \$this->getTool();
         \$filter = array_merge(\$this->getFilterValues(), \$filter);
-        \$list = \{namespace}\{classname}Map::create()->findFiltered(\$filter, \$tool);
+        \$list = \{db-namespace}\{classname}Map::create()->findFiltered(\$filter, \$tool);
         return \$list;
     }
 
@@ -502,6 +653,19 @@ STR;
         return $tpl->parse($data);
     }
 
+
+    /**
+     * @param array $params any overrides for the curly template
+     * @return string
+     * @throws \Exception
+     */
+    public function makeEdit($params = array())
+    {
+        $tpl = $this->createFormEditTemplate();
+        $data = $this->getDefaultData();
+        return $tpl->parse($data);
+    }
+
     /**
      * @param bool $isModelForm
      * @return array
@@ -509,8 +673,6 @@ STR;
     protected function processForm($isModelForm = false)
     {
         $data = array(
-            'property-name' => lcfirst($this->className),
-            'form-id' => str_replace('_', '-', $this->getTable()),
             'field-list' => ''
         );
         foreach ($this->tableInfo as $col) {
@@ -521,14 +683,100 @@ STR;
         return $data;
     }
 
+
+    /**
+     * @return \Tk\CurlyTemplate
+     */
+    protected function createFormEditTemplate()
+    {
+        $classTpl = <<<STR
+<?php
+namespace {controller-namespace};
+
+use App\Controller\AdminEditIface;
+use Dom\Template;
+use Tk\Request;
+
+/**
+ * TODO: Add Route to routes.php:
+ *      \$routes->add('{table-id}-edit', Route::create('/staff/{namespace-url}Edit.html', '{controller-namespace}\{classname}\Edit::doDefault'));
+ *
+ * @author {author-name}
+ * @created {date}
+ * @link {author-www}
+ * @license Copyright {year} {author-biz}
+ */
+class Edit extends AdminEditIface
+{
+
+    /**
+     * @var \{db-namespace}\{classname}
+     */
+    protected \${property-name} = null;
+
+
+    /**
+     * Iface constructor.
+     */
+    public function __construct()
+    {
+        \$this->setPageTitle('{name} Edit');
+    }
+
+    /**
+     * @param Request \$request
+     * @throws \Exception
+     */
+    public function doDefault(Request \$request)
+    {
+        \$this->{property-name} = new \{db-namespace}\{classname}();
+        if (\$request->get('{property-name}Id')) {
+            \$this->assessment = \{db-namespace}\{classname}Map::create()->find(\$request->get('{property-name}Id'));
+        }
+
+        \$this->setForm(\{form-namespace}\{classname}::create()->setModel(\$this->{property-name}));
+        \$this->initForm(\$request);
+        \$this->getForm()->execute();
+    }
+
+    /**
+     * @return \Dom\Template
+     */
+    public function show()
+    {
+        \$template = parent::show();
+
+        // Render the form
+        \$template->appendTemplate('panel', \$this->getForm()->show());
+
+        return \$template;
+    }
+
+    /**
+     * @return Template
+     */
+    public function __makeTemplate()
+    {
+        \$xhtml = <<<HTML
+<div class="tk-panel" data-panel-title="{name} Edit" data-panel-icon="fa fa-book" var="panel"></div>
+HTML;
+        return \Dom\Loader::load(\$xhtml);
+    }
+
+}
+STR;
+        $tpl = \Tk\CurlyTemplate::create($classTpl);
+        return $tpl;
+    }
+
     /**
      * @return \Tk\CurlyTemplate
      */
     protected function createFormIfaceTemplate()
     {
-        $classTpl = <<<STR
+        $classTpl = <<<PHP
 <?php
-namespace App\Form;
+namespace {form-namespace};
 
 use Tk\Form\Field;
 use Tk\Form\Event;
@@ -570,7 +818,7 @@ class {classname} extends \Bs\FormIface
      */
     public function execute(\$request = null)
     {
-        \$this->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
+        \$this->load(\{db-namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
         parent::execute(\$request);
     }
 
@@ -582,7 +830,7 @@ class {classname} extends \Bs\FormIface
     public function doSubmit(\$form, \$event)
     {
         // Load the object with form data
-        \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
+        \{db-namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
 
         // Do Custom Validations
 
@@ -604,7 +852,7 @@ class {classname} extends \Bs\FormIface
     }
 
     /**
-     * @return \Tk\Db\ModelInterface|\{namespace}\{classname}
+     * @return \Tk\Db\ModelInterface|\{db-namespace}\{classname}
      */
     public function get{classname}()
     {
@@ -612,7 +860,7 @@ class {classname} extends \Bs\FormIface
     }
 
     /**
-     * @param \{namespace}\{classname} \${property-name}
+     * @param \{db-namespace}\{classname} \${property-name}
      * @return \$this
      */
     public function set{classname}(\${property-name})
@@ -621,7 +869,7 @@ class {classname} extends \Bs\FormIface
     }
     
 }
-STR;
+PHP;
         $tpl = \Tk\CurlyTemplate::create($classTpl);
         return $tpl;
     }
@@ -633,7 +881,7 @@ STR;
     {
         $classTpl = <<<STR
 <?php
-namespace App\Form;
+namespace {form-namespace};
 
 use Tk\Form\Field;
 use Tk\Form\Event;
@@ -676,7 +924,7 @@ class {classname} extends \Bs\ModelForm
      */
     public function execute(\$request = null)
     {
-        \$this->getForm()->load(\{namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
+        \$this->getForm()->load(\{db-namespace}\{classname}Map::create()->unmapForm(\$this->get{classname}()));
         parent::execute(\$request);
     }
 
@@ -688,7 +936,7 @@ class {classname} extends \Bs\ModelForm
     public function doSubmit(\$form, \$event)
     {
         // Load the object with form data
-        \{namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
+        \{db-namespace}\{classname}Map::create()->mapForm(\$form->getValues(), \$this->get{classname}());
 
         // Do Custom Validations
 
@@ -710,7 +958,7 @@ class {classname} extends \Bs\ModelForm
     }
 
     /**
-     * @return \Tk\Db\ModelInterface|\{namespace}\{classname}
+     * @return \Tk\Db\ModelInterface|\{db-namespace}\{classname}
      */
     public function get{classname}()
     {
@@ -718,7 +966,7 @@ class {classname} extends \Bs\ModelForm
     }
 
     /**
-     * @param \{namespace}\{classname} \${property-name}
+     * @param \{db-namespace}\{classname} \${property-name}
      * @return \$this
      */
     public function set{classname}(\${property-name})

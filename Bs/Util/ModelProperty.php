@@ -10,13 +10,11 @@ namespace Bs\Util;
  */
 class ModelProperty extends \Tk\Collection
 {
-
     const TYPE_STRING = 'string';
     const TYPE_INT = 'int';
     const TYPE_FLOAT = 'float';
     const TYPE_DATE = '\DateTime';
     const TYPE_BOOL = 'bool';
-
 
 
     /**
@@ -30,7 +28,6 @@ class ModelProperty extends \Tk\Collection
      * @var string
      */
     protected $type = '';
-
 
 
     /**
@@ -162,6 +159,54 @@ TPL;
     }
 
     /**
+     * TODO: Finish this off (See the old object generators)
+     *
+     * @return string
+     */
+    public function getAccessor()
+    {
+        $tpl = <<<TPL
+    /**
+     * return %s
+     */
+    public function get%s() : %s
+    {
+        return \$this->%s;
+    }
+TPL;
+        // ...
+
+        return sprintf($tpl, $this->getType(), ucfirst($this->getName()), $this->getType(), $this->getName());
+    }
+
+    /**
+     * TODO: Finish this off (See the old object generators)
+     *
+     * @return string
+     */
+    public function getMutator()
+    {
+        $param = 'param';  // TODO:
+
+        $tpl = <<<TPL
+    /**
+     * @param %s \$%s
+     * @return %s
+     */
+    public function set%s(\$%s) : %s
+    {
+        \$this->%s = \$%s;
+        return \$this;
+    }
+TPL;
+        // ...
+
+        return sprintf($tpl, $this->getType(), $param, $this->get('classname', '$this'), ucfirst($this->getName()),
+            $param, $this->getType(), $this->getName(), $param
+        );
+    }
+
+    /**
      * @param string $errorParam
      * @return string
      */
@@ -254,14 +299,15 @@ TPL;
         $filterVal = sprintf("\$this->quote(\$filter['%s'])", $this->getName());
         switch ($this->getType()) {
             case self::TYPE_INT:
+            case self::TYPE_BOOL:
                 $filterVal = sprintf("(int)\$filter['%s']", $this->getName());
                 break;
             case self::TYPE_FLOAT:
                 $filterVal = sprintf("(float)\$filter['%s']", $this->getName());
                 break;
-            case self::TYPE_BOOL:
-                $filterVal = sprintf("(int)\$filter['%s']", $this->getName());
-                break;
+//            case self::TYPE_BOOL:
+//                $filterVal = sprintf("(int)\$filter['%s']", $this->getName());
+//                break;
         }
 
         return sprintf($tpl, $this->getName(), $this->get('Field'), $filterVal);
