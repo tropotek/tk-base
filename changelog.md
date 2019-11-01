@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.50 [2019-11-01]:
+-------------------------------
+  - Updated the model creation tools
+
+
 Ver 3.0.48 [2019-10-04]:
 -------------------------------
   - Update Tk\Routing\Route constructor to be compatable with sysmfony Route object
