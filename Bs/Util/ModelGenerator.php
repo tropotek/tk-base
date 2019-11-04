@@ -606,7 +606,7 @@ class {classname} extends \Bs\TableIface
         \$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-        //\$this->appendAction(\Tk\Table\Action\Link::create('New {name}', 'fa fa-plus', \Bs\Uri::createHomeUrl('/{namespace-url}Edit.html')));
+        //\$this->appendAction(\Tk\Table\Action\Link::createLink('New {name}', \Bs\Uri::createHomeUrl('/{namespace-url}Edit.html'), 'fa fa-plus'));
         //\$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
         \$this->appendAction(\Tk\Table\Action\Delete::create());
         \$this->appendAction(\Tk\Table\Action\Csv::create());
@@ -731,7 +731,7 @@ class Edit extends AdminEditIface
     {
         \$this->{property-name} = new \{db-namespace}\{classname}();
         if (\$request->get('{property-name}Id')) {
-            \$this->assessment = \{db-namespace}\{classname}Map::create()->find(\$request->get('{property-name}Id'));
+            \$this->{property-name} = \{db-namespace}\{classname}Map::create()->find(\$request->get('{property-name}Id'));
         }
 
         \$this->setForm(\{form-namespace}\{classname}::create()->setModel(\$this->{property-name}));
