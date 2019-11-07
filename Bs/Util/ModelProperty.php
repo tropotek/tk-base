@@ -167,14 +167,17 @@ TPL;
     /**
      * return %s
      */
-    public function get%s() : %s
+    public function %s%s() : %s
     {
         return \$this->%s;
     }
 TPL;
         // ...
+        $method = 'get';
+        if ($this->getType() == 'bool' || $this->getType() == 'boolean')
+            $method = 'is';
 
-        return sprintf($tpl, $this->getType(), ucfirst($this->getName()), $this->getType(), $this->getName());
+        return sprintf($tpl, $this->getType(), $method, ucfirst($this->getName()), $this->getType(), $this->getName());
     }
 
     /**
