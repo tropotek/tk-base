@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.52 [2019-11-12]:
+-------------------------------
+  - Added more to the new CA plugin
+
+
 Ver 3.0.50 [2019-11-01]:
 -------------------------------
   - Updated the model creation tools
