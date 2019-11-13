@@ -14,7 +14,7 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
 {
 
     /**
-     * @var \Tk\Table\Cell\Actions
+     * @var \Tk\Table\Cell\Actions|\Tk\Table\Cell\ButtonCollection
      */
     protected $actionCell = null;
 
@@ -75,12 +75,16 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
 
 
     /**
-     * @return \Tk\Table\Cell\Actions
+     * @param bool $newVer Use this to use the new \Tk\Table\Cell\Actions\ButtonCollection object
+     * @return \Tk\Table\Cell\Actions|\Tk\Table\Cell\ButtonCollection
      */
-    public function getActionCell()
+    public function getActionCell($newVer = false)
     {
         if (!$this->actionCell) {
             $this->actionCell = new \Tk\Table\Cell\Actions();
+            if ($newVer) {
+                $this->actionCell = new \Tk\Table\Cell\ButtonCollection();
+            }
         }
         return $this->actionCell;
     }
