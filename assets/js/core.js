@@ -162,12 +162,12 @@ var project_core = function () {
         minView: 2,
         maxView: 2
       });
+
       form.find('.datetime').datetimepicker({
         format: config.datepickerFormat + ' hh:ii',
         minuteStep: 15,
         showMeridian: false,
         showSeconds: false,
-
         autoclose: true,
         todayBtn: true,
         todayHighlight: true,
