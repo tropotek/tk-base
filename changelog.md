@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.0.56 [2019-11-25]:
+-------------------------------
+  - still trying to Fix the taskLog datetime field reload issue
+
+
 Ver 3.0.54 [2019-11-18]:
 -------------------------------
 
