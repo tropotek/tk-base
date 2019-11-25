@@ -292,6 +292,8 @@ TPL;
 
     public function getFilterQuery()
     {
+        if ($this->getName() == 'id' ) return '';
+
         $tpl = <<<TPL
         if (!empty(\$filter['%s'])) {
             \$filter->appendWhere('a.%s = %%s AND ', %s);
