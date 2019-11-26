@@ -48,18 +48,20 @@ class ModelGenerator
     {
         $this->db = $db;
         $this->table = $table;
+        $namespace = trim($namespace);
+        if (!$namespace)
+            $namespace = 'App';
         $this->setNamespace($namespace);
+
+        $className = trim($className);
+        if (!$className) {
+            $className = $this->makeClassname($table);
+        }
         $this->setClassName($className);
 
         if (!$db->hasTable($table)) {   // Check the DB for the table
             throw new \Exception('Table `' . $table . '` not found in the DB `' . $db->getDatabaseName().'`');
         }
-
-        // Setup default namespace and classname
-        if (!$this->getNamespace())
-            $this->setNamespace('App');
-        if (!$this->getClassName())
-            $this->setClassName($this->makeClassname($table));
 
         $this->tableInfo = $db->getTableInfo($table);
     }
@@ -96,7 +98,7 @@ class ModelGenerator
     protected function getDefaultData()
     {
         $now = \Tk\Date::create();
-        return array(
+        $a = array(
             'author-name' => 'Mick Mifsud',
             'author-biz' => 'Tropotek',
             'author-www' => 'http://tropotek.com.au/',
@@ -115,6 +117,7 @@ class ModelGenerator
             'namespace-url' => str_replace('_', '/', $this->getTable()),
             'table-id' => str_replace('_', '-', $this->getTable())
         );
+        return $a;
     }
 
     /**
@@ -202,7 +205,19 @@ class ModelGenerator
         return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $this->getClassName())), '_');
     }
 
-
+    /**
+     * @param array $data
+     * @param array|null $classData
+     * @param array|null $params
+     * @return array
+     */
+    protected function arrayMerge(array $data, array $classData = null, array $params = null)
+    {
+        unset($params['namespace']);
+        unset($params['classname']);
+        unset($params['basepath']);
+        return array_merge($data, $classData, $params);
+    }
 
     /**
      * @param array $params any overrides for the curly template
@@ -212,9 +227,7 @@ class ModelGenerator
     public function makeModel($params = array())
     {
         $tpl = $this->createModelTemplate();
-        $data = $this->getDefaultData();
-        $classData = $this->processModel();
-        $data = array_merge($data, $classData, $params);
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processModel(), $params);
         return $tpl->parse($data);
     }
 
@@ -304,9 +317,7 @@ STR;
     public function makeMapper($params = array())
     {
         $tpl = $this->createMapperTemplate();
-        $data = $this->getDefaultData();
-        $classData = $this->processMapper();
-        $data = array_merge($data, $classData, $params);
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processMapper(), $params);
         return $tpl->parse($data);
     }
 
@@ -445,9 +456,7 @@ STR;
     public function makeTable($params = array())
     {
         $tpl = $this->createTableTemplate();
-        $data = $this->getDefaultData();
-        $classData = $this->processTable();
-        $data = array_merge($data, $classData, $params);
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processTable(), $params);
         return $tpl->parse($data);
     }
 
@@ -491,7 +500,7 @@ STR;
 <?php 
 namespace {controller-namespace}\{classname};
 
-use App\Controller\AdminManagerIface;
+use Bs\Controller\AdminManagerIface;
 use Dom\Template;
 use Tk\Request;
 
@@ -652,9 +661,7 @@ STR;
         $tpl = $this->createFormIfaceTemplate();
         if (!empty($params['modelForm']))
             $tpl = $this->createModelFormTemplate();
-        $data = $this->getDefaultData();
-        $classData = $this->processForm(!empty($params['modelForm']));
-        $data = array_merge($data, $classData, $params);
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processForm(!empty($params['modelForm'])), $params);
         return $tpl->parse($data);
     }
 
@@ -698,7 +705,7 @@ STR;
 <?php
 namespace {controller-namespace}\{classname};
 
-use App\Controller\AdminEditIface;
+use Bs\Controller\AdminEditIface;
 use Dom\Template;
 use Tk\Request;
 

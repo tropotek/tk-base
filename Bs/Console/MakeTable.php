@@ -36,20 +36,5 @@ class MakeTable extends MakerIface
         parent::execute($input, $output);
         $this->makeTable();
 
-//        $config = \Bs\Config::getInstance();
-//        $phpFile = $config->getSitePath() . '/src/' . str_replace('\\', '/', $this->getGen()->getTableNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
-//        //$phpFile = $config->getSitePath() . '/src/App/Table/' . $gen->getClassName() . '.php';
-//        if (!$input->getOption('overwrite'))
-//            $phpFile = $this->makeUniquePhpFilename($phpFile);
-//        $tableCode = $this->getGen()->makeTable();
-//
-//        if (!is_dir(dirname($phpFile))) {
-//            $this->writeComment('Creating Path: ' . dirname($phpFile));
-//            mkdir(dirname($phpFile), 0777, true);
-//        }
-//
-//        $this->writeComment('Writing: ' . $phpFile);
-//        file_put_contents($phpFile, $tableCode);
-
     }
 }

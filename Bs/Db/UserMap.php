@@ -140,6 +140,11 @@ class UserMap extends Mapper
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
+        if (!empty($filter['id'])) {
+            $w = $this->makeMultiQuery($filter['id'], 'a.id');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
         if (!empty($filter['roleId'])) {
             $w = $this->makeMultiQuery($filter['roleId'], 'a.role_id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);

@@ -53,7 +53,11 @@ class MakerIface extends Iface
         if (!$this->getBasePath())
             $this->basePath = $this->getConfig()->getSitePath() . '/src';
 
-        $this->gen = \Bs\Util\ModelGenerator::create($this->getConfig()->getDb(), $input->getArgument('table'), $input->getOption('namespace'), $input->getOption('classname'));
+        $this->gen = \Bs\Util\ModelGenerator::create($this->getConfig()->getDb(),
+            $input->getArgument('table'),
+            $input->getOption('namespace'),
+            $input->getOption('classname')
+        );
     }
 
     /**
