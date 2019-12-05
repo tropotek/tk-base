@@ -15,14 +15,10 @@ $red-color: #F33 !default;
  */
 .tk-form {
 
-  //.required > label:before {
-  //  content:"* ";
-  //  color: #e70000;
-  //  font-weight: bold;
-  //}
-  .required > label {
-    text-decoration: underline dotted;
-
+  .required > label:before {
+    content:"* ";
+    color: #e70000;
+    font-weight: bold;
   }
 
   &.form-inline {
@@ -62,6 +58,8 @@ $red-color: #F33 !default;
   }
 
   .tk-form-events {
+    margin-top: 15px;
+    margin-bottom: 15px;
     .btn {
       margin-right: 10px;
     }
