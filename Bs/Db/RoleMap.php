@@ -100,6 +100,11 @@ class RoleMap extends Mapper
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
+        if (!empty($filter['id'])) {
+            $w = $this->makeMultiQuery($filter['id'], 'a.id');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
         if (!empty($filter['name'])) {
             $filter->appendWhere('a.name = %s AND ', $this->getDb()->quote($filter['name']));
         }
