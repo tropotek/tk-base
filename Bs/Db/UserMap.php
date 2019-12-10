@@ -114,7 +114,8 @@ class UserMap extends Mapper
      */
     public function findFiltered($filter, $tool = null)
     {
-        return $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
+        $r = $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
+        return $r;
     }
 
     /**
@@ -186,8 +187,15 @@ class UserMap extends Mapper
         }
         if (!empty($filter['type'])) {
             $filter->appendFrom(', user_role d');
+            $filter->appendWhere('a.role_id = d.id AND ');
             $w = $this->makeMultiQuery($filter['type'], 'd.type');
-            if ($w) $filter->appendWhere('a.role_id = d.id AND (%s) AND ', $w);
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+        if (!empty($filter['permission'])) {
+            $filter->appendFrom(', user_permission e');
+            $filter->appendWhere('a.role_id = e.role_id AND ');
+            $w = $this->makeMultiQuery($filter['permission'], 'e.name');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['exclude'])) {
