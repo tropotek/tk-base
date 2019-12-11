@@ -70,8 +70,8 @@ class User extends \Bs\TableIface
         $this->appendCell($actionsCell);
 
         $this->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl($this->getEditUrl());
-        $this->appendCell(new \Tk\Table\Cell\Text('username'))->setUrl($this->getEditUrl());
-        $this->appendCell(new \Tk\Table\Cell\Text('email'));
+        $this->appendCell(new \Tk\Table\Cell\Text('username'));
+        $this->appendCell(new \Tk\Table\Cell\Email('email'));
         $this->appendCell(new \Tk\Table\Cell\Text('phone'));
         $this->appendCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
             /** @var \Bs\Db\User $obj */
@@ -88,7 +88,7 @@ class User extends \Bs\TableIface
         $this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-        //$this->appendAction(\Tk\Table\Action\Link::create('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
+        //$this->appendAction(\Tk\Table\Action\Link::createLink('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
         //$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
         $this->appendAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array('1')));
         //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
