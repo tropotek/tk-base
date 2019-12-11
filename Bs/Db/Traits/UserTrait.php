@@ -45,7 +45,9 @@ trait UserTrait
      */
     public function getUser()
     {
-        return $this->getUserObj();
+        if (!$this->_user)
+            $this->_user = Config::getInstance()->getUserMapper()->find($this->getUserId());
+        return $this->_user;
     }
 
     /**
@@ -69,12 +71,11 @@ trait UserTrait
      *
      * @return UserIface|null
      * @throws \Exception
+     * @deprecated Use getUser()
      */
     public function getUserObj()
     {
-        if (!$this->_user)
-            $this->_user = Config::getInstance()->getUserMapper()->find($this->getUserId());
-        return $this->_user;
+        return $this->getUser();
     }
 
     /**

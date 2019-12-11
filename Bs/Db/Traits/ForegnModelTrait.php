@@ -49,7 +49,10 @@ trait ForegnModelTrait
      */
     public function setModel($model)
     {
-        return $this->setModelObj($model);
+        $this->setFkey(get_class($model));
+        $this->setFid($model->getVolatileId());
+        $this->_model = $model;
+        return $this;
     }
 
 
@@ -63,20 +66,21 @@ trait ForegnModelTrait
      */
     public function getModel()
     {
-        return $this->getModelObj();
+        if (!$this->_model && class_exists($this->getFkey().'Map')) {
+            $this->_model = $this->getModelMapper()->find($this->getFid());
+        }
+        return $this->_model;
     }
 
 
     /**
      * @param Model|ModelInterface $model
      * @return ForegnKeyTrait
+     * @deprecated Use setModel()
      */
     public function setModelObj($model)
     {
-        $this->setFkey(get_class($model));
-        $this->setFid($model->getVolatileId());
-        $this->_model = $model;
-        return $this;
+        return $this->setModel($model);
     }
 
 
@@ -84,13 +88,11 @@ trait ForegnModelTrait
      *
      * @return null|Model|ModelInterface
      * @throws \Exception
+     * @deprecated Use getModel()
      */
     public function getModelObj()
     {
-        if (!$this->_model && class_exists($this->getFkey().'Map')) {
-            $this->_model = $this->getModelMapper()->find($this->getFid());
-        }
-        return $this->_model;
+        return $this->getModel();
     }
 
 
