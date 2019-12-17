@@ -27,10 +27,13 @@ trait TimestampTrait
     }
 
     /**
-     * @return DateTime
+     * @param null|string $format   If supplied then a string of the formatted date is returned
+     * @return DateTime|string
      */
-    public function getModified(): DateTime
+    public function getModified($format = null)
     {
+        if ($format && $this->modified)
+            return $this->modified->format($format);
         return $this->modified;
     }
 

@@ -24,10 +24,13 @@ trait CreatedTrait
     }
 
     /**
-     * @return DateTime
+     * @param null|string $format   If supplied then a string of the formatted date is returned
+     * @return DateTime|string
      */
-    public function getCreated(): DateTime
+    public function getCreated($format = null)
     {
+        if ($format && $this->created)
+            return $this->created->format($format);
         return $this->created;
     }
 

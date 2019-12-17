@@ -571,7 +571,7 @@ class User extends Model implements UserIface
 
     /**
      * @return string
-     * @deprecated removing roleType over time
+     * @deprecated removing roleType over time Use the Permission object instead.
      */
     public function getRoleType()
     {

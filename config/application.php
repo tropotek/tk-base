@@ -77,7 +77,7 @@ $config['event.dispatcher.log'] = false;
  * Max size for profile images
  * Default; 1028*1028*2 (2M)
  */
-$config['upload.profile.imagesize'] = 1028*1028*2;
+$config['upload.course.imagesize'] = 1028*1028*2;
 
 /*
  * The session log allows us to add the log to exception emails
