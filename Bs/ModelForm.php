@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Tk\ConfigTrait;
 use Dom\Renderer\Renderer;
 use Dom\Template;
 
@@ -12,6 +13,7 @@ use Dom\Template;
  */
 abstract class ModelForm extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
+    use ConfigTrait;
 
     /**
      * @var \Tk\Form
@@ -146,30 +148,5 @@ abstract class ModelForm extends \Dom\Renderer\Renderer implements \Dom\Renderer
     public function getLayout()
     {
         return $this->getRenderer()->getLayout();
-    }
-
-    /**
-     * @return Config
-     */
-    public function getConfig()
-    {
-        return Config::getInstance();
-    }
-
-    /**
-     * @return \Tk\Uri
-     * @throws \Exception
-     */
-    public function getBackUrl()
-    {
-        return $this->getConfig()->getBackUrl();
-    }
-
-    /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->getConfig()->getUser();
     }
 }

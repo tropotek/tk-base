@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Controller;
 
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -35,37 +36,11 @@ abstract class Iface extends \Tk\Controller\Iface
     }
 
     /**
-     * Get the currently logged in user
-     *
-     * @return \Bs\Db\User
-     */
-    public function getUser()
-    {
-        return $this->getConfig()->getUser();
-    }
-
-    /**
-     * @return \Tk\Config|\Bs\Config|\App\Config
-     */
-    public function getConfig()
-    {
-        return parent::getConfig();
-    }
-
-    /**
      * @return \Tk\Crumbs
      */
     public function getCrumbs()
     {
         return $this->getConfig()->getCrumbs();
-    }
-
-    /**
-     * @return \Tk\Uri
-     */
-    public function getBackUrl()
-    {
-        return $this->getConfig()->getBackUrl();
     }
 
     /**

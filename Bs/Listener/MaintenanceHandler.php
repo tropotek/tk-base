@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Listener;
 
+use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -11,6 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class MaintenanceHandler implements Subscriber
 {
+    use ConfigTrait;
 
     /**
      * kernel.controller
@@ -80,13 +82,4 @@ HTML;
             \Tk\PageEvents::CONTROLLER_SHOW => 'showPage'
         );
     }
-
-    /**
-     * @return \App\Config|\Tk\Config
-     */
-    public function getConfig()
-    {
-        return \App\Config::getInstance();
-    }
-
 }

@@ -9,13 +9,4 @@ namespace Bs\Console;
  */
 class Iface extends \Tk\Console\Console
 {
-
-    /**
-     * @return \Bs\Config
-     */
-    public function getConfig()
-    {
-        return \Bs\Config::getInstance();
-    }
-
 }

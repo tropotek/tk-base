@@ -130,14 +130,6 @@ abstract class Mapper extends \Tk\Db\Mapper
         return $this;
     }
 
-    /**
-     * @return \Bs\Config
-     */
-    public function getConfig()
-    {
-        return \Bs\Config::getInstance();
-    }
-
 
     /**
      * This function creates a temporary table filled with dates

@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -31,24 +32,5 @@ class Page extends \Tk\Controller\Page
         return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlRole);
     }
 
-    /**
-     * Get the currently logged in user
-     *
-     * @return \Bs\Db\User
-     */
-    public function getUser()
-    {
-        return $this->getConfig()->getUser();
-    }
-
-    /**
-     * Get the global config object.
-     *
-     * @return \Bs\Config
-     */
-    public function getConfig()
-    {
-        return \Bs\Config::getInstance();
-    }
 
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Bs;
 
+use Tk\ConfigTrait;
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -8,13 +10,6 @@ namespace Bs;
  */
 class FrontController extends \Symfony\Component\HttpKernel\HttpKernel
 {
-
-    /**
-     * @return Config
-     */
-    public function getConfig()
-    {
-        return Config::getInstance();
-    }
+    use ConfigTrait;
 
 }

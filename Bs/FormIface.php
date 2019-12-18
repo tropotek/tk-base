@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+
 /**
  * @author Tropotek <info@tropotek.com>
  * @created: 22/07/18
@@ -9,6 +10,7 @@ namespace Bs;
  */
 abstract class FormIface extends \Tk\Form
 {
+
     /**
      * @var null|\Tk\Db\ModelInterface|\Tk\Collection
      */
@@ -19,7 +21,6 @@ abstract class FormIface extends \Tk\Form
      * @var bool
      */
     private $initDone = false;
-
 
 
     /**
@@ -40,8 +41,8 @@ abstract class FormIface extends \Tk\Form
     {
         /** @var FormIface $obj */
         $obj = parent::create($formId);
-        $obj->setDispatcher(\Bs\Config::getInstance()->getEventDispatcher());
-        $obj->setRenderer(\Bs\Config::getInstance()->createFormRenderer($obj));
+        $obj->setDispatcher($obj->getConfig()->getEventDispatcher());
+        $obj->setRenderer($obj->getConfig()->createFormRenderer($obj));
         return $obj;
     }
 
@@ -93,32 +94,5 @@ abstract class FormIface extends \Tk\Form
      * init all your form fields here
      */
     abstract public function init();
-
-
-    /**
-     * @return Config
-     */
-    public function getConfig()
-    {
-        return Config::getInstance();
-    }
-
-    /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->getConfig()->getUser();
-    }
-
-    /**
-     * @return \Tk\Uri
-     * @throws \Exception
-     */
-    public function getBackUrl()
-    {
-        return $this->getConfig()->getBackUrl();
-    }
-
 
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Listener;
 
+use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Bs\Db\User;
@@ -16,6 +17,8 @@ use Tk\Auth\AuthEvents;
  */
 class MasqueradeHandler implements Subscriber
 {
+    use ConfigTrait;
+
     /**
      * Session ID
      */
@@ -240,14 +243,6 @@ class MasqueradeHandler implements Subscriber
             $this->masqueradeLogout();
             //$event->stopPropagation();
         }
-    }
-
-    /**
-     * @return \Bs\Config|\Tk\Config
-     */
-    public function getConfig()
-    {
-        return \Bs\Config::getInstance();
     }
 
     /**

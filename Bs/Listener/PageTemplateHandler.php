@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Listener;
 
+use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 
 /**
@@ -10,6 +11,7 @@ use Tk\Event\Subscriber;
  */
 class PageTemplateHandler implements Subscriber
 {
+    use ConfigTrait;
 
     protected function substitution($str)
     {
@@ -151,14 +153,6 @@ JS;
     public function isBootstrap4()
     {
         return $this->getConfig()->get('css.framework') == 'bs4';
-    }
-
-    /**
-     * @return \Bs\Config
-     */
-    public function getConfig()
-    {
-        return \Bs\Config::getInstance();
     }
 
 

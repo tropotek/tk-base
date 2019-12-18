@@ -108,30 +108,6 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
     }
 
     /**
-     * @return Config
-     */
-    public function getConfig()
-    {
-        return Config::getInstance();
-    }
-
-    /**
-     * @return \Tk\Uri
-     */
-    public function getBackUrl()
-    {
-        return $this->getConfig()->getBackUrl();
-    }
-
-    /**
-     * @return Db\User
-     */
-    public function getUser()
-    {
-        return $this->getConfig()->getUser();
-    }
-
-    /**
      * Execute the renderer.
      * Return an object that your framework can interpret and display.
      *

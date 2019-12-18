@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Listener;
 
+use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 
 
@@ -12,6 +13,7 @@ use Tk\Event\Subscriber;
  */
 class PageLoaderHandler implements Subscriber
 {
+    use ConfigTrait;
 
     const NO_LOADER = 'no-loader';
 
@@ -228,14 +230,6 @@ CSS;
         return array(
             \Tk\PageEvents::CONTROLLER_SHOW => 'showPage'
         );
-    }
-
-    /**
-     * @return \App\Config|\Tk\Config
-     */
-    public function getConfig()
-    {
-        return \App\Config::getInstance();
     }
 
 }

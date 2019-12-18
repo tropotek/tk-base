@@ -2,6 +2,7 @@
 namespace Bs;
 
 
+use Tk\ConfigTrait;
 use Bs\Listener\MailHandler;
 use Bs\Listener\MaintenanceHandler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -29,6 +30,8 @@ use Monolog\Logger;
  */
 class Dispatch
 {
+    use ConfigTrait;
+
     /**
      * @var EventDispatcherInterface
      */
@@ -60,14 +63,6 @@ class Dispatch
     public function getDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    /**
-     * @return Config
-     */
-    public function getConfig()
-    {
-        return Config::getInstance();
     }
 
     /**
