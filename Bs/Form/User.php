@@ -32,6 +32,10 @@ class User extends \Bs\FormIface
      */
     public function init()
     {
+        $layout = $this->getRenderer()->getLayout();
+        $layout->removeRow('nameLast', 'col');
+        $layout->removeRow('phone', 'col');
+
 
         $tab = 'Details';
         if ($this->getUser()->getId() != 1 && $this->getConfig()->getUser()->isAdmin()) {
@@ -41,14 +45,17 @@ class User extends \Bs\FormIface
             $this->appendField(new Field\Html('roleId', $this->getUser()->getRole()->getName()))->setAttr('disabled')->addCss('form-control disabled')->setAttr('disabled')->addCss('form-control disabled')->setTabGroup($tab);
         }
 
-        $this->appendField(new Field\Input('name'))->setTabGroup($tab)->setRequired(true);
+        $this->appendField(new Field\Input('nameFirst'))->setLabel('First Name')->setTabGroup($tab)->setRequired(true);
+        $this->appendField(new Field\Input('nameLast'))->setLabel('Last Name(s)')->setTabGroup($tab)->setRequired(true);
+
         //if ($this->getUser()->getId() != 1 && $this->getConfig()->getUser()->isAdmin()) {
-        if ($this->getConfig()->getUser()->isAdmin() || !$this->getUser()->getId()) {
-            $this->appendField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
-        } else {
-            $this->appendField(new Field\Html('username'))->setAttr('disabled')->addCss('form-control disabled')->setTabGroup($tab);
-        }
-        $this->appendField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
+//        if ($this->getConfig()->getUser()->isAdmin() || !$this->getUser()->getId()) {
+            $this->appendField(new Field\Input('username'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
+//        } else {
+//            $this->appendField(new Field\Html('username'))->setAttr('disabled')->addCss('form-control disabled')->setTabGroup($tab);
+//        }
+
+        $this->appendField(new Field\Input('email'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('phone'))->setTabGroup($tab)->setNotes('Enter a phone number that you can be contacted on directly.');
         $this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
 

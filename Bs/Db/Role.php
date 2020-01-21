@@ -117,7 +117,7 @@ class Role extends Model implements \Tk\ValidInterface, RoleIface
     {
         if (!is_array($roleName)) $roleName = array($roleName);
         foreach ($roleName as $r) {
-            if (strtolower($this->name) == strtolower($r))
+            if (strtolower($this->getName()) == strtolower($r))
                 return true;
         }
         return false;

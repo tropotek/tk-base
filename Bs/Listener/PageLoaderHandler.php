@@ -44,7 +44,11 @@ $(document).ready(function() {
   $(window).on('beforeunload', function(e) {
     // Do not fire loader for some links... Add class="no-loader" for links that you want to force to not use the loader
     if (e.target && e.target.activeElement &&  
-        ((e.target.activeElement.href && (e.target.activeElement.href.indexOf(config.dataUrl) >= 0 || e.target.activeElement.href.indexOf('mailto:') >= 0)) || $(e.target.activeElement).hasClass('no-loader')) ) {
+        ((e.target.activeElement.href && (
+          e.target.activeElement.href.indexOf(config.dataUrl) >= 0 || 
+          e.target.activeElement.href.indexOf('mailto:') >= 0)) || 
+          $(e.target.activeElement).hasClass('no-loader')) 
+        ) {
       $('body').addClass('loaded');
       return;
     }

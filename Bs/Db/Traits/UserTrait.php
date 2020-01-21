@@ -28,11 +28,12 @@ trait UserTrait
     }
 
     /**
-     * @param int $userId
+     * @param int|UserIface $userId
      * @return UserTrait
      */
     public function setUserId($userId)
     {
+        if ($userId instanceof UserIface) $userId = $userId->getId();
         $this->userId = (int)$userId;
         return $this;
     }
@@ -55,6 +56,7 @@ trait UserTrait
      *
      * @param int|UserIface $user
      * @return $this
+     * @deprecated Use set UserId(UserIface)
      */
     public function setUser($user)
     {

@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Bs\Db\Traits\RoleTrait;
 use Tk\Db\Map\Model;
 
 /**
@@ -12,6 +13,7 @@ class User extends Model implements UserIface
 {
 
     use Traits\TimestampTrait;
+    use RoleTrait;
 
     /**
      * @var int
@@ -31,7 +33,7 @@ class User extends Model implements UserIface
     /**
      * @var string
      */
-    public $username = 'guest';
+    public $username = '';
 
     /**
      * @var string
@@ -41,12 +43,17 @@ class User extends Model implements UserIface
     /**
      * @var string
      */
-    public $name = 'Guest';
+    public $nameFirst = '';
 
     /**
      * @var string
      */
-    public $email = 'guest@noreply.com';
+    public $nameLast = '';
+
+    /**
+     * @var string
+     */
+    public $email = '';
 
     /**
      * @var string
@@ -104,11 +111,6 @@ class User extends Model implements UserIface
      */
     private $data = null;
 
-    /**
-     * @var RoleIface
-     */
-    private $role = null;
-
 
     /**
      * User constructor.
@@ -116,7 +118,19 @@ class User extends Model implements UserIface
     public function __construct()
     {
         $this->_TimestampTrait();
-        $this->ip = \Bs\Config::getInstance()->getRequest()->getIp();
+        $this->setIp($this->getConfig()->getRequest()->getClientIp());
+    }
+
+    /**
+     * @return User
+     */
+    public static function createGuest()
+    {
+        $user = new self();
+        $user->setUsername('guest');
+        $user->setNameFirst('Guest');
+        $user->setRoleId(Role::TYPE_PUBLIC);
+        return $user;
     }
 
     /**
@@ -136,22 +150,6 @@ class User extends Model implements UserIface
         $this->getHash();
         $this->getData()->save();
         parent::save();
-    }
-
-    /**
-     * @return RoleIface
-     */
-    public function getRole()
-    {
-        if (!$this->role) {
-            try {
-                $this->role = \Bs\Config::getInstance()->getRoleMapper()->find($this->roleId);
-            } catch (\Exception $e) {
-                \Tk\Log::warning('No valid role found for UID: ' . $this->getId());
-                $this->role = new Role();
-            }
-        }
-        return $this->role;
     }
 
     /**
@@ -183,11 +181,11 @@ class User extends Model implements UserIface
     public function getImageUrl()
     {
         $url = \Tk\Uri::create('/html/app/img/user.png');
-        if ($this->image) {
-            if (filter_var($this->image, \FILTER_SANITIZE_URL, \FILTER_FLAG_PATH_REQUIRED)) {
-                $url = \Tk\Uri::create($this->image);
-            } else if (file_exists($this->getConfig()->getDataPath() . $this->image)) {
-                $url = \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->image);
+        if ($this->getImage()) {
+            if (filter_var($this->getImage(), \FILTER_SANITIZE_URL, \FILTER_FLAG_PATH_REQUIRED)) {
+                $url = \Tk\Uri::create($this->getImage());
+            } else if (file_exists($this->getConfig()->getDataPath() . $this->getImage())) {
+                $url = \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->getImage());
             }
         } else if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
             $color = \Tk\Color::createRandom($this->getVolatileId());
@@ -204,25 +202,6 @@ class User extends Model implements UserIface
             $url = \Tk\Uri::create('data:image/png;base64,' . $b64);
         }
         return $url;
-    }
-
-
-    /**
-     * @return int
-     */
-    public function getRoleId(): int
-    {
-        return $this->roleId;
-    }
-
-    /**
-     * @param int $roleId
-     * @return User
-     */
-    public function setRoleId(int $roleId): User
-    {
-        $this->roleId = $roleId;
-        return $this;
     }
 
     /**
@@ -280,11 +259,13 @@ class User extends Model implements UserIface
     }
 
     /**
+     * returns the concatenated first and last name values
+     *
      * @return string
      */
     public function getName(): string
     {
-        return $this->name;
+        return $this->getNameFirst() . ' ' . $this->getNameLast();
     }
 
     /**
@@ -293,7 +274,45 @@ class User extends Model implements UserIface
      */
     public function setName(?string $name): User
     {
-        $this->name = $name;
+        \Tk\Log::warning('Using deprecated function.');
+        $this->setNameFirst(substr($name, 0, strpos($name, '')));
+        $this->setNameLast(substr($name, strpos($name, '')+1));
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameFirst(): string
+    {
+        return $this->nameFirst;
+    }
+
+    /**
+     * @param string $nameFirst
+     * @return User
+     */
+    public function setNameFirst(string $nameFirst): User
+    {
+        $this->nameFirst = $nameFirst;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameLast(): string
+    {
+        return $this->nameLast;
+    }
+
+    /**
+     * @param string $nameLast
+     * @return User
+     */
+    public function setNameLast(string $nameLast): User
+    {
+        $this->nameLast = $nameLast;
         return $this;
     }
 
@@ -462,11 +481,11 @@ class User extends Model implements UserIface
      */
     public function generateHash($isTemp = false)
     {
-        $key = sprintf('%s%s', $this->getVolatileId(), $this->username);
+        $key = sprintf('%s%s', $this->getVolatileId(), $this->getUsername());
         if ($isTemp) {
             $key .= date('-YmdHis');
         }
-        return \Bs\Config::getInstance()->hash($key);
+        return $this->getConfig()->hash($key);
     }
 
     /**
@@ -477,11 +496,10 @@ class User extends Model implements UserIface
      */
     public function setNewPassword($pwd = '')
     {
-        $config = \Bs\Config::getInstance();
         if (!$pwd) {
-            $pwd = $config->createPassword(10);
+            $pwd = $this->getConfig()->createPassword(10);
         }
-        $this->password = $config->hashPassword($pwd, $this);
+        $this->setPassword($this->getConfig()->hashPassword($pwd, $this));
         return $this;
     }
 
@@ -494,7 +512,6 @@ class User extends Model implements UserIface
         if (!$this->getRole()) return false;
         return $this->getRole()->hasPermission($permission);
     }
-
 
     /**
      * @return boolean
@@ -517,9 +534,8 @@ class User extends Model implements UserIface
      */
     public function isPublic()
     {
-        return !$this->getRole();
+        return !$this->getRole() || $this->getRole()->hasType(Role::TYPE_PUBLIC);
     }
-
 
     /**
      * Validate this object's current state and return an array
@@ -532,9 +548,9 @@ class User extends Model implements UserIface
     public function validate()
     {
         $errors = array();
+        $usermap = $this->getConfig()->getUserMapper();
 
-
-        if (!$this->roleId) {
+        if (!$this->getRoleId()) {
             $errors['roleId'] = 'Invalid field role value';
         } else {
             try {
@@ -545,29 +561,32 @@ class User extends Model implements UserIface
             }
         }
 
-        if (!$this->username) {
+        if (!$this->getUsername()) {
             $errors['username'] = 'Invalid field username value';
         } else {
-            $dup = UserMap::create()->findByUsername($this->username);
+            $dup = $usermap->findByUsername($this->getUsername());
             if ($dup && $dup->getId() != $this->getId()) {
                 $errors['username'] = 'This username is already in use';
             }
         }
-        if ($this->email) {
-            if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+        if ($this->getEmail()) {
+            if (!filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL)) {
                 $errors['email'] = 'Please enter a valid email address';
             } else {
-                $dup = UserMap::create()->findByEmail($this->email);
+                $dup = $usermap->findByEmail($this->getEmail());
                 if ($dup && $dup->getId() != $this->getId()) {
                     $errors['email'] = 'This email is already in use';
                 }
             }
         }
+        if ($this->getUid()) {
+            $dup = $usermap->findByUid($this->getUid());
+            if ($dup && $dup->getId() != $this->getId()) {
+                $errors['uid'] = 'This UID is already in use';
+            }
+        }
         return $errors;
     }
-
-
-
 
     /**
      * @return string

@@ -79,6 +79,22 @@ var project_core = function () {
   /**
    * Dual select list box renderer
    */
+  var initTkInputLock = function () {
+    if ($.fn.tkInputLock === undefined) {
+      console.warn('Plugin not loaded: tkInputLock');
+      return;
+    }
+
+    function init() {
+      var form = $(this);
+      form.find('input.tk-input-lock').tkInputLock();
+    }
+    $('form').on('init', document, init).each(init);
+  };
+
+  /**
+   * Dual select list box renderer
+   */
   var initDualListBox = function () {
     if ($.fn.DualListBox === undefined) {
       console.warn('Plugin not loaded: DualListBox');
@@ -636,6 +652,7 @@ var project_core = function () {
     initSugar: initSugar
     , initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
+    , initTkInputLock: initTkInputLock
     , initTkFileInput: initTkFileInput
     , initDualListBox: initDualListBox
     , initCodemirror: initCodemirror

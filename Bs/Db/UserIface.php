@@ -32,9 +32,22 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     public function getPassword();
 
     /**
+     * This should return the concatenated strings:
+     * $this->getNameFirst() . ' ' . $this->>getNameLast()
+     *
      * @return string
      */
     public function getName();
+
+    /**
+     * @return string
+     */
+    public function getNameFirst();
+
+    /**
+     * @return string
+     */
+    public function getNameLast();
 
     /**
      * @return string

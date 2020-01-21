@@ -27,7 +27,9 @@ class UserMap extends Mapper
             $this->dbMap->addPropertyMap(new Db\Text('uid'));
             $this->dbMap->addPropertyMap(new Db\Text('username'));
             $this->dbMap->addPropertyMap(new Db\Text('password'));
-            $this->dbMap->addPropertyMap(new Db\Text('name'));
+            //$this->dbMap->addPropertyMap(new Db\Text('name'));
+            $this->dbMap->addPropertyMap(new Db\Text('nameFirst', 'name_first'));
+            $this->dbMap->addPropertyMap(new Db\Text('nameLast', 'name_last'));
             $this->dbMap->addPropertyMap(new Db\Text('email'));
             $this->dbMap->addPropertyMap(new Db\Text('phone'));
             $this->dbMap->addPropertyMap(new Db\Text('image'));
@@ -55,7 +57,9 @@ class UserMap extends Mapper
             $this->formMap->addPropertyMap(new Form\Text('uid'));
             $this->formMap->addPropertyMap(new Form\Text('username'));
             $this->formMap->addPropertyMap(new Form\Text('password'));
-            $this->formMap->addPropertyMap(new Form\Text('name'));
+            //$this->formMap->addPropertyMap(new Form\Text('name'));
+            $this->formMap->addPropertyMap(new Form\Text('nameFirst'));
+            $this->formMap->addPropertyMap(new Form\Text('nameLast'));
             $this->formMap->addPropertyMap(new Form\Text('email'));
             $this->formMap->addPropertyMap(new Form\Text('phone'));
             $this->formMap->addPropertyMap(new Form\Text('image'));
@@ -67,7 +71,7 @@ class UserMap extends Mapper
 
     /**
      * @param string|int $identity
-     * @return \Tk\Db\Map\Model|User
+     * @return null|\Tk\Db\Map\Model|User
      * @throws \Exception
      */
     public function findByAuthIdentity($identity)
@@ -76,8 +80,8 @@ class UserMap extends Mapper
     }
 
     /**
-     * @param $username
-     * @return \Tk\Db\Map\Model|User
+     * @param string $username
+     * @return null|\Tk\Db\Map\Model|User
      * @throws \Exception
      */
     public function findByUsername($username)
@@ -86,13 +90,23 @@ class UserMap extends Mapper
     }
 
     /**
-     * @param $email
-     * @return \Tk\Db\Map\Model|User
+     * @param string $email
+     * @return null|\Tk\Db\Map\Model|User
      * @throws \Exception
      */
     public function findByEmail($email)
     {
         return $this->findFiltered(array('email' => $email))->current();
+    }
+
+    /**
+     * @param string $uid
+     * @return null|\Tk\Db\Map\Model|User
+     * @throws \Exception
+     */
+    public function findByUid($uid)
+    {
+        return $this->findFiltered(array('uid' => $uid))->current();
     }
 
     /**
@@ -130,7 +144,8 @@ class UserMap extends Mapper
             $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
             $w = '';
             $w .= sprintf('a.uid LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.nameFirst LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.nameLast LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.username LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.phone LIKE %s OR ', $this->quote($kw));
