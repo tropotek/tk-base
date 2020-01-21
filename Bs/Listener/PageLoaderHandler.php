@@ -28,7 +28,7 @@ class PageLoaderHandler implements Subscriber
         $controller = \Tk\Event\Event::findControllerObject($event);
         if ($controller instanceof \Bs\Controller\Iface) {
             $page = $controller->getPage();
-            if (!$page) return;
+            if (!$page || !$page->getTemplatePath()) return;
             $template = $page->getTemplate();
 
             // Do not use for public pages

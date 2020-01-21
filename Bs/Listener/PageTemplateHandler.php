@@ -40,6 +40,7 @@ class PageTemplateHandler implements Subscriber
         /** @var \Bs\Controller\Iface $controller */
         $controller = \Tk\Event\Event::findControllerObject($event);
         $config = \Bs\Config::getInstance();
+        //if (!$controller->getPage()->getTemplatePath()) return;
 
         $template = $controller->getPage()->getTemplate();
 
