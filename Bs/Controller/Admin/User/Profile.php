@@ -68,8 +68,8 @@ class Profile extends \Bs\Controller\AdminEditIface
 
         // Render the form
         $template->appendTemplate('panel', $this->form->show());
-        if ($this->user->id)
-            $template->setAttr('panel', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
+        if ($this->user->getId())
+            $template->setAttr('panel', 'data-panel-title', $this->user->getName() . ' - [ID ' . $this->user->getId() . ']');
 
         return $template;
     }
