@@ -54,7 +54,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function doDefault(\Tk\Request $request)
     {
         $this->user = $this->getConfig()->createUser();
-        $this->user->roleId = \Bs\Db\Role::DEFAULT_TYPE_USER;
+        $this->user->setRoleId(\Bs\Db\Role::DEFAULT_TYPE_USER);
         if ($request->get('userId')) {
             $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
         }
@@ -64,8 +64,21 @@ class Edit extends \Bs\Controller\AdminEditIface
         $this->getForm()->execute($request);
     }
 
+    public function initForm(\Tk\Request $request)
+    {
+        if ($this->user->getId() == 1 || !$this->getConfig()->getUser()->isAdmin()) {
+            $this->getForm()->appendField(new \Tk\Form\Field\Html('roleId', $this->user->getRole()->getName()))
+                ->setAttr('disabled')->addCss('form-control disabled')->setAttr('disabled')
+                ->addCss('form-control disabled')->setTabGroup('Details');
+
+            $this->getForm()->appendField(new \Tk\Form\Field\Html('username'))->setAttr('disabled')
+                ->addCss('form-control disabled')->setTabGroup('Details');
+        }
+
+    }
+
     /**
-     *
+     * @throws \Exception
      */
     public function initActionPanel()
     {
@@ -88,8 +101,8 @@ class Edit extends \Bs\Controller\AdminEditIface
         // Render the form
         $template->appendTemplate('form', $this->form->show());
         
-        if ($this->user->id)
-            $template->setAttr('form', 'data-panel-title', $this->user->name . ' - [ID ' . $this->user->id . ']');
+        if ($this->user->getId())
+            $template->setAttr('form', 'data-panel-title', $this->user->getName() . ' - [ID ' . $this->user->getId() . ']');
         
         return $template;
     }
