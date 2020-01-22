@@ -10,7 +10,6 @@
 $config = \Bs\Config::getInstance();
 include_once(__DIR__ . '/session.php');
 
-
 /**************************************
  * Default app config values
  **************************************/
