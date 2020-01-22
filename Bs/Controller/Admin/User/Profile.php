@@ -55,6 +55,8 @@ class Profile extends \Bs\Controller\AdminEditIface
             $this->getForm()->getField('username')->setAttr('disabled')->addCss('form-control disabled');
         if ($this->getForm()->getField('uid'))
             $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled');
+
+        
         $this->getForm()->execute();
     }
 
