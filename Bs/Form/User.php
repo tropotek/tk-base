@@ -67,7 +67,6 @@ class User extends \Bs\FormIface
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->appendField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->appendField(new Event\Link('cancel', $this->getBackUrl()));
-
     }
 
     /**
@@ -129,7 +128,6 @@ class User extends \Bs\FormIface
         }
 
         $this->getUser()->save();
-
 
         \Tk\Alert::addSuccess('Record saved!');
         $event->setRedirect($this->getBackUrl());
