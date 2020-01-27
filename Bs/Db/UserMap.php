@@ -144,8 +144,8 @@ class UserMap extends Mapper
             $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
             $w = '';
             $w .= sprintf('a.uid LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.nameFirst LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.nameLast LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.name_first LIKE %s OR ', $this->quote($kw));
+            $w .= sprintf('a.name_last LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.username LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.phone LIKE %s OR ', $this->quote($kw));
