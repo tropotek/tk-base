@@ -15,7 +15,7 @@ abstract class Mapper extends \Tk\Db\Mapper
 {
 
     /***
-     * @var \Tk\Event\Dispatcher
+     * @var \Tk\EventDispatcher\EventDispatcher
      */
     protected $dispatcher = null;
 
@@ -113,7 +113,7 @@ abstract class Mapper extends \Tk\Db\Mapper
     }
 
     /**
-     * @return \Tk\Event\Dispatcher
+     * @return \Tk\EventDispatcher\EventDispatcher
      */
     public function getDispatcher()
     {
@@ -121,7 +121,7 @@ abstract class Mapper extends \Tk\Db\Mapper
     }
 
     /**
-     * @param \Tk\Event\Dispatcher $dispatcher
+     * @param \Tk\EventDispatcher\EventDispatcher $dispatcher
      * @return $this
      */
     public function setDispatcher($dispatcher)

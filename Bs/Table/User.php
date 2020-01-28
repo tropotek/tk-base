@@ -55,7 +55,7 @@ class User extends \Bs\TableIface
         $actionsCell = $this->getActionCell();
         $actionsCell->addButton(\Tk\Table\Cell\ActionButton::create('Masquerade', \Tk\Uri::create(),
             'fa fa-user-secret', 'tk-masquerade'))->setAttr('data-confirm', 'You are about to masquerade as the selected user?')
-            ->setOnShow(function ($cell, $obj, $button) {
+            ->addOnShow(function ($cell, $obj, $button) {
                 /* @var $obj \Bs\Db\User */
                 /* @var $button \Tk\Table\Cell\ActionButton */
                 $config = \Bs\Config::getInstance();
