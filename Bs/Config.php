@@ -298,7 +298,7 @@ class Config extends \Tk\Config
                 $less->setCacheEnabled(!$this->isRefreshCacheRequest());
             }
 
-            if (class_exists('Leafo\ScssPhp\Compiler')) {
+            if (class_exists('Dom\Modifier\Filter\Scss')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
                 $vars = array(
                     'siteUrl' => rtrim(\Tk\Uri::create($this->getSiteUrl())->getPath(), '/'),
