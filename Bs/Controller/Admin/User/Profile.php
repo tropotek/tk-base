@@ -52,10 +52,11 @@ class Profile extends \Bs\Controller\AdminEditIface
         if ($this->getForm()->getField('active'))
             $this->getForm()->removeField('active');
         if ($this->getForm()->getField('username'))
-            $this->getForm()->getField('username')->setAttr('disabled')->addCss('form-control disabled');
+            $this->getForm()->getField('username')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
         if ($this->getForm()->getField('uid'))
-            $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled');
-
+            $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
+        if ($this->getForm()->getField('email'))
+            $this->getForm()->getField('email')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
 
         $this->getForm()->execute();
     }
