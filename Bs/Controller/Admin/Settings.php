@@ -2,7 +2,6 @@
 namespace Bs\Controller\Admin;
 
 
-
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -38,7 +37,6 @@ class Settings extends \Bs\Controller\AdminEditIface
         $this->setForm(\Bs\Form\Settings::create()->setModel($this->getData()));
         $this->initForm($request);
         $this->getForm()->execute($request);
-
     }
 
     /**

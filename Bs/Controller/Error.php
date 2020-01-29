@@ -72,7 +72,7 @@ class Error extends Iface
         $template->setAttr('base-url', 'href', $this->getConfig()->getSiteUrl() . dirname($this->getConfig()->get('template.error')) . '/');
 
         $url = $this->getConfig()->getSiteUrl() . '/';
-        if ($this->getUser()) {
+        if ($this->getAuthUser()) {
             $url = $this->getConfig()->getUserHomeUrl()->getPath();
         }
         if ($this->getConfig()->getBackUrl()) {

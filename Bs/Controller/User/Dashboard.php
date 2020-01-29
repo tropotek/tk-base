@@ -28,7 +28,7 @@ class Dashboard extends \Bs\Controller\UserIface
     {
         $template = parent::show();
         
-        $template->insertText('name', $this->getUser()->name);
+        $template->insertText('name', $this->getAuthUser()->name);
         
         return $template;
     }

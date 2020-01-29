@@ -31,6 +31,14 @@ class Profile extends \Bs\Controller\AdminEditIface
     }
 
     /**
+     * @return \Bs\Db\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * @param \Tk\Request $request
      * @throws \Exception
      */

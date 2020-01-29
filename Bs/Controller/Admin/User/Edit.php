@@ -32,6 +32,14 @@ class Edit extends \Bs\Controller\AdminEditIface
     }
 
     /**
+     * @return \Bs\Db\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * @param \Tk\Request $request
      * @param string $targetRole
      * @throws \Exception
@@ -82,7 +90,7 @@ class Edit extends \Bs\Controller\AdminEditIface
      */
     public function initActionPanel()
     {
-        if ($this->user->getId() && $this->getConfig()->getMasqueradeHandler()->canMasqueradeAs($this->getUser(), $this->user)) {
+        if ($this->user->getId() && $this->getConfig()->getMasqueradeHandler()->canMasqueradeAs($this->getAuthUser(), $this->user)) {
             $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Masquerade',
                 \Bs\Uri::create()->reset()->set(\Bs\Listener\MasqueradeHandler::MSQ, $this->user->getHash()), 'fa fa-user-secret'))
                 ->setAttr('data-confirm', 'You are about to masquerade as the selected user?')->addCss('tk-masquerade');
