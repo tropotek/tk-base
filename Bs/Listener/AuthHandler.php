@@ -28,7 +28,7 @@ class AuthHandler implements Subscriber
         if ($auth->getIdentity()) {         // Check if user is logged in
             $user = $config->getUserMapper()->findByAuthIdentity($auth->getIdentity());
             if ($user && $user->isActive()) {  // We set the user here for each page load
-                $config->setUser($user);
+                $config->setAuthUser($user);
             }
         }
     }
@@ -44,13 +44,13 @@ class AuthHandler implements Subscriber
 
         $urlRole = \Bs\Uri::create()->getRoleType($config->getAvailableUserRoleTypes());
         if ($urlRole && $urlRole != 'public') {
-            if (!$config->getUser()) {  // if no user and the url has permissions set
+            if (!$config->getAuthUser()) {  // if no user and the url has permissions set
                 $this->getLoginUrl()->redirect();
             }
             // Finally check if the user has access to the url
-            if (!$config->getUser()->hasPermission('type.'.$urlRole)) {
+            if (!$config->getAuthUser()->hasPermission('type.'.$urlRole)) {
                 \Tk\Alert::addWarning('1000: You do not have access to the requested page.');
-                $config->getUserHomeUrl($config->getUser())->redirect();
+                $config->getUserHomeUrl($config->getAuthUser())->redirect();
             }
         }
     }
@@ -97,7 +97,7 @@ class AuthHandler implements Subscriber
         /* @var \Bs\Db\User $user */
         $user = $config->getUserMapper()->findByAuthIdentity($result->getIdentity());
         if ($user && $user->isActive()) {
-            $config->setUser($user);
+            $config->setAuthUser($user);
         }
 
         if(!$event->getRedirect()) {
@@ -113,7 +113,7 @@ class AuthHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         if ($config->getMasqueradeHandler()->isMasquerading()) return;
-        $user = $config->getUser();
+        $user = $config->getAuthUser();
         if ($user) {
             $user->lastLogin = \Tk\Date::create();
             $user->save();

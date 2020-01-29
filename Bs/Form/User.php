@@ -60,7 +60,7 @@ class User extends \Bs\FormIface
         if (!$this->getUser()->getId())
             $f->setRequired(true);
 
-        if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId()) {
+        if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId()) {
             $this->remove('active');
         }
 
@@ -104,10 +104,10 @@ class User extends \Bs\FormIface
         }
 
         // Just a small check to ensure the user down not change their own role
-        if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId() && $this->getUser()->getRoleType() != $this->getConfig()->getUser()->getRoleType()) {
+        if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && $this->getUser()->getRoleType() != $this->getConfig()->getAuthUser()->getRoleType()) {
             $form->addError('You cannot change your own role information.');
         }
-        if ($this->getUser()->getId() == $this->getConfig()->getUser()->getId() && !$this->getUser()->isActive()) {
+        if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && !$this->getUser()->isActive()) {
             $form->addError('You cannot change your own active status.');
         }
 

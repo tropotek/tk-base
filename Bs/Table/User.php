@@ -59,7 +59,7 @@ class User extends \Bs\TableIface
                 /* @var $obj \Bs\Db\User */
                 /* @var $button \Tk\Table\Cell\ActionButton */
                 $config = \Bs\Config::getInstance();
-                if ($config->getMasqueradeHandler()->canMasqueradeAs($config->getUser(), $obj)) {
+                if ($config->getMasqueradeHandler()->canMasqueradeAs($config->getAuthUser(), $obj)) {
                     $button->setUrl(\Tk\Uri::create()->set(\Bs\Listener\MasqueradeHandler::MSQ, $obj->getHash()));
                 } else {
                     $button->setAttr('disabled', 'disabled')->addCss('disabled');

@@ -16,7 +16,7 @@ class PageTemplateHandler implements Subscriber
     protected function substitution($str)
     {
         $data = array();
-        $user = $this->getConfig()->getUser();
+        $user = $this->getConfig()->getAuthUser();
         if ($user) {
             $data['user.id'] = $user->getId();
             $data['user.name'] = $user->getName();
@@ -74,8 +74,8 @@ class PageTemplateHandler implements Subscriber
         $dataUrl = $this->getConfig()->getDataUrl();
         $templateUrl = $this->getConfig()->getTemplateUrl();
         $roleType = '';
-        if ($this->getConfig()->getUser()) {
-            $roleType = $this->getConfig()->getUser()->getRoleType();
+        if ($this->getConfig()->getAuthUser()) {
+            $roleType = $this->getConfig()->getAuthUser()->getRoleType();
         }
         $fw = $this->getConfig()->get('css.framework');
         $bs4 = $this->isBootstrap4() ? 'true' : 'false';
@@ -130,12 +130,12 @@ JS;
             $template->setVisible($config->get('template.var.page.alerts'));
         }
 
-        if ($this->getConfig()->getUser()) {
-            $template->insertText($config->get('template.var.page.user-name'), $this->getConfig()->getUser()->name);
-            $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getUser()->username);
-            $i = strpos($this->getConfig()->getUser()->username, '@');
+        if ($this->getConfig()->getAuthUser()) {
+            $template->insertText($config->get('template.var.page.user-name'), $this->getConfig()->getAuthUser()->name);
+            $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getAuthUser()->username);
+            $i = strpos($this->getConfig()->getAuthUser()->username, '@');
             if ($i > 0) {
-                $template->insertText($config->get('template.var.page.username'), substr($this->getConfig()->getUser()->username, 0, $i));
+                $template->insertText($config->get('template.var.page.username'), substr($this->getConfig()->getAuthUser()->username, 0, $i));
             }
 
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());

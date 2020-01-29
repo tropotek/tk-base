@@ -27,7 +27,7 @@ class Maintenance extends \Bs\Controller\Iface
     public function doDefault(Request $request)
     {
         if (!$this->getConfig()->get('site.maintenance.enabled')) {
-            if ($this->getConfig()->getUser()) {
+            if ($this->getConfig()->getAuthUser()) {
                 $this->getConfig()->getUserHomeUrl()->redirect();
             } else {
                 \Tk\Uri::create($this->getConfig()->get('url.auth.home'))->redirect();

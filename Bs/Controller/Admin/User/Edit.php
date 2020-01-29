@@ -66,7 +66,7 @@ class Edit extends \Bs\Controller\AdminEditIface
 
     public function initForm(\Tk\Request $request)
     {
-        if ($this->user->getId() == 1 || !$this->getConfig()->getUser()->isAdmin()) {
+        if ($this->user->getId() == 1 || !$this->getConfig()->getAuthUser()->isAdmin()) {
             $this->getForm()->appendField(new \Tk\Form\Field\Html('roleId', $this->user->getRole()->getName()))
                 ->setAttr('disabled')->addCss('form-control disabled')->setAttr('disabled')
                 ->addCss('form-control disabled')->setTabGroup('Details');

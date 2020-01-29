@@ -24,8 +24,8 @@ class MaintenanceHandler implements Subscriber
         /** @var \Tk\Controller\Iface $controller */
         $controller = \Tk\Event\Event::findControllerObject($event);
         if (\Tk\Uri::create()->basename() != 'login.html' && !$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('site.maintenance.enabled')) {
-            if ($this->getConfig()->getUser()) {
-                if ($this->getConfig()->getUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
+            if ($this->getConfig()->getAuthUser()) {
+                if ($this->getConfig()->getAuthUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
                 if ($this->getConfig()->getMasqueradeHandler()->getMasqueradingUser() && $this->getConfig()->getMasqueradeHandler()->getMasqueradingUser()->hasPermission(\Bs\Db\Permission::TYPE_ADMIN)) return;
             }
             $maintController = new \Bs\Controller\Maintenance();

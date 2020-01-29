@@ -494,7 +494,7 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return Db\Role
+     * @return Db\RoleIface
      */
     public function createRole()
     {
@@ -513,7 +513,7 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @param Db\User $user
+     * @param Db\UserIface $user
      * @return int|string
      */
     public function getUserIdentity($user)
@@ -522,7 +522,7 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return Db\User
+     * @return Db\UserIface
      */
     public function createUser()
     {
@@ -533,7 +533,7 @@ class Config extends \Tk\Config
 
     /**
      * @param int $id
-     * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface
+     * @return null|\Tk\Db\Map\Model|\Tk\Db\ModelInterface|Db\UserIface
      * @throws \Exception
      * @deprecated use \Bs\Config::getUserMapper()
      */
@@ -543,18 +543,18 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return Db\User
+     * @return Db\UserIface
      */
-    public function getUser()
+    public function getAuthUser()
     {
         return $this->get('user');
     }
 
     /**
-     * @param Db\User $user
+     * @param Db\UserIface $user
      * @return $this
      */
-    public function setUser($user)
+    public function setAuthUser($user)
     {
         $this->set('user', $user);
         return $this;
@@ -568,7 +568,7 @@ class Config extends \Tk\Config
      */
     public function getUserHomeUrl($user = null)
     {
-        if (!$user) $user = $this->getUser();
+        if (!$user) $user = $this->getAuthUser();
         return \Bs\Uri::createHomeUrl('/index.html', $user);
     }
 

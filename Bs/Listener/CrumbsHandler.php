@@ -18,7 +18,7 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
     public function onSystemInit($event)
     {
         $config = \Bs\Config::getInstance();
-        $user = $config->getUser();
+        $user = $config->getAuthUser();
         $homeTitle = '';
         $homeUrl = '';
         if ($user) {
