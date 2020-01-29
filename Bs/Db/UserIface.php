@@ -9,6 +9,10 @@ namespace Bs\Db;
 interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
 {
 
+    /**
+     * @return \Tk\Db\Data
+     */
+    public function getData();
 
     /**
      * @return int
