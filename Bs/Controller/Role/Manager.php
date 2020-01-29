@@ -35,8 +35,8 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
         $filter = array();
 //        $filter['institutionId'] = $this->getConfig()->getInstitutionId();
-//        if ($this->getUser()->isStudent() || $this->getUser()->isStaff())
-//            $filter['userId'] = $this->getUser()->getId();
+//        if ($this->getAuthUser()->isStudent() || $this->getAuthUser()->isStaff())
+//            $filter['userId'] = $this->getAuthUser()->getId();
 
         $this->getTable()->setList($this->getTable()->findList($filter));
 

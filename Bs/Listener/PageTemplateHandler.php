@@ -140,7 +140,7 @@ JS;
 
             $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
             $template->setVisible($config->get('template.var.page.logout'));
-//            $template->addCss($template->getBodyElement(), $this->getConfig()->getUser()->getRoleType());
+//            $template->addCss($template->getBodyElement(), $this->getConfig()->getAuthUser()->getRoleType());
         } else {
             $template->setVisible($config->get('template.var.page.login'));
         }
