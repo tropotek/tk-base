@@ -44,7 +44,7 @@ class Profile extends \Bs\Controller\AdminEditIface
      */
     public function init($request)
     {
-        $this->user = $this->getConfig()->getUser();
+        $this->user = $this->getConfig()->getAuthUser();
     }
 
     /**
