@@ -290,7 +290,7 @@ class {classname} extends \Tk\Db\Map\Model implements \Tk\ValidInterface
     {
 {construct}
     }
-    {accessors}    
+    {accessors}
     /**
      * @return array
      */
@@ -334,7 +334,8 @@ STR;
         );
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create($col);
-            if ($mp->getName() == 'del') continue;
+            $exclude = array('del', 'orderBy', 'modified', 'created');
+            if (in_array($mp->getName(), $exclude)) continue;
             $data['column-maps'] .= $mp->getColumnMap() . "\n";
             $data['form-maps'] .= $mp->getFormMap() . "\n";
             if ($mp->getType() == ModelProperty::TYPE_DATE || $mp->get('Type') == 'text') continue;
@@ -430,9 +431,7 @@ class {classname}Map extends Mapper
             \$w = \$this->makeMultiQuery(\$filter['id'], 'a.id');
             if (\$w) \$filter->appendWhere('(%s) AND ', \$w);
         }
-        
 {filter-queries}
-
         if (!empty(\$filter['exclude'])) {
             \$w = \$this->makeMultiQuery(\$filter['exclude'], 'a.id', 'AND', '!=');
             if (\$w) \$filter->appendWhere('(%s) AND ', \$w);
@@ -497,7 +496,7 @@ STR;
     protected function createTableManagerTemplate()
     {
         $classTpl = <<<STR
-<?php 
+<?php
 namespace {controller-namespace}\{classname};
 
 use Bs\Controller\AdminManagerIface;
@@ -570,7 +569,7 @@ class Manager extends AdminManagerIface
 HTML;
         return \Dom\Loader::load(\$xhtml);
     }
-    
+
 }
 STR;
         $tpl = \Tk\CurlyTemplate::create($classTpl);
@@ -599,7 +598,7 @@ use Tk\Table\Cell;
  *   \$tableTemplate = \$table->show();
  *   \$template->appendTemplate(\$tableTemplate);
  * </code>
- * 
+ *
  * @author {author-name}
  * @created {date}
  * @link {author-www}
@@ -607,14 +606,14 @@ use Tk\Table\Cell;
  */
 class {classname} extends \Bs\TableIface
 {
-    
+
     /**
      * @return \$this
      * @throws \Exception
      */
     public function init()
     {
-    
+
 {cell-list}
         // Filters
         \$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
@@ -627,7 +626,7 @@ class {classname} extends \Bs\TableIface
 
         // load table
         //\$this->setList(\$this->findList());
-        
+
         return \$this;
     }
 
@@ -802,7 +801,7 @@ use Tk\Form;
  *   \$formTemplate = \$form->getRenderer()->show();
  *   \$template->appendTemplate('form', \$formTemplate);
  * </code>
- * 
+ *
  * @author {author-name}
  * @created {date}
  * @link {author-www}
@@ -816,7 +815,7 @@ class {classname} extends \Bs\FormIface
      */
     public function init()
     {
-        
+
 {field-list}
         \$this->appendField(new Event\Submit('update', array(\$this, 'doSubmit')));
         \$this->appendField(new Event\Submit('save', array(\$this, 'doSubmit')));
@@ -850,7 +849,7 @@ class {classname} extends \Bs\FormIface
         if (\$form->hasErrors()) {
             return;
         }
-        
+
         \$isNew = (bool)\$this->get{classname}()->getId();
         \$this->get{classname}()->save();
 
@@ -879,7 +878,7 @@ class {classname} extends \Bs\FormIface
     {
         return \$this->setModel(\${property-name});
     }
-    
+
 }
 PHP;
         $tpl = \Tk\CurlyTemplate::create($classTpl);
@@ -907,7 +906,7 @@ use Tk\Form;
  *   \$formTemplate = \$form->getRenderer()->show();
  *   \$template->appendTemplate('form', \$formTemplate);
  * </code>
- * 
+ *
  * @author {author-name}
  * @created {date}
  * @link {author-www}
@@ -922,7 +921,7 @@ class {classname} extends \Bs\ModelForm
      */
     public function init()
     {
-        
+
 {field-list}
         \$this->getForm()->appendField(new Event\Submit('update', array(\$this, 'doSubmit')));
         \$this->getForm()->appendField(new Event\Submit('save', array(\$this, 'doSubmit')));
@@ -956,7 +955,7 @@ class {classname} extends \Bs\ModelForm
         if (\$form->hasErrors()) {
             return;
         }
-        
+
         \$isNew = !(bool)\$this->get{classname}()->getId();
         \$this->get{classname}()->save();
 
@@ -985,7 +984,7 @@ class {classname} extends \Bs\ModelForm
     {
         return \$this->setModel(\${property-name});
     }
-    
+
 }
 STR;
         $tpl = \Tk\CurlyTemplate::create($classTpl);
