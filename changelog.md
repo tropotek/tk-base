@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.0.82 [2020-02-04]:
+-------------------------------
+
+
 Ver 3.0.80 [2020-01-30]:
 -------------------------------
   - Merge branch 'master' of ssh://github.com/tropotek/tk-base
