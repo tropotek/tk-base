@@ -60,8 +60,10 @@ trait UserTrait
      */
     public function setUser($user)
     {
-        if ($user instanceof UserIface) $user = $user->getId();
-        $this->userId = (int)$user;
+        if ($user instanceof UserIface) {
+            $this->user = $user;
+            $this->userId = $user->getId();
+        }
         return $this;
     }
 
