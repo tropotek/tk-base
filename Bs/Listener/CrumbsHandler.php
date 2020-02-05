@@ -13,7 +13,7 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
     /**
      * Init the crumbs for this app
      *
-     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      */
     public function onSystemInit($event)
     {

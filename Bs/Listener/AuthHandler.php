@@ -15,7 +15,7 @@ class AuthHandler implements Subscriber
 {
 
     /**
-     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      * @throws \Exception
      */
     public function onRequest($event)
@@ -35,7 +35,7 @@ class AuthHandler implements Subscriber
 
 
     /**
-     * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
      * @throws \Exception
      */
     public function validatePageAccess($event)
