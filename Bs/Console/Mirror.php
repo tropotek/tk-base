@@ -46,6 +46,7 @@ class Mirror extends Iface
         $thisDb = $config->getDb();
         $liveDb = null;
         if (is_array($config->get('live.db'))) {
+            vd($config->get('live.db'));
             $liveDb = \Tk\Db\Pdo::create($config->get('live.db'));
         }
         if (!$liveDb) {
