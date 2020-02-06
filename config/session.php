@@ -17,18 +17,19 @@ $config['session.name'] = 'sn_' . substr(md5(\Tk\Uri::create($config->getSiteUrl
 $config['session.encryption'] = false;
 
 /*
- * session lifetime. Number of seconds that each session will last.
- * A value of 0 will keep the session active until the browser is closed (with a limit of 24h).
- * gc_maxlifetime
- */
-$config['session.expiration'] = 60 * 60 * 24 * 1;
-
-/*
  * Number of page loads before the session id is regenerated.
  * A value of 0 will disable automatic session id regeneration.
  * NOTE: Still not stable for DB \Tk\Sessions
  */
 $config['session.regenerate'] = 0;
+
+/*
+ * session lifetime. Number of seconds that each session will last.
+ * A value of 0 will keep the session active until the browser is closed (with a limit of 24h).
+ * gc_maxlifetime
+ */
+$config['session.gc_maxlifetime'] = 60 * 60 * 24 * 1;
+$config['session.expiration'] = 60 * 60 * 24 * 1;       // @deprecated
 
 /*
  * session.gc_probability in conjunction with session.gc_divisor is used to manage
