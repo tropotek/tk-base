@@ -73,10 +73,10 @@ class Mirror extends Iface
         // Copy the data from the live DB
         if (!$input->getOption('no-sql')) {
             if (!is_file($liveSqlFile) || $input->getOption('no-cache')) {
-                $this->writeComment('Download live.DB: ' . basename($liveSqlFile));
+                $this->writeComment('Download live.DB: ' . $liveSqlFile);
                 $liveBackup->save($liveSqlFile, array('exclude' => $exclude));
             } else {
-                $this->writeComment('Using existing live.DB: ' . basename($liveSqlFile));
+                $this->writeComment('Using existing live.DB: ' . $liveSqlFile);
             }
 
             // Prevent accidental writing to live DB
