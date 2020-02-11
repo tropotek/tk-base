@@ -50,8 +50,8 @@
         '      </div>\n' +
         '      <div class="modal-body"></div>\n' +
         '      <div class="modal-footer">\n' +
-        '        <button type="button" class="btn btn-secondary btn-no" data-dismiss="modal">Close</button>\n' +
-        '        <button type="button" class="btn btn-primary btn-yes">Submit</button>\n' +
+        '        <button type="button" class="btn btn-danger btn-no" data-dismiss="modal">Close</button>\n' +
+        '        <button type="button" class="btn btn-success btn-yes">Submit</button>\n' +
         '      </div>\n' +
         '    </div>\n' +
         '  </div>\n' +
@@ -67,13 +67,11 @@
     plugin.init = function() {
       plugin.settings = $.extend({}, defaults, $element.data(), options);
 
-      console.log($element);
-
       $element.data('confirmed', false);
       $element.on('click', function (e) {
         if ($element.data('confirmed')) {
           // This is here because, returning just true does not make the link work for some reason.
-          // I suspect this is du to nested click calls???? For now this will do (it works)
+          // I suspect this is due to nested click calls???? For now this will do (it works)
           document.location = $element.attr('href');
           return true;
         }
