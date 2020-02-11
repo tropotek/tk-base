@@ -498,14 +498,21 @@ var project_core = function () {
   };
 
   /**
-   * Now we can have a button confirmatino just by adding an attribute
+   * Now we can have a button confirmation just by adding an attribute
    *  Eg:
    *    <a href="#" class="btn" data-confirm="Are you sure you want to do this?">Delete</a>
    */
   var initDataConfirm = function () {
-    $('body').on('click', '[data-confirm]', function () {
-      return confirm($(this).data('confirm'));
-    });
+    if ($.fn.bsConfirm === undefined) {
+      $('body').on('click', '[data-confirm]', function () {
+        return confirm($(this).data('confirm'));
+      });
+    } else {
+      $('[data-confirm]').bsConfirm({});
+      // $('body').on('click', '[data-confirm]', function () {
+      //   $(this).bsConfirm({});
+      // });
+    }
   };
 
 
