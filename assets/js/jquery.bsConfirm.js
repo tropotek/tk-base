@@ -37,7 +37,7 @@
     // plugin settings
     var defaults = {
       selector: '[data-confirm]',
-      btnText: ['No', 'Yes'],
+      btnText: ['Cancel', 'OK'],
       // BS4+ modal template
       modalTemplate: '<div class="modal fade confirm-modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">\n' +
         '  <div class="modal-dialog" role="document">\n' +
@@ -50,8 +50,8 @@
         '      </div>\n' +
         '      <div class="modal-body"></div>\n' +
         '      <div class="modal-footer">\n' +
-        '        <button type="button" class="btn btn-danger btn-no" data-dismiss="modal">Close</button>\n' +
-        '        <button type="button" class="btn btn-success btn-yes">Submit</button>\n' +
+        '        <button type="button" class="btn btn-danger btn-no" data-dismiss="modal">Cancel</button>\n' +
+        '        <button type="button" class="btn btn-success btn-yes">OK</button>\n' +
         '      </div>\n' +
         '    </div>\n' +
         '  </div>\n' +
