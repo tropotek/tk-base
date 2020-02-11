@@ -509,9 +509,6 @@ var project_core = function () {
       });
     } else {
       $('[data-confirm]').bsConfirm({});
-      // $('body').on('click', '[data-confirm]', function () {
-      //   $(this).bsConfirm({});
-      // });
     }
   };
 
