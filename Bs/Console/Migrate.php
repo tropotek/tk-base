@@ -79,7 +79,7 @@ class Migrate extends Iface
         if (!count($tables)) {
             $this->write('As this is a new DB install login into the site using User: `admin` and Password: `password` and configure your site as needed.');
         }
-        
+
     }
 
 }
