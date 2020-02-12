@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Table;
 
+use Bs\Db\UserIface;
 use Tk\Form\Field;
 use Tk\Table\Cell;
 
@@ -69,11 +70,14 @@ class User extends \Bs\TableIface
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell($actionsCell);
 
-        $this->appendCell(new \Tk\Table\Cell\Text('name'))->addCss('key')->setUrl($this->getEditUrl());
+        $this->appendCell(new \Tk\Table\Cell\Text('nameFirst'))->addOnPropertyValue(function ($cell, $obj, $value) {
+            /** @var UserIface $obj */
+            return $obj->getName();
+        })->addCss('key')->setUrl($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('username'));
         $this->appendCell(new \Tk\Table\Cell\Email('email'));
         $this->appendCell(new \Tk\Table\Cell\Text('phone'));
-        $this->appendCell(new \Tk\Table\Cell\Text('roleId'))->setOnPropertyValue(function ($cell, $obj, $value) {
+        $this->appendCell(new \Tk\Table\Cell\Text('roleId'))->addOnPropertyValue(function ($cell, $obj, $value) {
             /** @var \Bs\Db\User $obj */
             if ($obj->getRole())
                 $value = $obj->getRole()->getName();
