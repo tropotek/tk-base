@@ -40,6 +40,28 @@ class Migrate extends Iface
         $db = Pdo::getInstance('db', $this->getConfig()->getGroup('db', true));
         $this->getConfig()->setDb($db);
 
+        $drop = false;
+        $tables = $db->getTableList();
+
+        if (count($tables))
+            $drop = $output-> askConfirmation('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: ', false);
+        if ($drop) {
+            $exclude = array();
+            if ($this->getConfig()->isDebug()) {
+                $exclude = array(\Tk\Session\Adapter\Database::$DB_TABLE);
+            }
+            $db->dropAllTables(true, $exclude);
+        }
+
+
+        // Update Database tables
+        $tables = $db->getTableList();
+        if (count($tables)) {
+            $this->write('Database Upgrade...');
+        } else {
+            $this->write('Database Install...');
+        }
+
         // Migrate new SQL files
         $migrate = new SqlMigrate($db);
         $migrate->setTempPath($this->getConfig()->getTempPath());
@@ -48,8 +70,9 @@ class Migrate extends Iface
             $migrateList = $this->getConfig()->get('sql.migrate.list');
         }
 
-        $migrate->migrateList($migrateList, function (string $str, SqlMigrate $m) use ($output) {
-            $output->writeln($str);
+        $mm = $this;
+        $migrate->migrateList($migrateList, function (string $str, SqlMigrate $m) use ($output, $mm) {
+            $mm->write($str);
         });
 
 
