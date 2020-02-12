@@ -28,6 +28,7 @@
  *   });
  * </code>
  */
+
 ;(function($) {
   var bsConfirm = function(element, options) {
     var plugin = this;

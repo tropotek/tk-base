@@ -505,7 +505,7 @@ var project_core = function () {
   var initDataConfirm = function () {
     if ($.fn.bsConfirm === undefined) {
       $('body').on('click', '[data-confirm]', function () {
-        return confirm($(this).data('confirm'));
+        return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
       });
     } else {
       $('[data-confirm]').bsConfirm({});
