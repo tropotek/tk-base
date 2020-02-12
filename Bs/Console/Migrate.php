@@ -5,6 +5,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Tk\Db\Pdo;
+use Tk\Util\SqlMigrate;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -35,7 +37,20 @@ class Migrate extends Iface
     {
         parent::execute($input, $output);
 
+        $db = Pdo::getInstance('db', $this->getConfig()->getGroup('db', true));
+        $this->getConfig()->setDb($db);
 
+        // Migrate new SQL files
+        $migrate = new SqlMigrate($db);
+        $migrate->setTempPath($this->getConfig()->getTempPath());
+        $migrateList = array('App Sql' => $this->getConfig()->getSrcPath() . '/config');
+        if ($this->getConfig()->get('sql.migrate.list')) {
+            $migrateList = $this->getConfig()->get('sql.migrate.list');
+        }
+
+        $migrate->migrateList($migrateList, function (string $str, SqlMigrate $m) use ($output) {
+            $output->writeln($str);
+        });
 
 
 
