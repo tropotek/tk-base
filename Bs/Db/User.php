@@ -265,7 +265,9 @@ class User extends Model implements UserIface
      */
     public function getName(): string
     {
-        return $this->getNameFirst() . ' ' . $this->getNameLast();
+        $name = trim($this->getNameFirst() . ' ' . $this->getNameLast());
+        if (!$name) $name = $this->getUsername();
+        return $name;
     }
 
     /**
