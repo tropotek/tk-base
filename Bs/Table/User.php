@@ -70,7 +70,7 @@ class User extends \Bs\TableIface
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell($actionsCell);
 
-        $this->appendCell(new \Tk\Table\Cell\Text('nameFirst'))->addOnPropertyValue(function ($cell, $obj, $value) {
+        $this->appendCell(new \Tk\Table\Cell\Text('nameFirst'))->setLabel('Name')->addOnPropertyValue(function ($cell, $obj, $value) {
             /** @var UserIface $obj */
             return $obj->getName();
         })->addCss('key')->setUrl($this->getEditUrl());
