@@ -21,6 +21,7 @@ class Mirror extends Iface
     protected function configure()
     {
         $this->setName('mirror')
+            ->setAliases(array('mir'))
             ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
             ->addOption('no-sql', 'S', InputOption::VALUE_NONE, 'Do not execute the sql component of the mirror')
             ->addOption('copy-data', 'd', InputOption::VALUE_NONE, 'Use scp to copy the data folder from the live site.')

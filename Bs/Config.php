@@ -659,6 +659,7 @@ class Config extends \Tk\Config
             $app->add(new \Bs\Console\Maintenance());
             $app->add(new \Bs\Console\DbBackup());
             $app->add(new \Bs\Console\UserPass());
+            $app->add(new \Bs\Console\Migrate());
             if ($this->isDebug()) {
                 $app->add(new \Bs\Console\MakeModel());
                 $app->add(new \Bs\Console\MakeTable());
