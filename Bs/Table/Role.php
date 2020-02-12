@@ -43,7 +43,7 @@ class Role extends TableIface
         $this->appendFilter(new Input('keywords'))->setLabel('')->setAttr('placeholder', 'Search');
 
         // Actions
-        $this->appendAction(Delete::create()->setOnDelete(function (Delete $action, $obj) {
+        $this->appendAction(Delete::create()->addOnDelete(function (Delete $action, $obj) {
             /** @var \Bs\Db\Role $obj */
             if ($obj->isStatic()) {
                 Alert::addWarning('Cannot delete system static roles.');

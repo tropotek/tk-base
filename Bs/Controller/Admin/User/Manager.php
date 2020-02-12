@@ -65,7 +65,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function show()
     {
-        $this->getActionPanel()->add(\Tk\Ui\Button::create('Add User', \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'), 'fa fa-user'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add User', \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'), 'fa fa-user'));
         $template = parent::show();
 
         $template->appendTemplate('table', $this->table->show());

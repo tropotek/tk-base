@@ -64,7 +64,7 @@ class PluginManager extends \Bs\Controller\AdminIface
         $this->table->setRenderer($this->getConfig()->createTableRenderer($this->table));
 
         $this->table->appendCell(new \Tk\Table\Cell\Text('icon'))->setLabel('')
-            ->setOnCellHtml(function ($cell, $obj, $html) {
+            ->addOnCellHtml(function ($cell, $obj, $html) {
                 // ToDO
                 $pluginName = \Bs\Config::getInstance()->getPluginFactory()->cleanPluginName($obj->name);
                 if (is_file(\Tk\Config::getInstance()->getPluginPath().'/'.$pluginName.'/icon.png')) {

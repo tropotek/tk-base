@@ -140,7 +140,7 @@ class Login extends Iface
 
         if ($this->getConfig()->get('site.client.registration')) {
             $template->setVisible('register');
-            $this->getPage()->getTemplate()->show('register');
+            $this->getPage()->getTemplate()->setVisible('register');
         }
 
         $js = <<<JS
