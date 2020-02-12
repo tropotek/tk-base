@@ -44,7 +44,7 @@ class Migrate extends Iface
         $tables = $db->getTableList();
 
         if (count($tables))
-            $drop = $output-> askConfirmation('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: ', false);
+            $drop = $this->askConfirmation('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: ', false);
         if ($drop) {
             $exclude = array();
             if ($this->getConfig()->isDebug()) {
@@ -75,8 +75,11 @@ class Migrate extends Iface
             $mm->write($str);
         });
 
-
-
+        $this->write('Database Migration Complete');
+        if (!count($tables)) {
+            $this->write('As this is a new DB install login into the site using User: `admin` and Password: `password` and configure your site as needed.');
+        }
+        
     }
 
 }
