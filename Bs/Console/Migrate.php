@@ -22,7 +22,7 @@ class Migrate extends Iface
     protected function configure()
     {
         $this->setName('migrate')
-            ->setAliases(array('mig'))
+            ->setAliases(array('mgt'))
             ->setDescription('Migrate the DB file for this project and its dependencies');
         parent::configure();
     }
