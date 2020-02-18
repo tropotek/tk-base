@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Controller\Admin\User;
 
+use Bs\Db\User;
 use Dom\Template;
 
 /**
@@ -35,7 +36,6 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function doDefaultRole(\Tk\Request $request, $targetRole)
     {
         $this->targetRole = $targetRole;
-
         $this->doDefault($request);
     }
 
@@ -46,10 +46,10 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function doDefault(\Tk\Request $request)
     {
         switch($this->targetRole) {
-            case \Bs\Db\Role::TYPE_ADMIN:
+            case User::TYPE_ADMIN:
                 $this->setPageTitle('Admin Users');
                 break;
-            case \Bs\Db\Role::TYPE_USER:
+            case User::TYPE_USER:
                 $this->setPageTitle('User Manager');
                 break;
         }
@@ -65,7 +65,8 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function show()
     {
-        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add User', \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'), 'fa fa-user'));
+        $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add User',
+            \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'), 'fa fa-user'));
         $template = parent::show();
 
         $template->appendTemplate('table', $this->table->show());

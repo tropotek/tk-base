@@ -10,9 +10,9 @@ use Tk\Db\ModelInterface;
  * @link http://www.tropotek.com/
  * @license Copyright 2019 Michael Mifsud
  */
-trait ForegnModelTrait
+trait ForeignModelTrait
 {
-    use ForegnKeyTrait;
+    use ForeignKeyTrait;
 
     /**
      * @var ModelInterface
@@ -30,7 +30,7 @@ trait ForegnModelTrait
 
     /**
      * @param int $fid
-     * @return ForegnKeyTrait
+     * @return ForeignKeyTrait
      */
     public function setFid($fid)
     {
@@ -40,14 +40,10 @@ trait ForegnModelTrait
 
 
     /**
-     *
-     * Note: This is use as an alias incases where set{Object}()
-     *   is already used in the main object for another reason
-     *
      * @param Model|ModelInterface $model
-     * @return ForegnKeyTrait
+     * @return ForeignKeyTrait
      */
-    public function setModel($model)
+    public function setForeignModel($model)
     {
         $this->setFkey(get_class($model));
         $this->setFid($model->getVolatileId());
@@ -57,42 +53,15 @@ trait ForegnModelTrait
 
 
     /**
-     *
-     * Note: This is use as an alias incases where get{Object}()
-     *   is already used in the main object for another reason
-     *
      * @return null|Model|ModelInterface
      * @throws \Exception
      */
     public function getModel()
     {
         if (!$this->_model && class_exists($this->getFkey().'Map')) {
-            $this->_model = $this->getModelMapper()->find($this->getFid());
+            $this->_model = $this->getForeignModelMapper()->find($this->getFid());
         }
         return $this->_model;
-    }
-
-
-    /**
-     * @param Model|ModelInterface $model
-     * @return ForegnKeyTrait
-     * @deprecated Use setModel()
-     */
-    public function setModelObj($model)
-    {
-        return $this->setModel($model);
-    }
-
-
-    /**
-     *
-     * @return null|Model|ModelInterface
-     * @throws \Exception
-     * @deprecated Use getModel()
-     */
-    public function getModelObj()
-    {
-        return $this->getModel();
     }
 
 

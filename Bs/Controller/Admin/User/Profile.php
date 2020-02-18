@@ -1,11 +1,9 @@
 <?php
 namespace Bs\Controller\Admin\User;
 
-use Tk\Request;
+use Bs\Db\User;
 use Dom\Template;
-use Tk\Form;
-use Tk\Form\Field;
-use Tk\Form\Event;
+use Tk\Request;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -16,7 +14,7 @@ class Profile extends \Bs\Controller\AdminEditIface
 {
 
     /**
-     * @var \Bs\Db\User|\Bs\Db\UserIface
+     * @var User|\Bs\Db\UserIface
      */
     protected $user = null;
 
@@ -31,7 +29,7 @@ class Profile extends \Bs\Controller\AdminEditIface
     }
 
     /**
-     * @return \Bs\Db\User
+     * @return User
      */
     public function getUser()
     {
@@ -39,7 +37,7 @@ class Profile extends \Bs\Controller\AdminEditIface
     }
 
     /**
-     * @param \Tk\Request $request
+     * @param Request $request
      * @throws \Exception
      */
     public function init($request)
@@ -48,10 +46,10 @@ class Profile extends \Bs\Controller\AdminEditIface
     }
 
     /**
-     * @param \Tk\Request $request
+     * @param Request $request
      * @throws \Exception
      */
-    public function doDefault(\Tk\Request $request)
+    public function doDefault(Request $request)
     {
         $this->init($request);
 
@@ -70,7 +68,7 @@ class Profile extends \Bs\Controller\AdminEditIface
     }
 
     /**
-     * @return \Dom\Template
+     * @return Template
      * @throws \Exception
      */
     public function show()

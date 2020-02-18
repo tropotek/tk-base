@@ -48,7 +48,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     {
         $this->targetRole = $targetRole;
         switch($targetRole) {
-            case \Bs\Db\Role::TYPE_ADMIN:
+            case \Bs\Db\User::TYPE_ADMIN:
                 $this->setPageTitle('Admin Edit');
                 break;
         }
@@ -62,7 +62,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function doDefault(\Tk\Request $request)
     {
         $this->user = $this->getConfig()->createUser();
-        $this->user->setRoleId(\Bs\Db\Role::DEFAULT_TYPE_USER);
+        $this->user->setType($this->targetRole);
         if ($request->get('userId')) {
             $this->user = $this->getConfig()->getUserMapper()->find($request->get('userId'));
         }
@@ -75,7 +75,7 @@ class Edit extends \Bs\Controller\AdminEditIface
     public function initForm(\Tk\Request $request)
     {
         if ($this->user->getId() == 1 || !$this->getConfig()->getAuthUser()->isAdmin()) {
-            $this->getForm()->appendField(new \Tk\Form\Field\Html('roleId', $this->user->getRole()->getName()))
+            $this->getForm()->appendField(new \Tk\Form\Field\Html('roleId', $this->user->getType()))
                 ->setAttr('disabled')->addCss('form-control disabled')->setAttr('disabled')
                 ->addCss('form-control disabled')->setTabGroup('Details');
 

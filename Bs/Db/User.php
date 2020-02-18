@@ -1,7 +1,8 @@
 <?php
 namespace Bs\Db;
 
-use Bs\Db\Traits\RoleTrait;
+use Bs\Db\Traits\PermissionTrait;
+use Bs\Db\Traits\TimestampTrait;
 use Tk\Db\Map\Model;
 
 /**
@@ -11,9 +12,25 @@ use Tk\Db\Map\Model;
  */
 class User extends Model implements UserIface
 {
+    use PermissionTrait;
+    use TimestampTrait;
 
-    use Traits\TimestampTrait;
-    use RoleTrait;
+    /**
+     * Default Public user This type should never be saved to storage
+     * It is intended to be the default system user that has not logged in
+     * (Access to public pages)
+     */
+    const TYPE_PUBLIC = 'public';
+
+    /**
+     * Administration user (Access to the admin area)
+     */
+    const TYPE_ADMIN = 'admin';
+
+    /**
+     * Base logged in user type (Access to user pages)
+     */
+    const TYPE_USER = 'user';
 
     /**
      * @var int
@@ -21,14 +38,14 @@ class User extends Model implements UserIface
     public $id = 0;
 
     /**
-     * @var int
+     * @var string
      */
-    public $roleId = 0;
+    public $uid = '';
 
     /**
      * @var string
      */
-    public $uid = '';
+    public $type = self::TYPE_PUBLIC;
 
     /**
      * @var string
@@ -105,11 +122,10 @@ class User extends Model implements UserIface
      */
     public $ip = '';
 
-
     /**
      * @var \Tk\Db\Data
      */
-    private $data = null;
+    private $_data = null;
 
 
     /**
@@ -127,9 +143,9 @@ class User extends Model implements UserIface
     public static function createGuest()
     {
         $user = new self();
+        $user->setName('Guest');
         $user->setUsername('guest');
-        $user->setNameFirst('Guest');
-        $user->setRoleId(Role::TYPE_PUBLIC);
+        $user->setType(self::TYPE_PUBLIC);
         return $user;
     }
 
@@ -159,9 +175,9 @@ class User extends Model implements UserIface
      */
     public function getData()
     {
-        if (!$this->data)
-            $this->data = \Tk\Db\Data::create(get_class($this), $this->getVolatileId(), 'user_data');
-        return $this->data;
+        if (!$this->_data)
+            $this->_data = \Tk\Db\Data::create(get_class($this), $this->getVolatileId(), 'user_data');
+        return $this->_data;
     }
 
     /**
@@ -216,9 +232,27 @@ class User extends Model implements UserIface
      * @param string $uid
      * @return User
      */
-    public function setUid(?string $uid): User
+    public function setUid(string $uid): User
     {
         $this->uid = $uid;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return User
+     */
+    public function setType(string $type): User
+    {
+        $this->type = $type;
         return $this;
     }
 
@@ -276,9 +310,13 @@ class User extends Model implements UserIface
      */
     public function setName(?string $name): User
     {
-        \Tk\Log::warning('Using deprecated function.');
-        $this->setNameFirst(substr($name, 0, strpos($name, '')));
-        $this->setNameLast(substr($name, strpos($name, '')+1));
+        $name = trim($name);
+        if ( preg_match('/\s/',$name) ) {
+            $this->setNameFirst(substr($name, 0, strpos($name, ' ')));
+            $this->setNameLast(substr($name, strpos($name, ' ') + 1));
+        } else {
+            $this->setNameFirst($name);
+        }
         return $this;
     }
 
@@ -506,21 +544,11 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string|string[] $permission
-     * @return bool
-     */
-    public function hasPermission($permission)
-    {
-        if (!$this->getRole()) return false;
-        return $this->getRole()->hasPermission($permission);
-    }
-
-    /**
      * @return boolean
      */
     public function isAdmin()
     {
-        return $this->hasPermission(Permission::TYPE_ADMIN);
+        return $this->getType() == self::TYPE_ADMIN;
     }
 
     /**
@@ -528,7 +556,7 @@ class User extends Model implements UserIface
      */
     public function isUser()
     {
-        return $this->hasPermission(Permission::TYPE_USER);
+        return $this->getType() == self::TYPE_USER;
     }
 
     /**
@@ -536,7 +564,25 @@ class User extends Model implements UserIface
      */
     public function isPublic()
     {
-        return !$this->getRole() || $this->getRole()->hasType(Role::TYPE_PUBLIC);
+        return !$this->getType() || $this->getType() == self::TYPE_PUBLIC;
+    }
+
+    /**
+     * Get a list of all available user types
+     *
+     * @param bool $valuesOnly
+     * @return array
+     */
+    public static function getUserTypeList($valuesOnly = false)
+    {
+        $arr = array(
+            'Administrator' => User::TYPE_ADMIN,
+            'User' => User::TYPE_USER
+        );
+        if ($valuesOnly) {
+            $arr = array_values($arr);
+        }
+        return $arr;
     }
 
     /**
@@ -551,17 +597,6 @@ class User extends Model implements UserIface
     {
         $errors = array();
         $usermap = $this->getConfig()->getUserMapper();
-
-        if (!$this->getRoleId()) {
-            $errors['roleId'] = 'Invalid field role value';
-        } else {
-            try {
-                $role = $this->getRole();
-                if (!$role) throw new \Tk\Exception('Please select a valid role.');
-            } catch (\Exception $e) {
-                $errors['roleId'] = $e->getMessage();
-            }
-        }
 
         if (!$this->getUsername()) {
             $errors['username'] = 'Invalid field username value';
@@ -590,31 +625,4 @@ class User extends Model implements UserIface
         return $errors;
     }
 
-    /**
-     * @return string
-     * @deprecated removing roleType over time Use the Permission object instead.
-     */
-    public function getRoleType()
-    {
-        //\Tk\Log::warning('Deprecated: User::getRoleType()');
-        if (!$this->getRole()) return '';
-        return $this->getRole()->getType();
-    }
-
-    /**
-     * @param string|array $roleType
-     * @return boolean
-     * @deprecated Use getRole()->hasType() or getRoleType()
-     */
-    public function hasRole($roleType)
-    {
-        \Tk\Log::warning('Deprecated: User::hasRole($role)');
-        if (!is_array($roleType)) $roleType = array($roleType);
-        foreach ($roleType as $r) {
-            if ($r == $this->getRoleType() || preg_match('/'.preg_quote($r).'/', $this->getRoleType())) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

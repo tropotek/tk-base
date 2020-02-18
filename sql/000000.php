@@ -1,6 +1,6 @@
 <?php
 
-
+// This is executed here to let the \Tk\Db\Data object control the creation of the Data table.
 $config = \App\Config::getInstance();
 try {
     $data = \Tk\Db\Data::create();

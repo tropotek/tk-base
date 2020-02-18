@@ -75,11 +75,8 @@ class Migrate extends Iface
             $mm->write($str);
         });
 
-        $this->write('Database Migration Complete');
-        if (!count($tables)) {
-            $this->write('As this is a new DB install login into the site using User: `admin` and Password: `password` and configure your site as needed.');
-        }
-
+        $this->write('Database Migration Complete.');
+        $this->write('Open the site in a browser to complete the site setup.');
     }
 
 }

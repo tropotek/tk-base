@@ -17,12 +17,12 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     /**
      * @return int
      */
-    public function getRoleId();
+    public function getUid();
 
     /**
-     * @return int
+     * @return string
      */
-    public function getUid();
+    public function getType();
 
     /**
      * @return string
@@ -84,22 +84,9 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     public function getHash();
 
     /**
-     * @return RoleIface
-     */
-    public function getRole();
-
-    /**
      * @return \DateTime|null
      */
     public function getLastLogin();
 
-
-
-    /**
-     * NOTE: All old $user->getRole() calls changed to $user->getRoleType() or $user->getRole()->getType()
-     * @return string
-     * @deprecated I want to eventually use the permission system not this function
-     */
-    public function getRoleType();
 
 }

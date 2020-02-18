@@ -23,11 +23,10 @@ class UserMap extends Mapper
             $this->setMarkDeleted('del');
             $this->dbMap = new \Tk\DataMap\DataMap();
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
-            $this->dbMap->addPropertyMap(new Db\Integer('roleId', 'role_id'));
             $this->dbMap->addPropertyMap(new Db\Text('uid'));
+            $this->dbMap->addPropertyMap(new Db\Text('type'));
             $this->dbMap->addPropertyMap(new Db\Text('username'));
             $this->dbMap->addPropertyMap(new Db\Text('password'));
-            //$this->dbMap->addPropertyMap(new Db\Text('name'));
             $this->dbMap->addPropertyMap(new Db\Text('nameFirst', 'name_first'));
             $this->dbMap->addPropertyMap(new Db\Text('nameLast', 'name_last'));
             $this->dbMap->addPropertyMap(new Db\Text('email'));
@@ -53,11 +52,10 @@ class UserMap extends Mapper
         if (!$this->formMap) {
             $this->formMap = new \Tk\DataMap\DataMap();
             $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
-            $this->formMap->addPropertyMap(new Form\Integer('roleId'));
             $this->formMap->addPropertyMap(new Form\Text('uid'));
+            $this->formMap->addPropertyMap(new Form\Text('type'));
             $this->formMap->addPropertyMap(new Form\Text('username'));
             $this->formMap->addPropertyMap(new Form\Text('password'));
-            //$this->formMap->addPropertyMap(new Form\Text('name'));
             $this->formMap->addPropertyMap(new Form\Text('nameFirst'));
             $this->formMap->addPropertyMap(new Form\Text('nameLast'));
             $this->formMap->addPropertyMap(new Form\Text('email'));
@@ -161,9 +159,8 @@ class UserMap extends Mapper
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
-        if (!empty($filter['roleId'])) {
-            $w = $this->makeMultiQuery($filter['roleId'], 'a.role_id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        if (!empty($filter['type'])) {
+            $filter->appendWhere('a.type = %s AND ', $this->getDb()->quote($filter['type']));
         }
 
         if (!empty($filter['uid'])) {
@@ -197,18 +194,9 @@ class UserMap extends Mapper
             $filter->appendWhere('a.session_id != "" AND a.session_id IS NOT NULL AND ');
         }
 
-        if (!empty($filter['role']) && empty($filter['type'])) {
-            $filter['type'] = $filter['role'];
-        }
-        if (!empty($filter['type'])) {
-            $filter->appendFrom(', user_role d');
-            $filter->appendWhere('a.role_id = d.id AND ');
-            $w = $this->makeMultiQuery($filter['type'], 'd.type');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
         if (!empty($filter['permission'])) {
             $filter->appendFrom(', user_permission e');
-            $filter->appendWhere('a.role_id = e.role_id AND ');
+            $filter->appendWhere('a.user_id = e.user_id AND ');
             $w = $this->makeMultiQuery($filter['permission'], 'e.name');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
@@ -219,6 +207,73 @@ class UserMap extends Mapper
         }
 
         return $filter;
+    }
+
+
+    // --------------------------------------------
+
+
+    /**
+     * Note: Be sure to check the active status of this role
+     *       and return false if this is a non active role.
+     *
+     * @param int $userId
+     * @param string $name
+     * @return bool
+     * @throws \Exception
+     */
+    public function hasPermission($userId, $name)
+    {
+        $stm = $this->getDb()->prepare('SELECT * FROM user_permission WHERE user_id = ? AND name = ?');
+        $stm->execute(array($userId, $name));
+        return ($stm->rowCount() > 0);
+    }
+
+    /**
+     * @param int $userId
+     * @param string $name
+     * @throws \Exception
+     */
+    public function addPermission($userId, $name)
+    {
+        if ($name && !$this->hasPermission($userId, $name)) {
+            $stm = $this->getDb()->prepare('INSERT INTO user_permission (user_id, name)  VALUES (?, ?)');
+            $stm->execute(array($userId, $name));
+        }
+    }
+
+    /**
+     * @param int $userId
+     * @param string $name
+     * @throws \Exception
+     */
+    public function removePermission($userId, $name = null)
+    {
+        if ($name !== null) {
+            if ($this->hasPermission($userId, $name)) {
+                $stm = $this->getDb()->prepare('DELETE FROM user_permission WHERE user_id = ? AND name = ?');
+                $stm->execute(array($userId, $name));
+            }
+        } else {
+            $stm = $this->getDb()->prepare('DELETE FROM user_permission WHERE user_id = ?');
+            $stm->execute(array($userId));
+        }
+    }
+
+    /**
+     * @param int $userId
+     * @return array
+     * @throws \Exception
+     */
+    public function getPermissions($userId)
+    {
+        $stm = $this->getDb()->prepare('SELECT * FROM user_permission a WHERE a.user_id = ?');
+        $stm->execute(array($userId));
+        $arr = array();
+        foreach ($stm as $row) {
+            $arr[] = $row->name;
+        }
+        return $arr;
     }
 
 }
