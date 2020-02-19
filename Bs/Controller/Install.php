@@ -85,7 +85,7 @@ class Install extends Iface
     {
         // Load the object with form data
         $this->getConfig()->getUserMapper()->mapForm($form->getValues(), array());
-        $values = $form->getValues();
+        $values = $form->getValues('/^site\./');
         $this->data->replace($values);
 
         if (empty($values['site.title']) || strlen($values['site.title']) < 3) {
@@ -119,10 +119,11 @@ class Install extends Iface
 
 
         if ($form->getFieldValue('newPassword')) {
-            //$this->getUser()->setNewPassword($form->getFieldValue('newPassword'));
+            $this->user->setNewPassword($form->getFieldValue('newPassword'));
         }
 
-        //$this->getUser()->save();
+        $this->user->save();
+        $this->data->save();
 
         \Tk\Alert::addSuccess('Site Setup Successfully!');
         //$event->setRedirect(\Tk\Uri::create());
