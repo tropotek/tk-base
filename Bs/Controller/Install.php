@@ -65,8 +65,6 @@ class Install extends Iface
         $this->form->appendField(new Form\Field\Password('newPassword'))->setRequired(true);
         $this->form->appendField(new Form\Field\Password('confPassword'))->setRequired(true);
 
-
-
         $this->form->load($this->getConfig()->getUserMapper()->unmapForm($this->user));
         $this->form->load($this->data->all());
         $this->form->appendField(new Form\Event\Submit('save', array($this, 'doSubmit')));
