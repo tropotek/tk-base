@@ -88,5 +88,35 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
      */
     public function getLastLogin();
 
+    /**
+     * @param string|array $type
+     * @return bool
+     */
+    public function hasType($type);
+
+    /**
+     * @return array
+     */
+    public function getPermissions();
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function addPermission($name);
+
+    /**
+     * @param string $name (optional) If omitted then all permissions are removed
+     * @return $this
+     */
+    public function removePermission($name = null);
+
+    /**
+     * Check if this object has the requested permission
+     *
+     * @param string|string[] $permission
+     * @return bool
+     */
+    public function hasPermission($permission);
 
 }

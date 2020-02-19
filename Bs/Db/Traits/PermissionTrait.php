@@ -3,6 +3,9 @@ namespace Bs\Db\Traits;
 
 
 
+use Exception;
+use Tk\Db\Map\Mapper;
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -19,10 +22,9 @@ trait PermissionTrait
      */
     abstract public function isActive();
     /**
-     * @return \Tk\Db\Map\Mapper
+     * @return Mapper
      */
     abstract public function getMapper();
-
 
 
     /**
@@ -32,20 +34,22 @@ trait PermissionTrait
     {
         try {
             return $this->getMapper()->getPermissions($this->getId());
-        } catch (\Exception $e) {}
+        } catch (Exception $e) {}
         return array();
     }
 
     /**
-     * @param string $name
+     * @param string|array $name
      * @return $this
      */
     public function addPermission($name)
     {
         try {
-            $this->getMapper()->addPermission($this->getId(), $name);
-        } catch (\Exception $e) {
-        }
+            if (!is_array($name)) $name = array($name);
+            foreach ($name as $item) {
+                $this->getMapper()->addPermission($this->getId(), $item);
+            }
+        } catch (Exception $e) {}
         return $this;
     }
 
@@ -57,15 +61,14 @@ trait PermissionTrait
     {
         try {
             $this->getMapper()->removePermission($this->getId(), $name);
-        } catch (\Exception $e) {
-        }
+        } catch (Exception $e) {}
         return $this;
     }
 
     /**
      * Check if this object has the requested permission
      *
-     * @param string|string[] $permission
+     * @param string|string[]|array $permission
      * @return bool
      */
     public function hasPermission($permission)
@@ -76,7 +79,7 @@ trait PermissionTrait
             try {
                 if ($this->getMapper()->hasPermission($this->getId(), $p))
                     return true;
-            } catch (\Exception $e) {}
+            } catch (Exception $e) {}
         }
         return false;
     }

@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Controller\Admin\User;
+namespace Bs\Controller\User;
 
 use Bs\Db\User;
 use Dom\Template;

@@ -8,7 +8,6 @@
 
 -- Create the new name fields
 alter table user add type varchar(32) default '' not null after uid;
-alter table user add constraint uid unique (uid);
 
 RENAME TABLE user_permission TO _user_role_permission;
 RENAME TABLE user_role TO _user_role;
@@ -25,6 +24,8 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
 
 UPDATE user a, _user_role b SET a.type = b.type
     WHERE a.role_id = b.id;
+
+UPDATE user SET type = 'member' WHERE type = 'user';
 
 INSERT INTO user_permission (user_id, name)
   (

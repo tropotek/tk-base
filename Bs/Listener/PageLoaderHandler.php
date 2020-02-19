@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Listener;
 
+use Bs\Db\User;
 use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 
@@ -33,7 +34,7 @@ class PageLoaderHandler implements Subscriber
 
             // Do not use for public pages
             $uri = \Bs\Uri::create();
-            if ($uri->getRoleType(\Tk\ObjectUtil::getClassConstants($this->getConfig()->createRole(), 'TYPE')) == '') {
+            if ($uri->getRoleType(User::getUserTypeList(true)) == '') {
                 return;
             }
 

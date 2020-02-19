@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Controller\Admin;
+namespace Bs\Controller;
 
 use Dom\Template;
 use Tk\Db\Exception;
@@ -365,8 +365,7 @@ HTML;
 
     /**
      * @param Request $request
-     * @throws \Tk\Db\Exception
-     * @throws \Tk\Plugin\Exception
+     * @throws \Exception
      */
     protected function doDeletePlugin(Request $request)
     {

@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Controller\Admin\User;
+namespace Bs\Controller\User;
 
 use Bs\Db\User;
 use Dom\Template;
@@ -16,7 +16,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
      * Setup the controller to work with users of this role
      * @var string
      */
-    protected $targetRole = 'user';
+    protected $targetType = '';
 
 
     /**
@@ -30,12 +30,12 @@ class Manager extends \Bs\Controller\AdminManagerIface
 
     /**
      * @param \Tk\Request $request
-     * @param string $targetRole
+     * @param string $targetType
      * @throws \Exception
      */
-    public function doDefaultRole(\Tk\Request $request, $targetRole)
+    public function doDefaultType(\Tk\Request $request, $targetType)
     {
-        $this->targetRole = $targetRole;
+        $this->targetType = $targetType;
         $this->doDefault($request);
     }
 
@@ -45,18 +45,18 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function doDefault(\Tk\Request $request)
     {
-        switch($this->targetRole) {
+        switch($this->targetType) {
             case User::TYPE_ADMIN:
                 $this->setPageTitle('Admin Users');
                 break;
-            case User::TYPE_USER:
-                $this->setPageTitle('User Manager');
+            case User::TYPE_MEMBER:
+                $this->setPageTitle('Member Manager');
                 break;
         }
-        $editUrl = \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html');
+        $editUrl = \Bs\Uri::createHomeUrl('/'.$this->targetType.'Edit.html');
 
         $this->table = \Bs\Table\User::create()->setEditUrl($editUrl)->init();
-        $this->table->setList($this->table->findList(array()));
+        $this->table->setList($this->table->findList(array('type' => $this->targetType)));
 
     }
 
@@ -66,7 +66,7 @@ class Manager extends \Bs\Controller\AdminManagerIface
     public function show()
     {
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add User',
-            \Bs\Uri::createHomeUrl('/'.$this->targetRole.'Edit.html'), 'fa fa-user'));
+            \Bs\Uri::createHomeUrl('/'.$this->targetType.'Edit.html'), 'fa fa-user'));
         $template = parent::show();
 
         $template->appendTemplate('table', $this->table->show());

@@ -1,6 +1,8 @@
 <?php
 namespace Bs;
 
+use Bs\Db\Permission;
+use Bs\Db\User;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
 /**
@@ -410,19 +412,6 @@ class Config extends \Tk\Config
     }
 
     /**
-     * Get the page role, if multiple roles return the first one.
-     *
-     * @return string
-     * @deprecated
-     */
-//    public function getPageRole()
-//    {
-//        $role = $this->getRequest()->getAttribute('role');
-//        if (is_array($role)) $role = current($role);
-//        return $role;
-//    }
-
-    /**
      * @param string $formId
      * @return \Tk\Form
      */
@@ -483,25 +472,6 @@ class Config extends \Tk\Config
     // ------------------------------- Commonly Overridden ---------------------------------------
 
     /**
-     * @return Db\RoleMap
-     */
-    public function getRoleMapper()
-    {
-        if (!$this->get('obj.mapper.role')) {
-            $this->set('obj.mapper.role', Db\RoleMap::create());
-        }
-        return $this->get('obj.mapper.role');
-    }
-
-    /**
-     * @return Db\RoleIface
-     */
-    public function createRole()
-    {
-        return new Db\Role();
-    }
-
-    /**
      * @return Db\UserMap
      */
     public function getUserMapper()
@@ -513,6 +483,7 @@ class Config extends \Tk\Config
     }
 
     /**
+     * Get the user for the Auth object getIdentity() method
      * @param Db\UserIface $user
      * @return int|string
      */
@@ -528,8 +499,6 @@ class Config extends \Tk\Config
     {
         return new Db\User();
     }
-
-
 
     /**
      * @param int $id
@@ -573,13 +542,18 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @param string $type (optional) If set returns only the permissions for that user type otherwise returns all permissions
      * @return array
      */
-    public function getAvailableUserRoleTypes()
+    public function getPermissionList($type = '')
     {
-        $a = $this->getRoleMapper()->findAllTypes();
-        return $a;
+        $class = Permission::class;
+        if ($type) {
+            return \Tk\ObjectUtil::getClassConstants($class, strtoupper($type));
+        }
+        return \Tk\ObjectUtil::getClassConstants($class);
     }
+
 
     /**
      * getFrontController

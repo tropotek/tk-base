@@ -32,7 +32,7 @@ class Uri extends \Tk\Uri
         if (!$user)
             $user = Config::getInstance()->getAuthUser();
         if ($user instanceof \Bs\Db\UserIface)
-            $home = '/' . $user->getRoleType();
+            $home = '/' . $user->getType();
         return new static($home . '/' . trim($spec,'/'));
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Form;
 
+use Bs\Db\Permission;
 use Tk\Form\Field;
 use Tk\Form\Event;
 use Tk\Form;
@@ -25,7 +26,7 @@ class User extends \Bs\FormIface
      * Setup the controller to work with users of this role
      * @var string
      */
-    protected $targetRole = '';
+    protected $targetType = '';
 
     /**
      * @throws \Exception
@@ -38,8 +39,8 @@ class User extends \Bs\FormIface
 
 
         $tab = 'Details';
-        $list = $this->getConfig()->getRoleMapper()->findFiltered(array());
-        $this->appendField(new Field\Select('roleId', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
+        $list = \Bs\Db\User::getUserTypeList();
+        $this->appendField(new Field\Select('type', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('nameFirst'))->setLabel('First Name')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('nameLast'))->setLabel('Last Name(s)')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('username'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
@@ -64,6 +65,14 @@ class User extends \Bs\FormIface
             $this->remove('active');
         }
 
+        $tab = 'Permissions';
+        $type = $this->getUser()->getType();
+        $list = $this->getConfig()->getPermissionList($type);
+        if (count($list)) {
+            $this->appendField(new Field\CheckboxGroup('permission', $list))->setLabel('Permission List')->setTabGroup($tab)
+                ->setValue(array_values($this->getConfig()->getPermissionList($this->getUser()->getType())));
+        }
+
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->appendField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->appendField(new Event\Link('cancel', $this->getBackUrl()));
@@ -76,6 +85,9 @@ class User extends \Bs\FormIface
     public function execute($request = null)
     {
         $this->load($this->getConfig()->getUserMapper()->unmapForm($this->getUser()));
+        if ($this->getUser()->getId()) {
+            $this->load(array('permission' => $this->getUser()->getPermissions()));
+        }
         parent::execute($request);
     }
 
@@ -104,7 +116,7 @@ class User extends \Bs\FormIface
         }
 
         // Just a small check to ensure the user down not change their own role
-        if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && $this->getUser()->getRoleType() != $this->getConfig()->getAuthUser()->getRoleType()) {
+        if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && $this->getUser()->getType() != $this->getConfig()->getAuthUser()->getType()) {
             $form->addError('You cannot change your own role information.');
         }
         if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && !$this->getUser()->isActive()) {
@@ -120,11 +132,16 @@ class User extends \Bs\FormIface
             $this->getUser()->setNewPassword($form->getFieldValue('newPassword'));
         }
 
+        if ($form->getFieldValue('permission')) {
+            $this->getUser()->removePermission();
+            $this->getUser()->addPermission($form->getFieldValue('permission'));
+        }
+
         // Keep the admin account available and working. (hack for basic sites)
         if ($this->getUser()->getId() == 1) {
-            $this->getUser()->active = true;
-            $this->getUser()->username = 'admin';
-            $this->getUser()->roleId = \Bs\Db\Role::DEFAULT_TYPE_ADMIN;
+            $this->getUser()->setActive(true);
+            $this->getUser()->setUsername('admin');
+            $this->getUser()->setType(\Bs\Db\User::TYPE_ADMIN);
         }
 
         $this->getUser()->save();
@@ -156,18 +173,18 @@ class User extends \Bs\FormIface
     /**
      * @return string
      */
-    public function getTargetRole()
+    public function getTargetType()
     {
-        return $this->targetRole;
+        return $this->targetType;
     }
 
     /**
-     * @param string $targetRole
+     * @param string $targetType
      * @return User
      */
-    public function setTargetRole($targetRole)
+    public function setTargetType($targetType)
     {
-        $this->targetRole = $targetRole;
+        $this->targetType = $targetType;
         return $this;
     }
     

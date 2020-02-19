@@ -36,7 +36,7 @@ class MasqueradeHandler implements Subscriber
      */
     public static $roleOrder = array(
         User::TYPE_ADMIN,        // Highest
-        User::TYPE_USER          // Lowest
+        User::TYPE_MEMBER        // Lowest
     );
 
     /**
@@ -47,7 +47,7 @@ class MasqueradeHandler implements Subscriber
     public function onMasquerade($event)
     {
         $request = $event->getRequest();
-        $config = \Bs\Config::getInstance();
+        $config = $this->getConfig();
         if (!$request->request->has(static::MSQ)) return;
 
         try {
@@ -127,7 +127,7 @@ class MasqueradeHandler implements Subscriber
     {
         $config = $this->getConfig();
         if (!$msqUser || !$user) return;
-        if ($user->id == $msqUser->id) return;
+        if ($user->getId() == $msqUser->getId()) return;
 
         // Get the masquerade queue from the session
         $msqArr = $config->getSession()->get(static::SID);
@@ -139,7 +139,7 @@ class MasqueradeHandler implements Subscriber
 
         // Save the current user and url to the session, to allow logout
         $userData = array(
-            'userId' => $user->id,
+            'userId' => $user->getId(),
             'url' => \Tk\Uri::create()->remove(static::MSQ)->toString()
         );
         array_push($msqArr, $userData);

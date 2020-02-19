@@ -35,7 +35,7 @@ $config['system.theme.admin']   = $config['system.template.path'] . '/admin';
 $config['system.theme.public']  = $config['system.template.path'] . '/public';
 
 $config['template.admin']       = $config['system.theme.admin'] . '/admin.html';
-$config['template.user']        = $config['system.theme.admin'] . '/admin.html';
+$config['template.member']      = $config['system.theme.admin'] . '/admin.html';
 $config['template.public']      = $config['system.theme.public'] . '/public.html';
 
 /*

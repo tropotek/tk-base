@@ -16,11 +16,11 @@ class User extends Model implements UserIface
     use TimestampTrait;
 
     /**
-     * Default Public user This type should never be saved to storage
+     * Default Guest user This type should never be saved to storage
      * It is intended to be the default system user that has not logged in
-     * (Access to public pages)
+     * (Access to public pages only)
      */
-    const TYPE_PUBLIC = 'public';
+    const TYPE_GUEST = 'guest';
 
     /**
      * Administration user (Access to the admin area)
@@ -30,7 +30,7 @@ class User extends Model implements UserIface
     /**
      * Base logged in user type (Access to user pages)
      */
-    const TYPE_USER = 'user';
+    const TYPE_MEMBER = 'member';
 
     /**
      * @var int
@@ -45,7 +45,7 @@ class User extends Model implements UserIface
     /**
      * @var string
      */
-    public $type = self::TYPE_PUBLIC;
+    public $type = '';
 
     /**
      * @var string
@@ -145,7 +145,7 @@ class User extends Model implements UserIface
         $user = new self();
         $user->setName('Guest');
         $user->setUsername('guest');
-        $user->setType(self::TYPE_PUBLIC);
+        $user->setType(self::TYPE_GUEST);
         return $user;
     }
 
@@ -162,7 +162,7 @@ class User extends Model implements UserIface
      */
     public function save()
     {
-        if ($this->isPublic()) return;
+        if ($this->isGuest()) return;
         $this->getHash();
         $this->getData()->save();
         parent::save();
@@ -236,6 +236,21 @@ class User extends Model implements UserIface
     {
         $this->uid = $uid;
         return $this;
+    }
+
+    /**
+     * @param string|array $type
+     * @return bool
+     */
+    public function hasType($type)
+    {
+        if (!is_array($type)) $type = array($type);
+        foreach ($type as $r) {
+            if ($r == $this->getType()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -554,17 +569,17 @@ class User extends Model implements UserIface
     /**
      * @return boolean
      */
-    public function isUser()
+    public function isMember()
     {
-        return $this->getType() == self::TYPE_USER;
+        return $this->getType() == self::TYPE_MEMBER;
     }
 
     /**
      * @return boolean
      */
-    public function isPublic()
+    public function isGuest()
     {
-        return !$this->getType() || $this->getType() == self::TYPE_PUBLIC;
+        return !$this->getType() || $this->getType() == self::TYPE_GUEST;
     }
 
     /**
@@ -577,13 +592,15 @@ class User extends Model implements UserIface
     {
         $arr = array(
             'Administrator' => User::TYPE_ADMIN,
-            'User' => User::TYPE_USER
+            'Member' => User::TYPE_MEMBER
         );
         if ($valuesOnly) {
             $arr = array_values($arr);
         }
         return $arr;
     }
+
+
 
     /**
      * Validate this object's current state and return an array

@@ -2,6 +2,8 @@
 namespace Bs;
 
 
+use Bs\Db\User;
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
@@ -27,7 +29,7 @@ class Page extends \Tk\Controller\Page
      */
     protected function makeDefaultTemplatePath()
     {
-        $urlRole = \Bs\Uri::create()->getRoleType($this->getConfig()->getAvailableUserRoleTypes());
+        $urlRole = \Bs\Uri::create()->getRoleType(User::getUserTypeList(true));
         if (!$urlRole) $urlRole = 'public';
         return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlRole);
     }
