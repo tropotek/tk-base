@@ -5,8 +5,8 @@ $config = \App\Config::getInstance();
 try {
     $data = \Tk\Db\Data::create();
     if (!$data->get('site.title')) {
-        $data->set('site.title', 'Tk II Project');
-        $data->set('site.short.title', 'Tk2Base');
+        $data->set('site.title', 'Tk Base Project');
+        $data->set('site.short.title', 'TkBase');
     }
     if (!$data->get('site.email'))
         $data->set('site.email', 'admin@example.com');

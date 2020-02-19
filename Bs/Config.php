@@ -662,6 +662,17 @@ class Config extends \Tk\Config
     }
 
     /**
+     * @return \Bs\Listener\InstallHandler
+     */
+    public function getInstallHandler()
+    {
+        if (!$this->get('handler.crumbs')) {
+            $this->set('handler.crumbs', new \Bs\Listener\InstallHandler());
+        }
+        return $this->get('handler.crumbs');
+    }
+
+    /**
      * @param string $customDataPath
      * @return array
      */

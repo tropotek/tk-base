@@ -44,7 +44,6 @@ class Login extends Iface
                 $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.login');
             }
             $this->page = $this->getConfig()->getPage($templatePath);
-            $this->page->setController($this);
         }
         return parent::getPage();
     }

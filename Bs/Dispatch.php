@@ -2,6 +2,7 @@
 namespace Bs;
 
 
+use Bs\Listener\InstallHandler;
 use Tk\ConfigTrait;
 use Bs\Listener\MailHandler;
 use Bs\Listener\MaintenanceHandler;
@@ -107,7 +108,6 @@ class Dispatch
         // Tk Listeners
         $dispatcher->addSubscriber(new StartupHandler($logger, $request, $config->getSession()));
 
-
         if ($config->get('system.email.exception')) {
             $dispatcher->addSubscriber(new ExceptionEmailListener(
                 $config->getEmailGateway(),
@@ -142,6 +142,7 @@ class Dispatch
         $dispatcher->addSubscriber($sh);
 
         // App Listeners
+        $dispatcher->addSubscriber($config->getInstallHandler());
         $dispatcher->addSubscriber(new ActionPanelHandler());
         $dispatcher->addSubscriber(new MailHandler());
 

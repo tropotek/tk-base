@@ -29,6 +29,7 @@ $routes->add('register', Route::create('/register.html', 'Bs\Controller\Register
 $routes->add('recover', Route::create('/recover.html', 'Bs\Controller\Recover::doDefault'));
 $routes->add('logout', Route::create('/logout.html', 'Bs\Controller\Logout::doDefault'));
 
+$routes->add('install', Route::create('/install.html', 'Bs\Controller\Install::doDefault'));
 $routes->add('maintenance', Route::create('/maintenance.html', 'Bs\Controller\Maintenance::doDefault'));
 
 
