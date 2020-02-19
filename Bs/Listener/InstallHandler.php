@@ -23,6 +23,10 @@ class InstallHandler implements Subscriber
         $list = $this->getConfig()->getUserMapper()->findFiltered(array());
         if (!$list->count()) {
             if (\Tk\Uri::create()->getRelativePath() != '/install.html') {
+                // clear all sessions
+                $query = sprintf('DELETE FROM %s WHERE 1', \Tk\Session\Adapter\Database::$DB_TABLE);
+                $this->getDb()->query($query);
+
                 \Tk\Uri::create('/install.html')->redirect();
             }
         } else {
