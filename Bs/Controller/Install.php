@@ -124,9 +124,9 @@ class Install extends Iface
         $this->data->save();
 
         \Tk\Alert::addSuccess('Site Setup Successfully!');
-        //$event->setRedirect(\Tk\Uri::create());
+        $event->setRedirect(\Tk\Uri::create());
         //$event->setRedirect(\Tk\Uri::create('/index.html'));
-        $event->setRedirect(\Tk\Uri::create('/login.html'));
+        //$event->setRedirect(\Tk\Uri::create('/login.html'));
     }
 
 
