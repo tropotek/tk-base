@@ -37,7 +37,7 @@ class Install extends Iface
 
     /**
      * @param Request $request
-     * @throws Form\Exception
+     * @throws \Exception
      */
     public function doDefault(Request $request)
     {
@@ -45,7 +45,7 @@ class Install extends Iface
         $this->user = $this->getConfig()->createUser();
         $this->user->setType(\Bs\Db\User::TYPE_ADMIN);
         $this->user->setUsername('admin');
-        $this->user->setNameFirst('Administrator');
+        $this->user->setName('Administrator');
 
         $this->form = $this->getConfig()->createForm('install');
         $this->form->setDispatcher($this->getConfig()->getEventDispatcher());
