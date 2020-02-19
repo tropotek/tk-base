@@ -43,6 +43,7 @@ class Install extends Iface
     {
         $this->data = \Tk\Db\Data::create();
         $this->user = $this->getConfig()->createUser();
+        $this->user->setType(\Bs\Db\User::TYPE_ADMIN);
         $this->user->setUsername('admin');
         $this->user->setNameFirst('Administrator');
 
@@ -97,8 +98,7 @@ class Install extends Iface
         if (empty($values['site.email']) || !filter_var($values['site.email'], \FILTER_VALIDATE_EMAIL)) {
             $form->addFieldError('site.email', 'Please enter a valid site email address');
         }
-
-
+        $this->user->setEmail($values['site.email']);
 
         // Password validation needs to be here
         if ($form->getField('newPassword')) {
@@ -112,7 +112,7 @@ class Install extends Iface
             }
         }
 
-        //$form->addFieldErrors($this->getUser()->validate());
+        $form->addFieldErrors($this->user->validate());
         if ($form->hasErrors()) {
             return;
         }
