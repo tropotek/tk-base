@@ -1,8 +1,7 @@
 <?php
 namespace Bs;
 
-use Bs\Db\Permission;
-use Bs\Db\User;
+use Bs\Db\Permission;;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
 /**
