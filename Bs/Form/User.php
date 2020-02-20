@@ -86,7 +86,7 @@ class User extends \Bs\FormIface
     public function execute($request = null)
     {
         $this->load($this->getConfig()->getUserMapper()->unmapForm($this->getUser()));
-        if ($this->getUser()->getId()) {
+        if ($this->getUser()->getId() && $this->getField('permission')) {
             $this->load(array('permission' => $this->getUser()->getPermissions()));
         }
         parent::execute($request);
