@@ -1,7 +1,7 @@
 <?php
 
 // This is executed here to let the \Tk\Db\Data object control the creation of the Data table.
-$config = \App\Config::getInstance();
+$config = \Bs\Config::getInstance();
 try {
     $data = \Tk\Db\Data::create();
     if (!$data->get('site.title')) {
@@ -10,8 +10,9 @@ try {
     }
     if (!$data->get('site.email'))
         $data->set('site.email', 'admin@example.com');
-    //$data->set('site.client.registration', 'site.client.registration');
-    //$data->set('site.client.activation', 'site.client.activation');
+    
+    $data->set('site.client.registration', '');
+    $data->set('site.client.activation', '');
 
     if (!$data->get('site.meta.keywords'))
         $data->set('site.meta.keywords', '');
@@ -23,7 +24,7 @@ try {
         $data->set('site.global.css', '');
 
     $data->save();
-} catch (\Tk\Db\Exception $e) {
+} catch (\Exception $e) {
 }
 
 
