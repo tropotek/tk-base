@@ -537,11 +537,14 @@ class Config extends \Tk\Config
 
     /**
      * Do we have an authorized user logged in
+     * @param null $user
      * @return bool
      */
-    public function hasAuthUser()
+    public function hasAuthUser($user = null)
     {
-        return ($this->getAuthUser() && $this->getAuthUser()->getType() && !$this->getAuthUser()->hasType(User::TYPE_GUEST));
+        if (!$user) $user = $this->getAuthUser();
+        if (!$user || !$user->getType()) return false;
+        return !$user->hasType(User::TYPE_GUEST);
     }
 
     /**
