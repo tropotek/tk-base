@@ -23,7 +23,7 @@
         "ttek/tk-auth": "~3.0.0",
         "ttek/tk-mail": "~3.0.0",
         "ttek/tk-plugin": "~3.0.0",
-        "ttek/tk-database": "~3.0.0",
+        "ttek/tk-database": "~3.2.0",
         "ttek/tk-domtemplate": "~3.0.0",
         "ttek/tk-form": "~3.0.0",
         "ttek/tk-table": "~3.0.0",
