@@ -2,6 +2,8 @@
 namespace Bs;
 
 use Bs\Db\Permission;;
+
+use Bs\Db\User;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
 /**
@@ -531,6 +533,15 @@ class Config extends \Tk\Config
     public function findUser($id)
     {
         return $this->getUserMapper()->find($id);
+    }
+
+    /**
+     * Do we have an authorized user logged in
+     * @return bool
+     */
+    public function hasAuthUser()
+    {
+        return ($this->getAuthUser() && $this->getAuthUser()->getType() && !$this->getAuthUser()->hasType(User::TYPE_GUEST));
     }
 
     /**

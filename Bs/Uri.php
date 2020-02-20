@@ -3,6 +3,8 @@ namespace Bs;
 
 
 
+use Bs\Db\User;
+
 /**
  * @author Michael Mifsud <info@tropotek.com>
  * @see http://www.tropotek.com/
@@ -31,7 +33,7 @@ class Uri extends \Tk\Uri
             $home = $user;
         if (!$user)
             $user = Config::getInstance()->getAuthUser();
-        if ($user instanceof \Bs\Db\UserIface)
+        if ($user instanceof \Bs\Db\UserIface && $user->getType() && !$user->hasType(User::TYPE_GUEST))
             $home = '/' . $user->getType();
         return new static($home . '/' . trim($spec,'/'));
     }

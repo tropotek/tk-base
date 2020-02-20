@@ -132,7 +132,7 @@ JS;
         }
 
         $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
-        if ($this->getConfig()->getAuthUser()) {
+        if ($this->hasAuthUser()) {
             $template->insertText($config->get('template.var.page.user-name'), $this->getConfig()->getAuthUser()->getName());
             $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getAuthUser()->getUsername());
             $i = strpos($this->getConfig()->getAuthUser()->getUsername(), '@');
