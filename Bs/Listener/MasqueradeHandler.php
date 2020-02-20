@@ -33,6 +33,7 @@ class MasqueradeHandler implements Subscriber
     /**
      * The order of role permissions
      * @var array
+     * @deprecated use $config->getUserTypeList()
      */
     public static $roleOrder = array(
         User::TYPE_ADMIN,        // Highest
@@ -102,8 +103,8 @@ class MasqueradeHandler implements Subscriber
     protected function hasPrecedence($user, $msqUser)
     {
         // Get the users role precedence order index
-        $userRoleIdx = $this->getRolePrecedenceIdx($user);
-        $msqRoleIdx = $this->getRolePrecedenceIdx($msqUser);
+        $userRoleIdx = $this->getTypePrecedenceIdx($user);
+        $msqRoleIdx = $this->getTypePrecedenceIdx($msqUser);
         return ($userRoleIdx < $msqRoleIdx);
     }
 
@@ -111,9 +112,10 @@ class MasqueradeHandler implements Subscriber
      * @param \Bs\Db\UserIface $user
      * @return int
      */
-    public function getRolePrecedenceIdx($user)
+    public function getTypePrecedenceIdx($user)
     {
-        return array_search($user->getType(), static::$roleOrder);
+        //return array_search($user->getType(), static::$roleOrder);
+        return array_search($user->getType(), $this->getConfig()->getUserTypeList());
     }
 
     /**

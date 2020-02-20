@@ -472,7 +472,10 @@ class Config extends \Tk\Config
     // ------------------------------- Commonly Overridden ---------------------------------------
 
     /**
-     * return the user types available to the system
+     * Return the user types available to the system
+     *
+     * It is important to order types from most permissions (admin) to least permissions (member/student)
+     * this will be used in masquerading log-ins
      *
      * @param bool $valuesOnly (optional) return the type values with no name keys
      * @return array
@@ -558,6 +561,7 @@ class Config extends \Tk\Config
     public function getUserHomeUrl($user = null)
     {
         if (!$user) $user = $this->getAuthUser();
+        if (!$user) return \Bs\Uri::create('/login.html');
         return \Bs\Uri::createHomeUrl('/index.html', $user);
     }
 

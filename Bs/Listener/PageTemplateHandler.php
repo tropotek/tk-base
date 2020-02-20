@@ -131,6 +131,7 @@ JS;
             $template->setVisible($config->get('template.var.page.alerts'));
         }
 
+        $template->setAttr($config->get('template.var.page.user-url'), 'href', $this->getConfig()->getUserHomeUrl());
         if ($this->getConfig()->getAuthUser()) {
             $template->insertText($config->get('template.var.page.user-name'), $this->getConfig()->getAuthUser()->getName());
             $template->insertText($config->get('template.var.page.username'), $this->getConfig()->getAuthUser()->getUsername());

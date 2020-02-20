@@ -583,23 +583,18 @@ class User extends Model implements UserIface
     }
 
     /**
-     * Get a list of all available user types
+     * Return the user types available to the system
      *
-     * @param bool $valuesOnly
+     * It is important to order types from most permissions (admin) to least permissions (member/student)
+     * this will be used in masquerading log-ins
+     *
+     * @param bool $valuesOnly (optional) return the type values with no name keys
      * @return array
      */
     public static function getUserTypeList($valuesOnly = false)
     {
-        $arr = array(
-            'Administrator' => User::TYPE_ADMIN,
-            'Member' => User::TYPE_MEMBER
-        );
-        if ($valuesOnly) {
-            $arr = array_values($arr);
-        }
-        return $arr;
+        return \Bs\Config::getInstance()->getUserTypeList($valuesOnly);
     }
-
 
 
     /**
