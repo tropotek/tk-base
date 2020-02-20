@@ -472,6 +472,26 @@ class Config extends \Tk\Config
     // ------------------------------- Commonly Overridden ---------------------------------------
 
     /**
+     * return the user types available to the system
+     *
+     * @param bool $valuesOnly (optional) return the type values with no name keys
+     * @return array
+     */
+    public function getUserTypeList($valuesOnly = false)
+    {
+        $arr = $this->get('user.type.list');
+        if (!is_array($arr))
+            $arr = array(
+                'Administrator' => 'admin',
+                'Member' => 'member'
+            );
+        if ($valuesOnly) {
+            $arr = array_values($arr);
+        }
+        return $arr;
+    }
+
+    /**
      * @return Db\UserMap
      */
     public function getUserMapper()

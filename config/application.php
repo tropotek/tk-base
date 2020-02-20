@@ -26,6 +26,15 @@ $config['sql.migrate.list'] = array(
     'App Sql' => $config->getSrcPath() . '/config'
 );
 
+
+/*
+ * The user types available to the system
+ */
+$config['user.type.list'] = array(
+    'Administrator' => 'admin',
+    'Member' => 'member'
+);
+
 /*
  * Template folders for pages
  */
