@@ -21,12 +21,10 @@ class User extends Model implements UserIface
      * (Access to public pages only)
      */
     const TYPE_GUEST = 'guest';
-
     /**
      * Administration user (Access to the admin area)
      */
     const TYPE_ADMIN = 'admin';
-
     /**
      * Base logged in user type (Access to user pages)
      */
