@@ -10,7 +10,7 @@ try {
     }
     if (!$data->get('site.email'))
         $data->set('site.email', 'admin@example.com');
-    
+
     $data->set('site.client.registration', '');
     $data->set('site.client.activation', '');
 
