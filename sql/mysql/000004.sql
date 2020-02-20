@@ -38,6 +38,16 @@ INSERT INTO user_permission (user_id, name)
 
 alter table user drop column role_id;
 alter table user drop column name;
+
 DROP TABLE _user_role;
 DROP TABLE _user_role_permission;
+
+
+
+
+-- NOTE: This has to be run manually before upgrading to ver 3.2
+-- RENAME TABLE migration TO _migration;
+-- RENAME TABLE data TO _data;
+-- RENAME TABLE session TO _session;
+-- RENAME TABLE plugin TO _plugin;
 
