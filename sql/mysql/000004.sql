@@ -6,7 +6,7 @@
 
 
 
--- Create the new name fields
+-- Create the new fields
 alter table user add type varchar(32) default '' not null after uid;
 
 RENAME TABLE user_permission TO _user_role_permission;
