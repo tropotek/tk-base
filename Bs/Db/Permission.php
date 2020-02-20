@@ -12,19 +12,15 @@ class Permission
 
 
     /**
+     * Get all available permissions for a user type
+     *
+     * @param string $type
      * @return array
      */
-    public static function getAdminPermissions()
+    public static function getTypePermissionList($type = 'admin')
     {
         return array();
     }
 
-    /**
-     * @return array
-     */
-    public static function getMemberPermissions()
-    {
-        return array();
-    }
 
 }
