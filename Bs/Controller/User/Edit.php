@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\Db\User;
 use Tk\Request;
 use Dom\Template;
 
@@ -15,7 +16,7 @@ class Edit extends \Bs\Controller\AdminEditIface
      * Setup the controller to work with users of this role
      * @var string
      */
-    protected $targetType = 'user';
+    protected $targetType = User::TYPE_MEMBER;
 
     /**
      * @var \Bs\Db\User

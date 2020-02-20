@@ -38,11 +38,15 @@ $routes->add('maintenance', Route::create('/maintenance.html', 'Bs\Controller\Ma
 //$routes->add('admin-dashboard-base', Route::create('/admin/', 'Bs\Controller\Admin\Dashboard::doDefault'));
 $routes->add('admin-user-profile', Route::create('/admin/profile.html', 'Bs\Controller\User\Profile::doDefault'));
 
-$routes->add('admin-admin-manager', Route::create('/admin/adminManager.html', 'Bs\Controller\User\Manager::doDefaultType', array('targetType' => \Bs\Db\User::TYPE_ADMIN)));
-$routes->add('admin-admin-edit', Route::create('/admin/adminEdit.html', 'Bs\Controller\User\Edit::doDefaultType', array('targetType' => \Bs\Db\User::TYPE_ADMIN)));
+$routes->add('admin-admin-manager', Route::create('/admin/adminManager.html', 'Bs\Controller\User\Manager::doDefaultType',
+    array('targetType' => \Bs\Db\User::TYPE_ADMIN)));
+$routes->add('admin-admin-edit', Route::create('/admin/adminEdit.html', 'Bs\Controller\User\Edit::doDefaultType',
+    array('targetType' => \Bs\Db\User::TYPE_ADMIN)));
 
-$routes->add('admin-user-manager', Route::create('/admin/memberManager.html', 'Bs\Controller\User\Manager::doDefaultType', array('targetType' => \Bs\Db\User::TYPE_MEMBER)));
-$routes->add('admin-user-edit', Route::create('/admin/memberEdit.html', 'Bs\Controller\User\Edit::doDefaultType', array('targetType' => \Bs\Db\User::TYPE_MEMBER)));
+$routes->add('admin-user-manager', Route::create('/admin/memberManager.html', 'Bs\Controller\User\Manager::doDefaultType',
+    array('targetType' => \Bs\Db\User::TYPE_MEMBER)));
+$routes->add('admin-user-edit', Route::create('/admin/memberEdit.html', 'Bs\Controller\User\Edit::doDefaultType',
+    array('targetType' => \Bs\Db\User::TYPE_MEMBER)));
 
 $routes->add('admin-settings', Route::create('/admin/settings.html', 'Bs\Controller\Admin\Settings::doDefault'));
 $routes->add('admin-plugin-manager', Route::create('/admin/plugins.html', 'Bs\Controller\PluginManager::doDefault'));
