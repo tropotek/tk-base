@@ -11,4 +11,20 @@ class Permission
 {
 
 
+    /**
+     * @return array
+     */
+    public static function getAdminPermissions()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getMemberPermissions()
+    {
+        return array();
+    }
+
 }
