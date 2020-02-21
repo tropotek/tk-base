@@ -196,7 +196,7 @@ class UserMap extends Mapper
 
         if (!empty($filter['permission'])) {
             $filter->appendFrom(', user_permission e');
-            $filter->appendWhere('a.user_id = e.user_id AND ');
+            $filter->appendWhere('a.id = e.user_id AND ');
             $w = $this->makeMultiQuery($filter['permission'], 'e.name');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
