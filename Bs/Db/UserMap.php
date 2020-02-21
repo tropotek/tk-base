@@ -160,7 +160,8 @@ class UserMap extends Mapper
         }
 
         if (!empty($filter['type'])) {
-            $filter->appendWhere('a.type = %s AND ', $this->getDb()->quote($filter['type']));
+            $w = $this->makeMultiQuery($filter['type'], 'a.type');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['uid'])) {
