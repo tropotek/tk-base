@@ -133,19 +133,20 @@ class User extends \Bs\FormIface
             $this->getUser()->setNewPassword($form->getFieldValue('newPassword'));
         }
 
+        $this->getUser()->save();
+
         if ($form->getFieldValue('permission')) {
             $this->getUser()->removePermission();
             $this->getUser()->addPermission($form->getFieldValue('permission'));
         }
 
         // Keep the admin account available and working. (hack for basic sites)
-        if ($this->getUser()->getId() == 1) {
+        if ($this->getUser()->getId() == 1 && $this->getUser()->getUsername() == 'admin') {
             $this->getUser()->setActive(true);
             $this->getUser()->setUsername('admin');
             $this->getUser()->setType(\Bs\Db\User::TYPE_ADMIN);
         }
 
-        $this->getUser()->save();
 
         \Tk\Alert::addSuccess('Record saved!');
         $event->setRedirect($this->getBackUrl());

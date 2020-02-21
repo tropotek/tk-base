@@ -580,11 +580,12 @@ class Config extends \Tk\Config
 
     /**
      * @param string $type (optional) If set returns only the permissions for that user type otherwise returns all permissions
+     * @param bool $removeTypes This removes any type permissions as they are deprecated for ver 4.0
      * @return array
      */
-    public function getPermissionList($type = '')
+    public function getPermissionList($type = '', $removeTypes = true)
     {
-         return Permission::getPermissionList($type);
+        return Permission::getPermissionList($type, $removeTypes);
     }
 
 
