@@ -98,8 +98,11 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     /**
      * NOTE: All old $user->getRole() calls changed to $user->getRoleType() or $user->getRole()->getType()
      * @return string
-     * @deprecated I want to eventually use the permission system not this function
+     * @deprecated I want to eventually use getType()
      */
     public function getRoleType();
+
+
+    public function getType();
 
 }

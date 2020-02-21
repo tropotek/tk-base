@@ -592,6 +592,14 @@ class User extends Model implements UserIface
 
     /**
      * @return string
+     */
+    public function getType()
+    {
+        return $this->getRoleType();
+    }
+
+    /**
+     * @return string
      * @deprecated removing roleType over time Use the Permission object instead.
      */
     public function getRoleType()
