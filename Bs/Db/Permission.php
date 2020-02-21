@@ -17,7 +17,7 @@ class Permission
      * @param string $type
      * @return array
      */
-    public static function getTypePermissionList($type = 'admin')
+    public static function getPermissionList($type = 'admin')
     {
         return array();
     }

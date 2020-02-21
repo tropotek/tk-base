@@ -17,15 +17,14 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
      */
     public function onSystemInit($event)
     {
-        $config = \Bs\Config::getInstance();
-        $user = $config->getAuthUser();
+        $user = $this->getConfig()->getAuthUser();
         $homeTitle = '';
         $homeUrl = '';
         if ($user) {
             $homeTitle = 'Dashboard';
-            $homeUrl = $config->getUserHomeUrl($user)->getRelativePath();
+            $homeUrl = $this->getConfig()->getUserHomeUrl($user)->getRelativePath();
         }
-        $config->getCrumbs($homeTitle, $homeUrl);
+        $this->getConfig()->getCrumbs($homeTitle, $homeUrl);
     }
 
     /**

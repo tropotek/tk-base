@@ -584,11 +584,7 @@ class Config extends \Tk\Config
      */
     public function getPermissionList($type = '')
     {
-        $class = Permission::class;
-        if ($type) {
-            return \Tk\ObjectUtil::getClassConstants($class, strtoupper($type));
-        }
-        return \Tk\ObjectUtil::getClassConstants($class);
+         return Permission::getPermissionList($type);
     }
 
 
@@ -703,10 +699,10 @@ class Config extends \Tk\Config
      */
     public function getInstallHandler()
     {
-        if (!$this->get('handler.crumbs')) {
-            $this->set('handler.crumbs', new \Bs\Listener\InstallHandler());
+        if (!$this->get('handler.installer')) {
+            $this->set('handler.installer', new \Bs\Listener\InstallHandler());
         }
-        return $this->get('handler.crumbs');
+        return $this->get('handler.installer');
     }
 
     /**

@@ -39,10 +39,10 @@ class User extends \Bs\FormIface
 
 
         $tab = 'Details';
-        $list = \Bs\Db\User::getUserTypeList();
-        if ($this->getAuthUser()->isAdmin()) {
-            //$this->appendField(new Field\Select('type', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
-        }
+//        if ($this->getAuthUser()->isAdmin()) {
+//            $list = $this->getConfig()->getUserTypeList();
+//            $this->appendField(new Field\Select('type', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
+//        }
         $this->appendField(new Field\Input('nameFirst'))->setLabel('First Name')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('nameLast'))->setLabel('Last Name(s)')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('username'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
@@ -68,7 +68,7 @@ class User extends \Bs\FormIface
         }
 
         $tab = 'Permissions';
-        $list = Permission::getTypePermissionList($this->getUser()->getType());
+        $list = $this->getConfig()->getPermissionList($this->getUser()->getType());
         if (count($list)) {
             $this->appendField(new Field\CheckboxGroup('permission', $list))->setLabel('Permission List')->setTabGroup($tab)
                 ->setValue(array_values($list));
