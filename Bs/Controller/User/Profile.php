@@ -51,6 +51,10 @@ class Profile extends \Bs\Controller\AdminEditIface
      */
     public function doDefault(Request $request)
     {
+        if ($this->user->getId() != $this->getAuthUser()->getId()) {
+            throw  new \Tk\Exception('Server error, please logout and back in to correct.');
+        }
+
         $this->init($request);
 
         $this->setForm(\Bs\Form\User::create()->setModel($this->user));
@@ -63,6 +67,8 @@ class Profile extends \Bs\Controller\AdminEditIface
             $this->getForm()->getField('uid')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
         if ($this->getForm()->getField('email'))
             $this->getForm()->getField('email')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
+        if ($this->getForm()->getField('permission'))
+            $this->getForm()->removeField('permission');
 
         $this->getForm()->execute();
     }
