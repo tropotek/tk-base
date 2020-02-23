@@ -163,10 +163,6 @@ class User extends Model implements UserIface
         if ($this->isGuest()) return;
         $this->getHash();
         $this->getData()->save();
-
-        // TODO: eventually remove the need for this permission
-        $this->addPermission('type.'.$this->getType()); // type permissions will be remove completely by ver 4.0
-
         parent::save();
     }
 

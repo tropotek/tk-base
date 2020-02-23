@@ -33,7 +33,7 @@ trait PermissionTrait
     public function getPermissions()
     {
         try {
-            return $this->getMapper()->getPermissions($this->getId());
+            return $this->getMapper()->getPermissions($this->getVolatileId());
         } catch (Exception $e) {}
         return array();
     }
@@ -47,7 +47,7 @@ trait PermissionTrait
         try {
             if (!is_array($name)) $name = array($name);
             foreach ($name as $item) {
-                $this->getMapper()->addPermission($this->getId(), $item);
+                $this->getMapper()->addPermission($this->getVolatileId(), $item);
             }
         } catch (Exception $e) {}
         return $this;
@@ -60,7 +60,7 @@ trait PermissionTrait
     public function removePermission($name = null)
     {
         try {
-            $this->getMapper()->removePermission($this->getId(), $name);
+            $this->getMapper()->removePermission($this->getVolatileId(), $name);
         } catch (Exception $e) {}
         return $this;
     }
@@ -77,7 +77,7 @@ trait PermissionTrait
         if (!is_array($permission)) $permission = array($permission);
         foreach ($permission as $p) {
             try {
-                if ($this->getMapper()->hasPermission($this->getId(), $p))
+                    if ($this->getMapper()->hasPermission($this->getVolatileId(), $p))
                     return true;
             } catch (Exception $e) {}
         }
