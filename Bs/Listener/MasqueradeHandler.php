@@ -1,11 +1,11 @@
 <?php
 namespace Bs\Listener;
 
-use Bs\Db\UserIface;
 use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Bs\Db\User;
+use Bs\Db\UserIface;
 use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
 
