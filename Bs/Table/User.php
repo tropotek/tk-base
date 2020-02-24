@@ -108,6 +108,7 @@ class User extends \Bs\TableIface
         if (!$tool) $tool = $this->getTool('a.name_first');
         $filter = array_merge($this->getFilterValues(), $filter);
         $list = $this->getConfig()->getUserMapper()->findFiltered($filter, $tool);
+        vd($this->getDb()->getLastQuery());
         return $list;
     }
 
