@@ -201,5 +201,3 @@ $config['url.auth.login'] = '/login.html';
 $config['url.auth.logout'] = '/logout.html';
 $config['url.auth.register'] = '/register.html';
 $config['url.auth.recover'] = '/recover.html';
-
-
