@@ -2,6 +2,7 @@
 namespace Bs\Listener;
 
 use Bs\Db\User;
+use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Event\AuthEvent;
@@ -14,6 +15,7 @@ use Tk\Auth\AuthEvents;
  */
 class AuthHandler implements Subscriber
 {
+    use ConfigTrait;
 
     /**
      * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event

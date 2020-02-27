@@ -261,11 +261,12 @@ class Config extends \Tk\Config
      *
      * Note: If you are creating a base lib then the DB really should be sent in via a param or method.
      *
-     * @param string $name
+     * @param ?string|null $name
      * @return mixed|\Tk\Db\Pdo
      */
-    public function getDb($name = 'db')
+    public function getDb($name = null)
     {
+        if (!$name) $name = 'db';
         if (!$this->get('db') && $this->has($name.'.type')) {
             try {
                 $pdo = \Tk\Db\Pdo::getInstance($name, $this->getGroup($name, true));
