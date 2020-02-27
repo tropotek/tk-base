@@ -165,7 +165,7 @@ TPL;
     {
         $tpl = <<<TPL
     /**
-     * return %s
+     * @return %s
      */
     public function %s%s() : %s
     {
