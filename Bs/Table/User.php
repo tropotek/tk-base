@@ -29,6 +29,8 @@ class User extends \Bs\TableIface
      */
     protected $editUrl = null;
 
+
+
     /**
      * @return \Tk\Uri
      */
