@@ -22,5 +22,16 @@ class Permission
         return array();
     }
 
+    /**
+     * Return the default permission set for creating new user types.
+     *
+     * @param string $type
+     * @return array
+     */
+    public static function getDefaultPermissionList($type = '')
+    {
+        return self::getPermissionList($type);
+    }
+
 
 }
