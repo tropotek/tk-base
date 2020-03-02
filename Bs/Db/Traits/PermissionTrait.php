@@ -75,7 +75,7 @@ trait PermissionTrait
     {
         if (!$this->isActive()) return false;
         if (!is_array($permission)) $permission = array($permission);
-        vd($permission);
+        vd($this->getName(), $permission);
         foreach ($permission as $p) {
             try {
                 if ($this->getMapper()->hasPermission($this->getVolatileId(), $p))
