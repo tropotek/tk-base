@@ -75,11 +75,10 @@ trait PermissionTrait
     {
         if (!$this->isActive()) return false;
         if (!is_array($permission)) $permission = array($permission);
-        vd($this->getName(), $permission);
         foreach ($permission as $p) {
             try {
                 if ($this->getMapper()->hasPermission($this->getVolatileId(), $p))
-                return true;
+                    return true;
             } catch (Exception $e) { \Tk\Log::warning($e->__toString()); }
         }
         return false;
