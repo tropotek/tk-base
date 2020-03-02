@@ -135,6 +135,7 @@ class AuthHandler implements Subscriber
             $event->setRedirect(\Tk\Uri::create('/'));
         }
         $auth->clearIdentity();
+        $this->getSession()->remove('isLti');
         if (!$config->getMasqueradeHandler()->isMasquerading()) {
             \Tk\Log::warning('Destroying Session');
             $config->getSession()->destroy();

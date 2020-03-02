@@ -135,7 +135,7 @@ class User extends \Bs\FormIface
 
         $this->getUser()->save();
 
-        if ($form->getFieldValue('permission')) {
+        if ($form->getField('permission')) {
             $this->getUser()->removePermission();
             $this->getUser()->addPermission($form->getFieldValue('permission'));
         }

@@ -7,6 +7,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * @author Michael Mifsud <info@tropotek.com>
  * @see http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
+ * @deprecated I do not think this is required here anymore, just use the base class  \Tk\Listener\CrumbsHandler
  */
 class CrumbsHandler extends \Tk\Listener\CrumbsHandler
 {
@@ -17,14 +18,15 @@ class CrumbsHandler extends \Tk\Listener\CrumbsHandler
      */
     public function onSystemInit($event)
     {
-        $user = $this->getConfig()->getAuthUser();
-        $homeTitle = '';
-        $homeUrl = '';
-        if ($user) {
-            $homeTitle = 'Dashboard';
-            $homeUrl = $this->getConfig()->getUserHomeUrl($user)->getRelativePath();
-        }
-        $this->getConfig()->getCrumbs($homeTitle, $homeUrl);
+        $this->getConfig()->getCrumbs();
+//        $user = $this->getConfig()->getAuthUser();
+//        $homeTitle = '';
+//        $homeUrl = '';
+//        if ($user) {
+//            $homeTitle = 'Dashboard';
+//            $homeUrl = $this->getConfig()->getUserHomeUrl($user)->getRelativePath();
+//        }
+//        $this->getConfig()->getCrumbs($homeTitle, $homeUrl);
     }
 
     /**

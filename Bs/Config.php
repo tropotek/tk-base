@@ -14,7 +14,6 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 class Config extends \Tk\Config
 {
 
-
     /**
      * init the default params.
      */
@@ -377,18 +376,19 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @param string $homeTitle
-     * @param string $homeUrl
      * @return \Tk\Crumbs
      */
-    public function getCrumbs($homeTitle = null, $homeUrl = null)
+    public function getCrumbs()
     {
         if (!$this->get('crumbs')) {
-            if ($homeTitle)
-                \Tk\Crumbs::$homeTitle = $homeTitle;
-            if ($homeUrl)
-                \Tk\Crumbs::$homeUrl = $homeUrl;
-            $obj = \Tk\Crumbs::getInstance();
+            $homeUrl = '/index.html';
+            $homeTitle = 'Dashboard';
+            if (!$this->getAuthUser() || $this->getAuthUser()->hasType(User::TYPE_GUEST)) {
+                $homeTitle = 'Home';
+            } else {
+                $homeUrl = \Uni\Uri::createHomeUrl($homeUrl)->getRelativePath();
+            }
+            $obj = \Tk\Crumbs::getInstance($homeUrl, $homeTitle);
             $this->set('crumbs', $obj);
         }
         return $this->get('crumbs');
