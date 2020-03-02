@@ -121,7 +121,7 @@ class UserMap extends Mapper
     /**
      * @param array|\Tk\Db\Filter $filter
      * @param Tool $tool
-     * @return ArrayObject|User[]
+     * @return ArrayObject|User[]|UserIface[]
      * @throws \Exception
      */
     public function findFiltered($filter, $tool = null)
