@@ -34,7 +34,7 @@ trait PermissionTrait
     {
         try {
             return $this->getMapper()->getPermissions($this->getVolatileId());
-        } catch (Exception $e) {}
+        } catch (Exception $e) { \Tk\Log::warning($e->__toString()); }
         return array();
     }
 
@@ -49,7 +49,7 @@ trait PermissionTrait
             foreach ($name as $item) {
                 $this->getMapper()->addPermission($this->getVolatileId(), $item);
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) { \Tk\Log::warning($e->__toString()); }
         return $this;
     }
 
@@ -61,7 +61,7 @@ trait PermissionTrait
     {
         try {
             $this->getMapper()->removePermission($this->getVolatileId(), $name);
-        } catch (Exception $e) {}
+        } catch (Exception $e) { \Tk\Log::warning($e->__toString()); }
         return $this;
     }
 
@@ -75,11 +75,12 @@ trait PermissionTrait
     {
         if (!$this->isActive()) return false;
         if (!is_array($permission)) $permission = array($permission);
+        vd($permission);
         foreach ($permission as $p) {
             try {
-                    if ($this->getMapper()->hasPermission($this->getVolatileId(), $p))
-                    return true;
-            } catch (Exception $e) {}
+                if ($this->getMapper()->hasPermission($this->getVolatileId(), $p))
+                return true;
+            } catch (Exception $e) { \Tk\Log::warning($e->__toString()); }
         }
         return false;
     }
