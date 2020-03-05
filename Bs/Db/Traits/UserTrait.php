@@ -41,7 +41,7 @@ trait UserTrait
     /**
      * Find this institutions owner user
      *
-     * @return UserIface|null
+     * @return UserIface|\Uni\Db\UserIface|null
      * @throws \Exception
      */
     public function getUser()
