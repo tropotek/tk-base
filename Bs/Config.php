@@ -1,6 +1,8 @@
 <?php
 namespace Bs;
 
+use Bs\Db\Role;
+use Bs\Db\User;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
 /**
@@ -380,15 +382,23 @@ class Config extends \Tk\Config
     public function getCrumbs($homeTitle = null, $homeUrl = null)
     {
         if (!$this->get('crumbs')) {
-            if ($homeTitle)
-                \Tk\Crumbs::$homeTitle = $homeTitle;
-            if ($homeUrl)
-                \Tk\Crumbs::$homeUrl = $homeUrl;
-            $obj = \Tk\Crumbs::getInstance();
+            $homeUrl = '/index.html';
+            $homeTitle = 'Dashboard';
+            if (!$this->getAuthUser() || $this->getAuthUser()->getType() == Role::TYPE_PUBLIC) {
+                $homeTitle = 'Home';
+            } else {
+                $homeUrl = \Uni\Uri::createHomeUrl($homeUrl)->getRelativePath();
+            }
+//            if ($homeTitle)
+//                \Tk\Crumbs::$homeTitle = $homeTitle;
+//            if ($homeUrl)
+//                \Tk\Crumbs::$homeUrl = $homeUrl;
+            $obj = \Tk\Crumbs::getInstance($homeUrl, $homeTitle);
             $this->set('crumbs', $obj);
         }
         return $this->get('crumbs');
     }
+
 
 
     //  -----------------------  Create methods  -----------------------
