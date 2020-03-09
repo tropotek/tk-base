@@ -74,6 +74,7 @@ trait PermissionTrait
     public function hasPermission($permission)
     {
         if (!$this->isActive()) return false;
+        if (func_num_args() > 1) $permission = func_get_args();
         if (!is_array($permission)) $permission = array($permission);
         foreach ($permission as $p) {
             try {

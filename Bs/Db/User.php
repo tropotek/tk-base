@@ -242,9 +242,10 @@ class User extends Model implements UserIface
      */
     public function hasType($type)
     {
-        if (!is_array($type)) $type = array($type);
+        if (func_num_args() > 1) $type = func_get_args();
+        else if (!is_array($type)) $type = array($type);
         foreach ($type as $r) {
-            if ($r == $this->getType()) {
+            if (trim($r) == trim($this->getType())) {
                 return true;
             }
         }
