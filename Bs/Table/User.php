@@ -97,8 +97,7 @@ class User extends \Bs\TableIface
             $arr[] = 'active';
         }
         /** @var \Tk\Table\Action\ColumnSelect $cs */
-        $cs = $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected($arr));
-        $cs->resetColumnSession();
+        $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected($arr));
 
         $this->appendAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array('1')));
         //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
