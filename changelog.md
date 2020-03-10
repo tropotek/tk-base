@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 3.2.0 [2020-03-11]:
+-------------------------------
+  - Merge branch '3.2' of ssh://github.com/tropotek/tk-base into 3.2
+  - Added LTI 1.3 plugin
+
+
 Ver 3.0.96 [2020-02-14]:
 -------------------------------
 
