@@ -90,7 +90,16 @@ class User extends \Bs\TableIface
 
         // Actions
         //$this->appendAction(\Tk\Table\Action\Link::createLink('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
-        //$this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected(array('modified', 'created')));
+        $arr = array('modified', 'created');
+        if ($this->getAuthUser()->isStaff()) {
+            $arr[] = 'username';
+            $arr[] = 'barcode';
+            $arr[] = 'active';
+        }
+        /** @var \Tk\Table\Action\ColumnSelect $cs */
+        $cs = $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected($arr));
+        $cs->resetColumnSession();
+
         $this->appendAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array('1')));
         //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
         $this->appendAction(\Tk\Table\Action\Csv::create());
