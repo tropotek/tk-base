@@ -77,10 +77,10 @@ class User extends \Bs\TableIface
             return $obj->getName();
         })->addCss('key')->setUrl($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('username'));
+        $this->appendCell(new \Tk\Table\Cell\Text('uid'))->setLabel('UID');
         $this->appendCell(new \Tk\Table\Cell\Email('email'));
         $this->appendCell(new \Tk\Table\Cell\Text('phone'));
         //$this->appendCell(new \Tk\Table\Cell\Text('type'));
-        $this->appendCell(new \Tk\Table\Cell\Text('uid'))->setLabel('UID');
         $this->appendCell(new \Tk\Table\Cell\Boolean('active'));
         $this->appendCell(new \Tk\Table\Cell\Date('lastLogin'));
         $this->appendCell(new \Tk\Table\Cell\Date('created'));
