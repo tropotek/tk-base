@@ -29,7 +29,25 @@ class User extends \Bs\TableIface
      */
     protected $editUrl = null;
 
+    protected $targetType = '';
 
+    /**
+     * @return string
+     */
+    public function getTargetType(): string
+    {
+        return $this->targetType;
+    }
+
+    /**
+     * @param string $targetType
+     * @return $this
+     */
+    public function setTargetType(string $targetType)
+    {
+        $this->targetType = $targetType;
+        return $this;
+    }
 
     /**
      * @return \Tk\Uri
@@ -115,6 +133,8 @@ class User extends \Bs\TableIface
      */
     public function findList($filter = array(), $tool = null)
     {
+        if (!$this->getTargetType() && !empty($filter['type']))
+            $this->setTargetType($filter['type']);
         if (!$tool) $tool = $this->getTool('a.name_first');
         $filter = array_merge($this->getFilterValues(), $filter);
         $list = $this->getConfig()->getUserMapper()->findFiltered($filter, $tool);
