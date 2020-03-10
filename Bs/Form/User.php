@@ -118,7 +118,7 @@ class User extends \Bs\FormIface
 
         // Just a small check to ensure the user down not change their own role
         if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && $this->getUser()->getType() != $this->getConfig()->getAuthUser()->getType()) {
-            $form->addError('You cannot change your own role information.');
+            $form->addError('You cannot change your own user type information.');
         }
         if ($this->getUser()->getId() == $this->getConfig()->getAuthUser()->getId() && !$this->getUser()->isActive()) {
             $form->addError('You cannot change your own active status.');
