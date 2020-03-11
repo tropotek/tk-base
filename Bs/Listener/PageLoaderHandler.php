@@ -34,7 +34,7 @@ class PageLoaderHandler implements Subscriber
 
             // Do not use for public pages
             $uri = \Bs\Uri::create();
-            if ($uri->getRoleType($this->getConfig()::getUserTypeList(true)) == '') {
+            if ($uri->getRoleType($this->getConfig()->getUserTypeList(true)) == '') {
                 return;
             }
 
