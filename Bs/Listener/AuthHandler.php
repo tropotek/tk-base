@@ -44,6 +44,7 @@ class AuthHandler implements Subscriber
     public function validatePageAccess($event)
     {
         $config = \Bs\Config::getInstance();
+        // TODO: we need to create an Object pattern that can handle page permissions with exceptions etc...
         $urlRole = \Bs\Uri::create()->getRoleType(User::getUserTypeList(true));
         if ($urlRole && $urlRole != 'public') {
             if (!$config->getAuthUser()) {  // if no user and the url has permissions set

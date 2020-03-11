@@ -589,6 +589,7 @@ class User extends Model implements UserIface
      *
      * @param bool $valuesOnly (optional) return the type values with no name keys
      * @return array
+     * @deprecated use \Bs\Config::getInstance()->getUserTypeList(...)
      */
     public static function getUserTypeList($valuesOnly = false)
     {

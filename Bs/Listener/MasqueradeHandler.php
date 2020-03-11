@@ -103,9 +103,9 @@ class MasqueradeHandler implements Subscriber
     protected function hasPrecedence($user, $msqUser)
     {
         // Get the users role precedence order index
-        $userRoleIdx = $this->getTypePrecedenceIdx($user);
-        $msqRoleIdx = $this->getTypePrecedenceIdx($msqUser);
-        return ($userRoleIdx < $msqRoleIdx);
+        $userTypeIdx = $this->getTypePrecedenceIdx($user);
+        $msqTypeIdx = $this->getTypePrecedenceIdx($msqUser);
+        return ($userTypeIdx < $msqTypeIdx);
     }
 
     /**

@@ -26,6 +26,7 @@ class Page extends \Tk\Controller\Page
      * Create the default template path using the url role if available (see Config)
      *
      * @return string
+     * @todo Refactor this method to not use the public type name
      */
     protected function makeDefaultTemplatePath()
     {

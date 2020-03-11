@@ -100,6 +100,8 @@ class Uri extends \Tk\Uri
      *
      * @param array $roles  Supply a list of available roles to search for
      * @return string
+     * @todo: deprecate this function outta here it should be a helper method in the App/Config if needed???
+     * @deprecated Not sure yet!!!!
      */
     public function getRoleType($roles = array())
     {
