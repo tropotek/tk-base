@@ -1,5 +1,13 @@
 #CHANGELOG#
 
+Ver 3.0.104 [2020-03-13]:
+-------------------------------
+  - Tagging and releasing branch `3.0` with version `3.0.102`.
+  - Fixed courseId collissions
+  - Tagging and releasing branch `3.0` with version `3.0.100`.
+  - Tagging and releasing branch `M	Bs/Db/User.php` with version `3.0.98`.
+
+
 Ver 3.0.102 [2020-03-13]:
 -------------------------------
   - Fixed courseId collissions
