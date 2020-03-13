@@ -129,6 +129,7 @@ class UserMap extends Mapper
     public function findFiltered($filter, $tool = null)
     {
         $r = $this->selectFromFilter($this->makeQuery(\Tk\Db\Filter::create($filter)), $tool);
+        vd($this->getDb()->getLastQuery());
         return $r;
     }
 
