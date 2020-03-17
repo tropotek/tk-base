@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db\Traits;
 
+use Bs\Db\User;
 use Bs\Db\UserIface;
 use Bs\Config;
 
@@ -41,7 +42,7 @@ trait UserTrait
     /**
      * Find this institutions owner user
      *
-     * @return UserIface|\Uni\Db\UserIface|null
+     * @return UserIface|\Uni\Db\UserIface|User|\Uni\Db\User|null
      * @throws \Exception
      */
     public function getUser()
