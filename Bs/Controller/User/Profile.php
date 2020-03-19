@@ -12,13 +12,6 @@ use Tk\Request;
  */
 class Profile extends \Bs\Controller\AdminEditIface
 {
-
-    /**
-     * @var User|\Bs\Db\UserIface
-     */
-    protected $user = null;
-
-
     /**
      * @throws \Exception
      */
@@ -29,35 +22,12 @@ class Profile extends \Bs\Controller\AdminEditIface
     }
 
     /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param Request $request
-     * @throws \Exception
-     */
-    public function init($request)
-    {
-        $this->user = $this->getConfig()->getAuthUser();
-    }
-
-    /**
      * @param Request $request
      * @throws \Exception
      */
     public function doDefault(Request $request)
     {
-        if ($this->user->getId() != $this->getAuthUser()->getId()) {
-            throw  new \Tk\Exception('Server error, please logout and back in to correct.');
-        }
-
-        $this->init($request);
-
-        $this->setForm(\Bs\Form\User::create()->setModel($this->user));
+        $this->setForm(\Bs\Form\User::create()->setModel($this->getConfig()->getAuthUser()));
 
         if ($this->getForm()->getField('active'))
             $this->getForm()->removeField('active');
@@ -71,14 +41,14 @@ class Profile extends \Bs\Controller\AdminEditIface
             $this->getForm()->removeField('permission');
 
             $tab = 'Permissions';
-            $list = $this->getConfig()->getPermissionList($this->getUser()->getType());
+            $list = $this->getConfig()->getPermissionList($this->getConfig()->getAuthUser()->getType());
             if (count($list)) {
                 $this->getForm()->appendField(\Tk\Form\Field\CheckboxGroup::createSelect('permission_ro', $list))
                     ->setLabel('Permission List')->setTabGroup($tab)
                     ->setValue(array_values($list));
             }
-            if ($this->getUser()->getId()) {
-                $this->getForm()->load(array('permission_ro' => $this->getUser()->getPermissions()));
+            if ($this->getConfig()->getAuthUser()->getId()) {
+                $this->getForm()->load(array('permission_ro' => $this->getConfig()->getAuthUser()->getPermissions()));
             }
         }
 
@@ -95,8 +65,8 @@ class Profile extends \Bs\Controller\AdminEditIface
 
         // Render the form
         $template->appendTemplate('panel', $this->form->show());
-        if ($this->user->getId())
-            $template->setAttr('panel', 'data-panel-title', $this->user->getName() . ' - [ID ' . $this->user->getId() . ']');
+        if ($this->getConfig()->getAuthUser()->getId())
+            $template->setAttr('panel', 'data-panel-title', $this->getConfig()->getAuthUser()->getName() . ' - [ID ' . $this->getConfig()->getAuthUser()->getId() . ']');
 
         return $template;
     }
