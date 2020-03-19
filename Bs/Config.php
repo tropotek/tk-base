@@ -386,7 +386,7 @@ class Config extends \Tk\Config
             if (!$this->getAuthUser() || $this->getAuthUser()->hasType(User::TYPE_GUEST)) {
                 $homeTitle = 'Home';
             } else {
-                $homeUrl = \Uni\Uri::createHomeUrl($homeUrl)->getRelativePath();
+                $homeUrl = \Bs\Uri::createHomeUrl($homeUrl)->getRelativePath();
             }
             $obj = \Tk\Crumbs::getInstance($homeUrl, $homeTitle);
             $this->set('crumbs', $obj);

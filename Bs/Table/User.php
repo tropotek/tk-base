@@ -109,11 +109,6 @@ class User extends \Bs\TableIface
         // Actions
         //$this->appendAction(\Tk\Table\Action\Link::createLink('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
         $arr = array('modified', 'created');
-        if ($this->getAuthUser()->isStaff()) {
-            $arr[] = 'username';
-            $arr[] = 'barcode';
-            $arr[] = 'active';
-        }
         /** @var \Tk\Table\Action\ColumnSelect $cs */
         $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected($arr));
 
