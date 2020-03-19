@@ -1,4 +1,9 @@
-
+-- --------------------------------------------
+-- @version 3.0.0
+-- Time to update the user name field to name_first, name_last fields
+--
+-- Author: Michael Mifsud <info@tropotek.com>
+-- --------------------------------------------
 
 
 

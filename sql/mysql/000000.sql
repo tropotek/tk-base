@@ -1,7 +1,8 @@
--- --------------------------------------------------------
+-- --------------------------------------------
+-- @version install
 --
--- @author Michael Mifsud <info@tropotek.com>
--- --------------------------------------------------------
+-- Author: Michael Mifsud <info@tropotek.com>
+-- --------------------------------------------
 
 
 CREATE TABLE IF NOT EXISTS `user`
