@@ -549,7 +549,7 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return Db\UserIface
+     * @return Db\UserIface|\|App\Db\User
      */
     public function getAuthUser()
     {
