@@ -1,4 +1,9 @@
 <?php
+/**
+ * @version 3.0
+ *
+ * @author: Michael Mifsud <info@tropotek.com>
+ */
 
 // This is executed here to let the \Tk\Db\Data object control the creation of the Data table.
 $config = \Bs\Config::getInstance();
