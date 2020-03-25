@@ -5,8 +5,6 @@
 -- @author: Michael Mifsud <info@tropotek.com>
 -- --------------------------------------------
 
-
-
 -- Create the new fields
 alter table user add type varchar(32) default '' not null after uid;
 
