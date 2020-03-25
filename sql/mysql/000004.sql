@@ -57,6 +57,23 @@ INSERT INTO user_permission (user_id, name)
     )
 ;
 
+INSERT INTO user_permission (user_id, name)
+    (
+        SELECT a.id, 'perm.manage.plugins'
+        FROM user a
+        WHERE a.type = 'admin'
+    )
+;
+
+INSERT INTO user_permission (user_id, name)
+    (
+        SELECT a.id, 'perm.manage.site'
+        FROM user a
+        WHERE a.type = 'admin'
+    )
+;
+
+
 alter table user drop column role_id;
 alter table user drop column name;
 

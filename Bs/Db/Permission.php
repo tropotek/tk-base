@@ -41,6 +41,7 @@ class Permission
         switch ($type) {
             case User::TYPE_ADMIN;
                 $arr = array(
+                    'Manage Site Config' => self::MANAGE_SITE,
                     'Manage Site Plugins' => self::MANAGE_PLUGINS,
                     'Can Masquerade' => self::CAN_MASQUERADE
                 );
@@ -67,7 +68,7 @@ class Permission
     public static function getDefaultPermissionList($type = '')
     {
         $list = self::getPermissionList($type);
-        if ($type = User::TYPE_ADMIN) {
+        if ($type == User::TYPE_ADMIN) {
             $list = array(
                 'Manage Site Config' => self::MANAGE_SITE,
                 'Manage Site Plugins' => self::MANAGE_PLUGINS,
