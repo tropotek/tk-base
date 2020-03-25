@@ -55,7 +55,7 @@ INSERT INTO user_permission (user_id, name)
     (
         SELECT a.id, 'perm.masquerade'
         FROM user a
-        WHERE a.type = 'client' OR a.type = 'admin'
+        WHERE a.type = 'admin'
     )
 ;
 
