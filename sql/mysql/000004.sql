@@ -40,8 +40,8 @@ INSERT INTO user_permission (user_id, name)
 alter table user drop column role_id;
 alter table user drop column name;
 
-DROP TABLE _user_role;
-DROP TABLE _user_role_permission;
+-- DROP TABLE _user_role;
+-- DROP TABLE _user_role_permission;
 
 
 

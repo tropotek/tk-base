@@ -10,6 +10,24 @@ namespace Bs\Db;
 class Permission
 {
 
+    /**
+     * Can manage site settings and configuration
+     * @target user,admin
+     */
+    const MANAGE_SITE        = 'perm.manage.site';
+
+    /**
+     * Can masquerade as other lower tier users
+     * @target user,admin
+     */
+    const CAN_MASQUERADE        = 'perm.masquerade';
+
+    /**
+     * Manage plugins
+     * @target user,admin
+     */
+    const MANAGE_PLUGINS        = 'perm.manage.plugins';
+
 
     /**
      * Get all available permissions for a user type
@@ -19,7 +37,25 @@ class Permission
      */
     public static function getPermissionList($type = '')
     {
-        return array();
+        $arr = array();
+        switch ($type) {
+            case User::TYPE_ADMIN;
+                $arr = array(
+                    'Manage Site Plugins' => self::MANAGE_PLUGINS,
+                    'Can Masquerade' => self::CAN_MASQUERADE
+                );
+                break;
+            case User::TYPE_MEMBER:
+                $arr = array();
+                break;
+            default:
+                $arr = array(
+                    'Manage Site Config' => self::MANAGE_SITE,
+                    'Manage Site Plugins' => self::MANAGE_PLUGINS,
+                    'Can Masquerade' => self::CAN_MASQUERADE
+                );
+        }
+        return $arr;
     }
 
     /**
@@ -30,7 +66,15 @@ class Permission
      */
     public static function getDefaultPermissionList($type = '')
     {
-        return self::getPermissionList($type);
+        $list = self::getPermissionList($type);
+        if ($type = User::TYPE_ADMIN) {
+            $list = array(
+                'Manage Site Config' => self::MANAGE_SITE,
+                'Manage Site Plugins' => self::MANAGE_PLUGINS,
+                'Can Masquerade' => self::CAN_MASQUERADE
+            );
+        }
+        return $list;
     }
 
 
