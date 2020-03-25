@@ -51,6 +51,16 @@ trait ForeignModelTrait
         return $this;
     }
 
+    /**
+     * Alias to getModel();
+     *
+     * @return Model|ModelInterface|null
+     * @throws \Exception
+     */
+    public function getForeignModel()
+    {
+        return $this->getModel();
+    }
 
     /**
      * @return null|Model|ModelInterface
