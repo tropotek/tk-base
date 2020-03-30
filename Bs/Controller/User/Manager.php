@@ -18,6 +18,8 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     protected $targetType = '';
 
+    protected $editUrl = null;
+
 
     /**
      * @throws \Exception
@@ -53,9 +55,12 @@ class Manager extends \Bs\Controller\AdminManagerIface
                 $this->setPageTitle('Member Manager');
                 break;
         }
-        $editUrl = \Bs\Uri::createHomeUrl('/'.$this->targetType.'Edit.html');
 
-        $this->table = \Bs\Table\User::create()->setEditUrl($editUrl)->init();
+        $tt = $this->targetType;
+        if (!$tt) $tt = 'user';
+        $this->editUrl = \Bs\Uri::createHomeUrl('/'.$tt.'Edit.html');
+
+        $this->table = \Bs\Table\User::create()->setEditUrl($this->editUrl)->init();
         $this->table->setList($this->table->findList(array('type' => $this->targetType)));
 
     }
@@ -65,8 +70,9 @@ class Manager extends \Bs\Controller\AdminManagerIface
      */
     public function show()
     {
+
         $this->getActionPanel()->append(\Tk\Ui\Link::createBtn('Add User',
-            \Bs\Uri::createHomeUrl('/'.$this->targetType.'Edit.html'), 'fa fa-user'));
+            $this->editUrl, 'fa fa-user'));
         $template = parent::show();
 
         $template->appendTemplate('table', $this->table->show());
