@@ -401,6 +401,7 @@ var project_core = function () {
       form.find('textarea.mce, textarea.mce-med, textarea.mce-min, textarea.mce-micro').each(function () {
         var el = $(this);
         var cfg = {statusbar: false};
+
         //var readonly = 0;
         if (el.is('[readonly]') || el.is('[disabled]')) {
           cfg.readonly = 1;
@@ -409,6 +410,9 @@ var project_core = function () {
           cfg.theme_advanced_disable = true;
         }
         var opts = $.extend({}, mceOpts, cfg, extOpts);
+        if (el.hasClass('mce-no-fm')) {   // disable the elFinder file manager
+          opts.file_picker_callback = null;
+        }
         if (el.hasClass('mce-micro')) {
           opts = $.extend({}, opts, {
             plugins: ['lists advlist autolink link image media code'],
