@@ -36,7 +36,8 @@ class CleanData extends Iface
         parent::execute($input, $output);
         $this->deleteEmptyFolders();
         $this->deleteTempFiles();
-        //$this->deleteOldSessions();
+        if (!$this->getConfig()->isDebug())
+            $this->deleteOldSessions();
     }
 
 
@@ -94,7 +95,7 @@ class CleanData extends Iface
     {
         $this->write('   - Cleaning obsolete sessions.');
         $db = \App\Config::getInstance()->getDb();
-        $expire = session_cache_expire()*2;
+        $expire = session_cache_expire()*4;
         $stm = $db->prepare('DELETE FROM '.\Tk\Session\Adapter\Database::$DB_TABLE.' WHERE modified < DATE_SUB(NOW(), INTERVAL '.$expire.' MINUTE)');
         $stm->execute();
     }
