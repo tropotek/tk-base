@@ -36,7 +36,7 @@ class CleanData extends Iface
         parent::execute($input, $output);
         $this->deleteEmptyFolders();
         $this->deleteTempFiles();
-        $this->deleteOldSessions();
+        //$this->deleteOldSessions();
     }
 
 
