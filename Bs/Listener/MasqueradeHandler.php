@@ -144,6 +144,9 @@ class MasqueradeHandler implements Subscriber
             'userId' => $user->getId(),
             'url' => \Tk\Uri::create()->remove(static::MSQ)->toString()
         );
+//            if ($config->getSubject() && $this->getConfig()->isLti()) {
+//                $config->getSession()->set('lti.subjectId', $this->getConfig()->getSubject()->getId());   // Limit the dashboard to one subject for LTI logins
+//            }
         array_push($msqArr, $userData);
         // Save the updated masquerade queue
         $config->getSession()->set(static::SID, $msqArr);
@@ -157,6 +160,7 @@ class MasqueradeHandler implements Subscriber
         $e->setResult($result);
         $e->setRedirect($url);
         $config->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e);
+
         if ($e->getRedirect())
             $e->getRedirect()->redirect();
 
