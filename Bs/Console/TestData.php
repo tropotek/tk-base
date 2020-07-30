@@ -180,7 +180,7 @@ class TestData extends Iface
     public function createRandomDate($from = null, $to = null)
     {
         if (!$from) {
-            $from = new \DateTime(strtotime('10 September 2000'));
+            $from = \Tk\Date::create(strtotime('10 September 2000'));
         }
         if (!$to) {
             $to = \Tk\Date::create();   // Now
