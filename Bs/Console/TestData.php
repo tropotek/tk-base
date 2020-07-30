@@ -70,6 +70,22 @@ class TestData extends Iface
         return implode('', $str);
     }
 
+    public function createStr($len = 12, $chars = 'abcdefghijklmnopqrstuvwxyz')
+    {
+        return substr(str_shuffle($chars), 0, $len);
+    }
+
+    public function createWords($cnt = 2, $len = 0, $chars = 'abcdefghijklmnopqrstuvwxyz')
+    {
+        $str = '';
+        for($i = 0; $i < $cnt; $i++) {
+            if ($len == 0) $len = rand(4, 24);
+            $str .= $this->createStr($len, $chars) . ' ';
+        }
+        return trim($str);
+    }
+
+
     public function createLipsumStr()
     {
         $str = <<<STR
@@ -142,5 +158,21 @@ STR;
         return $names[rand(0, count($names)-1)];
     }
 
+    /**
+     * @param null|\DateTime $from
+     * @param null|\DateTime $to
+     * @return \DateTime|string
+     */
+    public function createRandomDate($from = null, $to = null)
+    {
+        if (!$from) {
+            $from = new \DateTime(strtotime('10 September 2000'));
+        }
+        if (!$to) {
+            $to = \Tk\Date::create();   // Now
+        }
+        $ts = mt_rand($from->getTimestamp(), $to->getTimestamp());
+        return \Tk\Date::create($ts);
+    }
 
 }
