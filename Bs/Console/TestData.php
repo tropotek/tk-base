@@ -86,23 +86,37 @@ class TestData extends Iface
     }
 
 
-    public function createLipsumStr()
+    public function createLipsumStr($paragraphs = 2)
     {
-        $str = <<<STR
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque venenatis id ex a hendrerit. Fusce dictum quis felis vel cursus. Proin sollicitudin sed justo ut accumsan. Integer tincidunt lacus nibh, quis viverra turpis ultrices eget. Donec in enim et nibh faucibus laoreet. Curabitur aliquam purus vitae luctus vestibulum. Donec facilisis augue vitae lorem gravida ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-
-Fusce sed erat a odio eleifend iaculis vel non urna. Quisque consequat nunc quam, sit amet tincidunt dolor suscipit vel. Fusce id elit ligula. In ut augue purus. Aenean eu molestie ipsum. Sed porta eros quis efficitur euismod. Maecenas nec erat dictum, scelerisque elit at, ornare quam. Pellentesque et feugiat neque.
-STR;
+        $names = array(
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque venenatis id ex a hendrerit. Fusce dictum quis felis vel cursus. Proin sollicitudin sed justo ut accumsan. Integer tincidunt lacus nibh, quis viverra turpis ultrices eget. Donec in enim et nibh faucibus laoreet. Curabitur aliquam purus vitae luctus vestibulum. Donec facilisis augue vitae lorem gravida ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.',
+            'Fusce sed erat a odio eleifend iaculis vel non urna. Quisque consequat nunc quam, sit amet tincidunt dolor suscipit vel. Fusce id elit ligula. In ut augue purus. Aenean eu molestie ipsum. Sed porta eros quis efficitur euismod. Maecenas nec erat dictum, scelerisque elit at, ornare quam. Pellentesque et feugiat neque.'
+        );
+        $str = '';
+        for($i = 0; $i < $paragraphs; $i++) {
+            $str .= $names[rand(0, count($names)-1)] . "\n";
+        }
         return $str;
     }
 
-    public function createLipsumHtml()
+    public function createLipsumHtml($paragraphs = 2)
     {
-        $str = <<<STR
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque venenatis id ex a hendrerit. Fusce dictum quis felis vel cursus. Proin sollicitudin sed justo ut accumsan. Integer tincidunt lacus nibh, quis viverra turpis ultrices eget. Donec in enim et nibh faucibus laoreet. Curabitur aliquam purus vitae luctus vestibulum. Donec facilisis augue vitae lorem gravida ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
-<p>Fusce sed erat a odio eleifend iaculis vel non urna. Quisque consequat nunc quam, sit amet tincidunt dolor suscipit vel. Fusce id elit ligula. In ut augue purus. Aenean eu molestie ipsum. Sed porta eros quis efficitur euismod. Maecenas nec erat dictum, scelerisque elit at, ornare quam. Pellentesque et feugiat neque.</p>
-STR;
+        $names = array(
+            '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque venenatis id ex a hendrerit. Fusce dictum quis felis vel cursus. Proin sollicitudin sed justo ut accumsan. Integer tincidunt lacus nibh, quis viverra turpis ultrices eget. Donec in enim et nibh faucibus laoreet. Curabitur aliquam purus vitae luctus vestibulum. Donec facilisis augue vitae lorem gravida ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>',
+            '<p>Fusce sed erat a odio eleifend iaculis vel non urna. Quisque consequat nunc quam, sit amet tincidunt dolor suscipit vel. Fusce id elit ligula. In ut augue purus. Aenean eu molestie ipsum. Sed porta eros quis efficitur euismod. Maecenas nec erat dictum, scelerisque elit at, ornare quam. Pellentesque et feugiat neque.</p>'
+        );
+        $str = '';
+        for($i = 0; $i < $paragraphs; $i++) {
+            $str .= $names[rand(0, count($names)-1)] . "\n";
+        }
         return $str;
+    }
+
+    public function createSpecies()
+    {
+        $names = array('Dog', 'Goat', 'Pig', 'Sheep', 'Cattle', 'Cat', 'Chicken',
+            'Guinea Pig', 'Donkey', 'Fish', 'Horse', 'Rabbit ', 'Bird', 'Snake', 'Possum', 'Kangaroo');
+        return $names[rand(0, count($names)-1)];
     }
 
     public function createBreed()
