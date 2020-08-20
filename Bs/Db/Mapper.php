@@ -40,13 +40,16 @@ abstract class Mapper extends \Tk\Db\Mapper
     public function insert($obj)
     {
         $stop = false;
+        $e = new DbEvent($obj, $this);
         if ($this->getDispatcher()) {
-            $e = new DbEvent($obj, $this);
             $this->getDispatcher()->dispatch(DbEvents::MODEL_INSERT, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
             $r = parent::insert($obj);
+            if ($this->getDispatcher()) {
+                $this->getDispatcher()->dispatch(DbEvents::MODEL_INSERT_POST, $e);
+            }
             return $r;
         }
         return 0;
@@ -60,13 +63,16 @@ abstract class Mapper extends \Tk\Db\Mapper
     public function update($obj)
     {
         $stop = false;
+        $e = new DbEvent($obj, $this);
         if ($this->getDispatcher()) {
-            $e = new DbEvent($obj, $this);
             $this->getDispatcher()->dispatch(DbEvents::MODEL_UPDATE, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
             $r = parent::update($obj);
+            if ($this->getDispatcher()) {
+                $this->getDispatcher()->dispatch(DbEvents::MODEL_UPDATE_POST, $e);
+            }
             return $r;
         }
         return 0;
@@ -81,13 +87,16 @@ abstract class Mapper extends \Tk\Db\Mapper
     public function save($obj)
     {
         $stop = false;
+        $e = new DbEvent($obj, $this);
         if ($this->getDispatcher()) {
-            $e = new DbEvent($obj, $this);
             $this->getDispatcher()->dispatch(DbEvents::MODEL_SAVE, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
             parent::save($obj);
+            if ($this->getDispatcher()) {
+                $this->getDispatcher()->dispatch(DbEvents::MODEL_SAVE_POST, $e);
+            }
         }
     }
 
@@ -100,13 +109,16 @@ abstract class Mapper extends \Tk\Db\Mapper
     public function delete($obj)
     {
         $stop = false;
+        $e = new DbEvent($obj, $this);
         if ($this->getDispatcher()) {
-            $e = new DbEvent($obj, $this);
             $this->getDispatcher()->dispatch(DbEvents::MODEL_DELETE, $e);
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
             $r = parent::delete($obj);
+            if ($this->getDispatcher()) {
+                $this->getDispatcher()->dispatch(DbEvents::MODEL_DELETE_POST, $e);
+            }
             return $r;
         }
         return 0;

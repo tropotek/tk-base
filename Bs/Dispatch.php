@@ -3,6 +3,7 @@ namespace Bs;
 
 
 use Bs\Listener\InstallHandler;
+use Bs\Listener\StatusHandler;
 use Tk\ConfigTrait;
 use Bs\Listener\MailHandler;
 use Bs\Listener\MaintenanceHandler;
@@ -102,6 +103,8 @@ class Dispatch
             $dispatcher->addSubscriber(new PageHandler($dispatcher));
             $dispatcher->addSubscriber(new ResponseHandler($this->getConfig()->getDomModifier()));
         }
+
+        $dispatcher->addSubscriber(new StatusHandler());
 
         // Tk Listeners
         $dispatcher->addSubscriber(new StartupHandler($logger, $request, $this->getConfig()->getSession()));
