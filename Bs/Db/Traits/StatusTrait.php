@@ -123,11 +123,19 @@ trait StatusTrait
     }
 
     /**
-     * Object will only exist after a call to saveStatus()
+     * Object may not have a status
+     *
      * @return Status|null
      */
     public function getStatusObject()
     {
+        if (!$this->_statusObject) {
+            $this->_statusObject = \Bs\Db\StatusMap::create()->findFiltered(array(
+                'fkey' => get_class($this),
+                'fid' => $this->getId(),
+                'status' => $this->getStatus()
+            ), \Tk\Db\Tool::create('`created` DESC'))->current();
+        }
         return $this->_statusObject;
     }
 
