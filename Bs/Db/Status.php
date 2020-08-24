@@ -234,6 +234,26 @@ class Status extends Model
     }
 
     /**
+     * Return a unique list of users that have changed a status for this object
+     *
+     * @param string|null $type
+     * @return array|User[]
+     * @throws Exception
+     */
+    public function findUsersByType($type = '')
+    {
+        $userList = array();
+        $statusList = StatusMap::create()->findFiltered(array('model' => $this->getModel()));
+        foreach ($statusList as $status) {
+            if (!$status->getUser()) continue;
+            if ($type && $status->getUser()->getType() == $type) {
+                $userList[$status->getUserId()] = $status->getUser();
+            }
+        }
+        return $userList;
+    }
+
+    /**
      * @return int
      */
     public function getMsqUserId(): int

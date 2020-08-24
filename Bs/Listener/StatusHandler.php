@@ -40,13 +40,13 @@ class StatusHandler implements Subscriber
      */
     public function onSubmit(FormEvent $event)
     {
-        $values = $event->getForm()->getValues();
-        /** @var StatusTrait $model */
-        $model = $event->getForm()->getModel();
-
         /** @var StatusSelect $field */
         $field = $event->getForm()->getField('status');
         if (!$field) return;
+
+        $values = $event->getForm()->getValues();
+        /** @var StatusTrait $model */
+        $model = $event->getForm()->getModel();
 
         $model->setStatusNotify(false);
         if (isset($values[$field->getNotifyName()]) && $values[$field->getNotifyName()] == $field->getNotifyName()) {
