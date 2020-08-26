@@ -45,9 +45,10 @@ class Status extends \Bs\TableIface
      */
     public function init()
     {
+        $this->addCss('tk-status-table');
     
         $this->appendCell(new Cell\Checkbox('id'))->setLabel('ID');
-        $this->appendCell(new Text('name'))->setUrl($this->getEditUrl());
+        $this->appendCell(new Text('name'))->setLabel('Status')->setUrl($this->getEditUrl());
 
 //        $logUrl = null;
 //        if ($this->isShowLogUrl())
