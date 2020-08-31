@@ -61,6 +61,7 @@ trait UserTrait
      */
     public function setUser($user)
     {
+        \Tk\Log::warning('Using Deprecated Method UserTrait::setUser()');
         if ($user instanceof UserIface) {
             $this->user = $user;
             $this->userId = $user->getId();
