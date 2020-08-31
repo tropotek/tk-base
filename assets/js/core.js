@@ -655,7 +655,6 @@ var project_core = function () {
   };
 
 
-
   return {
     initSugar: initSugar
     , initDatetimePicker: initDatetimePicker
