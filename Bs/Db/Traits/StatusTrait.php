@@ -114,11 +114,9 @@ trait StatusTrait
         if (!$this->getStatusEvent()) { // create a default status name
             $this->setStatusEvent($this->makeStatusEventName());
         }
-        if ($this->isStatusNotify()) {
-            $this->_statusObj = \Bs\Db\Status::create($this);
-            if ($this->isStatusExecute()) {
-                $this->_statusObj->execute();
-            }
+        $this->_statusObj = \Bs\Db\Status::create($this);
+        if ($this->isStatusExecute()) {
+            $this->_statusObj->execute();   // <-- Status saved in here!!!
         }
     }
 
