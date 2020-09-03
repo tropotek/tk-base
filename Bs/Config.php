@@ -686,12 +686,11 @@ class Config extends \Tk\Config
     }
 
     /**
-     * @return \Bs\Listener\PageTemplateHandler
+     * @return \Tk\Listener\CrumbsHandler
      */
     public function getCrumbsHandler()
     {
         if (!$this->get('handler.crumbs')) {
-            //$this->set('handler.crumbs', new \Bs\Listener\CrumbsHandler());
             $this->set('handler.crumbs', new \Tk\Listener\CrumbsHandler());
         }
         return $this->get('handler.crumbs');
