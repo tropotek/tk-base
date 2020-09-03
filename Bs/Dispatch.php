@@ -104,7 +104,7 @@ class Dispatch
             $dispatcher->addSubscriber(new ResponseHandler($this->getConfig()->getDomModifier()));
         }
 
-        $dispatcher->addSubscriber(new StatusHandler());
+        $this->distpatchStatusHandler($dispatcher);
 
         // Tk Listeners
         $dispatcher->addSubscriber(new StartupHandler($logger, $request, $this->getConfig()->getSession()));
@@ -158,6 +158,14 @@ class Dispatch
 
         $dispatcher->addSubscriber(new MaintenanceHandler());
 
+    }
+
+    /**
+     * @param $dispatcher
+     */
+    protected function distpatchStatusHandler($dispatcher)
+    {
+        $dispatcher->addSubscriber(new StatusHandler());
     }
 
 }
