@@ -691,9 +691,21 @@ class Config extends \Tk\Config
     public function getCrumbsHandler()
     {
         if (!$this->get('handler.crumbs')) {
-            $this->set('handler.crumbs', new \Bs\Listener\CrumbsHandler());
+            //$this->set('handler.crumbs', new \Bs\Listener\CrumbsHandler());
+            $this->set('handler.crumbs', new \Tk\Listener\CrumbsHandler());
         }
         return $this->get('handler.crumbs');
+    }
+
+    /**
+     * @return \Bs\Listener\StatusHandler
+     */
+    public function getStatusHandler()
+    {
+        if (!$this->get('handler.status')) {
+            $this->set('handler.status', new \Bs\Listener\StatusHandler());
+        }
+        return $this->get('handler.status');
     }
 
     /**

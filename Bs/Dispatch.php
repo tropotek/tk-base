@@ -104,7 +104,6 @@ class Dispatch
             $dispatcher->addSubscriber(new ResponseHandler($this->getConfig()->getDomModifier()));
         }
 
-        $this->distpatchStatusHandler($dispatcher);
 
         // Tk Listeners
         $dispatcher->addSubscriber(new StartupHandler($logger, $request, $this->getConfig()->getSession()));
@@ -147,6 +146,8 @@ class Dispatch
         $dispatcher->addSubscriber(new ActionPanelHandler());
         $dispatcher->addSubscriber(new MailHandler());
 
+        if ($this->getConfig()->getStatusHandler())
+            $dispatcher->addSubscriber($this->getConfig()->getStatusHandler());
         if ($this->getConfig()->getAuthHandler())
             $dispatcher->addSubscriber($this->getConfig()->getAuthHandler());
         if ($this->getConfig()->getMasqueradeHandler())
@@ -158,14 +159,6 @@ class Dispatch
 
         $dispatcher->addSubscriber(new MaintenanceHandler());
 
-    }
-
-    /**
-     * @param $dispatcher
-     */
-    protected function distpatchStatusHandler($dispatcher)
-    {
-        $dispatcher->addSubscriber(new StatusHandler());
     }
 
 }
