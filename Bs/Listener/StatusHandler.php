@@ -41,6 +41,10 @@ class StatusHandler implements Subscriber
      */
     public function onSubmit(FormEvent $event)
     {
+        // TODO: there should be a better way to check this condition (IE: is a status form)
+        if (!$event->getForm()->getField('status')) return;
+
+
         /** @var StatusTrait|ModelInterface $model */
         $model = $event->getForm()->getModel();
         $values = $event->getForm()->getValues();
