@@ -77,7 +77,8 @@ var project_core = function () {
 
 
   /**
-   * Dual select list box renderer
+   * Add an edit lock button to text fields
+   * So the user has to click the unlock button b4 editing
    */
   var initTkInputLock = function () {
     if ($.fn.tkInputLock === undefined) {
@@ -88,6 +89,22 @@ var project_core = function () {
     function init() {
       var form = $(this);
       form.find('input.tk-input-lock').tkInputLock();
+    }
+    $('form').on('init', document, init).each(init);
+  };
+
+  /**
+   * Show the age from a past date field
+   */
+  var initTkAge = function () {
+    if ($.fn.tkAge === undefined) {
+      console.warn('Plugin not loaded: tkAge');
+      return;
+    }
+
+    function init() {
+      var form = $(this);
+      form.find('input.tk-age').tkAge();
     }
     $('form').on('init', document, init).each(init);
   };
@@ -660,6 +677,7 @@ var project_core = function () {
     , initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
     , initTkInputLock: initTkInputLock
+    , initTkAge: initTkAge
     , initTkFileInput: initTkFileInput
     , initDualListBox: initDualListBox
     , initCodemirror: initCodemirror
