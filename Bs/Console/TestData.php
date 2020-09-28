@@ -39,6 +39,11 @@ class TestData extends Iface
         return  sprintf('%s %s %s', $this->createNumberStr(2), $this->createNumberStr(4), $this->createNumberStr(4));
     }
 
+    public function createAddress()
+    {
+        return  sprintf('%s %s %s, %s', $this->createNumberStr(rand(1,4)), $this->createName(), 'Street', 'Melbourne, VIC, 3001');
+    }
+
     public function createDomain()
     {
         return  strtolower($this->createName()).'.com' . ((rand(1,5)==1) ? '.au' : '');
