@@ -48,7 +48,8 @@ class User extends \Bs\FormIface
         $this->appendField(new Field\Input('username'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('email'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('phone'))->setTabGroup($tab)->setNotes('Enter a phone number that you can be contacted on directly.');
-        $this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
+        $this->appendField(Field\Checkbox::create('active')->setCheckboxLabel('Enable User Login'))->setTabGroup($tab);
+        //$this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
 
         $tab = 'Password';
         $this->setAttr('autocomplete', 'off');
