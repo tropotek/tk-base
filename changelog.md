@@ -1,5 +1,13 @@
 #CHANGELOG#
 
+Ver 3.2.24 [2020-10-19]:
+-------------------------------
+  - Added new age addon to date input
+  - updated PathCase field locations
+  - Added colour field to PathCase
+  - Updated Weight Field to Path CAse
+
+
 Ver 3.2.22 [2020-09-14]:
 -------------------------------
   - fixed a few anying error emails and DB bugs
