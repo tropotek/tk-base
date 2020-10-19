@@ -34,8 +34,11 @@ class User extends \Bs\FormIface
     public function init()
     {
         $layout = $this->getRenderer()->getLayout();
+        $layout->removeRow('title', 'col-1');
+        $layout->removeRow('nameFirst', 'col');
         $layout->removeRow('nameLast', 'col');
         $layout->removeRow('phone', 'col');
+        $layout->removeRow('position', 'col');
 
 
         $tab = 'Details';
@@ -43,13 +46,17 @@ class User extends \Bs\FormIface
 //            $list = $this->getConfig()->getUserTypeList();
 //            $this->appendField(new Field\Select('type', $list))->prependOption('-- Select --', '')->setTabGroup($tab)->setRequired(true);
 //        }
+
+        $this->appendField(Field\Select::createSelect('title', \Bs\Db\User::getTitleList($this->getUser()->getTitle()))->prependOption('-- Select --') )->setTabGroup($tab);
         $this->appendField(new Field\Input('nameFirst'))->setLabel('First Name')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('nameLast'))->setLabel('Last Name(s)')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('username'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('email'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('phone'))->setTabGroup($tab)->setNotes('Enter a phone number that you can be contacted on directly.');
+        $this->appendField(new Field\Input('credentials'))->setTabGroup($tab)->setNotes('Enter your professional credentials. EG: BVSc, MPhil, MANZCVSc, Dip ACV');
+        $this->appendField(new Field\Input('position'))->setTabGroup($tab)->setNotes('Enter your work position/Department. EG: Senior Lecturer');
         $this->appendField(Field\Checkbox::create('active')->setCheckboxLabel('Enable User Login'))->setTabGroup($tab);
-        //$this->appendField(new Field\Checkbox('active'))->setTabGroup($tab);
+
 
         $tab = 'Password';
         $this->setAttr('autocomplete', 'off');
@@ -78,6 +85,7 @@ class User extends \Bs\FormIface
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));
         $this->appendField(new Event\Submit('save', array($this, 'doSubmit')));
         $this->appendField(new Event\Link('cancel', $this->getBackUrl()));
+
     }
 
     /**

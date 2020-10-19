@@ -53,7 +53,7 @@ class User extends Model implements UserIface
     /**
      * @var string
      */
-    public $password = '';
+    public $title = '';
 
     /**
      * @var string
@@ -74,6 +74,16 @@ class User extends Model implements UserIface
      * @var string
      */
     public $phone = '';
+
+    /**
+     * @var string
+     */
+    public $credentials = '';
+
+    /**
+     * @var string
+     */
+    public $position = '';
 
     /**
      * @var string
@@ -99,6 +109,11 @@ class User extends Model implements UserIface
      * @var string
      */
     public $sessionId = '';
+
+    /**
+     * @var string
+     */
+    public $password = '';
 
     /**
      * @var string
@@ -145,6 +160,32 @@ class User extends Model implements UserIface
         $user->setUsername('guest');
         $user->setType(self::TYPE_GUEST);
         return $user;
+    }
+
+
+    /**
+     * Use this to populate the select field for a users title
+     *
+     * @param string|null $title
+     * @return array|string[]
+     */
+    public static function getTitleList(?string $title = '')
+    {
+        $arr = array('Mr', 'Mrs', 'Ms', 'Dr', 'Prof', 'Esq', 'Hon', 'Messrs',
+            'Mmes', 'Msgr', 'Rev', 'Jr', 'Sr', 'St');
+        $arr = array_combine($arr, $arr);
+
+        $arr2 = array();
+        foreach ($arr as $k => $v) {
+            if ($v == $title) {
+                $arr2['* ' . $k . ''] = $v;
+            } else {
+                $arr2[$k] = $v;
+            }
+        }
+        $arr = $arr2;
+
+        return $arr;
     }
 
     /**
@@ -314,12 +355,14 @@ class User extends Model implements UserIface
     public function getName(): string
     {
         $name = trim($this->getNameFirst() . ' ' . $this->getNameLast());
-        if (!$name) $name = $this->getUsername();
+        if ($this->getTitle())
+            $name = $this->getTitle() . ' ' . $name;
+        if (!trim($name)) $name = $this->getUsername();
         return $name;
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return User
      */
     public function setName(?string $name): User
@@ -331,6 +374,24 @@ class User extends Model implements UserIface
         } else {
             $this->setNameFirst($name);
         }
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string|null $title
+     * @return User
+     */
+    public function setTitle(?string $title): User
+    {
+        $this->title = $title;
         return $this;
     }
 
@@ -379,7 +440,7 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string $email
+     * @param string|null $email
      * @return User
      */
     public function setEmail(?string $email): User
@@ -397,12 +458,48 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string $phone
+     * @param string|null $phone
      * @return User
      */
     public function setPhone(?string $phone): User
     {
         $this->phone = $phone;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCredentials(): string
+    {
+        return $this->credentials;
+    }
+
+    /**
+     * @param string|null $credentials
+     * @return User
+     */
+    public function setCredentials(?string $credentials): User
+    {
+        $this->credentials = $credentials;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPosition(): string
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param string|null $position
+     * @return User
+     */
+    public function setPosition(?string $position): User
+    {
+        $this->position = $position;
         return $this;
     }
 
@@ -415,7 +512,7 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string $image
+     * @param string|null $image
      * @return User
      */
     public function setImage(?string $image): User
@@ -469,7 +566,7 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param \DateTime $lastLogin
+     * @param \DateTime|null $lastLogin
      * @return User
      */
     public function setLastLogin(?\DateTime $lastLogin): User
@@ -487,7 +584,7 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string $sessionId
+     * @param string|null $sessionId
      * @return User
      */
     public function setSessionId(?string $sessionId): User
@@ -505,7 +602,7 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @param string $ip
+     * @param string|null $ip
      * @return User
      */
     public function setIp(?string $ip): User

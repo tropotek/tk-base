@@ -36,6 +36,24 @@ interface UserIface extends \Tk\ValidInterface, \Tk\Db\ModelInterface
     public function getPassword();
 
     /**
+     * Return the user title. EG: Dr, Ms, Mr, etc
+     * @return string
+     */
+    public function getTitle();
+
+    /**
+     * Return the user Credentials. EG: BVSc, MPhil, MANZCVSc, Dip ACVP
+     * @return string
+     */
+    public function getCredentials();
+
+    /**
+     * Return the user job position/Department. EG: Senior Lecturer
+     * @return string
+     */
+    public function getPosition();
+
+    /**
      * This should return the concatenated strings:
      * $this->getNameFirst() . ' ' . $this->>getNameLast()
      *
