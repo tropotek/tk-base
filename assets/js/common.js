@@ -29,7 +29,6 @@ jQuery(function ($) {
   project_core.initTkFileInput();
 
   project_core.initTkInputLock();
-  project_core.initTkAge();
 
 });
 
