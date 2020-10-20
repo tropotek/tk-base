@@ -93,21 +93,6 @@ var project_core = function () {
     $('form').on('init', document, init).each(init);
   };
 
-  /**
-   * Show the age from a past date field
-   */
-  var initTkAge = function () {
-    if ($.fn.tkAge === undefined) {
-      console.warn('Plugin not loaded: tkAge');
-      return;
-    }
-
-    function init() {
-      var form = $(this);
-      form.find('input.tk-age').tkAge();
-    }
-    $('form').on('init', document, init).each(init);
-  };
 
   /**
    * Dual select list box renderer
@@ -117,16 +102,17 @@ var project_core = function () {
       console.warn('Plugin not loaded: DualListBox');
       return;
     }
+    //console.warn('TK Plugin DualListBox has been disabled due to errors.');
 
     function init() {
       var form = $(this);
       // TODO: EMS causes an error here (check other sites with this plugin, time to find another option)??????
-      //form.find('select.tk-dualSelect, select.tk-dual-select').DualListBox();
-      form.find('select.tk-dualSelect, select.tk-dual-select').each(function () {
-        var el = $(this);
-        el.attr('disabled', 'disabled')
-          .after('<p><b>Mick: This has been disabled as we are working on a fix for these elements.</b></p>');
-      });
+      form.find('select.tk-dualSelect, select.tk-dual-select').DualListBox();
+      // form.find('select.tk-dualSelect, select.tk-dual-select').each(function () {
+      //   var el = $(this);
+      //   el.attr('disabled', 'disabled')
+      //     .after('<p><b>Mick: This has been disabled as we are working on a fix for this element.</b></p>');
+      // });
     }
     $('form').on('init', document, init).each(init);
   };
@@ -682,9 +668,8 @@ var project_core = function () {
     initSugar: initSugar
     , initDatetimePicker: initDatetimePicker
     , initLinkBlur: initLinkBlur
-    , initTkInputLock: initTkInputLock
-    , initTkAge: initTkAge
     , initTkFileInput: initTkFileInput
+    , initTkInputLock: initTkInputLock
     , initDualListBox: initDualListBox
     , initCodemirror: initCodemirror
     , initTinymce: initTinymce
