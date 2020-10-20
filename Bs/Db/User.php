@@ -178,9 +178,10 @@ class User extends Model implements UserIface
         $arr2 = array();
         foreach ($arr as $k => $v) {
             if ($v == $title) {
-                $arr2['* ' . $k . ''] = $v;
+                //$arr2['* ' . $k . ''] = $v;
+                $arr2['' . $k . '.'] = $v;
             } else {
-                $arr2[$k] = $v;
+                $arr2[$k.'.'] = $v;
             }
         }
         $arr = $arr2;
