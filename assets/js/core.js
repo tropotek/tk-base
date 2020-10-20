@@ -124,7 +124,8 @@ var project_core = function () {
       //form.find('select.tk-dualSelect, select.tk-dual-select').DualListBox();
       form.find('select.tk-dualSelect, select.tk-dual-select').each(function () {
         var el = $(this);
-        el.attr('disabled', 'disabled').after('<p><b>Mick: This has been disabled as we are working on a fix for these elements.</b></p>');
+        el.attr('disabled', 'disabled')
+          .after('<p><b>Mick: This has been disabled as we are working on a fix for these elements.</b></p>');
       });
     }
     $('form').on('init', document, init).each(init);
