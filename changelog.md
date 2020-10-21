@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.2.30 [2020-10-21]:
+-------------------------------
+  - Removed tkAge jQuery plugin as it interfears with dualListBox plugin
+
+
 Ver 3.2.28 [2020-10-21]:
 -------------------------------
   - Added media to report
