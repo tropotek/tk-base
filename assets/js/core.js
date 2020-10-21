@@ -109,7 +109,7 @@ var project_core = function () {
       // TODO: EMS causes an error here (check other sites with this plugin, time to find another option)??????
       //form.find('select.tk-dualSelect, select.tk-dual-select').DualListBox();
       //form.find('select.tk-dual-select').DualListBox();
-      
+
       form.find('select.tk-dualSelect, select.tk-dual-select').each(function () {
         var el = $(this);
         el.attr('disabled', 'disabled')
