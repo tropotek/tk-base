@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.2.32 [2020-10-22]:
+-------------------------------
+
+
 Ver 3.2.30 [2020-10-21]:
 -------------------------------
   - Removed tkAge jQuery plugin as it interfears with dualListBox plugin
