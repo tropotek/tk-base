@@ -98,11 +98,11 @@ var project_core = function () {
    * Dual select list box renderer
    */
   var initDualListBox = function () {
-    if ($.fn.DualListBox === undefined) {
-      console.warn('Plugin not loaded: DualListBox');
-      return;
-    }
     console.warn('TK Plugin DualListBox has been disabled due to errors.');
+    if ($.fn.DualListBox === undefined) {
+      //console.warn('Plugin not loaded: DualListBox');
+      //return;
+    }
 
     function init() {
       var form = $(this);
@@ -113,7 +113,7 @@ var project_core = function () {
       form.find('select.tk-dualSelect, select.tk-dual-select').each(function () {
         var el = $(this);
         el.attr('disabled', 'disabled')
-          .after('<p><b>Mick: This has been disabled as we are working on a fix for this element.</b></p>');
+          .after('<p><b>NOTICE: This has been disabled as we are working on a fix for this element.</b></p>');
       });
     }
     $('form').on('init', document, init).each(init);
