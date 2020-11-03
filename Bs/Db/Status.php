@@ -221,14 +221,14 @@ class Status extends Model
     /**
      * @param Status|null $status
      * @param string $userType
-     * @return Status|null
+     * @return User|null
      * @throws Exception
      */
     public static function findLastByUserType($status, $userType)
     {
-        if (!$status) return $status;
+        if (!$status) return null;
         if ($status->getUser() && $status->getUser()->hasType($userType)) {
-            return $status;
+            return $status->getUser();
         }
         return self::findLastByUserType($status->getPrevious(), $userType);
     }
