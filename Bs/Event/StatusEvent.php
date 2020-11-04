@@ -33,7 +33,7 @@ class StatusEvent extends \Tk\Event\Event
     }
 
     /**
-     * @return \Uni\Db\Status
+     * @return Status
      */
     public function getStatus()
     {
