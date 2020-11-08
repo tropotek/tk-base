@@ -104,12 +104,12 @@ class Status extends Model
     /**
      * @var ModelInterface|StatusTrait
      */
-    private $_modelStrategy = null;
+    protected $_modelStrategy = null;
 
     /**
      * @var Status
      */
-    private $_previous = null;
+    protected $_previous = null;
 
 
     /**
