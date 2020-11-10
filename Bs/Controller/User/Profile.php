@@ -27,7 +27,7 @@ class Profile extends \Bs\Controller\AdminEditIface
      */
     public function doDefault(Request $request)
     {
-        $this->setForm(\Bs\Form\User::create()->setModel($this->getConfig()->getAuthUser()));
+        $this->setForm($this->createForm());
 
         if ($this->getForm()->getField('active'))
             $this->getForm()->removeField('active');
@@ -53,6 +53,13 @@ class Profile extends \Bs\Controller\AdminEditIface
         }
 
         $this->getForm()->execute();
+    }
+    /**
+     * @return \Bs\Form\User
+     */
+    protected function createForm()
+    {
+        return \Bs\Form\User::create()->setModel($this->getConfig()->getAuthUser());
     }
 
     /**
