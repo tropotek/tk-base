@@ -171,7 +171,6 @@ class Status extends Model
 
         // Trigger mail event depending on the model
         if ($model->hasStatusChanged($this)) {
-            // Trigger Event
             $e = new StatusEvent($this);
             if ($this->getConfig()->getEventDispatcher()) {
                 // Fire event to setup status mail messages
@@ -344,7 +343,7 @@ class Status extends Model
     }
 
     /**
-     * @return mixed
+     * @return mixed|array
      */
     public function getSerialData()
     {
@@ -352,7 +351,7 @@ class Status extends Model
     }
 
     /**
-     * @param mixed $serialData
+     * @param mixed|array $serialData
      * @return Status
      */
     public function setSerialData($serialData)

@@ -28,7 +28,8 @@ class StatusHandler implements Subscriber
     {
         /** @var StatusTrait $model */
         $model = $event->getModel();
-        if (\Tk\ObjectUtil::classUses($model, StatusTrait::class)) {
+        //if (\Tk\ObjectUtil::classUses($model, StatusTrait::class)) {      // Does not work for \Uni\Db\StatusTrait
+        if (method_exists($model, 'saveStatus')) {
             $model->saveStatus();
         }
     }
@@ -41,16 +42,17 @@ class StatusHandler implements Subscriber
      */
     public function onSubmit(FormEvent $event)
     {
-        // TODO: there should be a better way to check this condition (IE: is a status form)
-        if (!$event->getForm()->getField('status')) return;
+//        // TODO: there should be a better way to check this condition (IE: is a status form)
+//        if (!$event->getForm()->getField('status')) return;
+
+        /** @var StatusSelect $field */
+        $field = $event->getForm()->getField('status');
+        if (!$field || !$field instanceof StatusSelect) return;
 
         /** @var StatusTrait|ModelInterface $model */
         $model = $event->getForm()->getModel();
         $values = $event->getForm()->getValues();
 
-        /** @var StatusSelect $field */
-        $field = $event->getForm()->getField('status');
-        if (!$field) return;
         $model->setStatusNotify(false);
         if (isset($values[$field->getNotifyName()]) && $values[$field->getNotifyName()] == $field->getNotifyName()) {
             $model->setStatusNotify(true);
