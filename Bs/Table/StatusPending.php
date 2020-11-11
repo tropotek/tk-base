@@ -49,22 +49,22 @@ class StatusPending extends \Bs\TableIface
     {
         $this->addCss('status-table');
 
-        $this->appendCell(new Text('id'))->setLabel('ID')->addOnCellHtml(function ($cell, $obj, $html) {
-            /** @var Iface $cell */
-            /** @var StatusAlias|StatusTrait $obj */
-            if ($obj->getModel()) {
-                $cell->setAttr('title', $obj->getLabel());
-                return $obj->getPendingIcon();
+        $this->appendCell(new Text('id'))->setLabel('ID')->addOnCellHtml(function (Iface $cell, StatusAlias $obj, $html) {
+            /** @var StatusTrait $model */
+            $model = $obj->getModel();
+            if ($model) {
+                $cell->setAttr('title', $model->getLabel());
+                return $model->getPendingIcon();
             }
             return '';
         });
 
-        $this->appendCell(new Text('name'))->addOnCellHtml(function ($cell, $obj, $html) {
-            /** @var Iface $cell */
-            /** @var StatusAlias|StatusTrait $obj */
+        $this->appendCell(new Text('name'))->addOnCellHtml(function (Iface $cell, StatusAlias $obj, $html) {
+            /** @var StatusTrait $model */
+            $model = $obj->getModel();
             $cell->removeAttr('title');
-            if ($obj->getModel()) {
-                return $obj->getPendingHtml();
+            if ($model) {
+                return $model->getPendingHtml();
             }
             return '';
         });
@@ -72,9 +72,7 @@ class StatusPending extends \Bs\TableIface
         // Actions
         $this->appendCell($this->getActionCell());
 
-        $this->appendCell(Date::createDate('created'))->addOnCellHtml(function ($cell, $obj, $html) {
-            /** @var Iface $cell */
-            /** @var StatusAlias $obj */
+        $this->appendCell(Date::createDate('created'))->addOnCellHtml(function (Iface $cell, StatusAlias $obj, $html) {
             $cell->removeAttr('title');
             return sprintf('<div class="status-created">%s</div>', $obj->getCreated(\Tk\Date::FORMAT_MED_DATE));
         });
@@ -84,6 +82,8 @@ class StatusPending extends \Bs\TableIface
         /** @var Select $select */
         $select = $this->appendFilter(new Select('fkey', $list));
         $select->prependOption('-- Type --', '')->setAttr('placeholder', 'Keywords');
+
+        $this->getRenderer()->removeFootRenderer('Limit');
 
         return $this;
     }
