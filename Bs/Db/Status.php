@@ -56,6 +56,21 @@ class Status extends Model
     public $msqUserId = 0;
 
     /**
+     * @var int
+     */
+    public $institutionId = 0;
+
+    /**
+     * @var int
+     */
+    public $courseId = 0;
+
+    /**
+     * @var int
+     */
+    public $subjectId = 0;
+
+    /**
      * The id of the subject of the activity
      * @var int
      */
@@ -143,6 +158,16 @@ class Status extends Model
                     $obj->setMsqUserId($msqUser->getId());
                 }
             }
+        }
+
+        if (method_exists($model, 'getInstitutionId')) {
+            $obj->setInstitutionId($model->getInstitutionId());
+        }
+        if (method_exists($model, 'getCourseId')) {
+            $obj->setCourseId($model->getCourseId());
+        }
+        if (method_exists($model, 'getSubjectId')) {
+            $obj->setSubjectId($model->getSubjectId());
         }
 
         return $obj;
@@ -267,6 +292,60 @@ class Status extends Model
     public function setMsqUserId(int $msqUserId): Status
     {
         $this->msqUserId = $msqUserId;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInstitutionId(): int
+    {
+        return $this->institutionId;
+    }
+
+    /**
+     * @param int $institutionId
+     * @return Status
+     */
+    public function setInstitutionId(int $institutionId): Status
+    {
+        $this->institutionId = $institutionId;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCourseId(): int
+    {
+        return $this->courseId;
+    }
+
+    /**
+     * @param int $courseId
+     * @return Status
+     */
+    public function setCourseId(int $courseId): Status
+    {
+        $this->courseId = $courseId;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSubjectId(): int
+    {
+        return $this->subjectId;
+    }
+
+    /**
+     * @param int $subjectId
+     * @return Status
+     */
+    public function setSubjectId(int $subjectId): Status
+    {
+        $this->subjectId = $subjectId;
         return $this;
     }
 

@@ -39,12 +39,19 @@ class StatusMap extends Mapper
      */
     public function initTable($db)
     {
+
         if (!$db->hasTable('status')) {
             $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `status` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT UNSIGNED NOT NULL DEFAULT 0,              -- The user who performed the activity
   `msq_user_id` INT UNSIGNED NOT NULL DEFAULT 0,          -- If the user was masquerading who was the root masquerading user
+  
+  -- For tkuni lib only
+  `institution_id` INTEGER NOT NULL DEFAULT 0,            
+  `course_id` INTEGER NOT NULL DEFAULT 0,
+  `subject_id` INTEGER NOT NULL DEFAULT 0,
+  
   `fkey` VARCHAR(64) NOT NULL DEFAULT '',                 -- A foreign key as a string (usually the object name)
   `fid` INTEGER NOT NULL DEFAULT 0,                       -- foreign_id
   `name` VARCHAR(32) NOT NULL DEFAULT '',                 -- pending|approved|not_approved
@@ -62,6 +69,26 @@ CREATE TABLE IF NOT EXISTS `status` (
 ) ENGINE = InnoDB;
 SQL;
             $db->query($sql);
+        } else {
+/*
+    //TODO: Need to update all site using status if the following does not work
+    alter table status
+        add institution_id INT UNSIGNED default 0 not null after msq_user_id;
+    alter table status
+        add course_id INT UNSIGNED default 0 not null after institution_id;
+    alter table status
+        add subject_id INT UNSIGNED default 0 not null after course_id;
+*/
+            $statusTbl = $db->getTableInfo('status');
+            if (!array_key_exists('institution_id', $statusTbl)) {
+                $db->query('alter table status add institution_id INT UNSIGNED default 0 not null after msq_user_id;');
+            }
+            if (!array_key_exists('course_id', $statusTbl)) {
+                $db->query('alter table status add course_id INT UNSIGNED default 0 not null after institution_id;');
+            }
+            if (!array_key_exists('subject_id', $statusTbl)) {
+                $db->query('alter table status add subject_id INT UNSIGNED default 0 not null after course_id;');
+            }
         }
     }
 
@@ -76,6 +103,9 @@ SQL;
             $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
             $this->dbMap->addPropertyMap(new Db\Integer('userId', 'user_id'));
             $this->dbMap->addPropertyMap(new Db\Integer('msqUserId', 'msq_user_id'));
+            $this->dbMap->addPropertyMap(new Db\Integer('institutionId', 'institution_id'));
+            $this->dbMap->addPropertyMap(new Db\Integer('courseId', 'course_id'));
+            $this->dbMap->addPropertyMap(new Db\Integer('subjectId', 'subject_id'));
             $this->dbMap->addPropertyMap(new Db\Integer('fid'));
             $this->dbMap->addPropertyMap(new Db\Text('fkey'));
             $this->dbMap->addPropertyMap(new Db\Text('name'));
@@ -110,7 +140,6 @@ SQL;
         if (!empty($filter['keywords'])) {
             $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
             $w = '';
-            $w .= sprintf('a.name LIKE %s OR ', $this->getDb()->quote($kw));
             $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
             $w .= sprintf('a.message LIKE %s OR ', $this->quote($kw));
             if (is_numeric($filter['keywords'])) {
@@ -169,6 +198,23 @@ SQL;
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
+        if (!empty($filter['institutionId'])) {
+            $filter->appendWhere('a.institution_id = %d AND ', (int)$filter['institutionId']);
+        }
+
+        if (!empty($filter['courseId'])) {
+            $filter->appendWhere('a.course_id = %d AND ', (int)$filter['courseId']);
+        }
+
+        if (!empty($filter['subjectId'])) {
+            if (empty($filter['courseId'])) {
+                $filter->appendWhere('a.subject_id = %d AND ', (int)$filter['subjectId']);
+            } else {
+                $filter->appendWhere('(a.subject_id = %d OR a.subject_id = 0) AND ', (int)$filter['subjectId']);
+            }
+        }
+
+
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
@@ -225,7 +271,6 @@ SQL;
   ) y');
         $filter->prependWhere('a.id = y.id AND ');
         $r = $this->selectFromFilter($filter, $tool);
-        //vd($this->getDb()->getLastQuery());
         return $r;
     }
 

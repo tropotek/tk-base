@@ -28,9 +28,21 @@ class StatusHandler implements Subscriber
     {
         /** @var StatusTrait $model */
         $model = $event->getModel();
-        //if (\Tk\ObjectUtil::classUses($model, StatusTrait::class)) {      // Does not work for \Uni\Db\StatusTrait
         if (method_exists($model, 'saveStatus')) {
             $model->saveStatus();
+        }
+    }
+
+    /**
+     * @param DbEvent $event
+     * @throws \Exception
+     */
+    public function onModelDeletePost(DbEvent $event)
+    {
+        /** @var StatusTrait|ModelInterface $model */
+        $model = $event->getModel();
+        if (method_exists($model, 'saveStatus')) {
+            \Bs\Db\StatusMap::create()->deleteByModel(get_class($model), $model->getId());
         }
     }
 
@@ -87,6 +99,7 @@ class StatusHandler implements Subscriber
     {
         return array(
             DbEvents::MODEL_SAVE_POST => array('onModelSavePost', 0),
+            DbEvents::MODEL_DELETE_POST => array('onModelDeletePost', 0),
             FormEvents::FORM_SUBMIT =>  array('onSubmit', 0)
         );
     }
