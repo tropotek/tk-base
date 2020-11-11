@@ -87,7 +87,7 @@ trait StatusTrait
         $u = '[Unknown]';
         if ($user) $u = $user->getName();
         return sprintf('<em>%s</em> triggered a pending status for %s [ID: %s]',
-            $u, $this->getLabel(), $this->getFid()
+            $u, $this->getLabel(), $this->getCurrentStatus()->getFid()
         );
     }
 
