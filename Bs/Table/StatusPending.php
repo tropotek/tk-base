@@ -80,15 +80,18 @@ class StatusPending extends \Bs\TableIface
         });
 
         // Filters
-        $filter = array();
-        $filter['courseId'] = $this->getConfig()->getCourseId();
-        $list = StatusMap::create()->findKeys($filter);
-        
+        $list = $this->getSelectList();
         /** @var Select $select */
         $select = $this->appendFilter(new Select('fkey', $list));
         $select->prependOption('-- Type --', '')->setAttr('placeholder', 'Keywords');
 
         return $this;
+    }
+
+    protected function getSelectList()
+    {
+        $filter = array();
+        return StatusMap::create()->findKeys($filter);
     }
 
     /**

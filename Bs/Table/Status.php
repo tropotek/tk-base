@@ -108,13 +108,9 @@ class Status extends \Bs\TableIface
         //$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-        //$this->appendAction(\Tk\Table\Action\Link::create('New Status', 'fa fa-plus', \Bs\Uri::createHomeUrl('/statusEdit.html')));
         $this->appendAction(ColumnSelect::create()->setSelected($this->selectedColumns));
-        //$this->appendAction(\Tk\Table\Action\Delete::create());
         $this->appendAction(Csv::create());
 
-        // load table
-        //$this->setList($this->findList());
         
         return $this;
     }

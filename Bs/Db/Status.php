@@ -243,34 +243,32 @@ class Status extends Model
     }
 
     /**
-     * @param Status|null $status
      * @param string $userType
      * @return User|null
      * @throws Exception
      */
-    public static function findLastByUserType($status, $userType)
+    public function findLastByUserType($userType = '')
     {
-        if (!$status) return null;
-        if ($status->getUser() && $status->getUser()->hasType($userType)) {
-            return $status->getUser();
+        if ($this->getUser() && $this->getUser()->hasType($userType)) {
+            return $this->getUser();
         }
-        return self::findLastByUserType($status->getPrevious(), $userType);
+        return $this->getPrevious()->findLastByUserType($userType);
     }
 
     /**
      * Return a unique list of users that have changed a status for this object
      *
-     * @param string|null $type
+     * @param string|null $userType
      * @return array|User[]
      * @throws Exception
      */
-    public function findUsersByType($type = '')
+    public function findUsersByType($userType = '')
     {
         $userList = array();
         $statusList = StatusMap::create()->findFiltered(array('model' => $this->getModel()));
         foreach ($statusList as $status) {
             if (!$status->getUser()) continue;
-            if ($type && $status->getUser()->getType() == $type) {
+            if ($userType && $status->getUser()->getType() == $userType) {
                 $userList[$status->getUserId()] = $status->getUser();
             }
         }
