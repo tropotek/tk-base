@@ -5,7 +5,6 @@ use Dom\Template;
 use Tk\Db\ModelInterface;
 use Tk\Db\Tool;
 use Bs\Db\Status;
-use Bs\Db\StatusMap;
 use Tk\ObjectUtil;
 
 /**
@@ -114,7 +113,7 @@ trait StatusTrait
         if (!$this->getStatusEvent()) { // create a default status name
             $this->setStatusEvent($this->makeStatusEventName());
         }
-        $this->_statusObj = \Bs\Db\Status::create($this);
+        $this->_statusObj = $this->getConfig()->createStatus($this);
         if ($this->isStatusExecute()) {
             $this->_statusObj->execute();   // <-- Status saved in here!!!
         }
@@ -128,11 +127,11 @@ trait StatusTrait
     public function getStatusObject()
     {
         if (!$this->_statusObject) {
-            $this->_statusObject = \Bs\Db\StatusMap::create()->findFiltered(array(
+            $this->_statusObject = $this->getConfig()->getStatusMap()->findFiltered(array(
                 'fkey' => get_class($this),
                 'fid' => $this->getId(),
                 'status' => $this->getStatus()
-            ), \Tk\Db\Tool::create('`created` DESC'))->current();
+            ), Tool::create('`created` DESC'))->current();
         }
         return $this->_statusObject;
     }
@@ -290,7 +289,7 @@ trait StatusTrait
      */
     public function getCurrentStatus()
     {
-        $status = StatusMap::create()->findFiltered(array('model' => $this), Tool::create('created DESC', 1))->current();
+        $status = $this->getConfig()->getStatusMap()->findFiltered(array('model' => $this), Tool::create('created DESC', 1))->current();
         return $status;
     }
 

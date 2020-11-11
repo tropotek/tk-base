@@ -3,8 +3,11 @@ namespace Bs;
 
 use Bs\Db\Permission;;
 
+use Bs\Db\Status;
+use Bs\Db\StatusMap;
 use Bs\Db\User;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Tk\Db\ModelInterface;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -586,6 +589,26 @@ class Config extends \Tk\Config
     public function getPermissionList($type = '')
     {
         return Permission::getPermissionList($type);
+    }
+
+
+    /**
+     *
+     * @param ModelInterface $model
+     * @return Status
+     */
+    public function createStatus($model)
+    {
+        return Status::create($model);
+    }
+
+    /**
+     * @param ModelInterface $model
+     * @return StatusMap
+     */
+    public function getStatusMap()
+    {
+        return StatusMap::create();
     }
 
 

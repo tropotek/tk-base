@@ -8,7 +8,7 @@ use Tk\Table\Action\ColumnSelect;
 use Tk\Table\Action\Csv;
 use Tk\Table\Cell;
 use Tk\Table\Cell\Text;
-use Uni\Db\StatusMap;
+use Bs\Db\StatusMap;
 
 /**
  * Example:
