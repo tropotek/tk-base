@@ -164,7 +164,7 @@ class Status extends Model
 
         /** @var StatusTrait $model */
         $model = $this->getModel();
-        if (!\Tk\ObjectUtil::classUses($model, StatusTrait::class)) {
+        if (!method_exists($model, 'getCurrentStatus')) {
             Log::error(get_class($this->getModel()) . ' does not use StatusTrait. Please update your class definition.');
             return;
         }
