@@ -162,7 +162,6 @@ trait StatusTrait
     public function makeStatusEventName()
     {
         return strtolower('status.' . ObjectUtil::getBaseNamespace($this) . '.' . ObjectUtil::basename($this) . '.' . $this->getStatus());
-        //return 'status.'.str_replace('_', '.', trim(get_class($this), '.')).$this->getStatus();
     }
 
     /**
