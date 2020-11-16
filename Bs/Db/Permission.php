@@ -72,7 +72,8 @@ class Permission
      */
     public static function getDefaultPermissionList($type = '')
     {
-        $list = self::getPermissionList($type);
+        $list = array();
+        //$list = self::getPermissionList($type);       // This would be a security issue
         if ($type == User::TYPE_ADMIN) {
             $list = array(
                 'Manage Site Config' => self::MANAGE_SITE,
