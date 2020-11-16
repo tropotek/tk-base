@@ -17,6 +17,11 @@ class Permission
     const MANAGE_SITE        = 'perm.manage.site';
 
     /**
+     * Developer User Permissions
+     */
+    const IS_DEVELOPER = 'perm.developer';
+
+    /**
      * Can masquerade as other lower tier users
      * @target user,admin
      */
