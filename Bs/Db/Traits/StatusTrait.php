@@ -96,7 +96,7 @@ trait StatusTrait
      */
     public function getLabel()
     {
-        return ucfirst(preg_replace('/[A-Z]/', ' $0', ObjectUtil::basename($this->getFkey())));
+        return ucfirst(preg_replace('/[A-Z]/', ' $0', ObjectUtil::basename($this->getCurrentStatus()->getFkey())));
     }
 
     // ////////////////////////////////  END  ////////////////////////////
