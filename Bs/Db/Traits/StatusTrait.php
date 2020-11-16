@@ -83,7 +83,7 @@ trait StatusTrait
      */
     public function getPendingHtml()
     {
-        $user = $this->getUser();
+        $user = $this->getCurrentStatus()->getUser();
         $u = '[Unknown]';
         if ($user) $u = $user->getName();
         return sprintf('<em>%s</em> triggered a pending status for %s [ID: %s]',
