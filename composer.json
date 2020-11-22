@@ -2,8 +2,12 @@
     "name": "ttek/tk-base",
     "type": "library",
     "description": "Base site library for the Tk lib",
-    "keywords":  ["tk", "tropotek", "tkbase"],
-    "time": "2019-04-09",
+    "keywords":  [
+        "tk",
+        "tropotek",
+        "tkbase"
+    ],
+    "time": "2020-11-23",
     "license": "MIT",
     "authors":  [
          {
@@ -28,7 +32,6 @@
         "ttek/tk-form": "~3.0.0",
         "ttek/tk-table": "~3.0.0",
         "ttek/tk-ui": "~3.0.0",
-
         "sensiolabs/ansi-to-html": "~1.0",
         "lasserafn/php-initial-avatar-generator": "~2.0"
     }
