@@ -1,5 +1,46 @@
 #CHANGELOG#
 
+Ver 3.2.56 [2020-11-23]:
+-------------------------------
+  - Tagging and releasing branch `3.2` with version `3.2.52`.
+  - Tagging and releasing branch `3.2` with version `3.2.50`.
+  - Tagging and releasing branch `3.2` with version `3.2.48`.
+  - Tagging and releasing branch `3.2` with version `3.2.46`.
+  - Tagging and releasing branch `3.2` with version `3.2.44`.
+  - Tagging and releasing branch `3.2` with version `3.2.42`.
+  - Tagging and releasing branch `3.2` with version `3.2.40`.
+  - Tagging and releasing branch `3.2` with version `3.2.38`.
+  - Tagging and releasing branch `3.2` with version `3.2.36`.
+  - Tagging and releasing branch `3.2` with version `3.2.34`.
+  - Tagging and releasing branch `3.2` with version `3.2.32`.
+  - Tagging and releasing branch `3.2` with version `3.2.30`.
+  - Removed tkAge jQuery plugin as it interfears with dualListBox plugin
+  - Tagging and releasing branch `3.2` with version `3.2.28`.
+  - Added media to report
+  - Tagging and releasing branch `3.2` with version `3.2.26`.
+  - Tagging and releasing branch `3.2` with version `3.2.24`.
+  - Added new age addon to date input
+  - updated PathCase field locations
+  - Added colour field to PathCase
+  - Updated Weight Field to Path CAse
+  - Tagging and releasing branch `3.2` with version `3.2.22`.
+  - fixed a few anying error emails and DB bugs
+  - Tagging and releasing branch `3.2` with version `3.2.20`.
+  - Tagging and releasing branch `3.2` with version `3.2.18`.
+  - Fixed Masquerading Lti issue
+  - Tagging and releasing branch `3.2` with version `3.2.16`.
+  - Tagging and releasing branch `3.2` with version `3.2.14`.
+  - Tagging and releasing branch `3.2` with version `3.2.12`.
+  - Merge branch '3.2' of ssh://github.com/tropotek/tk-base into 3.2
+  - Tagging and releasing branch `3.2` with version `3.2.10`.
+  - Tagging and releasing branch `3.2` with version `3.2.8`.
+  - Tagging and releasing branch `3.2` with version `3.2.6`.
+  - Tagging and releasing branch `3.2` with version `3.2.4`.
+  - Tagging and releasing branch `3.2` with version `3.2.2`.
+  - Tagging and releasing branch `3.2` with version `3.2.0`.
+  - Added LTI 1.3 plugin
+
+
 Ver 3.2.52 [2020-11-18]:
 -------------------------------
 
