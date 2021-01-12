@@ -252,7 +252,9 @@ class Status extends Model
         if ($this->getUser() && $this->getUser()->hasType($userType)) {
             return $this->getUser();
         }
-        return $this->getPrevious()->findLastByUserType($userType);
+        if ($this->getPrevious())
+            return $this->getPrevious()->findLastByUserType($userType);
+        return null;
     }
 
     /**
