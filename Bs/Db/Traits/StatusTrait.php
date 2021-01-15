@@ -19,7 +19,7 @@ trait StatusTrait
 {
 
     /**
-     * Set this to true if the status should send the notification message
+     * Set this to true if the status should send the notification message/emails
      * @var bool
      */
     private $_statusNotify = false;
@@ -37,7 +37,9 @@ trait StatusTrait
     private $_statusEvent = '';
 
     /**
-     * Execute the status event system. This will save the status to the log and execute the status events
+     * Execute the status event system.
+     * This will save the status to the log and execute the status events
+     *
      * @var boolean
      */
     private $_statusExecute = true;
@@ -145,6 +147,8 @@ trait StatusTrait
     }
 
     /**
+     * Set this to true if the status should send the notification message/emails
+     *
      * @param bool $statusNotify
      * @return $this
      */
@@ -209,6 +213,9 @@ trait StatusTrait
     }
 
     /**
+     * Execute the status event system.
+     * This will save the status to the log and execute status events
+     *
      * @param bool $statusExecute
      * @return $this
      */
