@@ -59,7 +59,7 @@ class Uri extends \Tk\Uri
     public function noCrumb($b = true)
     {
         if ($b)
-            $this->set(\Tk\Crumbs::CRUMB_IGNORE);
+            $this->set(\Tk\Crumbs::CRUMB_IGNORE);       // 'crumb_ignore'
         else
             $this->remove(\Tk\Crumbs::CRUMB_IGNORE);
         return $this;

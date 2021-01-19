@@ -611,6 +611,7 @@ var project_core = function () {
       }
       var tpl = $(settings.panelTemplate);
       tpl.addClass(element.attr('class'));
+      element.attr('class', 'tk-panel-org');
 
       tpl.hide();
       if (settings.panelIcon !== undefined) {
