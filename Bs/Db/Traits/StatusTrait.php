@@ -165,7 +165,11 @@ trait StatusTrait
      */
     public function makeStatusEventName()
     {
-        return strtolower('status.' . ObjectUtil::getBaseNamespace($this) . '.' . ObjectUtil::basename($this) . '.' . $this->getStatus());
+        $objNs = lcfirst(ObjectUtil::getBaseNamespace($this));
+        $objStr = lcfirst(ObjectUtil::basename($this));
+        $objStatus = lcfirst($this->getStatus());
+        $str = 'status.' . $objNs . '.' . $objStr . '.' . $objStatus;
+        return $str;
     }
 
     /**
