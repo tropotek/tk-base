@@ -519,7 +519,8 @@ var project_core = function () {
    */
   var initDataConfirm = function () {
     if ($.fn.bsConfirm === undefined) {
-      $('body').on('click', '[data-confirm]', function () {
+      $('[data-confirm]').on('click', document, function () {
+      //$('body').on('click', '[data-confirm]', function () {
         return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
       });
     } else {
