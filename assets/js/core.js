@@ -98,7 +98,7 @@ var project_core = function () {
    * Dual select list box renderer
    */
   var initDualListBox = function () {
-    console.warn('TK Plugin DualListBox has been disabled due to errors.');
+    //console.warn('TK Plugin DualListBox has been disabled due to errors.');
     if ($.fn.DualListBox === undefined) {
       //console.warn('Plugin not loaded: DualListBox');
       //return;
