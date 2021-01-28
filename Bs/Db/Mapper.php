@@ -31,6 +31,8 @@ abstract class Mapper extends \Tk\Db\Mapper
         // This will only mark the record deleted if column exists
         if ($this->hasColumn('del')) {
             $this->setMarkDeleted('del');
+        } else {
+            $this->setMarkDeleted('');
         }
     }
 
