@@ -28,7 +28,10 @@ abstract class Mapper extends \Tk\Db\Mapper
     {
         $this->dispatcher = $this->getConfig()->getEventDispatcher();
         parent::__construct($db);
-        $this->setMarkDeleted('del');           // Default to have a del field (This will only mark the record deleted)
+        // This will only mark the record deleted if column exists
+        if ($this->hasColumn('del')) {
+            $this->setMarkDeleted('del');
+        }
     }
 
     /**
