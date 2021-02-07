@@ -161,10 +161,10 @@ $config['system.auth.adapters'] = array(
 
 /*
  * \Tk\Auth\Adapter\Config
+ * Note: Do not use this methid in client production sites
  */
 //$config['system.auth.username'] = 'admin';
 //$config['system.auth.password'] = 'password';
-
 
 
 /* **********************************************
@@ -189,7 +189,6 @@ $config['template.var.page.user-url'] = 'user-url';
 
 // side-nav
 $config['template.var.page.side-nav'] = 'side-nav';
-
 
 
 /* **********************************************
