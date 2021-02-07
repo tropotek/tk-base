@@ -2,6 +2,8 @@
 namespace Bs\Event;
 
 use Bs\Db\Status;
+use Tk\Mail\CurlyMessage;
+use Tk\Mail\Message;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -17,7 +19,7 @@ class StatusEvent extends \Tk\Event\Event
     protected $status = null;
 
     /**
-     * @var array
+     * @var array|CurlyMessage[]
      */
     protected $messageList = array();
 
@@ -51,7 +53,7 @@ class StatusEvent extends \Tk\Event\Event
     }
 
     /**
-     * @param $message
+     * @param CurlyMessage $message
      * @return $this
      */
     public function addMessage($message)
@@ -61,7 +63,7 @@ class StatusEvent extends \Tk\Event\Event
     }
 
     /**
-     * @return array
+     * @return array|CurlyMessage[]
      */
     public function getMessageList()
     {
@@ -69,7 +71,7 @@ class StatusEvent extends \Tk\Event\Event
     }
 
     /**
-     * @param array $list
+     * @param array|CurlyMessage[] $list
      * @return $this
      */
     public function setMessageList($list = array())

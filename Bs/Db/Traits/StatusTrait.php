@@ -19,7 +19,7 @@ trait StatusTrait
 {
 
     /**
-     * Set this to true if the status should send the notification message
+     * Set this to true if the status should send the notification message/emails
      * @var bool
      */
     private $_statusNotify = false;
@@ -37,7 +37,9 @@ trait StatusTrait
     private $_statusEvent = '';
 
     /**
-     * Execute the status event system. This will save the status to the log and execute the status events
+     * Execute the status event system.
+     * This will save the status to the log and execute the status events
+     *
      * @var boolean
      */
     private $_statusExecute = true;
@@ -83,11 +85,11 @@ trait StatusTrait
      */
     public function getPendingHtml()
     {
-        $user = $this->getUser();
+        $user = $this->getCurrentStatus()->getUser();
         $u = '[Unknown]';
         if ($user) $u = $user->getName();
         return sprintf('<em>%s</em> triggered a pending status for %s [ID: %s]',
-            $u, $this->getLabel(), $this->getFid()
+            $u, $this->getLabel(), $this->getCurrentStatus()->getFid()
         );
     }
 
@@ -96,7 +98,7 @@ trait StatusTrait
      */
     public function getLabel()
     {
-        return ucfirst(preg_replace('/[A-Z]/', ' $0', ObjectUtil::basename($this->getFkey())));
+        return ucfirst(preg_replace('/[A-Z]/', ' $0', ObjectUtil::basename($this->getCurrentStatus()->getFkey())));
     }
 
     // ////////////////////////////////  END  ////////////////////////////
@@ -145,6 +147,8 @@ trait StatusTrait
     }
 
     /**
+     * Set this to true if the status should send the notification message/emails
+     *
      * @param bool $statusNotify
      * @return $this
      */
@@ -161,8 +165,11 @@ trait StatusTrait
      */
     public function makeStatusEventName()
     {
-        return strtolower('status.' . ObjectUtil::getBaseNamespace($this) . '.' . ObjectUtil::basename($this) . '.' . $this->getStatus());
-        //return 'status.'.str_replace('_', '.', trim(get_class($this), '.')).$this->getStatus();
+        $objNs = lcfirst(ObjectUtil::getBaseNamespace($this));
+        $objStr = lcfirst(ObjectUtil::basename($this));
+        $objStatus = lcfirst($this->getStatus());
+        $str = 'status.' . $objNs . '.' . $objStr . '.' . $objStatus;
+        return $str;
     }
 
     /**
@@ -210,6 +217,9 @@ trait StatusTrait
     }
 
     /**
+     * Execute the status event system.
+     * This will save the status to the log and execute status events
+     *
      * @param bool $statusExecute
      * @return $this
      */

@@ -17,6 +17,11 @@ class Permission
     const MANAGE_SITE        = 'perm.manage.site';
 
     /**
+     * Developer User Permissions
+     */
+    const IS_DEVELOPER = 'perm.developer';
+
+    /**
      * Can masquerade as other lower tier users
      * @target user,admin
      */
@@ -67,7 +72,8 @@ class Permission
      */
     public static function getDefaultPermissionList($type = '')
     {
-        $list = self::getPermissionList($type);
+        $list = array();
+        //$list = self::getPermissionList($type);       // This would be a security issue
         if ($type == User::TYPE_ADMIN) {
             $list = array(
                 'Manage Site Config' => self::MANAGE_SITE,

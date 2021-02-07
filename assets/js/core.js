@@ -98,7 +98,7 @@ var project_core = function () {
    * Dual select list box renderer
    */
   var initDualListBox = function () {
-    console.warn('TK Plugin DualListBox has been disabled due to errors.');
+    //console.warn('TK Plugin DualListBox has been disabled due to errors.');
     if ($.fn.DualListBox === undefined) {
       //console.warn('Plugin not loaded: DualListBox');
       //return;
@@ -519,7 +519,8 @@ var project_core = function () {
    */
   var initDataConfirm = function () {
     if ($.fn.bsConfirm === undefined) {
-      $('body').on('click', '[data-confirm]', function () {
+      $('[data-confirm]').on('click', document, function () {
+      //$('body').on('click', '[data-confirm]', function () {
         return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
       });
     } else {
@@ -611,6 +612,7 @@ var project_core = function () {
       }
       var tpl = $(settings.panelTemplate);
       tpl.addClass(element.attr('class'));
+      element.attr('class', 'tk-panel-org');
 
       tpl.hide();
       if (settings.panelIcon !== undefined) {

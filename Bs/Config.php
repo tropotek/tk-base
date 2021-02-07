@@ -786,4 +786,29 @@ class Config extends \Tk\Config
         return new Page($templatePath);
     }
 
+    /**
+     * validate a filename and see if we think it is a script or a harmful file
+     * to upload to the server
+     *
+     * @param string $filename
+     * @return bool
+     */
+    public static function validateFile($filename)
+    {
+        $filename = basename($filename);
+        $ext = trim(\Tk\File::getExtension($filename), '.');
+        // TODO: make these configurable in the config.php
+        $exclude = array('exe', 'com', 'php', 'perl', 'php5', 'php4', 'html', 'css', 'js');
+        $include = array();
+
+        if (count($exclude)) {
+            if (in_array($ext, $exclude)) {
+                return false;
+            }
+        }
+        if (count($include)) {
+            return in_array($ext, $include);
+        }
+        return true;
+    }
 }
