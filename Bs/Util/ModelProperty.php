@@ -301,7 +301,7 @@ TPL;
 TPL;
         if (preg_match('/Id$/', $this->getName()) && $this->getType() == self::TYPE_INT) {
             $tpl = <<<TPL
-        if (isset(\$filter['%s'])) {
+        if (!empty(\$filter['%s'])) {
             \$filter->appendWhere('a.%s = %%s AND ', %s);
         }
 TPL;

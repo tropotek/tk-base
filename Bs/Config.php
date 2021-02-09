@@ -585,10 +585,19 @@ class Config extends \Tk\Config
     /**
      * @param string $type (optional) If set returns only the permissions for that user type otherwise returns all permissions
      * @return array
+     * @deprecated Use getConfig()->getPermission()->getAvailablePermissionList($type);
      */
     public function getPermissionList($type = '')
     {
-        return Permission::getPermissionList($type);
+        return $this->getPermission()->getAvailablePermissionList($type);
+    }
+
+    /**
+     * @return Permission|null
+     */
+    public function getPermission()
+    {
+        return \Bs\Db\Permission::getInstance();
     }
 
 

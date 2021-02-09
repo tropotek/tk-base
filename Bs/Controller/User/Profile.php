@@ -41,7 +41,7 @@ class Profile extends \Bs\Controller\AdminEditIface
             $this->getForm()->removeField('permission');
 
             $tab = 'Permissions';
-            $list = $this->getConfig()->getPermissionList($this->getConfig()->getAuthUser()->getType());
+            $list = $this->getConfig()->getPermission()->getAvailablePermissionList($this->getConfig()->getAuthUser()->getType());
             if (count($list)) {
                 $this->getForm()->appendField(\Tk\Form\Field\CheckboxGroup::createSelect('permission_ro', $list))
                     ->setLabel('Permission List')->setTabGroup($tab)
