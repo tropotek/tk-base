@@ -424,6 +424,8 @@ class Config extends \Tk\Config
     {
         $form = \Tk\Form::create($formId);
         $form->setDispatcher($this->getEventDispatcher());
+        // TODO: check this does not cause issues
+        $form->setRenderer($this->createFormRenderer($form));
         return $form;
     }
 
@@ -433,7 +435,8 @@ class Config extends \Tk\Config
      */
     public function createFormRenderer($form)
     {
-        $obj = \Tk\Form\Renderer\Dom::create($form);
+        $obj = \Tk\Form\Renderer\DomRenderer::create($form);
+        //$obj = \Tk\Form\Renderer\Dom::create($form);
         $obj->setFieldGroupRenderer($this->getFormFieldGroupRenderer($form));
         $obj->getLayout()->setDefaultCol('col');
         return $obj;
