@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.2.68 [2021-02-18]:
+-------------------------------
+  - NAILED IT!!! New DomRenderer object for the Tk\Form way cleaner code
+
+
 Ver 3.2.66 [2021-02-11]:
 -------------------------------
   - Merge branch '3.2' of ssh://github.com/tropotek/tk-base into 3.2
