@@ -168,6 +168,9 @@ class Status extends Model
         }
         if (method_exists($model, 'getSubjectId')) {
             $obj->setSubjectId($model->getSubjectId());
+            if (!$obj->getCourseId() && method_exists($model, 'getSubject') && $obj->getSbject())
+                $obj->setCourseId($obj->getSbject()->getCourseId());
+
         }
 
         return $obj;
