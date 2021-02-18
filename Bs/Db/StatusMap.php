@@ -5,6 +5,7 @@ namespace Bs\Db;
 use DateTime;
 use Exception;
 use Tk\DataMap\DataMap;
+use Tk\DataMap\Form;
 use Tk\DataMap\Db;
 use Tk\Date;
 use Tk\Db\Filter;
@@ -116,6 +117,30 @@ SQL;
             $this->dbMap->addPropertyMap(new Db\Date('created'));
         }
         return $this->dbMap;
+    }
+
+    /**
+     * @return \Tk\DataMap\DataMap
+     */
+    public function getFormMap()
+    {
+        if (!$this->formMap) {
+            $this->formMap = new \Tk\DataMap\DataMap();
+            $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
+            $this->formMap->addPropertyMap(new Form\Integer('userId'));
+            $this->formMap->addPropertyMap(new Form\Integer('msqUserId'));
+            $this->formMap->addPropertyMap(new Form\Integer('institutionId'));
+            $this->formMap->addPropertyMap(new Form\Integer('courseId'));
+            $this->formMap->addPropertyMap(new Form\Integer('subjectId'));
+            $this->formMap->addPropertyMap(new Form\Integer('fid'));
+            $this->formMap->addPropertyMap(new Form\Text('fkey'));
+            $this->formMap->addPropertyMap(new Form\Text('name'));
+            $this->formMap->addPropertyMap(new Form\Text('event'));
+            $this->formMap->addPropertyMap(new Form\Text('message'));
+            $this->formMap->addPropertyMap(new Form\Boolean('notify'));
+            $this->formMap->addPropertyMap(new Form\Date('created'));
+        }
+        return $this->formMap;
     }
 
     /**
