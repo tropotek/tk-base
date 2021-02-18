@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.2.70 [2021-02-19]:
+-------------------------------
+
+
 Ver 3.2.68 [2021-02-18]:
 -------------------------------
   - NAILED IT!!! New DomRenderer object for the Tk\Form way cleaner code
