@@ -11,7 +11,7 @@ use Tk\Form\Field;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class Forms extends \Uni\Controller\AdminIface
+class Forms extends \Bs\Controller\AdminIface
 {
 
     /**
