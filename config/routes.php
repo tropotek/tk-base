@@ -62,6 +62,7 @@ $routes->add('member-profile', Route::create('/member/profile.html', 'Bs\Control
 $routes->add('admin-dev-events',
     Route::create('/admin/dev/dispatcherEvents.html', 'Bs\Controller\Admin\Dev\Events::doDefault'));
 $routes->add('admin-tail-log', Route::create('/admin/dev/tailLog.html', 'Bs\Controller\Admin\Dev\Tail\Log::doDefault'));
+$routes->add('admin-forms', Route::create('/admin/dev/forms.html', 'Bs\Controller\Admin\Dev\Forms::doDefault'));
 
 
 // Examples
