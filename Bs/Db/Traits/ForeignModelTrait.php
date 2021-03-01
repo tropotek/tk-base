@@ -40,6 +40,17 @@ trait ForeignModelTrait
 
 
     /**
+     * Alias to setForeignModel();
+     *
+     * @param Model|ModelInterface $model
+     * @return ForeignKeyTrait
+     */
+    public function setModel($model)
+    {
+        return $this->setForeignModel($model);
+    }
+
+    /**
      * @param Model|ModelInterface $model
      * @return ForeignKeyTrait
      */
@@ -52,21 +63,21 @@ trait ForeignModelTrait
     }
 
     /**
-     * Alias to getModel();
+     * Alias to getForeignModel();
      *
-     * @return Model|ModelInterface|null
-     * @throws \Exception
-     */
-    public function getForeignModel()
-    {
-        return $this->getModel();
-    }
-
-    /**
      * @return null|Model|ModelInterface
      * @throws \Exception
      */
     public function getModel()
+    {
+        return $this->getForeignModel();
+    }
+
+    /**
+     * @return Model|ModelInterface|null
+     * @throws \Exception
+     */
+    public function getForeignModel()
     {
         if (!$this->_model && class_exists($this->getFkey().'Map')) {
             $this->_model = $this->getForeignModelMapper()->find($this->getFid());
