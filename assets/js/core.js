@@ -397,7 +397,13 @@ var project_core = function () {
       image_advtab: true,
       content_style: 'body {padding: 10px}',
       convert_urls: false,
-      paste_as_text: true,
+
+      // Trying to fix past wod text issue?????? This does not seem o make any difference, need to find another editor I think
+      ////paste_as_text: true,
+      //paste_auto_cleanup_on_paste : true,
+      //paste_word_valid_elements: "b,strong,i,em,h1,h2,u,p,ol,ul,li,a[href],span,color,font-size,font-color,font-family,mark",
+      //paste_retain_style_properties: "all",
+
       browser_spellcheck: true,
       file_picker_callback: _elFinderPickerCallback,
       setup: function (ed) {
