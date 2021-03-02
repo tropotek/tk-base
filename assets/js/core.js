@@ -397,6 +397,7 @@ var project_core = function () {
       image_advtab: true,
       content_style: 'body {padding: 10px}',
       convert_urls: false,
+      paste_as_text: true,
       browser_spellcheck: true,
       file_picker_callback: _elFinderPickerCallback,
       setup: function (ed) {
