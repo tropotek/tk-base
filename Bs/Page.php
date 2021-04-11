@@ -30,7 +30,7 @@ class Page extends \Tk\Controller\Page
      */
     protected function makeDefaultTemplatePath()
     {
-        $urlType = \Bs\Uri::create()->getRoleType(User::getUserTypeList(true));
+        $urlType = \Bs\Uri::create()->getRoleType($this->getConfig()->getUserTypeList(true));
         if (!$urlType) $urlType = 'public';     // todo rename this to User::TYPE_GUEST
         return $this->getConfig()->getSitePath() . $this->getConfig()->get('template.'.$urlType);
     }
