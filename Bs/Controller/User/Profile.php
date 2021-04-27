@@ -39,8 +39,7 @@ class Profile extends \Bs\Controller\AdminEditIface
         if ($this->getForm()->getField('email'))
             $this->getForm()->getField('email')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
         if ($this->getForm()->getField('permission')) {
-            vd($this->getAuthUser()->getPermissions());
-            if (!$this->getAuthUser()->hasPermission(Permission::MANAGE_SITE))
+            if (!$this->getAuthUser()->hasPermission(Permission::MANAGE_SITE) && $this->getAuthUser()->getId() != 1)
                 $this->getForm()->getField('permission')->setAttr('readonly')->setAttr('disabled');
         }
 
