@@ -78,8 +78,7 @@ class User extends \Bs\FormIface
         $tab = 'Permissions';
         $list = $this->getConfig()->getPermission()->getAvailablePermissionList($this->getUser()->getType());
         if (count($list)) {
-            $this->appendField(new Field\CheckboxGroup('permission', $list))->setLabel('Permission List')->setTabGroup($tab)
-                ->setValue(array_values($list));
+            $this->appendField(new Field\CheckboxGroup('permission', $list))->setLabel('Permission List')->setTabGroup($tab);
         }
 
         $this->appendField(new Event\Submit('update', array($this, 'doSubmit')));

@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\Db\Permission;
 use Bs\Db\User;
 use Dom\Template;
 use Tk\Request;
@@ -38,18 +39,9 @@ class Profile extends \Bs\Controller\AdminEditIface
         if ($this->getForm()->getField('email'))
             $this->getForm()->getField('email')->setAttr('disabled')->addCss('form-control disabled')->removeCss('tk-input-lock');
         if ($this->getForm()->getField('permission')) {
-            $this->getForm()->removeField('permission');
-
-            $tab = 'Permissions';
-            $list = $this->getConfig()->getPermission()->getAvailablePermissionList($this->getConfig()->getAuthUser()->getType());
-            if (count($list)) {
-                $this->getForm()->appendField(\Tk\Form\Field\CheckboxGroup::createSelect('permission_ro', $list))
-                    ->setLabel('Permission List')->setTabGroup($tab)
-                    ->setValue(array_values($list));
-            }
-            if ($this->getConfig()->getAuthUser()->getId()) {
-                $this->getForm()->load(array('permission_ro' => $this->getConfig()->getAuthUser()->getPermissions()));
-            }
+            vd($this->getAuthUser()->getPermissions());
+            if (!$this->getAuthUser()->hasPermission(Permission::MANAGE_SITE))
+                $this->getForm()->getField('permission')->setAttr('readonly')->setAttr('disabled');
         }
 
         $this->getForm()->execute();
