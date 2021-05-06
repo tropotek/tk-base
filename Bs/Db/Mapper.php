@@ -51,11 +51,17 @@ abstract class Mapper extends \Tk\Db\Mapper
             $stop = $e->isQueryStopped();
         }
         if (!$stop) {
-            $r = parent::insert($obj);
+            $id = parent::insert($obj);
+            // NOTE: Added to ensure the ID is updated before the post insert event is triggered
+            $reflection = new \ReflectionClass($obj);
+            $property = $reflection->getProperty('id');
+            $property->setAccessible(true);
+            $property->setValue($obj, $id);
+
             if ($this->getDispatcher()) {
                 $this->getDispatcher()->dispatch(DbEvents::MODEL_INSERT_POST, $e);
             }
-            return $r;
+            return $id;
         }
         return 0;
     }
