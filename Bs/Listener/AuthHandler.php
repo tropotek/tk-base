@@ -48,6 +48,9 @@ class AuthHandler implements Subscriber
         $urlRole = \Bs\Uri::create()->getRoleType(User::getUserTypeList(true));
         if ($urlRole && $urlRole != 'public') {
             if (!$config->getAuthUser()) {  // if no user and the url has permissions set
+                // Save the request URL and redirect once authenticated
+                vd(\Bs\Uri::create()->toString());
+                $config->getSession()->set('auth.redirect.url', \Bs\Uri::create()->toString());
                 $this->getLoginUrl()->redirect();
             }
             // Finally check if the user has access to the url
@@ -102,8 +105,10 @@ class AuthHandler implements Subscriber
         if ($user && $user->isActive()) {
             $config->setAuthUser($user);
         }
-
-        if(!$event->getRedirect()) {
+        if ($config->getSession()->has('auth.redirect.url')) {
+            $event->setRedirect(\Bs\Uri::create($config->getSession()->get('auth.redirect.url')));
+            $config->getSession()->remove('auth.redirect.url');
+        } else if(!$event->getRedirect()) {
             $event->setRedirect(\Bs\Config::getInstance()->getUserHomeUrl($user));
         }
     }
