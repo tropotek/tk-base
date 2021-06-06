@@ -117,6 +117,7 @@ class StatusSelect extends \Tk\Form\Field\Select
         parent::load($values);
         $vals = null;
 
+            vd($this->getForm()->isSubmitted());
         if ($this->getForm() && $this->getForm()->isSubmitted()) {
             $vals = array();
             if (array_key_exists($this->getName(), $values)) {
@@ -124,6 +125,7 @@ class StatusSelect extends \Tk\Form\Field\Select
             }
             $this->notifyValue = false;
             $vals[$this->getNotifyName()] = false;
+            vd($vals, $values);
             if (isset($values[$this->getNotifyName()]) && $values[$this->getNotifyName()] == $this->getNotifyName()) {
                 $this->notifyValue = true;
                 $vals[$this->getNotifyName()] = true;
