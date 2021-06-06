@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.2.90 [2021-06-07]:
+-------------------------------
+
+
 Ver 3.2.88 [2021-05-25]:
 -------------------------------
   - Added redirect to requested URL after logging in
