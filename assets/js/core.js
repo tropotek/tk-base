@@ -414,7 +414,6 @@ var project_core = function () {
     };
 
     function init() {
-
       var form = $(this);
       form.find('textarea.mce, textarea.mce-med, textarea.mce-min, textarea.mce-micro').each(function () {
         var el = $(this);
@@ -432,26 +431,26 @@ var project_core = function () {
           opts.file_picker_callback = null;
         }
         if (el.hasClass('mce-micro')) {
-          opts = $.extend({}, opts, {
+          opts = $.extend({}, {
             plugins: ['lists advlist autolink link image media code'],
             toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
               '| link unlink | removeformat code',
             toolbar2: '',
             toolbar3: '',
             menubar: false
-          });
+          }, opts);
           opts.height = el.data('height') ? el.data('height') : 200;
         } else if (el.hasClass('mce-min')) {
-          opts = $.extend({}, opts, {
+          opts = $.extend({}, {
             plugins: ['lists advlist autolink link image media code preview fullscreen'],
             toolbar1: 'bold italic underline strikethrough | alignleft aligncenter alignright ' +
               '| bullist numlist | link unlink image media | removeformat fullscreen preview code',
             toolbar2: '',
             toolbar3: ''
-          });
+          }, opts);
           opts.height = el.data('height') ? el.data('height') : 200;
         } else if (el.hasClass('mce-med')) {
-          opts = $.extend({}, opts, {
+          opts = $.extend({}, {
             //plugins: ['advlist autolink link image lists charmap hr anchor code textcolor colorpicker textpattern'],
             plugins: [
               'advlist autolink link image lists charmap print preview hr anchor',
@@ -463,7 +462,7 @@ var project_core = function () {
             toolbar2: '',
             toolbar3: '',
             menubar: true
-          });
+          }, opts);
           opts.height = el.data('height') ? el.data('height') : 400;
           opts.statusbar = true;
         } else {

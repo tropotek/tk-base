@@ -559,9 +559,9 @@ class User extends Model implements UserIface
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getLastLogin(): \DateTime
+    public function getLastLogin(): ?\DateTime
     {
         return $this->lastLogin;
     }

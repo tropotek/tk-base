@@ -8,6 +8,7 @@ use Bs\Db\StatusMap;
 use Bs\Db\User;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Tk\Db\ModelInterface;
+use Tk\Request;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -152,6 +153,13 @@ class Config extends \Tk\Config
     public function getRequest()
     {
         if (!parent::getRequest()) {
+            if (is_array($this->get('request.trusted.proxies'))) {
+                \Tk\Request::setTrustedProxies($this->get('request.trusted.proxies'), Request::HEADER_X_FORWARDED_ALL);
+            }
+            if (is_array($this->get('request.trusted.hosts'))) {
+                \Tk\Request::setTrustedHosts($this->get('request.trusted.hosts'));
+            }
+
             $obj = \Tk\Request::createFromGlobals();
             parent::setRequest($obj);
         }
