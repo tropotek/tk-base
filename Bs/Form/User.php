@@ -14,7 +14,7 @@ use Tk\Form;
  *   $formTemplate = $form->getRenderer()->show();
  *   $template->appendTemplate('form', $formTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2018-11-19
  * @link http://tropotek.com.au/
@@ -50,8 +50,12 @@ class User extends \Bs\FormIface
         $this->appendField(Field\Select::createSelect('title', \Bs\Db\User::getTitleList($this->getUser()->getTitle()))->prependOption('-- Select --') )->setTabGroup($tab);
         $this->appendField(new Field\Input('nameFirst'))->setLabel('First Name')->setTabGroup($tab)->setRequired(true);
         $this->appendField(new Field\Input('nameLast'))->setLabel('Last Name(s)')->setTabGroup($tab)->setRequired(true);
-        $this->appendField(new Field\Input('username'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
-        $this->appendField(new Field\Input('email'))->addCss('tk-input-lock')->setTabGroup($tab)->setRequired(true);
+        $f = $this->appendField(new Field\Input('username'))->setTabGroup($tab)->setRequired(true);
+        if ($this->getUser()->getId())
+            $f->addCss('tk-input-lock');
+        $f = $this->appendField(new Field\Input('email'))->setTabGroup($tab)->setRequired(true);
+        if ($this->getUser()->getId())
+            $f->addCss('tk-input-lock');
         $this->appendField(new Field\Input('phone'))->setTabGroup($tab)->setNotes('Enter a phone number that you can be contacted on directly.');
         $this->appendField(new Field\Input('credentials'))->setTabGroup($tab)->setNotes('Enter your professional credentials. EG: BVSc, MPhil, MANZCVSc, Dip ACV');
         $this->appendField(new Field\Input('position'))->setTabGroup($tab)->setNotes('Enter your work position/Department. EG: Senior Lecturer');
@@ -59,12 +63,14 @@ class User extends \Bs\FormIface
 
 
         $tab = 'Password';
+
         $this->setAttr('autocomplete', 'off');
         $f = $this->appendField(new Field\Password('newPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setTabGroup($tab);
         if (!$this->getUser()->getId())
             $f->setRequired(true);
+
         $f = $this->appendField(new Field\Password('confPassword'))->setAttr('placeholder', 'Click to edit')
             ->setAttr('readonly')->setAttr('onfocus', "this.removeAttribute('readonly');this.removeAttribute('placeholder');")
             ->setNotes('Change this users password.')->setTabGroup($tab);
@@ -198,5 +204,5 @@ class User extends \Bs\FormIface
         $this->targetType = $targetType;
         return $this;
     }
-    
+
 }
