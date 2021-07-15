@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.2.96 [2021-07-15]:
+-------------------------------
+
+
 Ver 3.2.94 [2021-06-30]:
 -------------------------------
   - Merge branch '3.2' of ssh://github.com/tropotek/tk-base into 3.2
