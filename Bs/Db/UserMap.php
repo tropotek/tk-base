@@ -123,7 +123,6 @@ class UserMap extends Mapper
         return $this->findFiltered(array('hash' => $hash))->current();
     }
 
-
     /**
      * @param array|\Tk\Db\Filter $filter
      * @param Tool $tool
