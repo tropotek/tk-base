@@ -110,6 +110,12 @@ $config['log.session'] = $config->getTempPath().'/session.log';
  */
 //$config['mail.bcc'] = array('user1@example.edu.au');
 
+/**
+ * If this is set to true then emails are sent to the logged in users email address
+ */
+$config['system.debug.email.authUser'] = false;
+
+
 /*
  * This make the Form renderer add the required attribute to required
  * fields. This can be disabled by using the novalidate attribute on the form

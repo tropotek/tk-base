@@ -32,7 +32,7 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
         parent::__construct($tableId);
 
         //if ($this->getConfig()->isDebug())
-        $this->appendAction(\Tk\Table\Action\Link::createLink('reset', \Bs\Uri::create()->set(Table::RESET_TABLE, $this->getId()), 'fa fa-trash-o'))->setLabel('')->setAttr('data-confirm', 'Are you sure you want to reset the Table`s session?')->setAttr('title', 'Reset Table Filters and OrderBy.');
+        $this->appendAction(\Tk\Table\Action\Link::createLink('reset', \Bs\Uri::create()->set(Table::RESET_TABLE, $this->getId()), 'fa fa-retweet'))->setLabel('')->setAttr('data-confirm', 'Are you sure you want to reset the Table`s session?')->setAttr('title', 'Reset table filters and order to default.');
 
     }
 
