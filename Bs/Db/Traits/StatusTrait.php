@@ -133,7 +133,7 @@ trait StatusTrait
                 'fkey' => get_class($this),
                 'fid' => $this->getId(),
                 'status' => $this->getStatus()
-            ), Tool::create('`created` DESC'))->current();
+            ), Tool::create('id DESC'))->current();
         }
         return $this->_statusObject;
     }
@@ -299,7 +299,9 @@ trait StatusTrait
      */
     public function getCurrentStatus()
     {
-        $status = $this->getConfig()->getStatusMap()->findFiltered(array('model' => $this), Tool::create('created DESC', 1))->current();
+        $status = $this->getConfig()->getStatusMap()->findFiltered(
+            ['model' => $this],
+            Tool::create('id DESC', 1))->current();
         return $status;
     }
 

@@ -151,7 +151,9 @@ SQL;
      */
     public function findFiltered($filter, $tool = null)
     {
-        return $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
+        $r = $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
+        //vd($this->getDb()->getLastQuery());
+        return $r;
     }
 
     /**
@@ -244,7 +246,7 @@ SQL;
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
-
+//vd($filter);
         return $filter;
     }
 

@@ -225,11 +225,14 @@ class Status extends Model
     {
         if (!$this->_previous) {
             $filter = array(
-                'before' => $this->getCreated(),
+                'exclude' => $this->getId(),
+                //'before' => $this->getCreated(),
                 'fid' => $this->getFid(),
                 'fkey' => $this->getFkey()
             );
-            $this->_previous = StatusMap::create()->findFiltered($filter, Tool::create('created DESC', 1))->current();
+
+            $this->_previous = $this->getConfig()->getStatusMap()
+                ->findFiltered($filter, Tool::create('id DESC', 1))->current();
         }
         return $this->_previous;
     }
@@ -240,8 +243,9 @@ class Status extends Model
      */
     public function getPreviousName()
     {
-        if ($this->getPrevious())
-            return $this->getPrevious()->getName();
+        $prev = $this->getPrevious();
+        if ($prev)
+            return $prev->getName();
         return '';
     }
 
