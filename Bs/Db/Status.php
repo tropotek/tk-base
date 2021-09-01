@@ -256,12 +256,21 @@ class Status extends Model
      */
     public function findLastByUserType($userType = '')
     {
-        if ($this->getUser() && $this->getUser()->hasType($userType)) {
-            return $this->getUser();
-        }
-        if ($this->getPrevious())
+        if ($this->getUser()) {
+            if ($this->getUser()->hasType($userType))
+                return $this->getUser();
+        } else if ($this->getPrevious())
             return $this->getPrevious()->findLastByUserType($userType);
         return null;
+        
+        // TOOD: the blow call was calling recursively and not stopping causing the error:
+        //       "Cannot call session save handler in a recursive manner"
+//        if ($this->getUser() && $this->getUser()->hasType($userType)) {
+//            return $this->getUser();
+//        }
+//        if ($this->getPrevious())
+//            return $this->getPrevious()->findLastByUserType($userType);
+//        return null;
     }
 
     /**
