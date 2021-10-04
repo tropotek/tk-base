@@ -188,6 +188,14 @@ class UserMap extends Mapper
             $filter->appendWhere('a.email = %s AND ', $this->quote($filter['email']));
         }
 
+        if (!empty($filter['nameFirst'])) {
+            $filter->appendWhere('a.name_first = %s AND ', $this->quote($filter['nameFirst']));
+        }
+
+        if (!empty($filter['nameLast'])) {
+            $filter->appendWhere('a.name_last = %s AND ', $this->quote($filter['nameLast']));
+        }
+
         if (!empty($filter['phone'])) {
             $filter->appendWhere('a.phone = %s AND ', $this->getDb()->quote($filter['phone']));
         }
