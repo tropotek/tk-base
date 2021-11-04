@@ -203,6 +203,7 @@ class Status extends Model
             if ($this->getConfig()->getEventDispatcher()) {
                 // Fire event to setup status mail messages
                 $this->getConfig()->getEventDispatcher()->dispatch(StatusEvents::STATUS_CHANGE, $e);
+                //vd($this->getConfig()->getEventDispatcher()->getListeners(StatusEvents::STATUS_CHANGE));
                 if ($this->getEvent()) {
                     // Trigger status events for system wide processing. EG: 'status.placement.not approved', status.placementrequest.pending'
                     $this->getConfig()->getEventDispatcher()->dispatch($this->getEvent(), $e);
