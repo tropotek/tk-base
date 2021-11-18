@@ -185,7 +185,7 @@ class Status extends Model
     public function execute()
     {
         if (!$this->getName() || $this->getName() == $this->getPreviousName()) {
-            Log::debug('Status skipped');
+            Log::debug('Status Skipped: ' . $this->getPreviousName() . ' / ' . $this->getName() . ' - ' .$this->getFkey() . '[' . $this->getFid() . ']');
             return;
         }
         $this->save();
