@@ -630,6 +630,7 @@ var project_core = function () {
       if (element.find('.tk-panel-title-right')) {
         element.find('.tk-panel-title-right').addClass('pull-right float-right');
         tpl.find('.tp-title').parent().append(element.find('.tk-panel-title-right'));
+        //tpl.find('.tp-title').parent().parent().append(element.find('.tk-panel-title-right'));
       }
       element.before(tpl);
       element.detach();
