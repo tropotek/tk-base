@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.2.114 [2021-11-24]:
+-------------------------------
+  - Merge branch '3.2' of ssh://github.com/tropotek/tk-base into 3.2
+
+
 Ver 3.2.112 [2021-11-18]:
 -------------------------------
   - Merge branch '3.2' of ssh://github.com/tropotek/tk-base into 3.2
