@@ -167,6 +167,7 @@ trait StatusTrait
     {
         $objNs = lcfirst(ObjectUtil::getBaseNamespace($this));
         $objStr = lcfirst(ObjectUtil::basename($this));
+        //$objStr = strtolower(ObjectUtil::basename($this));
         $objStatus = lcfirst($this->getStatus());
         $str = 'status.' . $objNs . '.' . $objStr . '.' . $objStatus;
         return $str;
