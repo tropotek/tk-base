@@ -257,11 +257,13 @@ class Status extends Model
      */
     public function findLastByUserType($userType = '')
     {
+        // TOOD: See if this fixes the infinate recursive error
         if ($this->getUser()) {
             if ($this->getUser()->hasType($userType))
                 return $this->getUser();
-        } else if ($this->getPrevious())
-            return $this->getPrevious()->findLastByUserType($userType);
+            else if ($this->getPrevious())
+                return $this->getPrevious()->findLastByUserType($userType);
+        }
         return null;
         
         // TOOD: the blow call was calling recursively and not stopping causing the error:
