@@ -231,11 +231,11 @@ class Status extends Model
                 'fid' => $this->getFid(),
                 'fkey' => $this->getFkey()
             );
-
             $this->_previous = $this->getConfig()->getStatusMap()
                 ->findFiltered($filter, Tool::create('id DESC', 1))->current();
         }
-        return $this->_previous;
+        //return $this->_previous;      // This can cause the recursive loop error from findLastByUserType()
+        return null;
     }
 
     /**
@@ -257,7 +257,6 @@ class Status extends Model
      */
     public function findLastByUserType($userType = '')
     {
-        // TOOD: See if this fixes the infinate recursive error
         if ($this->getUser()) {
             if ($this->getUser()->hasType($userType))
                 return $this->getUser();
@@ -265,9 +264,7 @@ class Status extends Model
                 return $this->getPrevious()->findLastByUserType($userType);
         }
         return null;
-        
-        // TOOD: the blow call was calling recursively and not stopping causing the error:
-        //       "Cannot call session save handler in a recursive manner"
+
 //        if ($this->getUser() && $this->getUser()->hasType($userType)) {
 //            return $this->getUser();
 //        }
