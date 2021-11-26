@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.2.118 [2021-11-26]:
+-------------------------------
+  - Tagging and releasing branch `3.2` with version `3.2.116`.
+
+
 <<<<<<< HEAD
 Ver 3.2.116 [2021-11-26]:
 =======
