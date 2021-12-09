@@ -36,7 +36,7 @@ class Status extends \Bs\TableIface
     /**
      * @var array
      */
-    protected $selectedColumns = array('name', 'userId', 'message');
+    protected $selectedColumns = array('id', 'name', 'userId', 'message');
 
 
     /**
@@ -46,8 +46,10 @@ class Status extends \Bs\TableIface
     public function init()
     {
         $this->addCss('tk-status-table');
-    
-        $this->appendCell(new Cell\Checkbox('id'))->setLabel('ID');
+
+        if ($this->getAuthUser()->hasPermission(Permission::MANAGE_SITE)) {
+            $this->appendCell(new Cell\Checkbox('id'))->setLabel('ID');
+        }
         $this->appendCell(new Text('name'))->setLabel('Status')->setUrl($this->getEditUrl());
 
 //        $logUrl = null;
@@ -108,6 +110,9 @@ class Status extends \Bs\TableIface
         //$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
+        if ($this->getAuthUser()->hasPermission(Permission::MANAGE_SITE)) {
+            $this->appendAction(\Tk\Table\Action\Delete::create());
+        }
         $this->appendAction(ColumnSelect::create()->setSelected($this->selectedColumns));
         $this->appendAction(Csv::create());
 
