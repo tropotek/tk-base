@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Table;
 
+use Bs\Db\Permission;
 use Bs\Db\Status as StatusAlias;
 use Tk\Db\Map\ArrayObject;
 use Tk\Db\Tool;
