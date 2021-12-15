@@ -161,7 +161,7 @@ class Status extends Model
         }
 
         if (method_exists($model, 'getInstitutionId')) {
-            $obj->setInstitutionId($model->getAssessmentId());
+            $obj->setInstitutionId($model->getInstitutionId());
         }
         if (method_exists($model, 'getCourseId')) {
             $obj->setCourseId($model->getCourseId());
