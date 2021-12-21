@@ -228,7 +228,7 @@ class Status extends Model
         if (!$this->_previous) {
             $filter = array(
                 'exclude' => $this->getId(),
-                'before' => $this->getCreated(),
+                //'before' => $this->getCreated(),
                 'fid' => $this->getFid(),
                 'fkey' => $this->getFkey()
             );
@@ -242,6 +242,47 @@ class Status extends Model
         return $this->_previous;      // This can cause the recursive loop error from findLastByUserType()
         //return null;
     }
+    /**
+     * @param string $userType
+     * @return User|null
+     * @throws Exception
+     */
+    public function findLastByUserType($userType = '')
+    {
+        // NOTE: The recursive method was prone to endless loops
+        $filter = array(
+            //'exclude' => $this->getId(),
+            //'before' => $this->getCreated(),
+            'fid' => $this->getFid(),
+            'fkey' => $this->getFkey()
+        );
+        $list = $this->getConfig()->getStatusMap()
+            ->findFiltered($filter, Tool::create('id DESC', 100));
+        /** @var Status $s */
+        foreach ($list as $s) {
+            if ($s->getUser() && $s->getUser()->hasType($userType)) {
+                return $s->getUser();
+            }
+        }
+
+
+//        if ($this->getUser()) {
+//            if ($this->getUser()->hasType($userType))
+//                return $this->getUser();
+//            else if ($this->getPrevious())
+//                return $this->getPrevious()->findLastByUserType($userType);
+//        }
+        return null;
+
+//        if ($this->getUser() && $this->getUser()->hasType($userType)) {
+//            return $this->getUser();
+//        }
+//        $prev = $this->getPrevious();
+//        if ($prev) {
+//            return $prev->findLastByUserType($userType);
+//        }
+//        return null;
+    }
 
     /**
      * @return string
@@ -253,31 +294,6 @@ class Status extends Model
         if ($prev)
             return $prev->getName();
         return '';
-    }
-
-    /**
-     * @param string $userType
-     * @return User|null
-     * @throws Exception
-     */
-    public function findLastByUserType($userType = '')
-    {
-//        if ($this->getUser()) {
-//            if ($this->getUser()->hasType($userType))
-//                return $this->getUser();
-//            else if ($this->getPrevious())
-//                return $this->getPrevious()->findLastByUserType($userType);
-//        }
-//        return null;
-
-        if ($this->getUser() && $this->getUser()->hasType($userType)) {
-            return $this->getUser();
-        }
-        $prev = $this->getPrevious();
-        if ($prev) {
-            return $prev->findLastByUserType($userType);
-        }
-        return null;
     }
 
     /**
