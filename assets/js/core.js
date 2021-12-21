@@ -352,9 +352,14 @@ var project_core = function () {
           var url, reg, info;
           // URL normalization
           url = fm.convAbsUrl(file.url);
+          //url = file.url;
           // Remove domain name from the path
           url = url.replace(url.split('/').slice(0, 3).join('/'), '');
-          //console.log(url.replace(url.split('/').slice(0, 3).join('/'), ''));
+
+
+          //console.log(arguments);
+          // data-no-rel="data-no-rel"
+
 
           // Make file info
           info = file.name;
@@ -397,7 +402,7 @@ var project_core = function () {
       image_advtab: true,
       content_style: 'body {padding: 10px}',
       convert_urls: false,
-
+      baseUrl: config.siteUrl,
       // Trying to fix past wod text issue?????? This does not seem o make any difference, need to find another editor I think
       ////paste_as_text: true,
       //paste_auto_cleanup_on_paste : true,
