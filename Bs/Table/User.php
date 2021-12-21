@@ -106,6 +106,10 @@ class User extends \Bs\TableIface
         // Filters
         $this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
+        $list = ['Yes' => '1', 'No' => '0'];
+        $this->appendFilter(Field\Select::createSelect('active', $list)->setValue('1')->prependOption('-- Active --'));
+
+
         // Actions
         //$this->appendAction(\Tk\Table\Action\Link::createLink('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
         $arr = array('modified', 'created');
