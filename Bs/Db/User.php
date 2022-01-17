@@ -243,7 +243,7 @@ class User extends Model implements UserIface
             } else if (file_exists($this->getConfig()->getDataPath() . $this->getImage())) {
                 $url = \Tk\Uri::create($this->getConfig()->getDataUrl() . $this->getImage());
             }
-        } else if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar') && false) {
+        } else if (class_exists('\LasseRafn\InitialAvatarGenerator\InitialAvatar')) {
             // TODO: Disabled until the lib works
             // TODO: Currently gets the error:  Uncaught Error: Call to undefined function GuzzleHttp\Psr7\stream_for()
             $color = \Tk\Color::createRandom($this->getVolatileId());
