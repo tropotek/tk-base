@@ -197,6 +197,9 @@ class Status extends Model
             Log::error(get_class($this->getModel()) . ' does not use StatusTrait. Please update your class definition.');
             return;
         }
+        // TODO: Check to see if this ever happens
+        if (!$this->getId())
+            Log::warning('o Status '.$this->getName().' has an ID of 0');
 
         // Trigger mail event depending on the model
         if ($model->hasStatusChanged($this)) {

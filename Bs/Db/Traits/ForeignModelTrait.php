@@ -65,7 +65,7 @@ trait ForeignModelTrait
     /**
      * Alias to getForeignModel();
      *
-     * @return null|Model|ModelInterface
+     * @return null|Model|ModelInterface|StatusTrait
      * @throws \Exception
      */
     public function getModel()

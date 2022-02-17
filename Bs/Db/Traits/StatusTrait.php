@@ -50,20 +50,25 @@ trait StatusTrait
     private $_statusObject = null;
 
 
-    // TODO: Override any of these in your object to customise for your application
+    // NOTE: Override any of these in your object to customise for your application
 
     /**
      * Must be Called after the status object is saved.
      * Should return true if the status has changed and the statusChange event should be triggered
      *
-     * TODO: You should override this in your own objects to manage when an event is triggered
+     * NOTE: You should override this in your own objects to manage when an event is triggered
      *       For example: if a status from completed back to pending should trigger an event?
+     *
+     * TODO: This should be refactored so that we only need to send the current and prev status names
+     *       to the method like bool hasStatusChanged($currStatusName, $prevStatusName);
+     *       Then the object only has the values it needs to use directly.
+     *
      *
      * @param Status $status
      * @return boolean
      * @throws \Exception
      */
-    public function hasStatusChanged(Status $status)
+    public function hasStatusChanged(Status $status = null)
     {
         $prevStatusName = $status->getPreviousName();
         if ($status->getName() != $prevStatusName)
