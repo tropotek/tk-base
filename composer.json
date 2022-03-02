@@ -1,5 +1,5 @@
 {
-    "name": "ttek/tk-base",
+    "name": "uom/tk-base",
     "type": "library",
     "description": "Base site library for the Tk lib",
     "keywords":  [
@@ -16,12 +16,6 @@
             "homepage": "http://www.tropotek.com/"
         }
     ],
-    "funding":  [
-         {
-            "type": "Paypal",
-            "url": "https://www.paypal.me/tropotek"
-        }
-    ],
     "autoload":  {
         "psr-0":  {
             "Bs\\": ""
@@ -29,16 +23,16 @@
     },
     "require":  {
         "php": "^7.3||^8.0",
-        "ttek/tk-framework": "~3.0.0",
-        "ttek/tk-mvc": "~3.2.0",
-        "ttek/tk-auth": "~3.0.0",
-        "ttek/tk-mail": "~3.0.0",
-        "ttek/tk-plugin": "~3.2.0",
-        "ttek/tk-database": "~3.2.0",
-        "ttek/tk-domtemplate": "~3.0.0",
-        "ttek/tk-form": "~3.0.0",
-        "ttek/tk-table": "~3.0.0",
-        "ttek/tk-ui": "~3.0.0",
+        "uom/tk-framework": "~3.0.0",
+        "uom/tk-mvc": "~3.2.0",
+        "uom/tk-auth": "~3.0.0",
+        "uom/tk-mail": "~3.0.0",
+        "uom/tk-plugin": "~3.2.0",
+        "uom/tk-database": "~3.2.0",
+        "uom/tk-domtemplate": "~3.0.0",
+        "uom/tk-form": "~3.0.0",
+        "uom/tk-table": "~3.0.0",
+        "uom/tk-ui": "~3.0.0",
         "sensiolabs/ansi-to-html": "~1.0",
         "lasserafn/php-initial-avatar-generator": "~4.0"
     },
