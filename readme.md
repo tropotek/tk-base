@@ -25,7 +25,7 @@ composer require uom/tk-base
 Or add the following to your composer.json file:
 
 ```json
-"uom/tk-base": "~3.2"
+"uom/tk-base": "~3.4"
 ```
 
 If you do not use Composer, you can grab the code from GitHub, and use any
