@@ -32,5 +32,3 @@ If you do not use Composer, you can grab the code from GitHub, and use any
 PSR-0 compatible autoloader to load the classes.
 
 ## Introduction
-
-
