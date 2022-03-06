@@ -301,16 +301,17 @@ class Config extends \Tk\Config
             $dm->add(new \Dom\Modifier\Filter\UrlPath($this->getSiteUrl()));
             $dm->add(new \Dom\Modifier\Filter\JsLast());
 
-            if (class_exists('Dom\Modifier\Filter\Less')) {
-                /** @var \Dom\Modifier\Filter\Less $less */
-                $vars = array(
-                    'siteUrl' => rtrim(\Tk\Uri::create($this->getSiteUrl())->getPath(), '/'),
-                    'dataUrl' => rtrim(\Tk\Uri::create($this->getDataUrl())->getPath(), '/'),
-                    'templateUrl' => rtrim(\Tk\Uri::create($this->getTemplateUrl())->getPath(), '/') );
-                $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars ));
-                $less->setCompress(true);
-                $less->setCacheEnabled(!$this->isRefreshCacheRequest());
-            }
+            // Deprecated use Scss from now on.
+//            if (class_exists('Dom\Modifier\Filter\Less')) {
+//                /** @var \Dom\Modifier\Filter\Less $less */
+//                $vars = array(
+//                    'siteUrl' => rtrim(\Tk\Uri::create($this->getSiteUrl())->getPath(), '/'),
+//                    'dataUrl' => rtrim(\Tk\Uri::create($this->getDataUrl())->getPath(), '/'),
+//                    'templateUrl' => rtrim(\Tk\Uri::create($this->getTemplateUrl())->getPath(), '/') );
+//                $less = $dm->add(new \Dom\Modifier\Filter\Less($this->getSitePath(), $this->getSiteUrl(), $this->getCachePath(), $vars ));
+//                $less->setCompress(true);
+//                $less->setCacheEnabled(!$this->isRefreshCacheRequest());
+//            }
 
             if (class_exists('Dom\Modifier\Filter\Scss')) {
                 /** @var \Dom\Modifier\Filter\Scss $scss */
