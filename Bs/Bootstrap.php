@@ -69,6 +69,7 @@ class Bootstrap
             error_log('Log Path not readable: ' . $config->getLogPath());
         }
 
+        \Tk\Debug\VarDump::getInstance($config->getLog());
         if (!$config->isDebug()) {
             ini_set('display_errors', 'Off');
             error_reporting(0);
