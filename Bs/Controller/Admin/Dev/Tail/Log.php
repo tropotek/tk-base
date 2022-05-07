@@ -105,6 +105,7 @@ JS;
         $css = <<<CSS
 .tk-tail {
   position: relative;
+  background-color: #FFF;
 }
 .tail-out {
   position: relative;
