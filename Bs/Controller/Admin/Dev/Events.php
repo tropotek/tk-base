@@ -79,7 +79,7 @@ class Events extends \Bs\Controller\AdminIface
     public function show()
     {
         $template = parent::show();
-vd('test');
+
         $template->appendTemplate('table', $this->table->getRenderer()->show());
 
         return $template;

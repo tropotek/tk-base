@@ -1,9 +1,10 @@
 <?php
 namespace Bs;
 
+use Monolog\Handler\BrowserConsoleHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-
+use Tk\Log;
 
 /**
  * @author Michael Mifsud <info@tropotek.com>
@@ -56,11 +57,21 @@ class Bootstrap
                 }
                 //$logger = new Logger('system');
                 $logger = new Logger('system', array(), $processors);
+                
                 $handler = new StreamHandler($config->getLogPath(), $config->getLogLevel());
+                $formatter = new \Tk\Log\MonologLineFormatter();
+                $formatter->setColorsEnabled(true);
+                $formatter->setScriptTime($config->getScriptTime());
+                $handler->setFormatter($formatter);
+                $logger->pushHandler($handler);
+
+                $handler = new BrowserConsoleHandler();
                 $formatter = new \Tk\Log\MonologLineFormatter();
                 $formatter->setScriptTime($config->getScriptTime());
                 $handler->setFormatter($formatter);
                 $logger->pushHandler($handler);
+ 
+
                 $config->setLog($logger);
                 \Tk\Log::getInstance($logger);
                 \Dom\Template::$logger = $logger;
@@ -68,8 +79,13 @@ class Bootstrap
         } else {
             error_log('Log Path not readable: ' . $config->getLogPath());
         }
-
+        
         \Tk\Debug\VarDump::getInstance($config->getLog());
+
+        Log::debug('this is a test');
+        vd($config->all());
+
+
         if (!$config->isDebug()) {
             ini_set('display_errors', 'Off');
             error_reporting(0);
