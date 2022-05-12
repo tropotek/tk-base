@@ -80,11 +80,8 @@ class Bootstrap
             error_log('Log Path not readable: ' . $config->getLogPath());
         }
         
+        // Init the tk vardump functions
         \Tk\Debug\VarDump::getInstance($config->getLog());
-
-        Log::debug('this is a test');
-        vd($config->all());
-
 
         if (!$config->isDebug()) {
             ini_set('display_errors', 'Off');
