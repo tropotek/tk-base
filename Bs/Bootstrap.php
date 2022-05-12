@@ -79,7 +79,7 @@ class Bootstrap
         } else {
             error_log('Log Path not readable: ' . $config->getLogPath());
         }
-        
+
         // Init the tk vardump functions
         \Tk\Debug\VarDump::getInstance($config->getLog());
 
