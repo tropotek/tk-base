@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 3.2.142 [2022-05-13]:
+-------------------------------
+  - Fixed work week hours default search dates
+  - added vardump to bootstrap
+  - Added white background to tail log
+
+
 Ver 3.2.140 [2022-03-07]:
 -------------------------------
 
