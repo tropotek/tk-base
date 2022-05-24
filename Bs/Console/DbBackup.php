@@ -22,7 +22,7 @@ class DbBackup extends \Tk\Console\Console
         $this->setName('dbbackup')
             ->setDescription('Call this to dump a copy of the Database sql to stdout or a file if an argument is given')
             ->addArgument('output', InputArgument::OPTIONAL, 'A file path to dump the SQL to.', null)
-            ->addOption('date_format', 'f', InputArgument::OPTIONAL, 'Auto filename generated based on date when a directory is supplied as the output. See http://php.net/manual/en/function.date.php', 'D')
+            ->addArgument('date_format', InputArgument::OPTIONAL, 'Auto filename generated based on date when a directory is supplied as the output. See http://php.net/manual/en/function.date.php', 'D')
         ;
     }
 
