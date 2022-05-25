@@ -45,7 +45,7 @@ class DbBackup extends \Tk\Console\Console
 
         if ($outfile) {
             if (is_dir($outfile)) {
-                $outfile = $outfile . '/' . \Tk\Date::create()->format($input->getOption('date_format')) . '.sql'; // a backup for each day of the Week before overrwriting
+                $outfile = $outfile . '/' . \Tk\Date::create()->format($input->getArgument('date_format')) . '.sql'; // a backup for each day of the Week before overrwriting
                 $this->writeComment('  - Saving SQL to: ' . $outfile);
             } else {
                 $this->writeComment('  - Creating directory: ' . dirname($outfile));
