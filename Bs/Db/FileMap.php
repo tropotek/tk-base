@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS file
     fkey VARCHAR(64) DEFAULT '' NOT NULL,
     fid INT DEFAULT 0 NOT NULL,
     label VARCHAR(128) default '' NOT NULL,
-    path TEXT NULL,
+    `path` TEXT NULL,
     bytes INT DEFAULT 0 NOT NULL,
     mime VARCHAR(255) DEFAULT '' NOT NULL,
     active TINYINT(1) default 0,
@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS file
     created datetime NOT NULL,
     KEY user_id (user_id),
     KEY fkey (fkey),
-    KEY fkey_2 (fkey, fid)
+    KEY fkey_2 (fkey, fid),
+    KEY fkey_3 (fkey, fid, label)
 );
 SQL;
         if (!$this->getDb()->hasTable('file')) {
@@ -100,7 +101,6 @@ SQL;
         return $this->formMap;
     }
 
-
     /**
      * @param string $hash
      * @return File|Model|null
@@ -110,7 +110,6 @@ SQL;
     {
         return $this->findFiltered(array('hash' => $hash))->current();
     }
-
 
     /**
      * @param array|Filter $filter
@@ -155,12 +154,13 @@ SQL;
             $w = $this->makeMultiQuery($filter['label'], 'a.label');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
+        if (isset($filter['mime'])) {
+            $w = $this->makeMultiQuery($filter['mime'], 'a.mime');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
 
         if (!empty($filter['path'])) {
             $filter->appendWhere('a.path = %s AND ', $this->quote($filter['path']));
-        }
-        if (!empty($filter['mime'])) {
-            $filter->appendWhere('a.mime = %s AND ', $this->quote($filter['mime']));
         }
         if (!empty($filter['hash'])) {
             $filter->appendWhere('a.hash = %s AND ', $this->quote($filter['hash']));
