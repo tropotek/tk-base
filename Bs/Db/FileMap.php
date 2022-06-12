@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS file
     user_id INT(10) UNSIGNED NOT NULL DEFAULT 0,
     fkey VARCHAR(64) DEFAULT '' NOT NULL,
     fid INT DEFAULT 0 NOT NULL,
-    label VARCHAR(128) default '',
+    label VARCHAR(128) default '' NOT NULL,
     path TEXT NULL,
     bytes INT DEFAULT 0 NOT NULL,
     mime VARCHAR(255) DEFAULT '' NOT NULL,
@@ -129,7 +129,6 @@ SQL;
      */
     public function makeQuery(Filter $filter)
     {
-        vd($filter);
         $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['keywords'])) {
@@ -152,12 +151,13 @@ SQL;
             $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
+        if (isset($filter['label'])) {
+            $w = $this->makeMultiQuery($filter['label'], 'a.label');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
 
         if (!empty($filter['path'])) {
             $filter->appendWhere('a.path = %s AND ', $this->quote($filter['path']));
-        }
-        if (!empty($filter['label'])) {
-            $filter->appendWhere('a.label = %s AND ', $this->quote($filter['label']));
         }
         if (!empty($filter['mime'])) {
             $filter->appendWhere('a.mime = %s AND ', $this->quote($filter['mime']));

@@ -6,8 +6,6 @@ use Tk\Db\Tool;
 /**
  * Use this interface if you are planing on using the file upload field
  *
- *
- *
  * @author Michael Mifsud <info@tropotek.com>
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Michael Mifsud
