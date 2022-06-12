@@ -129,6 +129,7 @@ SQL;
      */
     public function makeQuery(Filter $filter)
     {
+        vd($filter);
         $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['keywords'])) {
