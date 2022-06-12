@@ -38,7 +38,6 @@ class File extends \Bs\TableIface
         $this->addCss('tk-file-table');
 
         $this->appendCell(new Cell\Checkbox('id'));
-
         $this->appendCell(new Text('path'))->setLabel('Status')
             ->addOnPropertyValue(function(Text $cell, \Bs\Db\File $obj, $value) {
                 $value = '';
@@ -48,20 +47,16 @@ class File extends \Bs\TableIface
                 }
                 return $value;
             });
-
         $this->appendCell(new Text('userId'))->addOnPropertyValue(function(Text $cell, \Bs\Db\File $obj, $value) {
             $value = '';
             if ($obj->getUser())
                 $value = $obj->getUser()->getName();
             return $value;
         });
-
         $this->appendCell(new Text('fkey'))->setLabel('Type');
         $this->appendCell(new Text('mime'));
         $this->appendCell(new Text('bytes'))->setLabel('Size');
         $this->appendCell(new Text('notes'));
-
-
         $this->appendCell(new Cell\Date('modified'));
         $this->appendCell(new Cell\Date('created'));
 
@@ -69,7 +64,6 @@ class File extends \Bs\TableIface
         //$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
 
         // Actions
-
         $this->appendAction(\Tk\Table\Action\Delete::create());
         $this->appendAction(ColumnSelect::create()->setUnselected(['modified', 'notes', 'mime']));
         $this->appendAction(Csv::create());
