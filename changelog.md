@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 3.4.12 [2022-06-13]:
+-------------------------------
+  - Add feature for students to upload PDF or image of signed consent letter
+  - Use existing \bs\Db\File object
+  - Fixed rule issue not allowing auto approve functionality
+
+
 Ver 3.4.10 [2022-05-27]:
 -------------------------------
 
