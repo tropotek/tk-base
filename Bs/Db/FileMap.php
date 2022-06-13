@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS file
     `path` TEXT NULL,
     bytes INT DEFAULT 0 NOT NULL,
     mime VARCHAR(255) DEFAULT '' NOT NULL,
-    active TINYINT(1) default 0,
     notes TEXT NULL,
     hash VARCHAR(128) DEFAULT '' NOT NULL,
     modified datetime NOT NULL,
@@ -71,7 +70,6 @@ SQL;
             $this->dbMap->addPropertyMap(new Db\Integer('bytes'));
             $this->dbMap->addPropertyMap(new Db\Text('mime'));
             $this->dbMap->addPropertyMap(new Db\Text('label'));
-            $this->dbMap->addPropertyMap(new Db\Boolean('active'));
             $this->dbMap->addPropertyMap(new Db\Text('notes'));
             $this->dbMap->addPropertyMap(new Db\Text('hash'));
             $this->dbMap->addPropertyMap(new Db\Date('modified'));
@@ -95,7 +93,6 @@ SQL;
             $this->formMap->addPropertyMap(new Form\Integer('bytes'));
             $this->formMap->addPropertyMap(new Form\Text('mime'));
             $this->formMap->addPropertyMap(new Form\Text('label'));
-            $this->formMap->addPropertyMap(new Form\Boolean('active'));
             $this->formMap->addPropertyMap(new Form\Text('notes'));
         }
         return $this->formMap;
@@ -164,13 +161,6 @@ SQL;
         }
         if (!empty($filter['hash'])) {
             $filter->appendWhere('a.hash = %s AND ', $this->quote($filter['hash']));
-        }
-        if (isset($filter['active']) && $filter['active'] !== '' && $filter['active'] !== null) {
-            if ($filter['active'] > 0) {
-                $filter->appendWhere('a.active = 1 AND ');
-            } else {
-                $filter->appendWhere('a.active = 0 AND ');
-            }
         }
 
         if (!empty($filter['model']) && $filter['model'] instanceof Model) {

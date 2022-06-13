@@ -68,11 +68,6 @@ class File extends Model implements ValidInterface
     public $label = '';
 
     /**
-     * @var boolean
-     */
-    public $active = '';
-
-    /**
      * @var string
      */
     public $notes = '';
@@ -125,7 +120,6 @@ class File extends Model implements ValidInterface
             $userId = 0;
         }
         $obj->setUserId($userId);
-
 
         if (!$dataPath) $dataPath = Config::getInstance()->getDataPath();
         if ($file) {
@@ -373,24 +367,25 @@ class File extends Model implements ValidInterface
     }
 
     /**
-     * Use this as to tell if the files are to be attached to the PDF report
+     * Delete from your code
      *
      * @return bool
+     * @deprecated
      */
     public function isActive()
     {
-        return $this->active;
+        return false;
     }
 
     /**
-     * Use this as to tell if the files are to be attached to the PDF report
+     * Delete from all code
      *
      * @param bool $active
      * @return File
+     * @deprecated
      */
     public function setActive($active)
     {
-        $this->active = $active;
         return $this;
     }
 
