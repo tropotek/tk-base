@@ -39,6 +39,7 @@ class File extends \Bs\TableIface
 
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell(new Text('path'))->setLabel('Status')
+            ->setLinkAttrs('target="_blank1"')
             ->addOnPropertyValue(function(Text $cell, \Bs\Db\File $obj, $value) {
                 $value = '';
                 if ($obj->getPath()) {
