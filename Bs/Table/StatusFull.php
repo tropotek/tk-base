@@ -51,6 +51,8 @@ class StatusFull extends \Bs\TableIface
             return $value;
         });
         $this->appendCell(new Text('name'))->setLabel('Status')->setUrl($this->getEditUrl());
+        $this->appendCell(new Text('courseId'));
+        $this->appendCell(new Text('subjectId'));
         $this->appendCell(new Text('event'));
         $this->appendCell(new Text('fkey'));
         $this->appendCell(new Text('fid'));

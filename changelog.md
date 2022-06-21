@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.4.14 [2022-06-22]:
+-------------------------------
+  - Added status manager
+
+
 Ver 3.4.12 [2022-06-13]:
 -------------------------------
   - Add feature for students to upload PDF or image of signed consent letter
