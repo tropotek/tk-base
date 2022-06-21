@@ -198,7 +198,8 @@ SQL;
             $filter->appendWhere('a.fid = %d AND ', (int)$filter['fid']);
         }
         if (!empty($filter['fkey'])) {
-            $filter->appendWhere('a.fkey = %s AND ', $this->quote($filter['fkey']));
+            $w = $this->makeMultiQuery($filter['fkey'], 'a.fkey');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['before']) && $filter['before'] instanceof DateTime) {
@@ -214,6 +215,20 @@ SQL;
         if (!empty($filter['monthTo']) && $filter['monthTo'] instanceof DateTime) {
             $filter->appendWhere('DATE_FORMAT(a.created, "%%Y-%%m") <= %s AND ', $this->quote($filter['monthTo']->format('Y-m')));
         }
+
+        $dates = array('dateStart', 'dateEnd');
+        foreach ($dates as $name) {
+            if (!empty($filter[$name]) && !$filter[$name] instanceof DateTime) {
+                $filter[$name] = Date::createFormDate($filter[$name]);
+            }
+        }
+        if (!empty($filter['dateStart']) && $filter['dateStart'] instanceof DateTime) {
+            $filter->appendWhere('a.created >= %s AND ', $this->quote($filter['dateStart']->format(Date::FORMAT_ISO_DATETIME)));
+        }
+        if (!empty($filter['dateEnd']) && $filter['dateEnd'] instanceof DateTime) {
+            $filter->appendWhere('a.created <= %s AND ', $this->quote($filter['dateEnd']->format(Date::FORMAT_ISO_DATETIME)));
+        }
+
 
         if (!empty($filter['event'])) {
             $w = $this->makeMultiQuery($filter['event'], 'a.event');
@@ -246,7 +261,6 @@ SQL;
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
-//vd($filter);
         return $filter;
     }
 
@@ -270,11 +284,65 @@ SQL;
     public function findKeys($filter)
     {
         $filter = $this->makeQuery(Filter::create($filter));
-        $sql = sprintf('SELECT DISTINCT a.fkey FROM %s WHERE %s ', $filter->getFrom(), $filter->getWhere());
+        $sql = sprintf('SELECT DISTINCT a.fkey FROM %s WHERE %s ', $filter->getFrom(), $filter->getWhere() ?: '1');
         $r = $this->getDb()->query($sql);
         $a = array();
         foreach ($r as $obj) {
             $a[ObjectUtil::basename($obj->fkey)] = $obj->fkey;
+        }
+        return $a;
+    }
+
+
+    /**
+     * @param array|Filter $filter
+     * @return array
+     * @throws Exception
+     */
+    public function findFkeys($filter)
+    {
+        $filter = $this->makeQuery(Filter::create($filter));
+        $sql = sprintf('SELECT DISTINCT a.fkey FROM %s WHERE %s ', $filter->getFrom(), $filter->getWhere() ?: '1');
+        $r = $this->getDb()->query($sql);
+        $a = array();
+        foreach ($r as $obj) {
+            $a[$obj->fkey] = $obj->fkey;
+        }
+        return $a;
+    }
+
+    /**
+     * @param array|Filter $filter
+     * @return array
+     * @throws Exception
+     */
+    public function findEvents($filter)
+    {
+        $filter = $this->makeQuery(Filter::create($filter));
+        $sql = sprintf('SELECT DISTINCT a.event FROM %s WHERE %s ', $filter->getFrom(), $filter->getWhere() ?: '1');
+        $r = $this->getDb()->query($sql);
+        $a = array();
+        foreach ($r as $obj) {
+            if (!$obj->event) continue;
+            $a[$obj->event] = $obj->event;
+        }
+        return $a;
+    }
+
+    /**
+     * @param array|Filter $filter
+     * @return array
+     * @throws Exception
+     */
+    public function findNames($filter)
+    {
+        $filter = $this->makeQuery(Filter::create($filter));
+        $sql = sprintf('SELECT DISTINCT a.name FROM %s WHERE %s ', $filter->getFrom(), $filter->getWhere() ?: '1');
+        $r = $this->getDb()->query($sql);
+        $a = array();
+        foreach ($r as $obj) {
+            if (!$obj->name) continue;
+            $a[$obj->name] = $obj->name;
         }
         return $a;
     }

@@ -1,15 +1,18 @@
 <?php
 namespace Bs\Table;
 
+use App\Form\Field\DateRange;
 use Bs\Db\Permission;
 use Bs\Db\Status as StatusAlias;
 use Tk\Db\Map\ArrayObject;
 use Tk\Db\Tool;
+use Tk\Form\Field\Input;
 use Tk\Table\Action\ColumnSelect;
 use Tk\Table\Action\Csv;
 use Tk\Table\Cell;
 use Tk\Table\Cell\Text;
 use Bs\Db\StatusMap;
+use Tk\Form\Field;
 
 /**
  * Example:
@@ -39,55 +42,18 @@ class StatusFull extends \Bs\TableIface
     {
         $this->addCss('tk-status-table');
 
-        if ($this->getAuthUser()->hasPermission(Permission::MANAGE_SITE)) {
-            $this->appendCell(new Cell\Checkbox('id'));
-        }
-        $this->appendCell(new Text('name'))->setLabel('Status')->setUrl($this->getEditUrl());
-
-//        $logUrl = null;
-//        if ($this->isShowLogUrl())
-//            $logUrl = \Uni\Uri::createSubjectUrl('/mailLogManager.html');
-
-
-        $this->appendCell(new Text('event'));
-//            ->setOnPropertyValue(function ($cell, $obj, $value) {
-//                /** @var $cell \Tk\Table\Cell\Text */
-//                /** @var $obj \Uni\Db\Status */
-//
-//                return $value;
-//            });
-//            ->setOnCellHtml(function ($cell, $obj, $html) {
-//                /** @var $cell \Tk\Table\Cell\Text */
-//                /** @var $obj \Uni\Db\Status */
-//                $value = $propValue = $cell->getPropertyValue($obj);
-//                if ($cell->getCharLimit() && strlen($propValue) > $cell->getCharLimit()) {
-//                    $propValue = substr($propValue, 0, $cell->getCharLimit()-3) . '...';
-//                }
-//                $cell->setAttr('title', $value);
-//                $html = htmlentities($propValue);
-//
-////                $url = $cell->getCellUrl($obj);
-////                if (!$url && $obj->getEvent()) {
-////                    $logList = \App\Db\MailLogMap::create()->findFiltered(array('statusId' => $obj->getId()));
-////                    if ($logList->count() && $logUrl) {
-////                        $cell->setAttr('title', 'Click to view all email logs for this status change.');
-////                        $url = $logUrl->set('statusId', $obj->getId());
-////                    }
-////                }
-//
-//                if ($url) {
-//                    $html = sprintf('<a href="%s">%s</a>', htmlentities($url->toString()), htmlentities($propValue));
-//                }
-//                return $html;
-//            });
-
+        //$this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell(new Text('userId'))->addOnPropertyValue(function ($cell, $obj, $value) {
-                /** @var $obj StatusAlias */
-                $value = '';
-                if ($obj->getUser())
-                    $value = $obj->getUser()->getName();
-                return $value;
-            });
+            /** @var $obj StatusAlias */
+            $value = '';
+            if ($obj->getUser())
+                $value = $obj->getUser()->getName();
+            return $value;
+        });
+        $this->appendCell(new Text('name'))->setLabel('Status')->setUrl($this->getEditUrl());
+        $this->appendCell(new Text('event'));
+        $this->appendCell(new Text('fkey'));
+        $this->appendCell(new Text('fid'));
 
         $this->appendCell(new Text('message'))->addCss('key wrap-normal')
             ->addOnCellHtml(function ($cell, $obj, $html) {
@@ -99,14 +65,28 @@ class StatusFull extends \Bs\TableIface
         $this->appendCell(new Cell\Date('created'));
 
         // Filters
-        //$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
+        $this->appendFilter(new Input('keywords'))->setAttr('placeholder', 'Search');
+
+        // courseId     // tkuni only
+        // subjectId    // tk uni only
+
+        // event
+        $list = \Bs\Db\StatusMap::create()->findEvents([]);
+        $this->appendFilter(new \Tk\Form\Field\CheckboxSelect('event', $list));
+        // status name
+        $list = \Bs\Db\StatusMap::create()->findNames([]);
+        $this->appendFilter(new \Tk\Form\Field\CheckboxSelect('name', $list));
+        // fkey
+        $list = \Bs\Db\StatusMap::create()->findFkeys([]);
+        $this->appendFilter(new \Tk\Form\Field\CheckboxSelect('fkey', $list));
+
+        $this->appendFilter(new Field\DateRange('date'));
+
+        //$this->resetSession();
 
         // Actions
-        if ($this->getAuthUser()->hasPermission(Permission::MANAGE_SITE)) {
-            $this->appendAction(\Tk\Table\Action\Delete::create());
-        }
-        $this->appendAction(ColumnSelect::create()->setSelected($this->selectedColumns));
-        $this->appendAction(Csv::create());
+        $this->appendAction(ColumnSelect::create()->setUnselected(['message', 'fid'])->setSelected([]));
+        $this->appendAction(\Tk\Table\Action\Csv::create());
 
         return $this;
     }
