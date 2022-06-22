@@ -349,6 +349,42 @@ SQL;
 
     /**
      * @param array|Filter $filter
+     * @return array
+     * @throws Exception
+     */
+    public function findCourses($filter)
+    {
+        $filter = $this->makeQuery(Filter::create($filter));
+        $sql = sprintf('SELECT DISTINCT a.course_id FROM %s WHERE %s ORDER BY course_id DESC', $filter->getFrom(), $filter->getWhere() ?: '1');
+        $r = $this->getDb()->query($sql);
+        $a = array();
+        foreach ($r as $obj) {
+            if (!$obj->course_id) continue;
+            $a[$obj->course_id] = $obj->course_id;
+        }
+        return $a;
+    }
+
+    /**
+     * @param array|Filter $filter
+     * @return array
+     * @throws Exception
+     */
+    public function findSubjects($filter)
+    {
+        $filter = $this->makeQuery(Filter::create($filter));
+        $sql = sprintf('SELECT DISTINCT a.subject_id FROM %s WHERE %s ORDER BY subject_id DESC', $filter->getFrom(), $filter->getWhere() ?: '1');
+        $r = $this->getDb()->query($sql);
+        $a = array();
+        foreach ($r as $obj) {
+            if (!$obj->subject_id) continue;
+            $a[$obj->subject_id] = $obj->subject_id;
+        }
+        return $a;
+    }
+
+    /**
+     * @param array|Filter $filter
      * @param Tool $tool
      * @return ArrayObject
      * @throws Exception

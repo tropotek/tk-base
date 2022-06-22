@@ -32,6 +32,15 @@ use Tk\Form\Field;
  */
 class StatusFull extends \Bs\TableIface
 {
+    /**
+     * @var null|callable
+     */
+    protected $onCourseShowOption = null;
+
+    /**
+     * @var null|callable
+     */
+    protected $onSubjectShowOption = null;
 
 
     /**
@@ -72,22 +81,28 @@ class StatusFull extends \Bs\TableIface
         // courseId     // tkuni only
         // subjectId    // tk uni only
 
-        // event
-        $list = \Bs\Db\StatusMap::create()->findEvents([]);
-        $this->appendFilter(new \Tk\Form\Field\CheckboxSelect('event', $list));
         // status name
-        $list = \Bs\Db\StatusMap::create()->findNames([]);
-        $this->appendFilter(new \Tk\Form\Field\CheckboxSelect('name', $list));
+        $list = \Bs\Db\StatusMap::create()->findCourses(['institutionId' => $this->getConfig()->getInstitutionId()]);
+        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('courseId', $list)); // ->addOnShowOption($this->onCourseShowOption);
+        // status name
+        $list = \Bs\Db\StatusMap::create()->findSubjects(['institutionId' => $this->getConfig()->getInstitutionId()]);
+        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('subjectId', $list)); //->addOnShowOption($this->onSubjectShowOption));
+        // status name
+        $list = \Bs\Db\StatusMap::create()->findNames(['institutionId' => $this->getConfig()->getInstitutionId()]);
+        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('name', $list));
+        // event
+        $list = \Bs\Db\StatusMap::create()->findEvents(['institutionId' => $this->getConfig()->getInstitutionId()]);
+        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('event', $list));
         // fkey
-        $list = \Bs\Db\StatusMap::create()->findFkeys([]);
-        $this->appendFilter(new \Tk\Form\Field\CheckboxSelect('fkey', $list));
+        $list = \Bs\Db\StatusMap::create()->findFkeys(['institutionId' => $this->getConfig()->getInstitutionId()]);
+        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('fkey', $list));
 
         $this->appendFilter(new Field\DateRange('date'));
 
         //$this->resetSession();
 
         // Actions
-        $this->appendAction(ColumnSelect::create()->setUnselected(['message', 'fid'])->setSelected([]));
+        $this->appendAction(ColumnSelect::create()->setUnselected(['message', 'event', 'fid'])->setSelected([]));
         $this->appendAction(\Tk\Table\Action\Csv::create());
 
         return $this;
@@ -105,6 +120,42 @@ class StatusFull extends \Bs\TableIface
         $filter = array_merge($this->getFilterValues(), $filter);
         $list = StatusMap::create()->findFiltered($filter, $tool);
         return $list;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getOnCourseShowOption(): ?callable
+    {
+        return $this->onCourseShowOption;
+    }
+
+    /**
+     * @param callable|null $onCourseShowOption
+     * @return StatusFull
+     */
+    public function setOnCourseShowOption(?callable $onCourseShowOption): StatusFull
+    {
+        $this->onCourseShowOption = $onCourseShowOption;
+        return $this;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getOnSubjectShowOption(): ?callable
+    {
+        return $this->onSubjectShowOption;
+    }
+
+    /**
+     * @param callable|null $onSubjectShowOption
+     * @return StatusFull
+     */
+    public function setOnSubjectShowOption(?callable $onSubjectShowOption): StatusFull
+    {
+        $this->onSubjectShowOption = $onSubjectShowOption;
+        return $this;
     }
 
 }
