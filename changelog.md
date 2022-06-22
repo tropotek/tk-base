@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.4.16 [2022-06-22]:
+-------------------------------
+  - added names to courses and subject
+
+
 Ver 3.4.14 [2022-06-22]:
 -------------------------------
   - Added status manager
