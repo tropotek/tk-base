@@ -118,6 +118,7 @@ class StatusFull extends \Bs\TableIface
     {
         if (!$tool) $tool = $this->getTool('created DESC');
         $filter = array_merge($this->getFilterValues(), $filter);
+        vd($filter);
         $list = StatusMap::create()->findFiltered($filter, $tool);
         return $list;
     }

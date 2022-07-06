@@ -244,17 +244,28 @@ SQL;
             $filter->appendWhere('a.institution_id = %d AND ', (int)$filter['institutionId']);
         }
 
+
         if (!empty($filter['courseId'])) {
-            $filter->appendWhere('a.course_id = %d AND ', (int)$filter['courseId']);
+            $w = $this->makeMultiQuery($filter['courseId'], 'a.course_id');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['subjectId'])) {
-            if (empty($filter['courseId'])) {
-                $filter->appendWhere('a.subject_id = %d AND ', (int)$filter['subjectId']);
-            } else {
-                $filter->appendWhere('(a.subject_id = %d OR a.subject_id = 0) AND ', (int)$filter['subjectId']);
-            }
+            $w = $this->makeMultiQuery($filter['subjectId'], 'a.subject_id');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
+
+//        if (!empty($filter['courseId'])) {
+//            $filter->appendWhere('a.course_id = %d AND ', (int)$filter['courseId']);
+//        }
+//
+//        if (!empty($filter['subjectId'])) {
+//            if (empty($filter['courseId'])) {
+//                $filter->appendWhere('a.subject_id = %d AND ', (int)$filter['subjectId']);
+//            } else {
+//                $filter->appendWhere('(a.subject_id = %d OR a.subject_id = 0) AND ', (int)$filter['subjectId']);
+//            }
+//        }
 
 
         if (!empty($filter['exclude'])) {
