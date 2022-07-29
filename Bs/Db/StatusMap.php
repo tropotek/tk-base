@@ -152,7 +152,6 @@ SQL;
     public function findFiltered($filter, $tool = null)
     {
         $r = $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
-        //vd($this->getDb()->getLastQuery());
         return $r;
     }
 
