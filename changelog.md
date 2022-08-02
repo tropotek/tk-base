@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 3.4.22 [2022-08-03]:
+-------------------------------
+  - Added case completed date to report, removed comments
+  - removed comments
+
+
 Ver 3.4.20 [2022-07-06]:
 -------------------------------
 
