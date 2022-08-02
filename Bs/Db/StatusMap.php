@@ -254,19 +254,6 @@ SQL;
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
-//        if (!empty($filter['courseId'])) {
-//            $filter->appendWhere('a.course_id = %d AND ', (int)$filter['courseId']);
-//        }
-//
-//        if (!empty($filter['subjectId'])) {
-//            if (empty($filter['courseId'])) {
-//                $filter->appendWhere('a.subject_id = %d AND ', (int)$filter['subjectId']);
-//            } else {
-//                $filter->appendWhere('(a.subject_id = %d OR a.subject_id = 0) AND ', (int)$filter['subjectId']);
-//            }
-//        }
-
-
         if (!empty($filter['exclude'])) {
             $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
