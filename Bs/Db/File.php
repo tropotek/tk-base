@@ -73,6 +73,11 @@ class File extends Model implements ValidInterface
     public $notes = '';
 
     /**
+     * @var bool
+     */
+    public $selected = false;
+
+    /**
      * @var string
      */
     public $hash = '';
@@ -403,6 +408,24 @@ class File extends Model implements ValidInterface
     public function setNotes(string $notes): void
     {
         $this->notes = $notes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSelected(): bool
+    {
+        return $this->selected;
+    }
+
+    /**
+     * @param bool $selected
+     * @return File
+     */
+    public function setSelected(bool $selected): File
+    {
+        $this->selected = $selected;
+        return $this;
     }
 
     /**

@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS file
     bytes INT DEFAULT 0 NOT NULL,
     mime VARCHAR(255) DEFAULT '' NOT NULL,
     notes TEXT NULL,
+    selected BOOL NOT NULL DEFAULT FALSE,
     hash VARCHAR(128) DEFAULT '' NOT NULL,
     modified datetime NOT NULL,
     created datetime NOT NULL,
@@ -72,6 +73,7 @@ SQL;
             $this->dbMap->addPropertyMap(new Db\Text('label'));
             $this->dbMap->addPropertyMap(new Db\Text('notes'));
             $this->dbMap->addPropertyMap(new Db\Text('hash'));
+            $this->dbMap->addPropertyMap(new Db\Boolean('selected'));
             $this->dbMap->addPropertyMap(new Db\Date('modified'));
             $this->dbMap->addPropertyMap(new Db\Date('created'));
         }
@@ -94,6 +96,7 @@ SQL;
             $this->formMap->addPropertyMap(new Form\Text('mime'));
             $this->formMap->addPropertyMap(new Form\Text('label'));
             $this->formMap->addPropertyMap(new Form\Text('notes'));
+            $this->formMap->addPropertyMap(new Form\Boolean('selected'));
         }
         return $this->formMap;
     }
@@ -154,6 +157,10 @@ SQL;
         if (isset($filter['mime'])) {
             $w = $this->makeMultiQuery($filter['mime'], 'a.mime');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
+        if (isset($filter['selected']) && $filter['selected'] !== '' && $filter['selected'] !== null) {
+            $filter->appendWhere('a.selected = %s AND ', (int)$filter['selected']);
         }
 
         if (!empty($filter['path'])) {
