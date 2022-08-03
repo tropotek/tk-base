@@ -251,7 +251,8 @@ SQL;
 
         if (!empty($filter['subjectId'])) {
             $w = $this->makeMultiQuery($filter['subjectId'], 'a.subject_id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+            // a.subject_id = 0 allow`s for course status to also be shown
+            if ($w) $filter->appendWhere('((%s) OR a.subject_id = 0) AND ', $w);
         }
 
         if (!empty($filter['exclude'])) {
