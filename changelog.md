@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.4.24 [2022-08-04]:
+-------------------------------
+  - Fixed status pending for subjectId = 0
+
+
 Ver 3.4.22 [2022-08-03]:
 -------------------------------
   - Added case completed date to report, removed comments
