@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.4.26 [2022-08-04]:
+-------------------------------
+  - Added new selected property to File object
+
+
 Ver 3.4.24 [2022-08-04]:
 -------------------------------
   - Fixed status pending for subjectId = 0
