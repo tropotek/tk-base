@@ -172,7 +172,6 @@ trait StatusTrait
     {
         $objNs = lcfirst(ObjectUtil::getBaseNamespace($this));
         $objStr = lcfirst(ObjectUtil::basename($this));
-        //$objStr = strtolower(ObjectUtil::basename($this));
         $objStatus = lcfirst($this->getStatus());
         $str = 'status.' . $objNs . '.' . $objStr . '.' . $objStatus;
         return $str;
@@ -263,6 +262,25 @@ trait StatusTrait
     {
         if (!is_array($status)) $status = array($status);
         return in_array($this->getStatus(), $status);
+    }
+
+    /**
+     * Return the most recent status by the status name
+     *
+     * @param string $name
+     * @return Status|null
+     * @throws Exception
+     */
+    public function findStatusByName($name)
+    {
+        $filter = array(
+            'fid' => $this->getId(),
+            'fkey' => get_class($this),
+            'name' => $name
+        );
+        $status = $this->getConfig()->getStatusMap()
+            ->findFiltered($filter, Tool::create('id DESC', 1))->current();
+        return $status;
     }
 
     /**

@@ -36,18 +36,19 @@ CREATE TABLE IF NOT EXISTS file
     user_id INT(10) UNSIGNED NOT NULL DEFAULT 0,
     fkey VARCHAR(64) DEFAULT '' NOT NULL,
     fid INT DEFAULT 0 NOT NULL,
-    label VARCHAR(128) default '',
-    path TEXT NULL,
+    label VARCHAR(128) default '' NOT NULL,
+    `path` TEXT NULL,
     bytes INT DEFAULT 0 NOT NULL,
     mime VARCHAR(255) DEFAULT '' NOT NULL,
-    active TINYINT(1) default 0,
     notes TEXT NULL,
+    selected BOOL NOT NULL DEFAULT FALSE,
     hash VARCHAR(128) DEFAULT '' NOT NULL,
     modified datetime NOT NULL,
     created datetime NOT NULL,
     KEY user_id (user_id),
     KEY fkey (fkey),
-    KEY fkey_2 (fkey, fid)
+    KEY fkey_2 (fkey, fid),
+    KEY fkey_3 (fkey, fid, label)
 );
 SQL;
         if (!$this->getDb()->hasTable('file')) {
@@ -70,9 +71,9 @@ SQL;
             $this->dbMap->addPropertyMap(new Db\Integer('bytes'));
             $this->dbMap->addPropertyMap(new Db\Text('mime'));
             $this->dbMap->addPropertyMap(new Db\Text('label'));
-            $this->dbMap->addPropertyMap(new Db\Boolean('active'));
             $this->dbMap->addPropertyMap(new Db\Text('notes'));
             $this->dbMap->addPropertyMap(new Db\Text('hash'));
+            $this->dbMap->addPropertyMap(new Db\Boolean('selected'));
             $this->dbMap->addPropertyMap(new Db\Date('modified'));
             $this->dbMap->addPropertyMap(new Db\Date('created'));
         }
@@ -94,12 +95,11 @@ SQL;
             $this->formMap->addPropertyMap(new Form\Integer('bytes'));
             $this->formMap->addPropertyMap(new Form\Text('mime'));
             $this->formMap->addPropertyMap(new Form\Text('label'));
-            $this->formMap->addPropertyMap(new Form\Boolean('active'));
             $this->formMap->addPropertyMap(new Form\Text('notes'));
+            $this->formMap->addPropertyMap(new Form\Boolean('selected'));
         }
         return $this->formMap;
     }
-
 
     /**
      * @param string $hash
@@ -110,7 +110,6 @@ SQL;
     {
         return $this->findFiltered(array('hash' => $hash))->current();
     }
-
 
     /**
      * @param array|Filter $filter
@@ -151,25 +150,24 @@ SQL;
             $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
+        if (isset($filter['label'])) {
+            $w = $this->makeMultiQuery($filter['label'], 'a.label');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+        if (isset($filter['mime'])) {
+            $w = $this->makeMultiQuery($filter['mime'], 'a.mime');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
+        if (isset($filter['selected']) && $filter['selected'] !== '' && $filter['selected'] !== null) {
+            $filter->appendWhere('a.selected = %s AND ', (int)$filter['selected']);
+        }
 
         if (!empty($filter['path'])) {
             $filter->appendWhere('a.path = %s AND ', $this->quote($filter['path']));
         }
-        if (!empty($filter['label'])) {
-            $filter->appendWhere('a.label = %s AND ', $this->quote($filter['label']));
-        }
-        if (!empty($filter['mime'])) {
-            $filter->appendWhere('a.mime = %s AND ', $this->quote($filter['mime']));
-        }
         if (!empty($filter['hash'])) {
             $filter->appendWhere('a.hash = %s AND ', $this->quote($filter['hash']));
-        }
-        if (isset($filter['active']) && $filter['active'] !== '' && $filter['active'] !== null) {
-            if ($filter['active'] > 0) {
-                $filter->appendWhere('a.active = 1 AND ');
-            } else {
-                $filter->appendWhere('a.active = 0 AND ');
-            }
         }
 
         if (!empty($filter['model']) && $filter['model'] instanceof Model) {

@@ -19,7 +19,6 @@ if (isset($_REQUEST['path'])) {
 list($dataPath, $dataUrl) = $config->getElfinderPath($customDataPath);
 
 // ===============================================
-//vd($_REQUEST, $dataPath, $dataUrl);
 
 
 

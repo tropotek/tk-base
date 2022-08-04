@@ -1,13 +1,67 @@
 #CHANGELOG#
 
-Ver 3.2.142 [2022-05-13]:
+Ver 3.4.26 [2022-08-04]:
 -------------------------------
-  - Fixed work week hours default search dates
-  - added vardump to bootstrap
-  - Added white background to tail log
+  - Added new selected property to File object
 
 
-Ver 3.2.140 [2022-03-07]:
+Ver 3.4.24 [2022-08-04]:
+-------------------------------
+  - Fixed status pending for subjectId = 0
+
+
+Ver 3.4.22 [2022-08-03]:
+-------------------------------
+  - Added case completed date to report, removed comments
+  - removed comments
+
+
+Ver 3.4.20 [2022-07-06]:
+-------------------------------
+
+
+Ver 3.4.18 [2022-07-06]:
+-------------------------------
+
+
+Ver 3.4.16 [2022-06-22]:
+-------------------------------
+  - added names to courses and subject
+
+
+Ver 3.4.14 [2022-06-22]:
+-------------------------------
+  - Added status manager
+
+
+Ver 3.4.12 [2022-06-13]:
+-------------------------------
+  - Add feature for students to upload PDF or image of signed consent letter
+  - Use existing \bs\Db\File object
+  - Fixed rule issue not allowing auto approve functionality
+
+
+Ver 3.4.10 [2022-05-27]:
+-------------------------------
+
+
+Ver 3.4.8 [2022-05-26]:
+-------------------------------
+
+
+Ver 3.4.6 [2022-05-25]:
+-------------------------------
+
+
+Ver 3.4.4 [2022-03-07]:
+-------------------------------
+
+
+Ver 3.4.2 [2022-03-03]:
+-------------------------------
+
+
+Ver 3.4.0 [2022-03-03]:
 -------------------------------
 
 
@@ -58,7 +112,11 @@ Ver 3.2.118 [2021-11-26]:
   - Tagging and releasing branch `3.2` with version `3.2.116`.
 
 
+<<<<<<< HEAD
 Ver 3.2.116 [2021-11-26]:
+=======
+Ver 3.2.116 [2021-11-25]:
+>>>>>>> af938d7a41e560e9a17c95391c72e6a6f061257d
 -------------------------------
 
 

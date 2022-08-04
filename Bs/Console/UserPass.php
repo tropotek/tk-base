@@ -74,9 +74,6 @@ class UserPass extends \Tk\Console\Console
         $user->setNewPassword($password);
         $user->save();
 
-
-        //vd($user);
-
     }
 
 }

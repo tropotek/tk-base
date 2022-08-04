@@ -230,15 +230,9 @@ SQL;
         list($iUnit, $iType) = explode(' ', $interval);
 
         $st = $this->getDb()->prepare('CALL procFillCal(?, ?, ?, ?, ?)');
-
         $st->execute(array($tableName, $df, $dt, $iType, $iUnit));
 
-//        vd($st->getPdo()->getLastQuery());
-//        vd($st->getPdo()->errorInfo());
-
     }
-
-
 
     /**
      * This function creates a temporary table filled with dates

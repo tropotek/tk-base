@@ -24,7 +24,7 @@ class Config extends \Tk\Config
     protected function init()
     {
         parent::init();
-        $this->set('system.lib.base.path', $this['system.vendor.path'] . '/ttek/tk-base');
+        $this->set('system.lib.base.path', $this['system.vendor.path'] . '/uom/tk-base');
     }
 
     /**
@@ -301,7 +301,7 @@ class Config extends \Tk\Config
             $dm->add(new \Dom\Modifier\Filter\UrlPath($this->getSiteUrl()));
             $dm->add(new \Dom\Modifier\Filter\JsLast());
 
-            // Deprecated no longer using less
+            // Deprecated use Scss from now on.
 //            if (class_exists('Dom\Modifier\Filter\Less')) {
 //                /** @var \Dom\Modifier\Filter\Less $less */
 //                $vars = array(

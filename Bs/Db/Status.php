@@ -30,7 +30,7 @@ class Status extends Model
     use CreatedTrait;
 
     // Status type templates (use these in your own objects)
-    // const STATUS_PENDING = Status::STATUS_PENDING;       <---- This is valid syntax in you objects.
+    // const STATUS_PENDING = Status::STATUS_PENDING;       // Note: This is valid syntax in your own objects.
     const STATUS_PENDING = 'pending';
     const STATUS_AMEND = 'amend';
     const STATUS_APPROVED = 'approved';
@@ -207,7 +207,6 @@ class Status extends Model
             if ($this->getConfig()->getEventDispatcher()) {
                 // Fire event to setup status mail messages
                 $this->getConfig()->getEventDispatcher()->dispatch(StatusEvents::STATUS_CHANGE, $e);
-                //vd($this->getConfig()->getEventDispatcher()->getListeners(StatusEvents::STATUS_CHANGE));
                 if ($this->getEvent()) {
                     // Trigger status events for system wide processing. EG: 'status.placement.not approved', status.placementrequest.pending'
                     $this->getConfig()->getEventDispatcher()->dispatch($this->getEvent(), $e);
@@ -228,24 +227,18 @@ class Status extends Model
      */
     public function getPrevious()
     {
-
         if (!$this->_previous) {
             $filter = array(
                 'exclude' => $this->getId(),
-                //'before' => $this->getCreated(),
                 'fid' => $this->getFid(),
                 'fkey' => $this->getFkey()
             );
             $this->_previous = $this->getConfig()->getStatusMap()
                 ->findFiltered($filter, Tool::create('id DESC', 1))->current();
-            //if ($this->_previous) {
-                //vdd($this->getId(), $this->_previous->getId());
-                //exit();
-            //}
         }
-        return $this->_previous;      // This can cause the recursive loop error from findLastByUserType()
-        //return null;
+        return $this->_previous;
     }
+
     /**
      * @param string $userType
      * @return User|null
@@ -253,10 +246,7 @@ class Status extends Model
      */
     public function findLastByUserType($userType = '')
     {
-        // NOTE: The recursive method was prone to endless loops
         $filter = array(
-            //'exclude' => $this->getId(),
-            //'before' => $this->getCreated(),
             'fid' => $this->getFid(),
             'fkey' => $this->getFkey()
         );
@@ -268,24 +258,7 @@ class Status extends Model
                 return $s->getUser();
             }
         }
-
-
-//        if ($this->getUser()) {
-//            if ($this->getUser()->hasType($userType))
-//                return $this->getUser();
-//            else if ($this->getPrevious())
-//                return $this->getPrevious()->findLastByUserType($userType);
-//        }
         return null;
-
-//        if ($this->getUser() && $this->getUser()->hasType($userType)) {
-//            return $this->getUser();
-//        }
-//        $prev = $this->getPrevious();
-//        if ($prev) {
-//            return $prev->findLastByUserType($userType);
-//        }
-//        return null;
     }
 
     /**

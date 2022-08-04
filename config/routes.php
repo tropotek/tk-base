@@ -72,7 +72,6 @@ $routes->add('admin-forms', Route::create('/admin/dev/forms.html', 'Bs\Controlle
 
 // Example: How to do a simple controller/route all-in-one
 //$routes->add('simpleTest', Route::create('/test.html', function ($request) use ($config) {
-//    vd($config->toString());
 //    return '<p>This is a simple test</p>';
 //}));
 
