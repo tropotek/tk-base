@@ -1,5 +1,14 @@
 #CHANGELOG#
 
+Ver 3.4.28 [2022-08-05]:
+-------------------------------
+  - Tagging and releasing branch `3.2` with version `3.2.142`.
+  - Fixed work week hours default search dates
+  - added vardump to bootstrap
+  - Added white background to tail log
+  - Tagging and releasing branch `3.2` with version `3.2.140`.
+
+
 Ver 3.4.26 [2022-08-04]:
 -------------------------------
   - Added new selected property to File object
