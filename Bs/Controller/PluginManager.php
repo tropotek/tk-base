@@ -214,7 +214,7 @@ CSS;
         $names = $pluginFactory->getAvailablePlugins();
         foreach ($names as $pluginName) {
             $info = $pluginFactory->getPluginInfo($pluginName);
-            $info->name = str_replace('uom-plg/', '', $info->name);
+            $info->name = str_replace('ttek-plg/', '', $info->name);
             if (empty($info->access)) {
                 $info->access = 'admin';
             }
