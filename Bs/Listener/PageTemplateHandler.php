@@ -72,7 +72,7 @@ class PageTemplateHandler implements Subscriber
 
         $rel = \Tk\Uri::create()->getRelativePath();
         $siteUrl = $this->getConfig()->getSiteUrl();
-        $siteUrl = $this->getConfig()->getVendorUrl();
+        $vendorUrl = $this->getConfig()->getOrgVendorUrl();
         $dataUrl = $this->getConfig()->getDataUrl();
         $templateUrl = $this->getConfig()->getTemplateUrl();
         $roleType = '';
@@ -88,7 +88,7 @@ var config = {
   relativePath : '$rel',
   siteUrl :      '$siteUrl',
   dataUrl :      '$dataUrl',
-  vendorUrl :    '$siteUrl',
+  orgVendorUrl : '$vendorUrl',
   templateUrl:   '$templateUrl',
   cssFramework:  '$fw',
   isBootstrap4:  $bs4,               // deprecated Use 'cssFramework'
