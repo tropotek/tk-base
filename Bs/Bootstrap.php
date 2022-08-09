@@ -65,11 +65,12 @@ class Bootstrap
                 $handler->setFormatter($formatter);
                 $logger->pushHandler($handler);
 
-                $handler = new BrowserConsoleHandler();
-                $formatter = new \Tk\Log\MonologLineFormatter();
-                $formatter->setScriptTime($config->getScriptTime());
-                $handler->setFormatter($formatter);
-                $logger->pushHandler($handler);
+                // TODO: needs more testing
+//                $handler = new BrowserConsoleHandler();
+//                $formatter = new \Tk\Log\MonologLineFormatter();
+//                $formatter->setScriptTime($config->getScriptTime());
+//                $handler->setFormatter($formatter);
+//                $logger->pushHandler($handler);
  
 
                 $config->setLog($logger);
