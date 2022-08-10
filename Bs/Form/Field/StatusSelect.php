@@ -8,7 +8,7 @@ namespace Bs\Form\Field;
  * on each page load. it is meant to be used as a trigger element.
  *
  *
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @see http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */

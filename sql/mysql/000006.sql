@@ -1,7 +1,7 @@
 -- --------------------------------------------
 -- @version 3.4.26
 --
--- @author: Michael Mifsud <info@tropotek.com>
+-- @author: Michael Mifsud <http://www.tropotek.com/>
 -- --------------------------------------------
 SELECT count(*) into @tblCnt FROM information_schema.TABLES WHERE TABLE_NAME = 'file' AND TABLE_SCHEMA in (SELECT DATABASE());
 IF @tblCnt > 0 THEN

@@ -7,7 +7,7 @@ use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */

@@ -1,7 +1,7 @@
 -- --------------------------------------------
 -- @version 3.0.0
 --
--- @author: Michael Mifsud <info@tropotek.com>
+-- @author: Michael Mifsud <http://www.tropotek.com/>
 -- --------------------------------------------
 
 

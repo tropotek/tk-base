@@ -6,7 +6,7 @@ use Dom\Renderer\Renderer;
 use Dom\Template;
 
 /**
- * @author Tropotek <info@tropotek.com>
+ * @author Tropotek <http://www.tropotek.com/>
  * @created: 22/07/18
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Tropotek

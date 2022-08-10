@@ -3,7 +3,7 @@
  * Application default config values
  * This file should not need to be edited
  *
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */

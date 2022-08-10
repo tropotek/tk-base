@@ -15,7 +15,7 @@ use Tk\Table\Cell\Date;
 use Tk\Table\Cell\Text;
 
 /**
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @see http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  *

@@ -4,7 +4,7 @@ namespace Bs\Controller;
 use Tk\Request;
 
 /**
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */

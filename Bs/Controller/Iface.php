@@ -5,7 +5,7 @@ namespace Bs\Controller;
 use Tk\Controller\Page;
 
 /**
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @link http://www.tropotek.com/
  * @license Copyright 2016 Michael Mifsud
  */

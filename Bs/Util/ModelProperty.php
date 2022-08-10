@@ -4,7 +4,7 @@ namespace Bs\Util;
 
 
 /**
- * @author Tropotek <info@tropotek.com>
+ * @author Tropotek <http://www.tropotek.com/>
  * @link http://www.tropotek.com/
  * @license Copyright 2017 Tropotek
  */

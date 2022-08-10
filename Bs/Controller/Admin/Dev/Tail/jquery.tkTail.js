@@ -2,7 +2,7 @@
  * Plugin: Example
  * Version: 1.0
  *
- * @author Michael Mifsud <info@tropotek.com>
+ * @author Michael Mifsud <http://www.tropotek.com/>
  * @see http://www.tropotek.com/
  * @license Copyright 2007 Michael Mifsud
  * @source http://stefangabos.ro/jquery/jquery-plugin-boilerplate-revisited/

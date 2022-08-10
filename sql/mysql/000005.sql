@@ -2,7 +2,7 @@
 -- @version 3.2.0
 -- Time to update the user name field to name_first, name_last fields
 --
--- @author: Michael Mifsud <info@tropotek.com>
+-- @author: Michael Mifsud <http://www.tropotek.com/>
 -- --------------------------------------------
 
 -- Create the new fields
