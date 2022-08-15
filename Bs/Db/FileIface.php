@@ -9,7 +9,7 @@ namespace Bs\Db;
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Michael Mifsud
  */
-interface FileIface
+interface FileIface extends \Tk\Db\ModelInterface
 {
 
     /**
@@ -22,9 +22,17 @@ interface FileIface
      *   }
      *
      * @param string $label     (optional) If supplied the list should only return these labelled files
-     * @param \Tk\Db\Tool|null $tool   (optional) If supplied use this in the qurery.
-     * @return array|Tk\Db\Map\ArrayObject|File[]
+     * @param \Tk\Db\Tool|null $tool   (optional) If supplied use this in the query.
+     * @return array|\Tk\Db\Map\ArrayObject|File[]
      */
     public function getFileList(string $label = '', ?\Tk\Db\Tool $tool = null);
+
+    /**
+     * Return the root folder location to save these files
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function getDataPath();
 
 }
