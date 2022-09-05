@@ -27,7 +27,6 @@ class AuthHandler implements Subscriber
         // Only the identity details should be in the auth session not the full user object, to save space and be secure.
         $config = \Bs\Config::getInstance();
         $auth = $config->getAuth();
-        $user = null;                       // public user if null
         if ($auth->getIdentity()) {         // Check if user is logged in
             $user = $config->getUserMapper()->findByAuthIdentity($auth->getIdentity());
             if ($user && $user->isActive()) {  // We set the user here for each page load
@@ -45,7 +44,7 @@ class AuthHandler implements Subscriber
     {
         $config = \Bs\Config::getInstance();
         // TODO: we need to create an Object pattern that can handle page permissions with exceptions etc...
-        $urlRole = \Bs\Uri::create()->getRoleType(User::getUserTypeList(true));
+        $urlRole = \Bs\Uri::create()->getRoleType($config->getUserTypeList(true));
         if ($urlRole && $urlRole != 'public') {
             if (!$config->getAuthUser()) {  // if no user and the url has permissions set
                 // Save the request URL and redirect once authenticated
