@@ -230,5 +230,5 @@ class Mirror extends Iface
         //$this->write('Complete!!!');
 
     }
-    
+
 }
