@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 3.4.46 [2022-09-21]:
+-------------------------------
+  - Merge branch '3.4' of ssh://github.com/tropotek/tk-base into 3.4
+  - Updated mirror command
+
+
 Ver 3.4.44 [2022-09-05]:
 -------------------------------
 
