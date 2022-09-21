@@ -64,8 +64,13 @@ $routes->add('admin-dev-events',
 $routes->add('admin-tail-log', Route::create('/admin/dev/tailLog.html', 'Bs\Controller\Admin\Dev\Tail\Log::doDefault'));
 $routes->add('admin-forms', Route::create('/admin/dev/forms.html', 'Bs\Controller\Admin\Dev\Forms::doDefault'));
 
+$routes->add('mirror-db-backup', Route::create('/util/mirrorDb', 'Bs\Util\Mirror::doDbBackup', [], [], '', ['https'], ['POST']));
+$routes->add('mirror-data-backup', Route::create('/util/mirrorData', 'Bs\Util\Mirror::doDataBackup', [], [], '', ['https'], ['POST']));
+
 
 // Examples
+
+
 
 // Ajax Routes
 //$routes->add('ajax-find-user', Route::create('/api/1.0/findUser', 'App\Ajax\User::doFindUser', array('POST')));

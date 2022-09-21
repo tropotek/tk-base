@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Console;
 
+use Bs\Uri;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,12 +39,82 @@ class Mirror extends Iface
     {
         parent::execute($input, $output);
 
-        // required vars
         $config = $this->getConfig();
         if (!$config->isDebug()) {
-            $this->writeError('Error: Only run this command in a debug environment.');
+            $this->writeError('Only run this command in a debug environment.');
             return;
         }
+        if (!$this->getConfig()->get('db.skey')) {
+            $this->writeError('Secret key not valid: ' . $this->getConfig()->get('db.skey'));
+            return;
+        }
+        if (!$this->getConfig()->get('mirror.db')) {
+            $this->writeError('Invalid source mirror URL: ' . $this->getConfig()->get('mirror.db'));
+            return;
+        }
+
+        $debugSqlFile = $config->getSitePath() . '/bin/assets/debug.sql';
+        $backupSqlFile = $config->getTempPath() . '/tmpt.sql';
+        $mirrorSqlFile = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql.gz';
+
+        // Delete live cached files
+        $list = glob($config->getTempPath().'/*-tmpl.sql.gz');
+        foreach ($list as $file) {
+            if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
+                unlink($file);
+            }
+        }
+
+        $db = $config->getDb();
+        $dbBackup = \Tk\Util\SqlBackup::create($db);
+        $exclude = [\Tk\Session\Adapter\Database::$DB_TABLE];
+
+        if (!$input->getOption('no-sql')) {
+            if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
+                $this->writeComment('Download fresh mirror file: ' . $mirrorSqlFile);
+                // get a copy of the remote DB to be mirrored
+                $query = 'db_skey=' . $this->getConfig()->get('db.skey');
+                @unlink($mirrorSqlFile);
+                $fp = fopen($mirrorSqlFile, 'w');
+                $curl = curl_init(Uri::create($this->getConfig()->get('mirror.db'))->setScheme(Uri::SCHEME_HTTP_SSL)->toString());
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+                curl_setopt($curl, CURLOPT_HEADER, 0);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($curl, CURLOPT_FILE, $fp);
+
+                curl_exec($curl);
+                if(curl_error($curl)) {
+                    fwrite($fp, curl_error($curl));
+                }
+                curl_close($curl);
+                fclose($fp);
+            } else {
+                $this->writeComment('Using existing mirror file: ' . $mirrorSqlFile);
+            }
+
+            // Prevent accidental writing to live DB
+            $this->writeComment('Backup this DB to file: ' . $backupSqlFile);
+            $dbBackup->save($backupSqlFile, ['exclude' => $exclude]);
+
+            $this->write('Drop this DB tables');
+            $db->dropAllTables(true, $exclude);
+
+            $this->write('Import mirror file to this DB');
+            $dbBackup->restore($mirrorSqlFile);
+
+            $this->write('Apply dev sql updates');
+            $dbBackup->restore($debugSqlFile);
+
+            unlink($backupSqlFile);
+
+        }
+        /*
+        $this->write('Done!');
+        return;
+
         $thisDb = $config->getDb();
         $liveDb = null;
         if (is_array($config->get('live.db'))) {
@@ -54,14 +125,14 @@ class Mirror extends Iface
             return;
         }
 
-        $debugSqlFile = $config->getSitePath() . '/bin/assets/debug.sql';
-        $thisSqlFile = $config->getTempPath() . '/tmpt.sql';
-        $liveSqlFile = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql';
+        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
+        $backupSqlFile = $config->getTempPath() . '/db_bak.sql';
+        $mirrorSqlFile = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql';
 
         // Delete live cached files
         $list = glob($config->getTempPath().'/*-tmpl.sql');
         foreach ($list as $file) {
-            if ($input->getOption('no-cache') || $file != $liveSqlFile) {
+            if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
                 unlink($file);
             }
         }
@@ -73,33 +144,38 @@ class Mirror extends Iface
 
         // Copy the data from the live DB
         if (!$input->getOption('no-sql')) {
-            if (!is_file($liveSqlFile) || $input->getOption('no-cache')) {
-                $this->writeComment('Download live.DB: ' . $liveSqlFile);
-                $liveBackup->save($liveSqlFile, array('exclude' => $exclude));
+            if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
+                $this->writeComment('Download live.DB: ' . $mirrorSqlFile);
+                $liveBackup->save($mirrorSqlFile, array('exclude' => $exclude));
             } else {
-                $this->writeComment('Using existing live.DB: ' . $liveSqlFile);
+                $this->writeComment('Using existing live.DB: ' . $mirrorSqlFile);
             }
 
             // Prevent accidental writing to live DB
             $liveBackup = null;
-            $this->writeComment('Backup this.DB to file: ' . $thisSqlFile);
-            $thisBackup->save($thisSqlFile, array('exclude' => $exclude));
+            $this->writeComment('Backup this.DB to file: ' . $backupSqlFile);
+            $thisBackup->save($backupSqlFile, array('exclude' => $exclude));
 
             $this->write('Drop this.DB tables/views');
             $thisDb->dropAllTables(true, $exclude);
 
             $this->write('Import live.DB file to this.DB');
-            $thisBackup->restore($liveSqlFile);
+            $thisBackup->restore($mirrorSqlFile);
 
             $this->write('Apply dev sql updates');
             $thisBackup->restore($debugSqlFile);
 
-            unlink($thisSqlFile);
+            unlink($backupSqlFile);
 
         }
+        */
 
         // if withData, copy the data folder and its files
         if ($input->getOption('copy-data')) {
+
+            $this->writeError('Copying the data folder is disabled until further notice.');
+            return;
+
             if (!$config->get('live.data.path')) {
                 $this->writeError('Error: Cannot copy data files as the live.data.path is not configured.');
                 return;
@@ -154,7 +230,5 @@ class Mirror extends Iface
         //$this->write('Complete!!!');
 
     }
-
-
-
+    
 }

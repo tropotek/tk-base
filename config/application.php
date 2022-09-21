@@ -69,6 +69,13 @@ $config['template.xtpl.ext']    = '.xtpl';
  */
 $config['css.framework']         = 'bs4';
 
+/*
+ * DB secret API key
+ * Use this  key for the mirror command in a dev environment.
+ * Keep this key secret. Access to the sites DB can be gained with it.
+ * Dissabled by default
+ */
+$config['db.skey']               = '';
 
 /**
  * Set the system timezone
