@@ -61,7 +61,7 @@ class Mirror extends Iface
         $list = glob($config->getTempPath().'/*-tmpl.sql.gz');
         foreach ($list as $file) {
             if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
-                unlink($file);
+                if (is_file($file)) unlink($file);
             }
         }
 
@@ -74,7 +74,7 @@ class Mirror extends Iface
                 $this->writeComment('Download fresh mirror file: ' . $mirrorSqlFile);
                 // get a copy of the remote DB to be mirrored
                 $query = 'db_skey=' . $this->getConfig()->get('db.skey');
-                @unlink($mirrorSqlFile);
+                if (is_file($mirrorSqlFile)) unlink($mirrorSqlFile);
                 $fp = fopen($mirrorSqlFile, 'w');
                 $curl = curl_init(Uri::create($this->getConfig()->get('mirror.db'))->setScheme(Uri::SCHEME_HTTP_SSL)->toString());
                 curl_setopt($curl, CURLOPT_POST, true);
