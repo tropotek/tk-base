@@ -152,6 +152,7 @@ SQL;
     public function findFiltered($filter, $tool = null)
     {
         $r = $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
+        vd($this->getDb()->getLastQuery());
         return $r;
     }
 
@@ -251,8 +252,14 @@ SQL;
 
         if (!empty($filter['subjectId'])) {
             $w = $this->makeMultiQuery($filter['subjectId'], 'a.subject_id');
-            // a.subject_id = 0 allow`s for course status to also be shown
+            // a.subject_id = 0 allow`s for course only status to also be shown
             if ($w) $filter->appendWhere('((%s) OR a.subject_id = 0) AND ', $w);
+        }
+
+        if (!empty($filter['strictSubjectId'])) {
+            $w = $this->makeMultiQuery($filter['strictSubjectId'], 'a.subject_id');
+            // a.subject_id = 0 allow`s for course only status to also be shown
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['exclude'])) {

@@ -86,7 +86,7 @@ class StatusFull extends \Bs\TableIface
         $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('courseId', $list)); // ->addOnShowOption($this->onCourseShowOption);
         // status name
         $list = \Bs\Db\StatusMap::create()->findSubjects(['institutionId' => $this->getConfig()->getInstitutionId()]);
-        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('subjectId', $list)); //->addOnShowOption($this->onSubjectShowOption));
+        $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('strictSubjectId', $list)); //->addOnShowOption($this->onSubjectShowOption));
         // status name
         $list = \Bs\Db\StatusMap::create()->findNames(['institutionId' => $this->getConfig()->getInstitutionId()]);
         $this->appendFilter(\Tk\Form\Field\CheckboxSelect::createSelect('name', $list));
