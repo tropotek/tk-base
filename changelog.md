@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 3.4.50 [2022-09-30]:
+-------------------------------
+  - Added assessment manager
+  - updated status manager query
+
+
 Ver 3.4.48 [2022-09-21]:
 -------------------------------
   - Merge branch '3.4' of ssh://github.com/tropotek/tk-base into 3.4
