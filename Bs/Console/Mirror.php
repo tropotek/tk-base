@@ -53,14 +53,15 @@ class Mirror extends Iface
             return;
         }
 
-        $debugSqlFile = $config->getSitePath() . '/bin/assets/debug.sql';
+        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
         $backupSqlFile = $config->getTempPath() . '/tmpt.sql';
-        $mirrorSqlFile = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql.gz';
+        $mirrorFileGz  = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql.gz';
+        $mirrorFileSQL = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql';
 
         // Delete live cached files
-        $list = glob($config->getTempPath().'/*-tmpl.sql.gz');
+        $list = glob($config->getTempPath().'/*-tmpl.sql');
         foreach ($list as $file) {
-            if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
+            if ($input->getOption('no-cache') || $file != $mirrorFileSQL) {
                 if (is_file($file)) unlink($file);
             }
         }
@@ -70,12 +71,12 @@ class Mirror extends Iface
         $exclude = [\Tk\Session\Adapter\Database::$DB_TABLE];
 
         if (!$input->getOption('no-sql')) {
-            if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
-                $this->writeComment('Download fresh mirror file: ' . $mirrorSqlFile);
+            if (!is_file($mirrorFileSQL) || $input->getOption('no-cache')) {
+                $this->writeComment('Download fresh mirror file: ' . $mirrorFileGz);
                 // get a copy of the remote DB to be mirrored
                 $query = 'db_skey=' . $this->getConfig()->get('db.skey');
-                if (is_file($mirrorSqlFile)) unlink($mirrorSqlFile);
-                $fp = fopen($mirrorSqlFile, 'w');
+                if (is_file($mirrorFileGz)) unlink($mirrorFileGz);
+                $fp = fopen($mirrorFileGz, 'w');
                 $curl = curl_init(Uri::create($this->getConfig()->get('mirror.db'))->setScheme(Uri::SCHEME_HTTP_SSL)->toString());
                 curl_setopt($curl, CURLOPT_POST, true);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -92,7 +93,7 @@ class Mirror extends Iface
                 curl_close($curl);
                 fclose($fp);
             } else {
-                $this->writeComment('Using existing mirror file: ' . $mirrorSqlFile);
+                $this->writeComment('Using existing mirror file: ' . $mirrorFileGz);
             }
 
             // Prevent accidental writing to live DB
@@ -102,8 +103,17 @@ class Mirror extends Iface
             $this->write('Drop this DB tables');
             $db->dropAllTables(true, $exclude);
 
+            // Uncompress file first
+            if (is_file($mirrorFileGz)) {
+                $command = sprintf('gunzip %s', escapeshellarg($mirrorFileGz));
+                exec($command, $out, $ret);
+                if ($ret != 0) {
+                    throw new \Tk\Db\Exception(implode("\n", $out));
+                }
+            }
+
             $this->write('Import mirror file to this DB');
-            $dbBackup->restore($mirrorSqlFile);
+            $dbBackup->restore($mirrorFileSQL);
 
             $this->write('Apply dev sql updates');
             $dbBackup->restore($debugSqlFile);
