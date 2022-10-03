@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.4.52 [2022-10-03]:
+-------------------------------
+  - fixed mirror command file cleanup
+
+
 Ver 3.4.50 [2022-09-30]:
 -------------------------------
   - Added assessment manager
