@@ -65,6 +65,9 @@ class Mirror extends Iface
                 if (is_file($file)) unlink($file);
             }
         }
+        // Remove any prev local backup files
+        if (is_file($backupSqlFile))
+            unlink($backupSqlFile);
 
         $db = $config->getDb();
         $dbBackup = \Tk\Util\SqlBackup::create($db);
@@ -118,67 +121,9 @@ class Mirror extends Iface
             $this->write('Apply dev sql updates');
             $dbBackup->restore($debugSqlFile);
 
-            unlink($backupSqlFile);
+            //unlink($backupSqlFile);
 
         }
-        /*
-        $this->write('Done!');
-        return;
-
-        $thisDb = $config->getDb();
-        $liveDb = null;
-        if (is_array($config->get('live.db'))) {
-            $liveDb = \Tk\Db\Pdo::create($config->get('live.db'));
-        }
-        if (!$liveDb) {
-            $this->writeError('Error: No source DB connection params available.');
-            return;
-        }
-
-        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
-        $backupSqlFile = $config->getTempPath() . '/db_bak.sql';
-        $mirrorSqlFile = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql';
-
-        // Delete live cached files
-        $list = glob($config->getTempPath().'/*-tmpl.sql');
-        foreach ($list as $file) {
-            if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
-                unlink($file);
-            }
-        }
-
-        $liveBackup = \Tk\Util\SqlBackup::create($liveDb);
-        $thisBackup = \Tk\Util\SqlBackup::create($thisDb);
-        $exclude = array(\Tk\Session\Adapter\Database::$DB_TABLE);
-
-
-        // Copy the data from the live DB
-        if (!$input->getOption('no-sql')) {
-            if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
-                $this->writeComment('Download live.DB: ' . $mirrorSqlFile);
-                $liveBackup->save($mirrorSqlFile, array('exclude' => $exclude));
-            } else {
-                $this->writeComment('Using existing live.DB: ' . $mirrorSqlFile);
-            }
-
-            // Prevent accidental writing to live DB
-            $liveBackup = null;
-            $this->writeComment('Backup this.DB to file: ' . $backupSqlFile);
-            $thisBackup->save($backupSqlFile, array('exclude' => $exclude));
-
-            $this->write('Drop this.DB tables/views');
-            $thisDb->dropAllTables(true, $exclude);
-
-            $this->write('Import live.DB file to this.DB');
-            $thisBackup->restore($mirrorSqlFile);
-
-            $this->write('Apply dev sql updates');
-            $thisBackup->restore($debugSqlFile);
-
-            unlink($backupSqlFile);
-
-        }
-        */
 
         // if withData, copy the data folder and its files
         if ($input->getOption('copy-data')) {
