@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 3.4.54 [2022-10-07]:
+-------------------------------
+  - Fixed reminder query issue
+
+
 Ver 3.4.52 [2022-10-03]:
 -------------------------------
   - fixed mirror command file cleanup
