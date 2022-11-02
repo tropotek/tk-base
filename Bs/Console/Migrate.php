@@ -85,7 +85,7 @@ class Migrate extends Iface
         }
 
         $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
-        if ($config->isDebug()) {
+        if ($config->isDebug() && is_file($debugSqlFile)) {
             $this->writeBlue('Apply dev sql updates');
             $dbBackup->restore($debugSqlFile);
         }
