@@ -53,7 +53,6 @@ class Mirror extends Iface
             return;
         }
 
-        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
         $backupSqlFile = $config->getTempPath() . '/tmpt.sql';
         $mirrorFileGz  = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql.gz';
         $mirrorFileSQL = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql';
@@ -128,6 +127,7 @@ class Mirror extends Iface
                 }
             }
 
+            $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
             if ($config->isDebug()) {
                 $this->writeBlue('Apply dev sql updates');
                 $dbBackup->restore($debugSqlFile);

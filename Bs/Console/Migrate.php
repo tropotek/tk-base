@@ -72,6 +72,24 @@ class Migrate extends Iface
             $mm->write($str);
         });
 
+        // Run all static scripts views.sql, triggers.sql, procedures.sql, functions.sql
+        $config = $this->getConfig();
+        $dbBackup = \Tk\Util\SqlBackup::create($db);
+        $staticFiles = ['views.sql', 'triggers.sql', 'procedures.sql', 'functions.sql'];
+        foreach ($staticFiles as $file) {
+            $path = "{$config->getSitePath()}/src/config/sql/{$file}";
+            if (is_file($path)) {
+                $this->writeGreen('Applying ' . $file);
+                $dbBackup->restore($path);
+            }
+        }
+
+        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
+        if ($config->isDebug()) {
+            $this->writeBlue('Apply dev sql updates');
+            $dbBackup->restore($debugSqlFile);
+        }
+
         $this->write('Database Migration Complete.');
         $this->write('Open the site in a browser to complete the site setup: ' . \Tk\Uri::create('/')->toString());
     }
