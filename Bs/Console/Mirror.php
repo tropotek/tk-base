@@ -118,10 +118,20 @@ class Mirror extends Iface
             $this->write('Import mirror file to this DB');
             $dbBackup->restore($mirrorFileSQL);
 
-            $this->write('Apply dev sql updates');
-            $dbBackup->restore($debugSqlFile);
+            // Run all static scripts views.sql, triggers.sql, procedures.sql, functions.sql
+            $staticFiles = ['views.sql', 'triggers.sql', 'procedures.sql', 'functions.sql'];
+            foreach ($staticFiles as $file) {
+                $path = "{$config->getSitePath()}/src/config/sql/{$file}";
+                if (is_file($path)) {
+                    $this->writeGreen('Applying ' . $file);
+                    $dbBackup->restore($path);
+                }
+            }
 
-            //unlink($backupSqlFile);
+            if ($config->isDebug()) {
+                $this->writeBlue('Apply dev sql updates');
+                $dbBackup->restore($debugSqlFile);
+            }
 
         }
 
