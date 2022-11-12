@@ -2,12 +2,8 @@
     "name": "ttek/tk-base",
     "type": "library",
     "description": "Base site library for the Tk lib",
-    "keywords":  [
-        "tk",
-        "tropotek",
-        "tkbase"
-    ],
-    "time": "2021-11-26",
+    "keywords":  ["tropotek"],
+    "time": "2022-11-13",
     "license": "MIT",
     "authors":  [
          {
@@ -21,23 +17,17 @@
         }
     },
     "require":  {
-        "php": "^7.3||^8.0",
-        "ttek/tk-framework": "~3.2.0",
-        "ttek/tk-mvc": "~3.4.0",
-        "ttek/tk-auth": "~3.2.0",
-        "ttek/tk-mail": "~3.2.0",
-        "ttek/tk-plugin": "~3.4.0",
-        "ttek/tk-database": "~3.4.0",
-        "ttek/tk-domtemplate": "~3.2.0",
-        "ttek/tk-form": "~3.2.0",
-        "ttek/tk-table": "~3.2.0",
-        "ttek/tk-ui": "~3.2.0",
-        "sensiolabs/ansi-to-html": "~1.0",
-        "lasserafn/php-initial-avatar-generator": "~4.0"
+        "php": "^8.0",
+        "ttek/tk-framework": "~8.0.0",
+        "ttek/tk-auth": "~8.0.0",
+        "ttek/tk-mail": "~8.0.0",
+        "ttek/tk-domtemplate": "~8.0.0",
+        "ttek/tk-form": "~8.0.0",
+        "ttek/tk-table": "~8.0.0"
     },
     "extra":  {
         "branch-alias":  {
-            "dev-master": "3.4.x-dev"
+            "dev-master": "8.0.x-dev"
         }
     }
 }
