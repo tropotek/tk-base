@@ -1,117 +1,121 @@
-/*
- * Plugin: bsConfirm
- * Version: 1.0
- * Date: 11/05/17
- *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @see http://www.tropotek.com/
- * @license Copyright 2007 Michael Mifsud
- * @source http://stefangabos.ro/jquery/jquery-plugin-boilerplate-revisited/
- */
-
 /**
- * TODO: Change every instance of "bsConfirm" to the name of your plugin!
+ * Plugin: bsConfirm
+ *
  * Description:
- *   {Add a good description so you can identify the plugin when reading the code.}
  *
- * <code>
- *   $(document).ready(function() {
- *     // attach the plugin to an element
- *     $('#element').bsConfirm({'foo': 'bar'});
+ * To enable the plugin on your desired selector you can use the following script
+ * that defaults to a standard javascript dialog if the plugin is not available.
  *
- *     // call a public method
- *     $('#element').data('bsConfirm').foo_public_method();
+ * ```
+ *   if ($.fn.bsConfirm === undefined) {
+ *     $('[data-confirm]').on('click', document, function () {
+ *       return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
+ *     });
+ *   } else {
+ *     $('[data-confirm]').bsConfirm();
+ *   }
+ * ```
  *
- *     // get the value of a property
- *     $('#element').data('bsConfirm').settings.foo;
- *   
- *   });
- * </code>
+ * Now all elements containing the data-confirm attribute will have a confirm dialog on the click event.
+ *
+ * ```
+ *   <a href="/home/page/action" title="Action Confirmation Title"
+ *      data-confirm="Are you sure you want to complete this action?"
+ *      data-ok="Yep" data-cancel="Nuh">Action</a>
+ * ```
+ *
+ *
+ * @author Tropotek <http://www.tropotek.com/>
+ * @date 31/10/2022
+ * @version 1.2
  */
 
 ;(function($) {
-  var bsConfirm = function(element, options) {
-    var plugin = this;
-    plugin.settings = {};
-    var $element = $(element);
+  let bsConfirm = function(element, options) {
 
     // plugin settings
-    var defaults = {
-      selector: '[data-confirm]',
-      btnText: ['Cancel', 'OK'],
-      // BS4+ modal template
-      modalTemplate: '<div class="modal fade confirm-modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">\n' +
-        '  <div class="modal-dialog" role="document">\n' +
-        '    <div class="modal-content">\n' +
-        '      <div class="modal-header">\n' +
-        '        <h5 class="modal-title" id="confirmModalLabel">Modal title</h5>\n' +
-        '        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n' +
-        '          <span aria-hidden="true">&times;</span>\n' +
-        '        </button>\n' +
-        '      </div>\n' +
-        '      <div class="modal-body"></div>\n' +
-        '      <div class="modal-footer">\n' +
-        '        <button class="btn btn-danger btn-no" data-dismiss="modal">Cancel</button>\n' +
-        '        <button class="btn btn-success btn-yes">OK</button>\n' +
-        '      </div>\n' +
-        '    </div>\n' +
-        '  </div>\n' +
-        '</div>',
-      onConfirm: function() { },
-      onCancel: function() { }
+    const defaults = {
+      // BS3-BS4 modal template
+//       template: /*html*/`
+// <div class="modal fade bsConfirm-modal" tabindex="-1" role="dialog" aria-labelledby="bsConfirmModalLabel" aria-hidden="true">
+//   <div class="modal-dialog" role="document">
+//     <div class="modal-content">
+//       <div class="modal-header">
+//         <h5 class="modal-title" id="bsConfirmModalLabel"></h5>
+//         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+//       </div>
+//       <div class="modal-body"></div>
+//       <div class="modal-footer">
+//         <button class="btn btn-danger btn-cancel" data-dismiss="modal">Cancel</button>
+//         <button class="btn btn-success btn-ok">OK</button>
+//       </div>
+//     </div>
+//   </div>
+// </div>`,
+      // BS5+ modal template
+      template: /*html*/`
+<div class="modal fade bsConfirm-modal" tabindex="-1" role="dialog" aria-labelledby="bsConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bsConfirmModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-danger btn-cancel" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-success btn-ok">OK</button>
+      </div>
+    </div>
+  </div>
+</div>`,
+      ok: 'Ok',
+      cancel: 'Cancel'
     };
 
-    // plugin vars
-    var foo = '';
+	  // Plugin private params
+    let plugin = this;
+    plugin.settings = {};
+    let el = $(element);
 
     // constructor method
     plugin.init = function() {
-      plugin.settings = $.extend({}, defaults, $element.data(), options);
+      plugin.settings = $.extend({}, defaults, el.data(), options);
 
-      $element.data('confirmed', false);
-      $element.on('click', function (e) {
-        if ($element.data('confirmed')) {
-          // This is here because, returning just true does not make the link work for some reason.
-          // I suspect this is due to nested click calls???? For now this will do (it works)
-          document.location = $element.attr('href');
-          return true;
-        }
+      el.on('click', function (e) {
         $('.confirm-modal').remove();
-        var $modal = $(plugin.settings.modalTemplate);
-        $modal.find('.modal-title').text($element.attr('title'));
-        $modal.find('.modal-body').html($element.data('confirm'));
+        let modal = $(plugin.settings.template);
+        $('.modal-title', modal).text(el.attr('title'));
+        $('.modal-body', modal).html(el.data('confirm'));
+        $('.btn-cancel', modal).html(plugin.settings.cancel);
+        $('.btn-ok', modal).html(plugin.settings.ok);
 
-        $modal.find('.btn-no').text(plugin.settings.btnText[0]).on('click', function () {
-          $element.data('confirmed', false);
-          $modal.modal('hide');
+        $('.btn-cancel', modal).on('click', function () {
+          modal.modal('hide');
           return false;
         });
-        $modal.find('.btn-yes').text(plugin.settings.btnText[1]).on('click', function () {
-          $element.data('confirmed', true);
-          $element.trigger('click');
-          $modal.modal('hide');
+        $('.btn-ok', modal).on('click', function () {
+          modal.modal('hide');
+          if (el.attr('href')) {  // Url submit
+            document.location = el.attr('href');
+          } else if (el.attr('type') === 'submit') {  // Form submit
+            el.off('click');
+            el.trigger('click');
+          }
           return true;
         });
 
-        $('body').append($modal);
-        $modal.modal();
-        $modal.on('hidden.bs.modal', function (e) {
-          $modal.remove();
+        $('body').append(modal);
+        modal.modal();
+        modal.on('hidden.bs.modal', function (e) {
+          modal.remove();
         })
-        $modal.modal('show');
+        modal.modal('show');
         return false;
       });
 
-
     };  // END init()
 
-    // private methods
-    //var foo_private_method = function() { };
-
-    // public methods
-    //plugin.foo_public_method = function() { };
-
-    // call the "constructor" method
     plugin.init();
   };
 
@@ -119,7 +123,7 @@
   $.fn.bsConfirm = function(options) {
     return this.each(function() {
       if (undefined === $(this).data('bsConfirm')) {
-        var plugin = new bsConfirm(this, options);
+        let plugin = new bsConfirm(this, options);
         $(this).data('bsConfirm', plugin);
       }
     });
