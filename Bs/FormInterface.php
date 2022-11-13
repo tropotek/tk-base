@@ -8,7 +8,7 @@ namespace Bs;
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Tropotek
  */
-abstract class FormIface extends \Tk\Form
+abstract class FormInterface extends \Tk\Form
 {
 
     /**
@@ -35,11 +35,11 @@ abstract class FormIface extends \Tk\Form
 
     /**
      * @param string $formId
-     * @return FormIface|\Tk\Form|static
+     * @return FormInterface|\Tk\Form|static
      */
     public static function create($formId = '')
     {
-        /** @var FormIface $obj */
+        /** @var FormInterface $obj */
         $obj = parent::create($formId);
         $obj->setDispatcher($obj->getConfig()->getEventDispatcher());
         $obj->setRenderer($obj->getConfig()->createFormRenderer($obj));
@@ -48,11 +48,11 @@ abstract class FormIface extends \Tk\Form
 
     /**
      * @param null|\Tk\Db\ModelInterface $model
-     * @return FormIface|\Tk\Form|static
+     * @return FormInterface|\Tk\Form|static
      */
     public static function createModel($model = null)
     {
-        /** @var FormIface $obj */
+        /** @var FormInterface $obj */
         $obj = self::create(\Tk\ObjectUtil::basename($model));
         $obj->setModel($model);
         return $obj;

@@ -22,13 +22,13 @@ use Tk\Table\Renderer\Dom\Div;
  *   $tableTemplate = $table->show();
  *   $template->appendTemplate($tableTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2019-05-23
  * @link http://tropotek.com.au/
  * @license Copyright 2019 Tropotek
  */
-class StatusPending extends \Bs\TableIface
+class StatusPending extends \Bs\TableInterface
 {
 
     /**

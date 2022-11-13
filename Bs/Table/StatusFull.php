@@ -24,13 +24,13 @@ use Tk\Form\Field;
  *   $tableTemplate = $table->show();
  *   $template->appendTemplate($tableTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2019-05-23
  * @link http://tropotek.com.au/
  * @license Copyright 2019 Tropotek
  */
-class StatusFull extends \Bs\TableIface
+class StatusFull extends \Bs\TableInterface
 {
     /**
      * @var null|callable

@@ -15,13 +15,13 @@ use Tk\Table\Cell;
  *   $tableTemplate = $table->show();
  *   $template->appendTemplate($tableTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2018-11-19
  * @link http://tropotek.com.au/
  * @license Copyright 2018 Tropotek
  */
-class User extends \Bs\TableIface
+class User extends \Bs\TableInterface
 {
 
     /**
@@ -66,7 +66,7 @@ class User extends \Bs\TableIface
         $this->editUrl = $editUrl;
         return $this;
     }
-    
+
     /**
      * @return $this
      * @throws \Exception
@@ -86,7 +86,7 @@ class User extends \Bs\TableIface
                     $button->setAttr('disabled', 'disabled')->addCss('disabled');
                 }
             });
-    
+
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell($actionsCell);
 
@@ -120,7 +120,7 @@ class User extends \Bs\TableIface
         //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
         $this->appendAction(\Tk\Table\Action\Csv::create());
 
-        
+
         return $this;
     }
 

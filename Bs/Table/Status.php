@@ -21,13 +21,13 @@ use Bs\Db\StatusMap;
  *   $tableTemplate = $table->show();
  *   $template->appendTemplate($tableTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2019-05-23
  * @link http://tropotek.com.au/
  * @license Copyright 2019 Tropotek
  */
-class Status extends \Bs\TableIface
+class Status extends \Bs\TableInterface
 {
     /**
      * @var bool
@@ -117,7 +117,7 @@ class Status extends \Bs\TableIface
         $this->appendAction(ColumnSelect::create()->setSelected($this->selectedColumns));
         $this->appendAction(Csv::create());
 
-        
+
         return $this;
     }
 

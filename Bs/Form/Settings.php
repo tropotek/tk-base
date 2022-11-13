@@ -13,13 +13,13 @@ use Tk\Form;
  *   $formTemplate = $form->getRenderer()->show();
  *   $template->appendTemplate('form', $formTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2018-11-19
  * @link http://tropotek.com.au/
  * @license Copyright 2018 Tropotek
  */
-class Settings extends \Bs\FormIface
+class Settings extends \Bs\FormInterface
 {
 
     /**
@@ -121,5 +121,5 @@ class Settings extends \Bs\FormIface
     {
         return $this->setModel($data);
     }
-    
+
 }

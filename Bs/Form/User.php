@@ -20,7 +20,7 @@ use Tk\Form;
  * @link http://tropotek.com.au/
  * @license Copyright 2018 Tropotek
  */
-class User extends \Bs\FormIface
+class User extends \Bs\FormInterface
 {
     /**
      * Setup the controller to work with users of this role

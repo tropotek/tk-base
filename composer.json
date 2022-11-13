@@ -23,7 +23,8 @@
         "ttek/tk-mail": "~8.0.0",
         "ttek/tk-domtemplate": "~8.0.0",
         "ttek/tk-form": "~8.0.0",
-        "ttek/tk-table": "~8.0.0"
+        "ttek/tk-table": "~8.0.0",
+        "studio-42/elfinder": "~2.1.0"
     },
     "extra":  {
         "branch-alias":  {

@@ -20,13 +20,13 @@ use Tk\Table\Cell\Text;
  *   $tableTemplate = $table->show();
  *   $template->appendTemplate($tableTemplate);
  * </code>
- * 
+ *
  * @author Mick Mifsud
  * @created 2019-05-23
  * @link http://tropotek.com.au/
  * @license Copyright 2019 Tropotek
  */
-class File extends \Bs\TableIface
+class File extends \Bs\TableInterface
 {
 
     /**

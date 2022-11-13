@@ -11,7 +11,7 @@ use Tk\Table;
  * @link http://www.tropotek.com/
  * @license Copyright 2018 Tropotek
  */
-class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
+class TableInterface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
 {
 
     /**
@@ -38,7 +38,7 @@ class TableIface extends \Tk\Table implements \Dom\Renderer\DisplayInterface
 
     /**
      * @param $id
-     * @return static|TableIface|\Tk\Table
+     * @return static|TableInterface|\Tk\Table
      */
     public static function create($id = '')
     {
