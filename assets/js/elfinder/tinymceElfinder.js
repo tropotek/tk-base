@@ -1,3 +1,8 @@
+/**
+ *
+ * @see https://github.com/nao-pon/tinymceElfinder
+ */
+
 window.tinymceElfinder = function(opts) {
   // elFinder node
   let elfNode = $('<div/>');
@@ -10,7 +15,7 @@ window.tinymceElfinder = function(opts) {
   const uploadTargetHash = opts.uploadTargetHash || 'L1_Lw';
   delete opts.uploadTargetHash;
 
-  // get elFinder insrance
+  // get elFinder instance
   const getfm = open => {
     // CSS class name of TinyMCE conntainer
     const cls = (tinymce.majorVersion < 5)? 'mce-container' : 'tox';
@@ -142,9 +147,13 @@ window.tinymceElfinder = function(opts) {
     return false;
   };
 
-  this.uploadHandler = function (blobInfo, success, failure) {
+  // TODO: This does not work, handle args are wrong
+  //       See: https://www.tiny.cloud/docs/tinymce/6/upload-images/#images_upload_handler
+  //this.uploadHandler = function (blobInfo, success, failure) {
+  this.uploadHandler = function (blobInfo, progress) {
+
     new Promise(function(resolve, reject) {
-      getfm(uploadTargetHash).then(fm => {
+      getfm(uploadTargetHash).then((fm) => {
         let fmNode = fm.getUI(),
           file = blobInfo.blob(),
           clipdata = true;
@@ -162,6 +171,7 @@ window.tinymceElfinder = function(opts) {
           };
 
         // check file object
+        console.log(file)
         if (file.name) {
           // file blob of client side file object
           clipdata = void(0);
@@ -171,7 +181,7 @@ window.tinymceElfinder = function(opts) {
           files: [file],
           target: uploadTargetHash,
           clipdata: clipdata, // to get unique name on connector
-          dropEvt: {altKey: true, ctrlKey: true} // diable watermark on demo site
+          dropEvt: {altKey: true, ctrlKey: true} // disable watermark on demo site
         }, void(0), uploadTargetHash)
           .done(data => {
             if (data.added && data.added.length) {
@@ -199,9 +209,11 @@ window.tinymceElfinder = function(opts) {
         reject(fm.i18n(error? (error === 'userabort'? 'errAbort' : error) : 'errUploadNoFiles'));
       });
     }).then((url) => {
-      success(url);
+      console.log(url);
+      //success(url);
     }).catch((err) => {
-      failure(err);
+      console.log(err);
+      //failure(err);
     });
   };
 };
