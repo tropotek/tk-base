@@ -33,7 +33,7 @@
 <div class="input-group">
   <div class="tki-iga">
     <!-- input element will be added here -->
-    <button type="button" title="Click to edit field" class="btn btn-outline-secondary border"><i class="fa"></i></button>
+    <button type="button" class="btn btn-outline-secondary border" title="Click to edit field"><i class="fa"></i></button>
   </div>
 </div>
 `,
