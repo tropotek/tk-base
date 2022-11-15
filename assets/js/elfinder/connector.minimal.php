@@ -152,18 +152,7 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 
 
 
-// ========== Setup =============
-// TODO: see if this is still the way to do this....
-
-$config = \Tk\Config::instance();
-$customDataPath = '/media';
-if (isset($_REQUEST['path'])) {
-    $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
-}
-list($dataPath, $dataUrl) = getElfinderPath($customDataPath);
-
-// ===============================================
-
+// ========== Setup data-elfinder-path =============
 
 function getElfinderPath(string $customDataPath = '/media'): array
 {
@@ -179,6 +168,16 @@ function getElfinderPath(string $customDataPath = '/media'): array
     return array($dataPath, $dataUrl);
 }
 
+$config = \Tk\Config::instance();
+$customDataPath = '/media';
+if (isset($_REQUEST['path'])) {
+    $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
+}
+list($dataPath, $dataUrl) = getElfinderPath($customDataPath);
+
+// ===============================================
+
+
 // Documentation for connector options:
 // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
 $opts = array(
@@ -189,12 +188,9 @@ $opts = array(
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
             'path'          => $dataPath . '/',                  // path to files (REQUIRED)
             'URL'           => $dataUrl  . '/',                  // URL to files (REQUIRED)
-//			'path'          => '../files/',                 // path to files (REQUIRED)
-//			'URL'           => dirname($_SERVER['PHP_SELF']) . '/../files/', // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-//			'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
 			'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
@@ -206,11 +202,8 @@ $opts = array(
 			'driver'        => 'Trash',
             'path'          => $dataPath . '/.trash/',
             'tmbURL'        => $dataUrl . '/.trash/.tmb/',
-//			'path'          => '../files/.trash/',
-//			'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../files/.trash/.tmb/',
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
-//			'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
 			'uploadOrder'   => array('deny', 'allow'),      // Same as above

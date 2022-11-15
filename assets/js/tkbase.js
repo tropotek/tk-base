@@ -11,7 +11,7 @@
  *   });
  * ```
  *
- * NOTE: Be sure to have the tk lib config defined in the site, something like this:
+ * NOTE: Requires the tk lib config defined in the site, something like this:
  * ```javascript
  * let config = {
  *   baseUrl        : '/Projects/tk8base',
@@ -27,28 +27,39 @@
  *   }
  * }
  * ```
+ *
+ * To enable these functions include the following JS and CSS:
+ *
+ * CSS:
+ * ```html
+ *   <link rel="stylesheet" href="/vendor/ttek/tk-base/assets/css/fontawesome/css/fontawesome.min.css" />
+ *   <link rel="stylesheet" href="/vendor/ttek/tk-base/assets/js/include/jquery-ui/jquery-ui.min.css" />
+ *   <link rel="stylesheet" href="/vendor/studio-42/elfinder/css/elfinder.full.css" />
+ * ```
+ *
+ * Javascript:
+ * ```html
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery-ui/external/jquery/jquery.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery-ui/jquery-ui.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/htmx.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/sugar.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery.bsConfirm.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/sugar.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery.tkInputLock.js"></script>
+ *
+ *   <script src="/vendor/tinymce/tinymce/tinymce.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/elfinder/tinymceElfinder.js"></script>
+ *   <script src="/vendor/studio-42/elfinder/js/elfinder.min.js"></script>
+ *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery.tinymce.min.js"></script>
+ *
+ *   <script src="/vendor/ttek/tk-base/assets/js/tkbase.js"></script>
+ *   <script src="/html/assets/app.js"></script>
+ * ```
  */
 
-
-/** CSS includes in your template **/
-// <link rel="stylesheet" href="/vendor/ttek/tk-base/assets/css/fontawesome/css/fontawesome.min.css" />
-// <link rel="stylesheet" href="/vendor/ttek/tk-base/assets/js/include/jquery-ui/jquery-ui.min.css" />
-// <link rel="stylesheet" href="/vendor/studio-42/elfinder/css/elfinder.full.css" />
-
-
-/** JS includes in your template **/
-//<script src="/vendor/ttek/tk-base/assets/js/include/htmx.min.js"></script>
-// <script src="/vendor/ttek/tk-base/assets/js/include/sugar.min.js"></script>
-// <script src="/vendor/ttek/tk-base/assets/js/include/jquery.bsConfirm.js"></script>
-// <script src="/vendor/ttek/tk-base/assets/js/include/sugar.min.js"></script>
-// <script src="/vendor/ttek/tk-base/assets/js/include/jquery.tkInputLock.js"></script>
-// <script src="/vendor/tinymce/tinymce/tinymce.min.js"></script>
-// <script src="/vendor/studio-42/elfinder/js/elfinder.min.js"></script>
-// <script src="/vendor/ttek/tk-base/assets/js/elfinder/tinymceElfinder.js"></script>
-// <script src="/vendor/ttek/tk-base/assets/js/tkbase.js"></script>
-
-
+// Var dump function for debugging
 function vd() {
+  if (!config.debug) return;
   for(let k in arguments) console.log(arguments[k]);
 }
 
@@ -56,7 +67,7 @@ let tkbase = function () {
   "use strict";
 
   /**
-   * enable the sugar utils
+   * Enable the sugar utils
    * @link https://sugarjs.com/
    */
   let initSugar = function () {
@@ -121,7 +132,6 @@ let tkbase = function () {
 
   /**
    * Tiny MCE setup
-   *
    *   See this article for how to create plugins in custom paths and see if it works
    *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
    */
@@ -131,22 +141,15 @@ let tkbase = function () {
       return;
     }
 
-    // make mce elfinder connector instance
-    const mceElf = new tinymceElfinder({
-      // connector URL (Use elFinder Demo site's connector for this demo)
-      url: config.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php',
-      // upload target folder hash for this tinyMCE
-      uploadTargetHash: 'l1_lw',
-      // elFinder dialog node id
-      nodeId: 'elfinder'
-    });
-
-    function urlconverter_callback(url, node, on_save) {
-      let parts = url.split(config.baseUrl);
-      if (parts.length > 1) {
-        url = config.baseUrl + parts[1];
-      }
-      return url;
+    function getMceElf(data) {
+      return new tinymceElfinder({
+        // connector URL (Use elFinder Demo site's connector for this demo)
+        url: config.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php?path='+ data.elfinderPath,
+        // upload target folder hash for this tinyMCE
+        uploadTargetHash: 'l1_lw',
+        // elFinder dialog node id
+        nodeId: 'elfinder'
+      });
     }
 
     // Default base tinymce options
@@ -164,36 +167,33 @@ let tkbase = function () {
         '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
       ],
       content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
-
-      urlconverter_callback : urlconverter_callback,
-      file_picker_callback : mceElf.browser,
-      // TODO: this does not work for tinymce 6 yet, lookinto it at a later date
-      //images_upload_handler: mceElf.uploadHandler,
-      // imagetools_cors_hosts: ['hypweb.net'] // set CORS for this demo
-
-      // Optimisations
-      //button_tile_map: true,
-      //entity_encoding: 'raw',
-      //verify_html: false,
+      urlconverter_callback : function (url, node, on_save) {
+        let parts = url.split(config.baseUrl);
+        if (parts.length > 1) {
+          url = config.baseUrl + parts[1];
+        }
+        return url;
+      },
+      statusbar: false,
     };
 
-    /**
-     * Selector: .mce-min
-     * Tiny MCE with only the default editing no upload
-     * functionality with elfinder
-     */
-    tinymce.init({selector: '.mce-min'});
+    $('form').each(function () {
+      let form = $(this);
 
-    /**
-     * Selector: .mce
-     * Full tinymce with elfinder finlemanager
-     */
-    let mce = $.extend({
-      selector: '.mce'
-    }, mceDefaults);
-    tinymce.init(mce);
+      // Tiny MCE with only the default editing no upload
+      //   functionality with elfinder
+      $('textarea.mce-min', form).tinymce({});
 
-  };
+      // Full tinymce with elfinder file manager
+      $('textarea.mce', form).each(function () {
+        let el = $(this);
+          el.tinymce($.extend(mceDefaults, {
+            file_picker_callback : getMceElf($(this).data()).browser,
+          }));
+      });
+    });
+
+  };  // end initTinymce()
 
   /**
    * Code Mirror setup
@@ -223,7 +223,7 @@ let tkbase = function () {
       }.bind(el.cm));
     });
 
-  };
+  };  // end initCodemirror()
 
 
   return {
@@ -234,7 +234,6 @@ let tkbase = function () {
     initTinymce: initTinymce,
     initCodemirror: initCodemirror,
   }
-
 }();
 
 
