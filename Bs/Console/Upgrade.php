@@ -56,14 +56,14 @@ class Upgrade extends Iface
             'git pull',
             'git log --tags --simplify-by-decoration --pretty="format:%ci %d %h"',
             'git checkout {tag}',
-            'composer update'
+            'composer update --ignore-platform-reqs'
         );
 
         if ($config->isDebug()) {
             array_unshift($cmdList, 'ci');
             $cmdList[] = 'git reset --hard';
             $cmdList[] = 'git checkout master';
-            $cmdList[] = 'composer update';
+            $cmdList[] = 'composer update --ignore-platform-reqs';
         }
 
 
