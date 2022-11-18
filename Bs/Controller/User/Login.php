@@ -38,6 +38,7 @@ class Login extends Iface
      */
     public function getPage()
     {
+        vd('test');
         if (!$this->page) {
             $templatePath = '';
             if ($this->getConfig()->get('template.login')) {
@@ -143,13 +144,13 @@ class Login extends Iface
 
         $js = <<<JS
 jQuery(function ($) {
-  
+
   $('#login-form').on('keypress', function (e) {
     if (e.which === 13) {
       $(this).find('#login-form_login').trigger('click');
     }
   });
-  
+
 });
 JS;
         $template->appendJs($js);
