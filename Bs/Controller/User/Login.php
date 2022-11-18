@@ -38,7 +38,6 @@ class Login extends Iface
      */
     public function getPage()
     {
-        vd('test');
         if (!$this->page) {
             $templatePath = '';
             if ($this->getConfig()->get('template.login')) {
