@@ -10,7 +10,7 @@ use Tk\Db\Map\Model;
  * @link http://www.tropotek.com/
  * @license Copyright 2015 Michael Mifsud
  */
-class User extends Model implements UserIface
+class User extends Model implements UserInterface
 {
     use PermissionTrait;
     use TimestampTrait;
@@ -225,7 +225,7 @@ class User extends Model implements UserIface
      *
      * @return string
      */
-    public function getDataPath()
+    public function getDataPath(): string
     {
         return sprintf('/user/%s', $this->getVolatileId());
     }

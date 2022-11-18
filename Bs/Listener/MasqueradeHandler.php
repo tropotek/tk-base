@@ -5,7 +5,7 @@ use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Bs\Db\User;
-use Bs\Db\UserIface;
+use Bs\Db\UserInterface;
 use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
 
@@ -52,7 +52,7 @@ class MasqueradeHandler implements Subscriber
         if (!$request->request->has(static::MSQ)) return;
 
         try {
-            /** @var UserIface $user */
+            /** @var UserInterface $user */
             $user = $config->getAuthUser();
             if (!$user) throw new \Tk\Exception('Invalid User');
             /** @var User $msqUser */
@@ -70,8 +70,8 @@ class MasqueradeHandler implements Subscriber
     /**
      * Check if this user can masquerade as the supplied msqUser
      *
-     * @param UserIface $user The current User
-     * @param UserIface $msqUser
+     * @param UserInterface $user The current User
+     * @param UserInterface $msqUser
      * @return bool
      */
     public function canMasqueradeAs($user, $msqUser)
@@ -96,8 +96,8 @@ class MasqueradeHandler implements Subscriber
     }
 
     /**
-     * @param UserIface $user The current User
-     * @param UserIface $msqUser
+     * @param UserInterface $user The current User
+     * @param UserInterface $msqUser
      * @return bool
      */
     protected function hasPrecedence($user, $msqUser)
@@ -109,7 +109,7 @@ class MasqueradeHandler implements Subscriber
     }
 
     /**
-     * @param \Bs\Db\UserIface $user
+     * @param \Bs\Db\UserInterface $user
      * @return int
      */
     public function getTypePrecedenceIdx($user)
@@ -120,8 +120,8 @@ class MasqueradeHandler implements Subscriber
 
     /**
      *
-     * @param UserIface $user
-     * @param UserIface $msqUser
+     * @param UserInterface $user
+     * @param UserInterface $msqUser
      * @return bool|void
      * @throws \Exception
      */
@@ -214,7 +214,7 @@ class MasqueradeHandler implements Subscriber
     /**
      * Get the user who is masquerading, ignoring any nested masqueraded users
      *
-     * @return UserIface|null
+     * @return UserInterface|null
      * @throws \Exception
      */
     public function getMasqueradingUser()

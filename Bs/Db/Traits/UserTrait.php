@@ -2,7 +2,7 @@
 namespace Bs\Db\Traits;
 
 use Bs\Db\User;
-use Bs\Db\UserIface;
+use Bs\Db\UserInterface;
 use Bs\Config;
 
 
@@ -15,7 +15,7 @@ trait UserTrait
 {
 
     /**
-     * @var UserIface
+     * @var UserInterface
      */
     private $_user = null;
 
@@ -29,12 +29,12 @@ trait UserTrait
     }
 
     /**
-     * @param int|UserIface $userId
+     * @param int|UserInterface $userId
      * @return UserTrait
      */
     public function setUserId($userId)
     {
-        if ($userId instanceof UserIface) $userId = $userId->getId();
+        if ($userId instanceof UserInterface) $userId = $userId->getId();
         $this->userId = (int)$userId;
         return $this;
     }
@@ -42,7 +42,7 @@ trait UserTrait
     /**
      * Find this institutions owner user
      *
-     * @return UserIface|\Uni\Db\UserIface|User|\Uni\Db\User|null
+     * @return UserInterface|\Uni\Db\UserIface|User|\Uni\Db\User|null
      * @throws \Exception
      */
     public function getUser()
@@ -55,14 +55,14 @@ trait UserTrait
     /**
      * Set the author of this notice
      *
-     * @param int|UserIface $user
+     * @param int|UserInterface $user
      * @return $this
      * @deprecated Use set UserId(UserIface)
      */
     public function setUser($user)
     {
         \Tk\Log::warning('Using Deprecated Method UserTrait::setUser()');
-        if ($user instanceof UserIface) {
+        if ($user instanceof UserInterface) {
             $this->user = $user;
             $this->userId = $user->getId();
         }
@@ -75,7 +75,7 @@ trait UserTrait
      * Note: This is use as an alias incases where get{Object}()
      *   is already used in the main object for another reason
      *
-     * @return UserIface|null
+     * @return UserInterface|null
      * @throws \Exception
      * @deprecated Use getUser()
      */

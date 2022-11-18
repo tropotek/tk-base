@@ -5,18 +5,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Tk\Console\Console;
 
 /**
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @see http://www.tropotek.com/
- * @license Copyright 2017 Michael Mifsud
+ * @author Tropotek <http://www.tropotek.com/>
  */
-class UserPass extends \Tk\Console\Console
+class UserPass extends Console
 {
 
-    /**
-     *
-     */
     protected function configure()
     {
         $this->setName('userPass')
@@ -29,19 +25,16 @@ class UserPass extends \Tk\Console\Console
         ;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null|void
-     * @throws \Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $config = \App\Config::getInstance();
-        $db = $config->getDb();
-        
+        // TODO: Implement this for debug mode when we have a user system
+        $this->writeError('TODO: This command is under development and is not operational yet!');
+        return self::FAILURE;
+
+        $config = $this->getConfig();
+
         $options = array();
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
@@ -60,13 +53,13 @@ class UserPass extends \Tk\Console\Console
         if (count($userList) > 1) {
             if ($institutionId == 0) {
                 $this->writeError('Please supply an institution ID as the username is not unique');
-                return;
+                return self::FAILURE;
             }
             $this->writeError('Error: user is not unique: ' . count($userList) . ' users found.');
-            return;
+            return self::FAILURE;
         }  else if (!count($userList)) {
             $this->writeError('Error: No valid user found.');
-            return;
+            return self::FAILURE;
         }
 
         /** @var \Bs\Db\User $user */
@@ -74,6 +67,7 @@ class UserPass extends \Tk\Console\Console
         $user->setNewPassword($password);
         $user->save();
 
+        return self::SUCCESS;
     }
 
 }

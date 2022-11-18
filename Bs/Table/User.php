@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Table;
 
-use Bs\Db\UserIface;
+use Bs\Db\UserInterface;
 use Tk\Form\Field;
 use Tk\Table\Cell;
 
@@ -91,7 +91,7 @@ class User extends \Bs\TableInterface
         $this->appendCell($actionsCell);
 
         $this->appendCell(new \Tk\Table\Cell\Text('nameFirst'))->setLabel('Name')->addOnPropertyValue(function ($cell, $obj, $value) {
-            /** @var UserIface $obj */
+            /** @var UserInterface $obj */
             return $obj->getName();
         })->addCss('key')->setUrl($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('username'));
