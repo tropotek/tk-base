@@ -1,176 +1,99 @@
 <?php
-namespace Bs\Controller;
+namespace Bs\Controller\User;
 
-use Tk\Request;
-use Tk\Form;
-use Tk\Form\Field;
-use Tk\Form\Event;
-use Tk\Auth\AuthEvents;
-use Tk\Event\AuthEvent;
-
+use Dom\Mvc\PageController;
+use Dom\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Tk\Auth\Result;
+use Tk\Uri;
 
 /**
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
+ * @author Tropotek <http://www.tropotek.com/>
  */
-class Login extends Iface
+class Login extends PageController
 {
 
-    /**
-     * @var Form
-     */
-    protected $form = null;
 
-
-
-
-    /**
-     * Login constructor.
-     */
     public function __construct()
     {
-        $this->setPageTitle('Login');
+        parent::__construct($this->getFactory()->getLoginPage());
+        $this->getPage()->setTitle('Login');
     }
 
-    /**
-     * @return \Tk\Controller\Page
-     */
-    public function getPage()
+    public function doLogin(Request $request)
     {
-        if (!$this->page) {
-            $templatePath = '';
-            if ($this->getConfig()->get('template.login')) {
-                $templatePath = $this->getConfig()->getSitePath() . $this->getConfig()->get('template.login');
-            }
-            $this->page = $this->getConfig()->getPage($templatePath);
+        if ($request->request->has('login')) {
+            $this->onSubmit($request);
+        } else {
+            $this->getSession()->set('login', time());
         }
-        return parent::getPage();
+
+        return $this->getPage();
     }
 
-    /**
-     * @param Request $request
-     * @throws \Exception
-     */
-    public function doDefault(Request $request)
+    public function onSubmit(Request $request)
     {
-        $this->init();
+        $result = $this->getFactory()->getAuthController()->clearIdentity()->authenticate($this->getFactory()->getAuthAdapter());
 
-        $this->form->execute();
+        $this->getSession()->remove('login');
+        if ($result->getCode() != Result::SUCCESS) {
+            $this->getFactory()->getSession()->getFlashBag()->add('error', $result->getMessage());
+            Uri::create()->redirect();
+        }
 
+        Uri::create('/dashboard')->redirect();
     }
 
-    /**
-     * @throws \Exception
-     */
-    protected function init()
+    public function doLogout(Request $request)
     {
-        if (!$this->form) {
-            $this->form = $this->getConfig()->createForm('login-form');
-        }
+        $this->getFactory()->getAuthController()->clearIdentity();
+        $this->getFactory()->getSession()->getFlashBag()->add('success', 'Logged out successfully');
+        Uri::create('/')->redirect();
 
-        $this->form->appendField(new Field\Input('username'));
-        $this->form->appendField(new Field\Password('password'));
-        $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
-        $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
-            ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
-
-        if ($this->getConfig()->get('site.client.registration')) {
-            $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
-                ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
-        }
+        //return $this->getPage();
     }
 
-    /**
-     * @param \Tk\Form $form
-     * @param \Tk\Form\Event\Iface $event
-     */
-    public function doLogin($form, $event)
+    public function show(): ?Template
     {
-        if ($form->hasErrors()) {
-            $form->addError('Invalid username or password');
-            return;
-        }
+        $template = $this->getTemplate();
 
-        try {
-            // Fire the login event to allow developing of misc auth plugins
-            $e = new AuthEvent();
-            $e->replace($form->getValues());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
+        $template->setAttr('token', 'value', $this->getSession()->get('login'));
 
-            // Use the event to process the login like below....
-            $result = $e->getResult();
-            if (!$result) {
-                $form->addError('Invalid username or password');
-                return;
-            }
-            if (!$result->isValid()) {
-                $form->addError( implode("<br/>\n", $result->getMessages()) );
-                return;
-            }
-
-            // Copy the event to avoid propagation issues
-            $e2 = new AuthEvent($e->getAdapter());
-            $e2->replace($e->all());
-            $e2->setResult($e->getResult());
-            $e2->setRedirect($e->getRedirect());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e2);
-            if ($e2->getRedirect())
-                $e2->getRedirect()->redirect();
-
-        } catch (\Exception $e) {
-            $form->addError($e->getMessage());
-            $form->addError('Login Error: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * @return \Dom\Template
-     */
-    public function show()
-    {
-        $template = parent::show();
-
-        // Render the form
-        if ($this->form) {
-            $template->appendTemplate('form', $this->form->getRenderer()->show());
-        }
-
-        if ($this->getConfig()->get('site.client.registration')) {
-            $template->setVisible('register');
-            $this->getPage()->getTemplate()->setVisible('register');
-        }
-
-        $js = <<<JS
-jQuery(function ($) {
-
-  $('#login-form').on('keypress', function (e) {
-    if (e.which === 13) {
-      $(this).find('#login-form_login').trigger('click');
-    }
-  });
-
-});
-JS;
-        $template->appendJs($js);
 
         return $template;
     }
 
-
-    /**
-     * @return \Dom\Template
-     */
     public function __makeTemplate()
     {
-        $xhtml = <<<HTML
-<div class="tk-login-panel tk-login">
+        $html = <<<HTML
+<div>
+  <form method="post">
+    <input type="hidden" name="token" value="" var="token" />
+    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
-  <div var="form"></div>
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="username" />
+      <label for="floatingInput">Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" />
+      <label for="floatingPassword">Password</label>
+    </div>
 
+    <div class="checkbox mb-3" choice="remember">
+      <label>
+        <input type="checkbox" value="remember" /> Remember me
+      </label>
+    </div>
+
+    <button class="w-100 btn btn-lg btn-primary" type="submit" name="login">Sign in</button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
+  </form>
 </div>
 HTML;
-
-        return \Dom\Loader::load($xhtml);
+        return $this->loadTemplate($html);
     }
+
 }
+
+

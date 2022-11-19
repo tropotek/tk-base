@@ -19,7 +19,6 @@ interface UserInterface extends ModelInterface
      */
     public function getDataPath(): string;
 
-
     /**
      * return true if this user type = or is in the supplied type(s)
      */
@@ -67,6 +66,10 @@ interface UserInterface extends ModelInterface
 
     public function getLastLogin(): ?\DateTime;
 
+    /**
+     * Return true if the user has system admin permissions
+     */
+    public function isAdmin(): bool;
 
 
     // TODO: add setters for account registration only, just the minimum required setters only
