@@ -24,8 +24,6 @@ class Login extends PageController
     {
         if ($request->request->has('login')) {
             $this->onSubmit($request);
-        } else {
-            $this->getSession()->set('login', time());
         }
 
         return $this->getPage();
@@ -35,7 +33,12 @@ class Login extends PageController
     {
         $result = $this->getFactory()->getAuthController()->clearIdentity()->authenticate($this->getFactory()->getAuthAdapter());
 
+        $token = $this->getSession()->get('login');
         $this->getSession()->remove('login');
+        if ($token + 2*60 < time()) { // 2 min to login or else the token times out
+            $this->getFactory()->getSession()->getFlashBag()->add('error', 'Invalid form submission. Please try again.');
+            Uri::create()->redirect();
+        }
         if ($result->getCode() != Result::SUCCESS) {
             $this->getFactory()->getSession()->getFlashBag()->add('error', $result->getMessage());
             Uri::create()->redirect();
@@ -49,15 +52,15 @@ class Login extends PageController
         $this->getFactory()->getAuthController()->clearIdentity();
         $this->getFactory()->getSession()->getFlashBag()->add('success', 'Logged out successfully');
         Uri::create('/')->redirect();
-
-        //return $this->getPage();
     }
 
     public function show(): ?Template
     {
         $template = $this->getTemplate();
+        vd();
+        $this->getSession()->set('login', time());
 
-        $template->setAttr('token', 'value', $this->getSession()->get('login'));
+        //$template->setAttr('token', 'value', $this->getSession()->get('login'));
 
 
         return $template;
