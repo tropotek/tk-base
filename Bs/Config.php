@@ -101,9 +101,9 @@ class Config extends \Tk\Config
                     $this['system.auth.dbtable.activeColumn']);
                 $adapter->setHashCallback(array($this, 'hashPassword'));
                 break;
-            case '\Tk\Auth\Adapter\Trapdoor':
-                $adapter = new $class();
-                break;
+//            case '\Tk\Auth\Adapter\Trapdoor':
+//                $adapter = new $class();
+//                break;
             default:
                 throw new \Tk\Auth\Exception('Cannot locate adapter class: ' . $class);
         }

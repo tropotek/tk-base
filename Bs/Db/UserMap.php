@@ -120,6 +120,9 @@ class UserMap extends Mapper
      */
     public function findByHash($hash)
     {
+        if (!$hash) {
+            return null;
+        }
         return $this->findFiltered(array('hash' => $hash))->current();
     }
 

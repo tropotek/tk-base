@@ -7,8 +7,6 @@ use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
 use Tk\Form\Event;
-use Tk\Auth\AuthEvents;
-use Tk\Event\AuthEvent;
 
 
 /**
@@ -61,7 +59,7 @@ class Activate extends Iface
     {
         $hash = $request->get('h');
         $this->user = $this->getConfig()->getUserMapper()->findByHash($hash);
-        if (!$this->user) {
+        if (!$this->user || $this->user->getPassword()) {       // Only allow access for users without a password set
             Alert::addError('Invalid user account');
             Uri::create('/')->redirect();
         }
@@ -82,60 +80,70 @@ class Activate extends Iface
             $this->form = $this->getConfig()->createForm('activate-form');
         }
 
-        $this->form->appendField(new Field\Password('password'));
-        $this->form->appendField(new Field\Password('password-confirm'));
+        $this->form->appendField(new Field\Input('newPassword'));
+        $this->form->appendField(new Field\Input('confPassword'));
 
-        $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
-        $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
-            ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
+        $this->form->appendField(new Event\Submit('activate', array($this, 'doActivate')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
 
-        if ($this->getConfig()->get('site.client.registration')) {
-            $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
-                ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
-        }
     }
 
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
      */
-    public function doLogin($form, $event)
+    public function doActivate($form, $event)
     {
-        if ($form->hasErrors()) {
-            $form->addError('Invalid username or password');
-            return;
-        }
-
         try {
-            // Fire the login event to allow developing of misc auth plugins
-            $e = new AuthEvent();
-            $e->replace($form->getValues());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
-
-            // Use the event to process the login like below....
-            $result = $e->getResult();
-            if (!$result) {
-                $form->addError('Invalid username or password');
-                return;
-            }
-            if (!$result->isValid()) {
-                $form->addError( implode("<br/>\n", $result->getMessages()) );
-                return;
+            if (!$form->getFieldValue('newPassword')  || $form->getFieldValue('newPassword') != $form->getFieldValue('confPassword')) {
+                $form->addFieldError('newPassword');
+                $form->addFieldError('confPassword');
+                $form->addError('Passwords do not match');
+            } else {
+                // TODO: Add a password complexity calculator to ensure basic passwords are not used
+                $this->checkPassword($form->getFieldValue('newPassword'), $errors);
+                if (count($errors)) {
+                    $form->addError($errors);
+                }
             }
 
-            // Copy the event to avoid propagation issues
-            $e2 = new AuthEvent($e->getAdapter());
-            $e2->replace($e->all());
-            $e2->setResult($e->getResult());
-            $e2->setRedirect($e->getRedirect());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e2);
-            if ($e2->getRedirect())
-                $e2->getRedirect()->redirect();
+            if ($form->hasErrors()) {
+                return;
+            }
+            $this->user->setNewPassword($form->getFieldValue('newPassword'));
+            $this->user->save();
 
+            \Tk\Alert::addSuccess('Password Saved!');
+            $event->setRedirect($this->getConfig()->get('url.auth.login'));
         } catch (\Exception $e) {
             $form->addError($e->getMessage());
-            $form->addError('Login Error: ' . $e->getMessage());
+            $form->addError('Activation Error: ' . $e->getMessage());
         }
+    }
+
+    protected function checkPassword($pwd, &$errors) {
+        $errors_init = $errors;
+
+        if (strlen($pwd) < 8) {
+            $errors[] = "Password too short!";
+        }
+
+        if (!preg_match("#[0-9]+#", $pwd)) {
+            $errors[] = "Password must include at least one number!";
+        }
+
+        if (!preg_match("#[a-zA-Z]+#", $pwd)) {
+            $errors[] = "Password must include at least one letter!";
+        }
+
+        if( !preg_match("#[A-Z]+#", $pwd) ) {
+            $errors[] = "Password must include at least one Capital!";
+        }
+
+        if( !preg_match("#\W+#", $pwd) ) {
+            $errors[] = "Password must include at least one symbol!";
+        }
+
+        return ($errors == $errors_init);
     }
 
     /**
@@ -174,7 +182,8 @@ JS;
     {
         $xhtml = <<<HTML
 <div class="tk-login-panel tk-login">
-
+  <p>Please create a new password to access your account.</p>
+  <p><small>Passwords must be longer than 8 characters and include one number, one uppercase letter and one symbol.</small></p>
   <div var="form"></div>
 
 </div>

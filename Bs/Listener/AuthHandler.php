@@ -72,13 +72,12 @@ class AuthHandler implements Subscriber
             $config->getMasqueradeHandler()->masqueradeClear();
         }
 
-        $result = null;
         if (!$event->getAdapter()) {
             $adapterList = $config->get('system.auth.adapters');
-            $result = null;
             foreach ($adapterList as $name => $class) {
                 $event->setAdapter($config->getAuthAdapter($class, $event->all()));
                 if (!$event->getAdapter()) continue;
+
                 $result = $auth->authenticate($event->getAdapter());
                 if ($result && $result->isValid()) {
                     $event->setResult($result);
@@ -216,6 +215,38 @@ class AuthHandler implements Subscriber
      * @param \Tk\Event\Event $event
      * @throws \Exception
      */
+    public function onActivate(\Tk\Event\Event $event)
+    {
+        /** @var \Bs\Db\User $user */
+        $user = $event->get('user');
+        $config = \Bs\Config::getInstance();
+
+        // Send an email to confirm account active
+        $url = $this->getActivateUrl()->set('h', $user->getHash());
+
+        $message = $config->createMessage();
+        $content = sprintf('
+    <h2>Account Successfully Activated.</h2>
+    <p>
+      Welcome Back {name}
+    </p>
+    <p>
+      Your account has been successfully activated , please follow the link to create a new password.<br/>
+      <a href="{activate-url}">{activate-url}</a>.
+    </p>');
+        $message->set('content', $content);
+        $message->setSubject('Account Activation.');
+        $message->addTo($user->getEmail());
+        $message->set('name', $user->getName());
+        $message->set('activate-url', $url->toString());
+        \Bs\Config::getInstance()->getEmailGateway()->send($message);
+
+    }
+
+    /**
+     * @param \Tk\Event\Event $event
+     * @throws \Exception
+     */
     public function onRecover(\Tk\Event\Event $event)
     {
         /** @var \Bs\Db\User $user */
@@ -255,6 +286,14 @@ class AuthHandler implements Subscriber
     /**
      * @return \Bs\Uri
      */
+    public function getActivateUrl()
+    {
+        return \Bs\Uri::create(\Bs\Config::getInstance()->get('url.auth.activate'));
+    }
+
+    /**
+     * @return \Bs\Uri
+     */
     public function getRegisterUrl()
     {
         return \Bs\Uri::create(\Bs\Config::getInstance()->get('url.auth.register'));
@@ -287,6 +326,7 @@ class AuthHandler implements Subscriber
             AuthEvents::LOGIN => 'onLogin',
             AuthEvents::LOGIN_SUCCESS => array(array('onLoginSuccess', 5), array('updateUser', 0)),
             AuthEvents::LOGOUT => 'onLogout',
+            AuthEvents::ACTIVATE => 'onActivate',
             AuthEvents::REGISTER => 'onRegister',
             AuthEvents::REGISTER_CONFIRM => 'onRegisterConfirm',
             AuthEvents::RECOVER => 'onRecover'

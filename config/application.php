@@ -168,7 +168,7 @@ $config['system.auth.dbtable.passwordColumn'] = 'password';
 $config['system.auth.adapters'] = array(
     'DbTable' => '\Tk\Auth\Adapter\DbTable',
     //'Config' => '\Tk\Auth\Adapter\Config',
-    'Trap' => '\Tk\Auth\Adapter\Trapdoor'
+    //'Trap' => '\Tk\Auth\Adapter\Trapdoor'
     //'LDAP' => '\Tk\Auth\Adapter\Ldap'
 );
 
@@ -211,5 +211,6 @@ $config['template.var.page.side-nav'] = 'side-nav';
 $config['url.auth.home'] = '/index.html';
 $config['url.auth.login'] = '/login.html';
 $config['url.auth.logout'] = '/logout.html';
+$config['url.auth.activate'] = '/activate.html';
 $config['url.auth.register'] = '/register.html';
 $config['url.auth.recover'] = '/recover.html';

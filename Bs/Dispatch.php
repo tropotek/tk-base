@@ -148,6 +148,7 @@ class Dispatch
 
         if ($this->getConfig()->getStatusHandler())
             $dispatcher->addSubscriber($this->getConfig()->getStatusHandler());
+
         if ($this->getConfig()->getAuthHandler())
             $dispatcher->addSubscriber($this->getConfig()->getAuthHandler());
         if ($this->getConfig()->getMasqueradeHandler())

@@ -91,12 +91,22 @@ class Login extends Iface
             $form->addError('Invalid username or password');
             return;
         }
-
         try {
             // Fire the login event to allow developing of misc auth plugins
             $e = new AuthEvent();
             $e->replace($form->getValues());
+
             $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
+
+            // TODO: This needs to be updated in the future
+            // Check if there is a null password and send activation email
+            $user = $this->getConfig()->getUserMapper()->findByUsername($form->getFieldValue('username'));
+            if (get_class($e->getAdapter()) == 'Tk\Auth\Adapter\DbTable' && $user && !$user->getPassword()) {
+                $e->set('user', $user);
+                $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::ACTIVATE, $e);
+                $form->addError('Your account requires activation, an email has been sent to your nominated account.');
+                return;
+            }
 
             // Use the event to process the login like below....
             $result = $e->getResult();
