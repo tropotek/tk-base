@@ -27,6 +27,7 @@ $routes->add('home-base', Route::create('/', 'Bs\Controller\Index::doDefault'));
 $routes->add('login', Route::create('/login.html', 'Bs\Controller\Login::doDefault'));
 $routes->add('register', Route::create('/register.html', 'Bs\Controller\Register::doDefault'));
 $routes->add('recover', Route::create('/recover.html', 'Bs\Controller\Recover::doDefault'));
+$routes->add('activate', Route::create('/activate.html', 'Bs\Controller\Activate::doDefault'));
 $routes->add('logout', Route::create('/logout.html', 'Bs\Controller\Logout::doDefault'));
 
 $routes->add('install', Route::create('/install.html', 'Bs\Controller\Install::doDefault'));
