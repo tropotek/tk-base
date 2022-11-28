@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Controller;
 
+use Bs\Db\User;
 use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
@@ -81,6 +82,17 @@ class Login extends Iface
         }
     }
 
+    protected function findUser($form)
+    {
+        return $this->getConfig()->getUserMapper()->findByUsername($form->getFieldValue('username'));
+    }
+
+    protected function getActivateUrl(User $user)
+    {
+        $url = \Bs\Uri::create(\Bs\Config::getInstance()->get('url.auth.activate'));
+        return $url->set('h', $user->getHash());
+    }
+
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
@@ -96,17 +108,17 @@ class Login extends Iface
             $e = new AuthEvent();
             $e->replace($form->getValues());
 
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
-
-            // TODO: This needs to be updated in the future
             // Check if there is a null password and send activation email
-            $user = $this->getConfig()->getUserMapper()->findByUsername($form->getFieldValue('username'));
-            if (get_class($e->getAdapter()) == 'Tk\Auth\Adapter\DbTable' && $user && !$user->getPassword()) {
+            $user = $this->findUser($form);
+            if ($user instanceof User && !$user->getPassword()) {
                 $e->set('user', $user);
+                $e->set('activateUrl', $this->getActivateUrl($user));
                 $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::ACTIVATE, $e);
                 $form->addError('Your account requires activation, an email has been sent to your nominated account.');
                 return;
             }
+
+            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
 
             // Use the event to process the login like below....
             $result = $e->getResult();

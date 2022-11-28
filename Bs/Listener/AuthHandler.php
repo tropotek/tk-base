@@ -223,6 +223,9 @@ class AuthHandler implements Subscriber
 
         // Send an email to confirm account active
         $url = $this->getActivateUrl()->set('h', $user->getHash());
+        if ($event->has('activateUrl')) {
+            $url = $event->get('activateUrl');
+        }
 
         $message = $config->createMessage();
         $content = sprintf('

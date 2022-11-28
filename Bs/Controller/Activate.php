@@ -87,6 +87,11 @@ class Activate extends Iface
 
     }
 
+    public function getLoginUrl()
+    {
+        return $this->getConfig()->get('url.auth.login');
+    }
+
     /**
      * @param \Tk\Form $form
      * @param \Tk\Form\Event\Iface $event
@@ -99,10 +104,11 @@ class Activate extends Iface
                 $form->addFieldError('confPassword');
                 $form->addError('Passwords do not match');
             } else {
-                // TODO: Add a password complexity calculator to ensure basic passwords are not used
-                $this->checkPassword($form->getFieldValue('newPassword'), $errors);
-                if (count($errors)) {
-                    $form->addError($errors);
+                if (!$this->getConfig()->isDebug()) {
+                    $this->checkPassword($form->getFieldValue('newPassword'), $errors);
+                    if (count($errors)) {
+                        $form->addError($errors);
+                    }
                 }
             }
 
@@ -113,7 +119,7 @@ class Activate extends Iface
             $this->user->save();
 
             \Tk\Alert::addSuccess('Password Saved!');
-            $event->setRedirect($this->getConfig()->get('url.auth.login'));
+            $event->setRedirect($this->getLoginUrl());
         } catch (\Exception $e) {
             $form->addError($e->getMessage());
             $form->addError('Activation Error: ' . $e->getMessage());
@@ -161,9 +167,9 @@ class Activate extends Iface
         $js = <<<JS
 jQuery(function ($) {
   
-  $('#login-form').on('keypress', function (e) {
+  $('#activate-form').on('keypress', function (e) {
     if (e.which === 13) {
-      $(this).find('#login-form_login').trigger('click');
+      $(this).find('#activate-form_activate').trigger('click');
     }
   });
   
