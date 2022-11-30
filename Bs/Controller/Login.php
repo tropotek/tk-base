@@ -58,7 +58,6 @@ class Login extends Iface
         $this->init();
 
         $this->form->execute();
-
     }
 
     /**
