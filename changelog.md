@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 3.4.62 [2022-12-01]:
+-------------------------------
+  - added activate account email for user accounts with no password
+  - Added new activate page and tests for dbTable authentication
+
+
 Ver 3.4.60 [2022-11-16]:
 -------------------------------
 
