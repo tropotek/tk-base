@@ -132,44 +132,43 @@ class Mirror extends Iface
             $dataBakPath = $dataPath . '_bak';
             $tempDataFile  = $config->getSitePath() . '/dest-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz';
 
-            $this->write('Copy live data files...[Please wait]');
+            $this->write('Downloading live data files...[Please wait]');
             if (is_file($tempDataFile)) unlink($tempDataFile);
             $this->postRequest($this->getConfig()->get('mirror.data'), $tempDataFile);
-            $this->write('Complete');
+            $this->write('Download Complete!');
 
             if (is_dir($dataBakPath)) { // Remove any old bak data folder
+                $this->write('Deleting existing data backup: ' . $dataBakPath);
                 $cmd = sprintf('rm -rf %s ', escapeshellarg($dataBakPath));
                 system($cmd);
             }
             if (is_dir($dataPath)) {    // Move existing data to data_bak
                 $this->write('Move current data files to backup location: ' . $dataBakPath);
                 $cmd = sprintf('mv %s %s ', escapeshellarg($dataPath), escapeshellarg($dataBakPath));
-                $this->write($cmd);
+                //$this->write($cmd);
                 system($cmd);
             }
             if (is_dir($dataPath)) {    // Move temp data to data
                 $this->write('Extract downloaded data files to: ' . $dataPath);
-                // $cmd = sprintf('mv %s %s ', escapeshellarg($tmpPath), escapeshellarg($dataPath));
                 $cmd = sprintf('cd %s && tar zxf %s ', escapeshellarg($config->getSitePath()), escapeshellarg(basename($tempDataFile)));
-                $this->write($cmd);
+                //$this->write($cmd);
                 system($cmd);
             }
 
             //
-            $this->write('Change data folder permissions');
-            if (is_dir($dataPath)) {
-                $cmd = sprintf('chmod ug+rw %s -R', escapeshellarg($dataPath));
-                $this->write($cmd);
-                system($cmd);
-                $cmd = sprintf('chgrp www-data %s -R', escapeshellarg($dataPath));
-                $this->write($cmd);
-                system($cmd);
-            }
+//            $this->write('Change data folder permissions');
+//            if (is_dir($dataPath)) {
+//                $cmd = sprintf('chmod ug+rw %s -R', escapeshellarg($dataPath));
+//                //$this->write($cmd);
+//                system($cmd);
+//                $cmd = sprintf('chgrp www-data %s -R', escapeshellarg($dataPath));
+//                //$this->write($cmd);
+//                system($cmd);
+//            }
         }
         if (is_file($tempDataFile)) unlink($tempDataFile);
 
         $this->write('Complete!!!');
-
     }
 
     protected function postRequest($srcUrl, $destPath)

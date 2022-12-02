@@ -46,6 +46,7 @@ class Mirror
         header("Content-Type: application/octet-stream");
         header('Content-Length: '.$filesize);
         $this->_fileOutput($path);
+        if (is_file($path)) unlink($path);
 
         exit;
     }
@@ -91,7 +92,7 @@ class Mirror
             escapeshellarg(basename($srcFile)),
             basename($this->getConfig()->getDataPath())
         );
-        Log::info($cmd);
+        //Log::info($cmd);
         system($cmd);
 
         $public_name = basename($srcFile);
@@ -101,6 +102,7 @@ class Mirror
         header('Content-Length: '.$filesize);
         $this->_fileOutput($srcFile);
         if (is_file($srcFile)) unlink($srcFile);
+
         exit;
     }
 
