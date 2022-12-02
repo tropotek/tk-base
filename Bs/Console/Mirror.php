@@ -48,10 +48,6 @@ class Mirror extends Iface
             $this->writeError('Secret key not valid: ' . $this->getConfig()->get('db.skey'));
             return;
         }
-        if (!$this->getConfig()->get('mirror.db')) {
-            $this->writeError('Invalid source mirror URL: ' . $this->getConfig()->get('mirror.db'));
-            return;
-        }
 
         $backupSqlFile = $config->getTempPath() . '/tmpt.sql';
         $mirrorFileGz  = $config->getTempPath() . '/'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-tmpl.sql.gz';
@@ -74,26 +70,15 @@ class Mirror extends Iface
 
         if (!$input->getOption('no-sql')) {
             if (!is_file($mirrorFileSQL) || $input->getOption('no-cache')) {
+                if (!$this->getConfig()->get('mirror.db')) {
+                    $this->writeError('Invalid DB source mirror URL: ' . $this->getConfig()->get('mirror.db'));
+                    return;
+                }
                 $this->writeComment('Download fresh mirror file: ' . $mirrorFileGz);
                 // get a copy of the remote DB to be mirrored
-                $query = 'db_skey=' . $this->getConfig()->get('db.skey');
                 if (is_file($mirrorFileGz)) unlink($mirrorFileGz);
-                $fp = fopen($mirrorFileGz, 'w');
-                $curl = curl_init(Uri::create($this->getConfig()->get('mirror.db'))->setScheme(Uri::SCHEME_HTTP_SSL)->toString());
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
-                curl_setopt($curl, CURLOPT_HEADER, 0);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($curl, CURLOPT_FILE, $fp);
+                $this->postRequest($this->getConfig()->get('mirror.db'), $mirrorFileGz);
 
-                curl_exec($curl);
-                if(curl_error($curl)) {
-                    fwrite($fp, curl_error($curl));
-                }
-                curl_close($curl);
-                fclose($fp);
             } else {
                 $this->writeComment('Using existing mirror file: ' . $mirrorFileGz);
             }
@@ -135,52 +120,42 @@ class Mirror extends Iface
 
         }
 
-        // if withData, copy the data folder and its files
+        // if with Data, copy the data folder and its files
         if ($input->getOption('copy-data')) {
 
-            $this->writeError('Copying the data folder is disabled until further notice.');
-            return;
-
-            if (!$config->get('live.data.path')) {
-                $this->writeError('Error: Cannot copy data files as the live.data.path is not configured.');
+            if (!$this->getConfig()->get('mirror.data')) {
+                $this->writeError('Invalid data source mirror URL: ' . $this->getConfig()->get('mirror.data'));
                 return;
             }
 
             $dataPath = $config->getDataPath();
-            $tmpPath = $dataPath . '_tmp';
-            $bakPath = $dataPath . '_bak';
+            $dataBakPath = $dataPath . '_bak';
+            $tempDataFile  = $config->getSitePath() . '/dest-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz';
 
-            if (is_dir($tmpPath)) { // Delete any tmpPath if exists
-                $cmd = sprintf('rm -rf %s ', escapeshellarg($tmpPath));
-                system($cmd);
-            }
-            if (!is_dir($tmpPath))
-                mkdir($tmpPath, 0777, true);
+            $this->write('Copy live data files...[Please wait]');
+            if (is_file($tempDataFile)) unlink($tempDataFile);
+            $this->postRequest($this->getConfig()->get('mirror.data'), $tempDataFile);
+            $this->write('Complete');
 
-            $this->write('Copy live data files.');
-            $livePath = rtrim($config->get('live.data.path'), '/') . '/*';
-            $cmd = sprintf('scp -r %s %s ', escapeshellarg($livePath), escapeshellarg($tmpPath));
-            $this->write($cmd);
-            system($cmd);
-
-            if (is_dir($bakPath)) { // Remove old bak data
-                $cmd = sprintf('rm -rf %s ', escapeshellarg($bakPath));
+            if (is_dir($dataBakPath)) { // Remove any old bak data folder
+                $cmd = sprintf('rm -rf %s ', escapeshellarg($dataBakPath));
                 system($cmd);
             }
             if (is_dir($dataPath)) {    // Move existing data to data_bak
-                $this->write('Move current data files.');
-                $cmd = sprintf('mv %s %s ', escapeshellarg($dataPath), escapeshellarg($bakPath));
+                $this->write('Move current data files to backup location: ' . $dataBakPath);
+                $cmd = sprintf('mv %s %s ', escapeshellarg($dataPath), escapeshellarg($dataBakPath));
                 $this->write($cmd);
                 system($cmd);
             }
             if (is_dir($dataPath)) {    // Move temp data to data
-                $this->write('Finalise new data files.');
-                $cmd = sprintf('mv %s %s ', escapeshellarg($tmpPath), escapeshellarg($dataPath));
+                $this->write('Extract downloaded data files to: ' . $dataPath);
+                // $cmd = sprintf('mv %s %s ', escapeshellarg($tmpPath), escapeshellarg($dataPath));
+                $cmd = sprintf('cd %s && tar zxf %s ', escapeshellarg($config->getSitePath()), escapeshellarg(basename($tempDataFile)));
                 $this->write($cmd);
                 system($cmd);
             }
 
-            // use scp to copy the data files
+            //
             $this->write('Change data folder permissions');
             if (is_dir($dataPath)) {
                 $cmd = sprintf('chmod ug+rw %s -R', escapeshellarg($dataPath));
@@ -191,9 +166,31 @@ class Mirror extends Iface
                 system($cmd);
             }
         }
+        if (is_file($tempDataFile)) unlink($tempDataFile);
 
-        //$this->write('Complete!!!');
+        $this->write('Complete!!!');
 
+    }
+
+    protected function postRequest($srcUrl, $destPath)
+    {
+        $query = 'db_skey=' . $this->getConfig()->get('db.skey');
+        $fp = fopen($destPath, 'w');
+        $curl = curl_init(Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL)->toString());
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_FILE, $fp);
+
+        curl_exec($curl);
+        if(curl_error($curl)) {
+            fwrite($fp, curl_error($curl));
+        }
+        curl_close($curl);
+        fclose($fp);
     }
 
 }

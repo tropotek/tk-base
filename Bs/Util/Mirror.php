@@ -3,6 +3,7 @@ namespace Bs\Util;
 
 use Bs\Uri;
 use Tk\ConfigTrait;
+use Tk\Log;
 
 /**
  * @author Tropotek <http://www.tropotek.com/>
@@ -71,8 +72,6 @@ class Mirror
         }
     }
 
-
-
     public function doDataBackup(\Tk\Request $request)
     {
 //        if (!$this->getConfig()->isDebug()) {
@@ -85,7 +84,24 @@ class Mirror
             throw new \Tk\Exception('Invalid security key.');
         }
 
-        return 'Not implemented yet!';
+        $srcFile = $this->getConfig()->getSitePath() . '/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz';
+        if (is_file($srcFile)) unlink($srcFile);
+        $cmd = sprintf('cd %s && tar zcf %s %s',
+            $this->getConfig()->getSitePath(),
+            escapeshellarg(basename($srcFile)),
+            basename($this->getConfig()->getDataPath())
+        );
+        Log::info($cmd);
+        system($cmd);
+
+        $public_name = basename($srcFile);
+        $filesize = filesize($srcFile);
+        header("Content-Disposition: attachment; filename=$public_name;");
+        header("Content-Type: application/octet-stream");
+        header('Content-Length: '.$filesize);
+        $this->_fileOutput($srcFile);
+        if (is_file($srcFile)) unlink($srcFile);
+        exit;
     }
 
 }
