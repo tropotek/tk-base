@@ -59,7 +59,8 @@ class Activate extends Iface
     {
         $hash = $request->get('h');
         $this->user = $this->getConfig()->getUserMapper()->findByHash($hash);
-        if (!$this->user || $this->user->getPassword()) {       // Only allow access for users without a password set
+        //if (!$this->user || $this->user->getPassword()) {
+        if (!$this->user) {
             Alert::addError('Invalid user account');
             Uri::create('/')->redirect();
         }
