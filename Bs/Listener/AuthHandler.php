@@ -169,7 +169,7 @@ class AuthHandler implements Subscriber
     </p>
     <p>
       To complete your account registration please click on the following activation Link:<br/>
-      <a href="{activate-url}">{activate-url}</a>
+      <a href="{activate-url}">http://link-as-text/</a>
     </p>');
         $message->set('content', $content);
         $message->setSubject('Account Registration.');
@@ -272,7 +272,7 @@ class AuthHandler implements Subscriber
         $message->setSubject('Password Recovery');
         $message->addTo($user->getEmail());
         $message->set('name', $user->getName());
-        //$message->set('password', $pass);                   // TODO: Find another way we cannot have the password sent via email
+        $message->set('password', $pass);                   // TODO: Find another way we cannot have the password sent via email
         $message->set('login-url', $url->toString());       // TODO make this url link to the recover password page and they can create a new pass
         \Bs\Config::getInstance()->getEmailGateway()->send($message);
 
