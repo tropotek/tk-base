@@ -243,7 +243,6 @@ class AuthHandler implements Subscriber
         $message->set('name', $user->getName());
         $message->set('activate-url', $url->toString());
         \Bs\Config::getInstance()->getEmailGateway()->send($message);
-
     }
 
     /**
