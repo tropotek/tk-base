@@ -111,6 +111,10 @@ class Recover extends Iface
         $e->set('user', $user);
         $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::RECOVER, $e);
 
+        // Enable the activation page
+        $this->getConfig()->getUserMapper()->cleanRecover();
+        $this->getConfig()->getUserMapper()->addRecover($user->getId());
+
         \Tk\Alert::addSuccess('Please check your nominated email account for recovery instructions.');
         $event->setRedirect(\Tk\Uri::create());
     }

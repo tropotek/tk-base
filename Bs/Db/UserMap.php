@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Tk\Date;
 use Tk\Db\Tool;
 use Tk\Db\Map\ArrayObject;
 use Tk\DataMap\Db;
@@ -294,6 +295,39 @@ class UserMap extends Mapper
             $arr[] = $row->name;
         }
         return $arr;
+    }
+
+
+    public function hasRecover(int $userId): bool
+    {
+        $stm = $this->getDb()->prepare('SELECT * FROM user_recover a WHERE a.user_id = ?');
+        $stm->execute([$userId]);
+        return ($stm->rowCount() > 0);
+    }
+
+    public function addRecover(int $userId): int
+    {
+        if ($this->hasRecover($userId)) {
+            $this->removeRecover($userId);
+        }
+        $stm = $this->getDb()->prepare('INSERT INTO user_recover (user_id)  VALUES (?)');
+        return $stm->execute([$userId]);
+    }
+
+    public function removeRecover(int $userId): int
+    {
+        $stm = $this->getDb()->prepare('DELETE FROM user_recover WHERE user_id = ?');
+        return $stm->execute([$userId]);
+    }
+
+    public function cleanRecover(?\DateTime $expireDate = null): bool
+    {
+        if (!$expireDate) {
+            $expireDate = new \DateTime();
+            $expireDate->sub(new \DateInterval('P1D'));
+        }
+        $stm = $this->getDb()->prepare('DELETE FROM user_recover WHERE created < ?');
+        return $stm->execute([$expireDate->format(Date::FORMAT_ISO_DATETIME)]);
     }
 
 }

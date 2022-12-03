@@ -57,7 +57,11 @@ class Activate extends Iface
      */
     protected function findUser($hash)
     {
-        return $this->getConfig()->getUserMapper()->findByHash($hash);
+        $user = $this->getConfig()->getUserMapper()->findByHash($hash);
+        if ($user && !$this->getConfig()->getUserMapper()->hasRecover($user->getId())) {
+            $user = null;
+        }
+        return $user;
     }
 
     /**
@@ -126,6 +130,9 @@ class Activate extends Iface
             }
             $this->user->setNewPassword($form->getFieldValue('newPassword'));
             $this->user->save();
+            // remove activation flag from DB
+            $this->getConfig()->getUserMapper()->removeRecover($this->user->getId());
+
 
             \Tk\Alert::addSuccess('Password Saved!');
             $event->setRedirect($this->getLoginUrl());

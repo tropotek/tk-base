@@ -236,7 +236,8 @@ class AuthHandler implements Subscriber
     <p>
       Your account has been successfully activated , please follow the link to create a new password.<br/>
       <a href="{activate-url}">{activate-url}</a>.
-    </p>');
+    </p>
+    <p><small>Note: This link is only valid for 12 hours</small></p>');
         $message->set('content', $content);
         $message->setSubject($this->getConfig()->get('site.title') . ' Account Activation.');
         $message->addTo($user->getEmail());
@@ -270,7 +271,8 @@ class AuthHandler implements Subscriber
     <p>
       Please follow the link to create a new password.<br/> 
       <a href="{activate-url}">{activate-url}</a>
-    </p>');
+    </p>
+    <p><small>Note: This link is only valid for 12 hours</small></p>');
         $message->set('content', $content);
         $message->setSubject($this->getConfig()->get('site.title') . ' Password Recovery');
         $message->addTo($user->getEmail());
