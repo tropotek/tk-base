@@ -130,9 +130,9 @@ class Activate extends Iface
             }
             $this->user->setNewPassword($form->getFieldValue('newPassword'));
             $this->user->save();
+
             // remove activation flag from DB
             $this->getConfig()->getUserMapper()->removeRecover($this->user->getId());
-
 
             \Tk\Alert::addSuccess('Password Saved!');
             $event->setRedirect($this->getLoginUrl());
