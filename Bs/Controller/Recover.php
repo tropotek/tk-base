@@ -100,7 +100,7 @@ class Recover extends Iface
         } else {
             $user = $this->getConfig()->getUserMapper()->findByUsername($account);
         }
-        if (!$user) {
+        if (!$user || !$user->isActive() || $user->getId() == 1) {
             $form->addError('Please enter a valid username or email');
             return;
         }

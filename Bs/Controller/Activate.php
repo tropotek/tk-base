@@ -52,14 +52,22 @@ class Activate extends Iface
     }
 
     /**
+     * @param string $hash
+     * @return \Bs\Db\User|\Tk\Db\Map\Model|\Uni\Db\User|null
+     */
+    protected function findUser($hash)
+    {
+        return $this->getConfig()->getUserMapper()->findByHash($hash);
+    }
+
+    /**
      * @param Request $request
      * @throws \Exception
      */
     public function doDefault(Request $request)
     {
         $hash = $request->get('h');
-        $this->user = $this->getConfig()->getUserMapper()->findByHash($hash);
-        //if (!$this->user || $this->user->getPassword()) {
+        $this->user = $this->findUser($hash);
         if (!$this->user) {
             Alert::addError('Invalid user account');
             Uri::create('/')->redirect();

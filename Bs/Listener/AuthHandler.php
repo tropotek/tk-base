@@ -276,7 +276,7 @@ class AuthHandler implements Subscriber
         $message->addTo($user->getEmail());
         $message->set('name', $user->getName());
 
-        $message->set('activate-url', $url->toString());       // TODO make this url link to the recover password page and they can create a new pass
+        $message->set('activate-url', $url->toString());
         \Bs\Config::getInstance()->getEmailGateway()->send($message);
 
     }
