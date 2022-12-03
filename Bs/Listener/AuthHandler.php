@@ -238,7 +238,7 @@ class AuthHandler implements Subscriber
       <a href="{activate-url}">{activate-url}</a>.
     </p>');
         $message->set('content', $content);
-        $message->setSubject('Account Activation.');
+        $message->setSubject($this->getConfig()->get('site.title') . ' Account Activation.');
         $message->addTo($user->getEmail());
         $message->set('name', $user->getName());
         $message->set('activate-url', $url->toString());
@@ -253,26 +253,30 @@ class AuthHandler implements Subscriber
     {
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
-        $pass = $event->get('password');
         $config = \Bs\Config::getInstance();
 
-        $url = $this->getLoginUrl();
+        // Send an email to confirm account active
+        $url = $this->getActivateUrl()->set('h', $user->getHash());
+        if ($event->has('activateUrl')) {
+            $url = $event->get('activateUrl');
+        }
 
         $message = $config->createMessage();
         $content = sprintf('
-    <h2>Account Successfully Activated.</h2>
+    <h2>Account Password Recovery.</h2>
     <p>
       Welcome {name}
     </p>
     <p>
-      Your account has been successfully activated click here to <a href="{login-url}">login</a>.
+      Please follow the link to create a new password.<br/> 
+      <a href="{activate-url}">{activate-url}</a>
     </p>');
         $message->set('content', $content);
-        $message->setSubject('Password Recovery');
+        $message->setSubject($this->getConfig()->get('site.title') . ' Password Recovery');
         $message->addTo($user->getEmail());
         $message->set('name', $user->getName());
-        $message->set('password', $pass);                   // TODO: Find another way we cannot have the password sent via email
-        $message->set('login-url', $url->toString());       // TODO make this url link to the recover password page and they can create a new pass
+
+        $message->set('activate-url', $url->toString());       // TODO make this url link to the recover password page and they can create a new pass
         \Bs\Config::getInstance()->getEmailGateway()->send($message);
 
     }

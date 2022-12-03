@@ -105,19 +105,13 @@ class Recover extends Iface
             return;
         }
 
-        $newPass = $this->getConfig()->createPassword();
-        $user->password = $this->getConfig()->hashPassword($newPass, $user);
-        $user->save();
-
         // Fire the login event to allow developing of misc auth plugins
         $e = new \Tk\Event\Event();
         $e->set('form', $form);
         $e->set('user', $user);
-        $e->set('password', $newPass);
-        //$event->set('templatePath', $this->getTemplatePath());
         $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::RECOVER, $e);
 
-        \Tk\Alert::addSuccess('You new access details have been sent to your email address.');
+        \Tk\Alert::addSuccess('Please check your nominated email account for recovery instructions.');
         $event->setRedirect(\Tk\Uri::create());
     }
 
