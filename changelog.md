@@ -1,5 +1,13 @@
 #CHANGELOG#
 
+Ver 3.4.68 [2022-12-04]:
+-------------------------------
+  - Added timeout on password recovery
+  - Added timeout on recovery links
+  - Fixed recover password pages
+  - Merge branch '3.4' of https://github.com/tropotek/tk-base into 3.4
+
+
 Ver 3.4.66 [2022-12-02]:
 -------------------------------
 
