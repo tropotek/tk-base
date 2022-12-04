@@ -61,8 +61,7 @@ class Mirror extends Iface
             }
         }
         // Remove any prev local backup files
-        if (is_file($backupSqlFile))
-            unlink($backupSqlFile);
+        if (is_file($backupSqlFile)) unlink($backupSqlFile);
 
         $db = $config->getDb();
         $dbBackup = \Tk\Util\SqlBackup::create($db);
@@ -118,6 +117,7 @@ class Mirror extends Iface
                 $dbBackup->restore($debugSqlFile);
             }
 
+            //if (is_file($backupSqlFile)) unlink($backupSqlFile);
         }
 
         // if with Data, copy the data folder and its files
@@ -165,8 +165,8 @@ class Mirror extends Iface
 //                //$this->write($cmd);
 //                system($cmd);
 //            }
+            if (is_file($tempDataFile)) unlink($tempDataFile);
         }
-        if (is_file($tempDataFile)) unlink($tempDataFile);
 
         $this->write('Complete!!!');
     }
