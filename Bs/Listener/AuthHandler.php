@@ -221,6 +221,10 @@ class AuthHandler implements Subscriber
         $user = $event->get('user');
         $config = \Bs\Config::getInstance();
 
+        // Enable the activation page
+        $user->getMapper()->cleanRecover();
+        $user->getMapper()->addRecover($user->getId());
+
         // Send an email to confirm account active
         $url = $this->getActivateUrl()->set('h', $user->getHash());
         if ($event->has('activateUrl')) {
@@ -255,6 +259,10 @@ class AuthHandler implements Subscriber
         /** @var \Bs\Db\User $user */
         $user = $event->get('user');
         $config = \Bs\Config::getInstance();
+
+        // Enable the activation page
+        $user->getMapper()->cleanRecover();
+        $user->getMapper()->addRecover($user->getId());
 
         // Send an email to confirm account active
         $url = $this->getActivateUrl()->set('h', $user->getHash());
