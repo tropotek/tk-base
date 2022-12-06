@@ -113,6 +113,20 @@ class Config extends \Tk\Config
     }
 
     /**
+     * getAuth
+     *
+     * @return \Tk\Auth
+     */
+    public function getAuth()
+    {
+        if (!$this->get('auth')) {
+            $obj = new \Tk\Auth(new \Tk\Auth\Storage\SessionStorage($this->getSession()));
+            $this->set('auth', $obj);
+        }
+        return $this->get('auth');
+    }
+
+    /**
      * @param $pwd
      * @param \Bs\Db\User $user (optional)
      * @return string
@@ -130,20 +144,6 @@ class Config extends \Tk\Config
         return $this->hash($pwd, $salt);
     }
 
-
-    /**
-     * getAuth
-     *
-     * @return \Tk\Auth
-     */
-    public function getAuth()
-    {
-        if (!$this->get('auth')) {
-            $obj = new \Tk\Auth(new \Tk\Auth\Storage\SessionStorage($this->getSession()));
-            $this->set('auth', $obj);
-        }
-        return $this->get('auth');
-    }
 
     /**
      * getRequest

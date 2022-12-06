@@ -2,6 +2,7 @@
 namespace Bs\Controller;
 
 use Bs\Db\User;
+use Bs\Uri;
 use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
@@ -55,6 +56,11 @@ class Login extends Iface
      */
     public function doDefault(Request $request)
     {
+        if ($request->get('auth') == '1' && $this->getAuthUser()) {
+            Uri::createHomeUrl('/index.html')->redirect();
+            //Uri::create('/index.html')->redirect();
+        }
+
         $this->init();
 
         $this->form->execute();
@@ -74,7 +80,6 @@ class Login extends Iface
         $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
         $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
             ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
-
         if ($this->getConfig()->get('site.client.registration')) {
             $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
                 ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
@@ -171,6 +176,19 @@ jQuery(function ($) {
     }
   });
   
+  $('.tk-popup').on('click', function () {
+      let params = 'scrollbars=no,status=no,location=no,toolbar=no,menubar=no,width=800,height=450';
+      let child = window.open(this.href, $(this).text(), params);
+      child.focus();
+      $(window).on('message', function (e) {
+         if (e.originalEvent.data == 'closing') {
+             child.close();
+             window.location = window.location + '?auth=1';
+         }
+      });
+      return false;
+  });
+  
 });
 JS;
         $template->appendJs($js);
@@ -188,7 +206,11 @@ JS;
 <div class="tk-login-panel tk-login">
 
   <div var="form"></div>
-
+  <div class="external row">
+    <a href="/microsoftLogin.html?login=yes" class="btn btn-lg btn-default tk-popup col-12">Microsoft</a>
+<!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning tk-popup col-12">Google</a>-->
+<!--    <a href="/githubLogin.html" class="btn btn-lg btn-default tk-popup col-12">Github</a>-->
+  </div>
 </div>
 HTML;
 

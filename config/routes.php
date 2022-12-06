@@ -30,6 +30,12 @@ $routes->add('recover', Route::create('/recover.html', 'Bs\Controller\Recover::d
 $routes->add('activate', Route::create('/activate.html', 'Bs\Controller\Activate::doDefault'));
 $routes->add('logout', Route::create('/logout.html', 'Bs\Controller\Logout::doDefault'));
 
+$routes->add('login-microsoft', Route::create('/microsoftLogin.html', 'Tk\ExtAuth\Microsoft\Controller::doLogin'));
+$routes->add('auth-microsoft', Route::create('/microsoftAuth.html',  'Tk\ExtAuth\Microsoft\Controller::doAuth'));
+// TODO:
+//$routes->add('auth-google', Route::create('/googleAuth.html', 'Tk\ExtAuth\Google\Controller::doLogin'));
+//$routes->add('auth-github', Route::create('/githubAuth.html', 'Tk\ExtAuth\Github\Controller::doLogin'));
+
 $routes->add('install', Route::create('/install.html', 'Bs\Controller\Install::doDefault'));
 $routes->add('maintenance', Route::create('/maintenance.html', 'Bs\Controller\Maintenance::doDefault'));
 

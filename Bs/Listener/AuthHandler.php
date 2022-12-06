@@ -7,6 +7,8 @@ use Tk\Event\Subscriber;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
+use Tk\ExtAuth\Microsoft\Token;
+use Tk\ExtAuth\Microsoft\TokenMap;
 
 /**
  * @author Michael Mifsud <http://www.tropotek.com/>
@@ -138,11 +140,22 @@ class AuthHandler implements Subscriber
             $event->setRedirect(\Tk\Uri::create('/'));
         }
 
+        // TODO: do for other external auths, (Also we could create individual listeners for each ExtAuth system)
+        if ($this->getConfig()->get('auth.microsoft.enabled', false)) {
+            $token = TokenMap::create()->findBySessionKey($this->getSession()->get(Token::SESSION_KEY, ''));
+            if ($token) {
+                $token->delete();
+                // TODO: I think this need only to be called when the user clicks logout, use curl to call it.
+                //$event->setRedirect(\Tk\Uri::create($this->getConfig()->get('auth.microsoft.logout')));
+            }
+        }
+
         $auth->clearIdentity();
         if (!$config->getMasqueradeHandler()->isMasquerading()) {
             \Tk\Log::warning('Destroying Session');
             $config->getSession()->destroy();
         }
+
     }
 
 
