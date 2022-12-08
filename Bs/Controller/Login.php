@@ -157,6 +157,10 @@ class Login extends Iface
     {
         $template = parent::show();
 
+        if ($this->getConfig()->get('auth.microsoft.enabled')) {
+            $template->setVisible('microsoft');
+        }
+
         // Render the form
         if ($this->form) {
             $template->appendTemplate('form', $this->form->getRenderer()->show());
@@ -209,9 +213,9 @@ JS;
 
   <div var="form"></div>
   <div class="external row">
-    <a href="/microsoftLogin.html?login=yes" class="btn btn-lg btn-default tk-popup col-12">Microsoft</a>
-<!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning tk-popup col-12">Google</a>-->
-<!--    <a href="/githubLogin.html" class="btn btn-lg btn-default tk-popup col-12">Github</a>-->
+    <a href="/microsoftLogin.html?login=yes" class="btn btn-lg btn-default tk-popup col-12" choice="microsoft">Microsoft</a>
+<!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning tk-popup col-12" choice="google">Google</a>-->
+<!--    <a href="/githubLogin.html" class="btn btn-lg btn-default tk-popup col-12" choice="github">Github</a>-->
   </div>
 </div>
 HTML;
