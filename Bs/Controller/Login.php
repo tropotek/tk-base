@@ -2,6 +2,7 @@
 namespace Bs\Controller;
 
 use Bs\Db\User;
+use Bs\Uri;
 use Tk\Request;
 use Tk\Form;
 use Tk\Form\Field;
@@ -55,6 +56,10 @@ class Login extends Iface
      */
     public function doDefault(Request $request)
     {
+        if ($request->get('auth') == '1' && $this->getAuthUser()) {
+            Uri::createHomeUrl('/index.html')->redirect();
+        }
+
         $this->init();
 
         $this->form->execute();
@@ -74,7 +79,6 @@ class Login extends Iface
         $this->form->appendField(new Event\Submit('login', array($this, 'doLogin')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
         $this->form->appendField(new Event\Link('forgotPassword', \Tk\Uri::create($this->getConfig()->get('url.auth.recover')), ''))
             ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-recover-url');
-
         if ($this->getConfig()->get('site.client.registration')) {
             $this->form->appendField(new \Tk\Form\Event\Link('register', \Tk\Uri::create($this->getConfig()->get('url.auth.register')), ''))
                 ->removeCss('btn btn-sm btn-default btn-once')->addCss('tk-register-url');
@@ -152,6 +156,10 @@ class Login extends Iface
     {
         $template = parent::show();
 
+        if ($this->getConfig()->get('auth.microsoft.enabled')) {
+            $template->setVisible('microsoft');
+        }
+
         // Render the form
         if ($this->form) {
             $template->appendTemplate('form', $this->form->getRenderer()->show());
@@ -188,7 +196,11 @@ JS;
 <div class="tk-login-panel tk-login">
 
   <div var="form"></div>
-
+  <div class="external row">
+    <a href="/microsoftLogin.html" class="btn btn-lg btn-default col-12" choice="microsoft">Microsoft</a>
+<!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning col-12" choice="google">Google</a>-->
+<!--    <a href="/githubLogin.html" class="btn btn-lg btn-default col-12" choice="github">Github</a>-->
+  </div>
 </div>
 HTML;
 
