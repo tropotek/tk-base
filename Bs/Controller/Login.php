@@ -186,7 +186,6 @@ jQuery(function ($) {
              const urlParams = new URLSearchParams(window.location.search);
              urlParams.set('auth', '1');
              window.location.search = urlParams;
-             //window.location = window.location + '?auth=1';
          }
       });
       return false;
