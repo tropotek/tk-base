@@ -58,7 +58,6 @@ class Login extends Iface
     {
         if ($request->get('auth') == '1' && $this->getAuthUser()) {
             Uri::createHomeUrl('/index.html')->redirect();
-            //Uri::create('/index.html')->redirect();
         }
 
         $this->init();
@@ -180,21 +179,6 @@ jQuery(function ($) {
     }
   });
   
-  $('.tk-popup').on('click', function () {
-      let params = 'scrollbars=no,status=no,location=no,toolbar=no,menubar=no,width=800,height=450';
-      let child = window.open(this.href, $(this).text(), params);
-      child.focus();
-      $(window).on('message', function (e) {
-         if (e.originalEvent.data == 'closing') {
-             child.close();
-             const urlParams = new URLSearchParams(window.location.search);
-             urlParams.set('auth', '1');
-             window.location.search = urlParams;
-         }
-      });
-      return false;
-  });
-  
 });
 JS;
         $template->appendJs($js);
@@ -213,9 +197,9 @@ JS;
 
   <div var="form"></div>
   <div class="external row">
-    <a href="/microsoftLogin.html?login=yes" class="btn btn-lg btn-default tk-popup col-12" choice="microsoft">Microsoft</a>
-<!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning tk-popup col-12" choice="google">Google</a>-->
-<!--    <a href="/githubLogin.html" class="btn btn-lg btn-default tk-popup col-12" choice="github">Github</a>-->
+    <a href="/microsoftLogin.html" class="btn btn-lg btn-default col-12" choice="microsoft">Microsoft</a>
+<!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning col-12" choice="google">Google</a>-->
+<!--    <a href="/githubLogin.html" class="btn btn-lg btn-default col-12" choice="github">Github</a>-->
   </div>
 </div>
 HTML;

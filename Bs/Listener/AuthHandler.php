@@ -146,7 +146,7 @@ class AuthHandler implements Subscriber
             if ($token) {
                 $token->delete();
                 // TODO: I think this need only to be called when the user clicks logout, use curl to call it.
-                $event->setRedirect(\Tk\Uri::create($this->getConfig()->get('auth.microsoft.logout')));
+                //$event->setRedirect(\Tk\Uri::create($this->getConfig()->get('auth.microsoft.logout')));
             }
         }
 
