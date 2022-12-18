@@ -19,7 +19,7 @@ interface UserInterface extends ModelInterface
     /**
      * Return a data path to a location for users specific files
      */
-    public function getDataPath(): string;
+    //public function getDataPath(): string;
 
     /**
      * return true if this user type = or is in the supplied type(s)
@@ -50,8 +50,6 @@ interface UserInterface extends ModelInterface
 
     public function getEmail(): string;
 
-    public function getPhone(): string;
-
     public function isActive(): bool;
 
     /**
@@ -64,14 +62,10 @@ interface UserInterface extends ModelInterface
      * Should default to system timezone if none found
      * @link https://php.net/manual/en/datetimezone.construct.php
      */
-    public function getTimezone(): \DateTimeZone;
+    public function getTimezone(): string;
 
     public function getLastLogin(): ?\DateTime;
 
-    /**
-     * Return true if the user has system admin permissions
-     */
-    public function isAdmin(): bool;
 
 
     // TODO: add setters for account registration only, just the minimum required setters only

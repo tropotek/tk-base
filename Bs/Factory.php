@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use App\Db\UserMap;
 use Bs\Console\UserPass;
 use Bs\Db\UserInterface;
 use Dom\Mvc\Loader;
@@ -8,6 +9,7 @@ use Dom\Mvc\Modifier;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
+use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Adapter\DbTable;
 use Tk\Auth\Auth;
 
@@ -53,7 +55,10 @@ class Factory extends \Tk\Factory
     public function getAuthAdapter(): AdapterInterface
     {
         if (!$this->has('authAdapter')) {
-            $adapter = new DbTable($this->getDb(), 'user_auth', 'username', 'password');
+            //$adapter = new DbTable($this->getDb(), 'user', 'username', 'password');
+            // TODO: get the right mapper from the factory or somewhere
+            $adapter = new AuthUser(UserMap::create());
+            //$adapter = new AuthUser($this->getFactory()->getUserMap());
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');
