@@ -92,7 +92,6 @@
 
         $('.btn-cancel', modal).on('click', function () {
           modal.modal('hide');
-          // TODO: check this works for form submit buttons
           return false;
         });
         $('.btn-ok', modal).on('click', function () {

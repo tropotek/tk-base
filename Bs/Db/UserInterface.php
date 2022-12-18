@@ -11,6 +11,8 @@ interface UserInterface extends ModelInterface
 
     /**
      * Return a user object located by the identity saved in the Auth Adapter
+     *
+     * NOTE: By default the $identity is the username and the results are found in the user_auth table
      */
     public static function findByIdentity(string $identity): mixed;
 

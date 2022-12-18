@@ -33,7 +33,12 @@ class Login extends PageController
     {
         $result = $this->getFactory()->getAuthController()->clearIdentity()->authenticate($this->getFactory()->getAuthAdapter());
 
-        $token = $this->getSession()->get('login');
+
+        if ($request->request->has('remember')) {
+
+        }
+
+        $token = $this->getSession()->get('login', 0);
         $this->getSession()->remove('login');
         if ($token + 2*60 < time()) { // 2 min to login or else the token times out
             $this->getFactory()->getSession()->getFlashBag()->add('error', 'Invalid form submission. Please try again.');
@@ -57,11 +62,8 @@ class Login extends PageController
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        vd();
+        // Set a token in the session on show, to ensure this browser is the one that requested the login.
         $this->getSession()->set('login', time());
-
-        //$template->setAttr('token', 'value', $this->getSession()->get('login'));
-
 
         return $template;
     }
@@ -71,7 +73,6 @@ class Login extends PageController
         $html = <<<HTML
 <div>
   <form method="post">
-    <input type="hidden" name="token" value="" var="token" />
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating">
@@ -83,9 +84,9 @@ class Login extends PageController
       <label for="floatingPassword">Password</label>
     </div>
 
-    <div class="checkbox mb-3" choice="remember">
+    <div class="checkbox mb-3" choice1="remember">
       <label>
-        <input type="checkbox" value="remember" /> Remember me
+        <input type="checkbox" name="remember" value="remember" /> Remember me
       </label>
     </div>
 
