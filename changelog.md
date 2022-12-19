@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 3.4.78 [2022-12-19]:
+-------------------------------
+
+
 Ver 3.4.76 [2022-12-10]:
 -------------------------------
   - Merge branch '3.4' of https://github.com/tropotek/tk-base into 3.4
