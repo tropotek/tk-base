@@ -27,8 +27,6 @@
     let defaults = {
       lockIcon: 'fa-lock',
       unlockIcon: 'fa-unlock',
-      disabled: true,
-      readonly: true,   // if enabled you will not be able to toggle the lock only unclock it
       groupTpl: /*html*/`
 <div class="input-group">
   <div class="tki-iga">
@@ -75,20 +73,10 @@
     let updateInput = function(group, editable) {
       if (editable) {
         $('button .fa', group).removeClass(plugin.settings.lockIcon).addClass(plugin.settings.unlockIcon);
-        if (plugin.settings.disabled) {
-          $('input', group).removeAttr('disabled');
-        }
-        if (plugin.settings.readonly) {
-          $('input', group).removeAttr('readonly');
-        }
+        $('input', group).css({'pointerEvents': 'inherit', 'background': 'inherit' });
       } else {
         $('button .fa', group).removeClass(plugin.settings.unlockIcon).addClass(plugin.settings.lockIcon);
-        if (plugin.settings.disabled) {
-          $('input', group).attr('disabled', 'disabled');
-        }
-        if (plugin.settings.readonly) {
-          $('input', group).attr('readonly', 'readonly');
-        }
+        $('input', group).css({'pointerEvents': 'none', 'background': '#EEE' });
       }
     };
 
