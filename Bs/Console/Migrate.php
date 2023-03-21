@@ -84,11 +84,13 @@ class Migrate extends Iface
             }
         }
 
-        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
-        if ($config->isDebug() && is_file($debugSqlFile)) {
-            $this->writeBlue('Apply dev sql updates');
-            $dbBackup->restore($debugSqlFile);
-        }
+        // TODO: I do not think this should be run during migration only on the mirror command.
+        //       revert this if needed
+//        $debugSqlFile  = $config->getSitePath() . '/bin/assets/debug.sql';
+//        if ($config->isDebug() && is_file($debugSqlFile)) {
+//            $this->writeBlue('Apply dev sql updates');
+//            $dbBackup->restore($debugSqlFile);
+//        }
 
         $this->write('Database Migration Complete.');
         $this->write('Open the site in a browser to complete the site setup: ' . \Tk\Uri::create('/')->toString());

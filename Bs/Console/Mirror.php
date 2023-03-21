@@ -102,15 +102,16 @@ class Mirror extends Iface
             $this->write('Import mirror file to this DB');
             $dbBackup->restore($mirrorFileSQL);
 
+            // TODO: This should be run in the migration command only
             // Run all static scripts views.sql, triggers.sql, procedures.sql, functions.sql
-            $staticFiles = ['views.sql', 'triggers.sql', 'procedures.sql', 'functions.sql'];
-            foreach ($staticFiles as $file) {
-                $path = "{$config->getSitePath()}/src/config/sql/{$file}";
-                if (is_file($path)) {
-                    $this->writeGreen('Applying ' . $file);
-                    $dbBackup->restore($path);
-                }
-            }
+//            $staticFiles = ['views.sql', 'triggers.sql', 'procedures.sql', 'functions.sql'];
+//            foreach ($staticFiles as $file) {
+//                $path = "{$config->getSitePath()}/src/config/sql/{$file}";
+//                if (is_file($path)) {
+//                    $this->writeGreen('Applying ' . $file);
+//                    $dbBackup->restore($path);
+//                }
+//            }
 
             if (!$input->getOption('no-dev')) {
                 $debugSqlFile = $config->getSitePath() . '/bin/assets/debug.sql';
