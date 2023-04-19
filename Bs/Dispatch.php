@@ -34,10 +34,15 @@ class Dispatch extends \Tk\Mvc\Dispatch
             $this->getConfig()->isDebug()
         ));
 
+        // Handle DomTemplate renders and templates in controller returns
         $this->getDispatcher()->addSubscriber(new ViewHandler($this->getFactory()->getTemplateModifier()));
+
+        // Show total page bytes
+        /** @var PageBytes $pageBytes */
+        $pageBytes = $this->getFactory()->getTemplateModifier()->getFilter('pageBytes');
         $this->getDispatcher()->addSubscriber(new PageBytesHandler(
             $this->getFactory()->getLogger(),
-            $this->getFactory()->getTemplateModifier()->getFilter('pageBytes')
+            $pageBytes
         ));
 
     }

@@ -171,7 +171,6 @@ window.tinymceElfinder = function(opts) {
           };
 
         // check file object
-        console.log(file)
         if (file.name) {
           // file blob of client side file object
           clipdata = void(0);

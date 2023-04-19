@@ -10,7 +10,6 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\AuthUser;
-use Tk\Auth\Adapter\DbTable;
 use Tk\Auth\Auth;
 
 /**

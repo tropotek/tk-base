@@ -142,9 +142,10 @@ let tkbase = function () {
     }
 
     function getMceElf(data) {
+      let path = data.elfinderPath ?? '/media';
       return new tinymceElfinder({
         // connector URL (Use elFinder Demo site's connector for this demo)
-        url: config.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php?path='+ data.elfinderPath,
+        url: config.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php?path='+ path,
         // upload target folder hash for this tinyMCE
         uploadTargetHash: 'l1_lw',
         // elFinder dialog node id
@@ -187,9 +188,9 @@ let tkbase = function () {
       // Full tinymce with elfinder file manager
       $('textarea.mce', form).each(function () {
         let el = $(this);
-          el.tinymce($.extend(mceDefaults, {
-            file_picker_callback : getMceElf($(this).data()).browser,
-          }));
+        el.tinymce($.extend(mceDefaults, {
+          file_picker_callback : getMceElf(el.data()).browser,
+        }));
       });
     });
 

@@ -5,8 +5,6 @@ require $sitePath . '/_prepend.php';
 
 error_reporting(0); // Set E_ALL for debugging
 
-
-
 // // Optional exec path settings (Default is called with command name only)
 $bin = '/bin';
 define('ELFINDER_TAR_PATH',      $bin.'/tar');
@@ -150,10 +148,7 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 		:  null;                                 // else elFinder decide it itself
 }
 
-
-
 // ========== Setup data-elfinder-path =============
-
 function getElfinderPath(string $customDataPath = '/media'): array
 {
     $config = \Tk\Config::instance();
