@@ -5,7 +5,6 @@ use Tk\Db\Mapper\ModelInterface;
 
 interface UserInterface extends ModelInterface
 {
-
     /**
      * return true if this user type = or is in the supplied type(s)
      */
