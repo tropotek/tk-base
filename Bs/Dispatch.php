@@ -1,14 +1,11 @@
 <?php
 namespace Bs;
 
-
 use Dom\Mvc\EventListener\PageBytesHandler;
 use Dom\Mvc\EventListener\ViewHandler;
 use Dom\Mvc\Modifier\PageBytes;
+use Tk\Mvc\EventListener\ExceptionListener;
 
-/**
- * @author Tropotek <http://www.tropotek.com/>
- */
 class Dispatch extends \Tk\Mvc\Dispatch
 {
 
@@ -29,7 +26,7 @@ class Dispatch extends \Tk\Mvc\Dispatch
     {
         parent::httpInit();
 
-        $this->getDispatcher()->addSubscriber(new \Tk\Mvc\EventListener\ExceptionListener(
+        $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
             $this->getConfig()->isDebug()
         ));

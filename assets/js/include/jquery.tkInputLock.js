@@ -28,11 +28,8 @@
       lockIcon: 'fa-lock',
       unlockIcon: 'fa-unlock',
       groupTpl: /*html*/`
-<div class="input-group">
-  <div class="tki-iga">
-    <!-- input element will be added here -->
+<div class="input-group tki-iga">
     <button type="button" class="btn btn-outline-secondary border" title="Click to edit field"><i class="fa"></i></button>
-  </div>
 </div>
 `,
     };

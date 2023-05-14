@@ -2,7 +2,6 @@
 namespace Bs;
 
 use App\Db\UserMap;
-use Bs\Console\UserPass;
 use Bs\Db\UserInterface;
 use Dom\Mvc\Loader;
 use Dom\Mvc\Modifier;
@@ -12,9 +11,6 @@ use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
 
-/**
- * @author Tropotek <http://www.tropotek.com/>
- */
 class Factory extends \Tk\Factory
 {
 
@@ -30,9 +26,6 @@ class Factory extends \Tk\Factory
     {
         if (!$this->has('console')) {
             $app = parent::getConsole();
-            if ($this->getConfig()->isDebug()) {
-                $app->add(new UserPass());
-            }
             $this->set('console', $app);
         }
         return $this->get('console');

@@ -9,9 +9,8 @@ use Tk\Event\AuthEvent;
 use Tk\Auth\AuthEvents;
 
 /**
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
+ *
+ * @deprecated
  */
 class AuthHandler implements Subscriber
 {

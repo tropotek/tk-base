@@ -24,7 +24,7 @@ class MaintenanceHandler implements Subscriber
     {
         /** @var \Tk\Controller\Iface $controller */
         $controller = \Tk\Event\Event::findControllerObject($event);
-        if (\Tk\Uri::create()->basename() != 'login.html' && !$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('site.maintenance.enabled')) {
+        if (\Tk\Uri::create()->basename() != 'login.html' && !$controller instanceof \Bs\Controller\Login && !$controller instanceof \Bs\Controller\Logout && !$controller instanceof \Bs\Controller\Maintenance && $this->getConfig()->get('system.maintenance.enabled')) {
             if ($this->getConfig()->getAuthUser()) {
                 if ($this->getConfig()->getAuthUser()->hasType(User::TYPE_ADMIN)) return;
                 if ($this->getConfig()->getMasqueradeHandler()->getMasqueradingUser() &&
@@ -42,7 +42,7 @@ class MaintenanceHandler implements Subscriber
      */
     public function showPage($event)
     {
-        if (!$this->getConfig()->get('site.maintenance.enabled')) return;
+        if (!$this->getConfig()->get('system.maintenance.enabled')) return;
         $controller = \Tk\Event\Event::findControllerObject($event);
         if ($controller instanceof \Bs\Controller\Iface && !$controller instanceof \Bs\Controller\Maintenance) {
             $page = $controller->getPage();
@@ -68,11 +68,11 @@ HTML;
     {
         $data = \Tk\Db\Data::create();
         if ($b) {
-            $data->set('site.maintenance.enabled', 'site.maintenance.enabled');
+            $data->set('system.maintenance.enabled', 'system.maintenance.enabled');
             if ($message)
-                $data->set('site.maintenance.message', $message);
+                $data->set('system.maintenance.message', $message);
         } else {
-            $data->set('site.maintenance.enabled', '');
+            $data->set('system.maintenance.enabled', '');
         }
         $data->save();
     }

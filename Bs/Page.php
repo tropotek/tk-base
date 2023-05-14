@@ -3,9 +3,6 @@ namespace Bs;
 
 use Dom\Template;
 
-/**
- * @author Tropotek <http://www.tropotek.com/>
- */
 class Page extends \Dom\Mvc\Page
 {
 

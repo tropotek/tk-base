@@ -3,13 +3,6 @@ namespace Bs\Controller\Admin\Dev;
 
 use Tk\Request;
 
-/**
- *
- *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
- */
 class Events extends \Bs\Controller\AdminIface
 {
 

@@ -10,10 +10,4 @@ return function (CollectionConfigurator $routes) {
     $routes->add('maintenance', '/maintenance')
         ->controller([\Bs\Controller\Maintenance::class, 'doDefault']);
 
-    // Auth pages Login, Logout, Register, Recover
-    $routes->add('login', '/login')
-        ->controller([\Bs\Controller\User\Login::class, 'doLogin']);
-    $routes->add('logout', '/logout')
-        ->controller([\Bs\Controller\User\Login::class, 'doLogout']);
-
 };

@@ -26,7 +26,7 @@ class Maintenance extends \Bs\Controller\Iface
      */
     public function doDefault(Request $request)
     {
-        if (!$this->getConfig()->get('site.maintenance.enabled')) {
+        if (!$this->getConfig()->get('system.maintenance.enabled')) {
             if ($this->getConfig()->getAuthUser()) {
                 $this->getConfig()->getUserHomeUrl()->redirect();
             } else {
@@ -78,5 +78,5 @@ HTML;
 
         return \Dom\Loader::load($xhtml);
     }
-    
+
 }

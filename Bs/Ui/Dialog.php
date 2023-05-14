@@ -37,7 +37,6 @@ use Tk\Ui\Traits\CssTrait;
  *    $template->setAttr('modelBtn', 'data-toggle', 'modal');
  *    $template->setAttr('modelBtn', 'data-target', '#'.$this->dialog->getId());
  *
- * @author Tropotek <http://www.tropotek.com/>
  */
 class Dialog extends \Dom\Renderer\Renderer
 {

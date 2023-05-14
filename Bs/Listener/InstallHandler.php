@@ -6,9 +6,7 @@ use Tk\ConfigTrait;
 use Tk\Event\Subscriber;
 
 /**
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @see http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
+ * @deprecated
  */
 class InstallHandler implements Subscriber
 {
