@@ -41,6 +41,8 @@
 
     // constructor method
     plugin.init = function () {
+      if ($element.is('.is-invalid')) return;
+
       plugin.settings = $.extend({}, defaults, $(element).data(), options);
       form = $(element).closest('form');
 

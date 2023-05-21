@@ -10,6 +10,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
+use Tk\Mail\CurlyMessage;
+use Tk\Mail\Gateway;
 
 class Factory extends \Tk\Factory
 {
@@ -48,9 +50,7 @@ class Factory extends \Tk\Factory
     {
         if (!$this->has('authAdapter')) {
             //$adapter = new DbTable($this->getDb(), 'user', 'username', 'password');
-            // TODO: get the right mapper from the factory or somewhere
             $adapter = new AuthUser(UserMap::create());
-            //$adapter = new AuthUser($this->getFactory()->getUserMap());
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');
@@ -153,5 +153,27 @@ class Factory extends \Tk\Factory
             $this->set('templateLoader', $loader);
         }
         return $this->get('templateLoader');
+    }
+
+    /**
+     * @param string $template (optional) If no param supplied then the system default template is used
+     */
+    public function createMessage(string $template = ''): CurlyMessage
+    {
+        if (empty($template)) {
+            $tplPath = $this->getSystem()->makePath($this->getConfig()->get('system.mail.template'));
+            if (is_file($tplPath)) {
+                $template = file_get_contents($tplPath);
+                if (!$template) {
+                    \Tk\log::warning('Template file not found, using default template: ' . $tplPath);
+                    $template = '{content}';
+                }
+            }
+        }
+
+        $message = \Tk\Mail\CurlyMessage::create($template);
+        $message->setFrom($this->getRegistry()->get('system.email'));
+
+        return $message;
     }
 }
