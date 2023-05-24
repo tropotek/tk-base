@@ -1,35 +1,23 @@
 <?php
-
 namespace Bs\Db;
 
-use Bs\Db\Mapper;
-use Exception;
 use Tk\DataMap\DataMap;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
-use Tk\Db\Filter;
-use Tk\Db\Map\ArrayObject;
-use Tk\Db\Map\Model;
+use Tk\DataMap\Table;
+use Tk\Db\Mapper\Filter;
+use Tk\Db\Mapper\Mapper;
+use Tk\Db\Mapper\ModelInterface;
 use Tk\Db\Pdo;
-use Tk\Db\Tool;
 
-/**
- *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @see http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
- */
 class FileMap extends Mapper
 {
 
-    /**
-     * @param \Tk\Db\Pdo|null $db
-     * @throws \Exception
-     */
-    public function __construct($db = null)
+    public function __construct(?Pdo $db = null)
     {
         parent::__construct($db);
-        $sql = <<<SQL
+        if (!$this->getDb()->hasTable('file')) {
+            $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS file
 (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -51,82 +39,77 @@ CREATE TABLE IF NOT EXISTS file
     KEY fkey_3 (fkey, fid, label)
 );
 SQL;
-        if (!$this->getDb()->hasTable('file')) {
             $this->getDb()->exec($sql);
         }
     }
 
-    /**
-     * @return DataMap
-     */
-    public function getDbMap()
+    public function makeDataMaps(): void
     {
-        if (!$this->dbMap) {
-            $this->dbMap = new DataMap();
-            $this->dbMap->addPropertyMap(new Db\Integer('id'), 'key');
-            $this->dbMap->addPropertyMap(new Db\Integer('userId', 'user_id'));
-            $this->dbMap->addPropertyMap(new Db\Text('fkey'));
-            $this->dbMap->addPropertyMap(new Db\Integer('fid'));
-            $this->dbMap->addPropertyMap(new Db\Text('path'));
-            $this->dbMap->addPropertyMap(new Db\Integer('bytes'));
-            $this->dbMap->addPropertyMap(new Db\Text('mime'));
-            $this->dbMap->addPropertyMap(new Db\Text('label'));
-            $this->dbMap->addPropertyMap(new Db\Text('notes'));
-            $this->dbMap->addPropertyMap(new Db\Text('hash'));
-            $this->dbMap->addPropertyMap(new Db\Boolean('selected'));
-            $this->dbMap->addPropertyMap(new Db\Date('modified'));
-            $this->dbMap->addPropertyMap(new Db\Date('created'));
+        if (!$this->getDataMappers()->has(self::DATA_MAP_DB)) {
+            $map = new DataMap();
+            $map->addDataType(new Db\Integer('id'));
+            $map->addDataType(new Db\Integer('userId', 'user_id'));
+            $map->addDataType(new Db\Text('fkey'));
+            $map->addDataType(new Db\Integer('fid'));
+            $map->addDataType(new Db\Text('path'));
+            $map->addDataType(new Db\Integer('bytes'));
+            $map->addDataType(new Db\Text('mime'));
+            $map->addDataType(new Db\Text('label'));
+            $map->addDataType(new Db\Text('notes'));
+            $map->addDataType(new Db\Text('hash'));
+            $map->addDataType(new Db\Boolean('selected'));
+            $map->addDataType(new Db\Date('modified'));
+            $map->addDataType(new Db\Date('created'));
+            $this->addDataMap(self::DATA_MAP_DB, $map);
         }
-        return $this->dbMap;
-    }
 
-    /**
-     * @return DataMap
-     */
-    public function getFormMap()
-    {
-        if (!$this->formMap) {
-            $this->formMap = new DataMap();
-            $this->formMap->addPropertyMap(new Form\Integer('id'), 'key');
-            $this->formMap->addPropertyMap(new Form\Integer('userId'));
-            $this->formMap->addPropertyMap(new Form\Text('fkey'));
-            $this->formMap->addPropertyMap(new Form\Integer('fid'));
-            $this->formMap->addPropertyMap(new Form\Text('path'));
-            $this->formMap->addPropertyMap(new Form\Integer('bytes'));
-            $this->formMap->addPropertyMap(new Form\Text('mime'));
-            $this->formMap->addPropertyMap(new Form\Text('label'));
-            $this->formMap->addPropertyMap(new Form\Text('notes'));
-            $this->formMap->addPropertyMap(new Form\Boolean('selected'));
+        if (!$this->getDataMappers()->has(self::DATA_MAP_FORM)) {
+            $map = new DataMap();
+            $map->addDataType(new Form\Integer('id'));
+            $map->addDataType(new Form\Integer('userId'));
+            $map->addDataType(new Form\Text('fkey'));
+            $map->addDataType(new Form\Integer('fid'));
+            $map->addDataType(new Form\Text('path'));
+            $map->addDataType(new Form\Integer('bytes'));
+            $map->addDataType(new Form\Text('mime'));
+            $map->addDataType(new Form\Text('label'));
+            $map->addDataType(new Form\Text('notes'));
+            $map->addDataType(new Form\Boolean('selected'));
+            $this->addDataMap(self::DATA_MAP_FORM, $map);
         }
-        return $this->formMap;
+
+        if (!$this->getDataMappers()->has(self::DATA_MAP_TABLE)) {
+            $map = new DataMap();
+            $map->addDataType(new Form\Integer('id'));
+            $map->addDataType(new Form\Integer('userId'));
+            $map->addDataType(new Form\Text('fkey'));
+            $map->addDataType(new Form\Integer('fid'));
+            $map->addDataType(new Form\Text('path'));
+            $map->addDataType(new Form\Integer('bytes'));
+            $map->addDataType(new Form\Text('mime'));
+            $map->addDataType(new Form\Text('label'));
+            $map->addDataType(new Form\Text('notes'));
+            $map->addDataType(new Table\Boolean('selected'));
+            $map->addDataType(new Form\Date('modified'))->setDateFormat('d/m/Y h:i:s');
+            $map->addDataType(new Form\Date('created'))->setDateFormat('d/m/Y h:i:s');
+            $this->addDataMap(self::DATA_MAP_TABLE, $map);
+        }
     }
 
-    /**
-     * @param string $hash
-     * @return File|Model|null
-     * @throws Exception
-     */
-    public function findByHash($hash)
+    public function findByHash($hash): ?File
     {
-        return $this->findFiltered(array('hash' => $hash))->current();
+        return $this->findFiltered(['hash' => $hash])->current();
     }
 
     /**
-     * @param array|Filter $filter
-     * @param Tool $tool
-     * @return ArrayObject|File[]
-     * @throws Exception
+     * @return \Tk\Db\Mapper\Result | File[]
      */
-    public function findFiltered($filter, $tool = null)
+    public function findFiltered($filter, $tool = null): \Tk\Db\Mapper\Result
     {
         return $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
     }
 
-    /**
-     * @param Filter $filter
-     * @return Filter
-     */
-    public function makeQuery(Filter $filter)
+    public function makeQuery(Filter $filter): Filter
     {
         $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
 
@@ -170,7 +153,7 @@ SQL;
             $filter->appendWhere('a.hash = %s AND ', $this->quote($filter['hash']));
         }
 
-        if (!empty($filter['model']) && $filter['model'] instanceof Model) {
+        if (!empty($filter['model']) && $filter['model'] instanceof ModelInterface) {
             $filter['fid'] = $filter['model']->getId();
             $filter['fkey'] = get_class($filter['model']);
         }

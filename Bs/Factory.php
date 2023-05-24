@@ -82,22 +82,12 @@ class Factory extends \Tk\Factory
 
     public function getUserPage(): Page
     {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.user')), function() {
-            if (!$this->getAuthUser()) {
-                $this->getSession()->getFlashBag()->add('error', 'You do not have permissions to access this page.');
-                \Tk\Uri::create('/login')->redirect();
-            }
-        });
+        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.user')));
     }
 
     public function getAdminPage(): Page
     {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.admin')), function() {
-            if (!$this->getAuthUser() && $this->getAuthUser()->isAdmin()) {
-                $this->getSession()->getFlashBag()->add('error', 'You do not have permissions to access this page.');
-                \Tk\Uri::create('/login')->redirect();
-            }
-        });
+        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.admin')));
     }
 
     public function getLoginPage(): Page

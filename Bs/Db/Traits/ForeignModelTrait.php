@@ -1,60 +1,43 @@
 <?php
 namespace Bs\Db\Traits;
 
-use Tk\Db\Map\Model;
-use Tk\Db\ModelInterface;
+use Tk\Db\Mapper\ModelInterface;
 
-
-/**
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2019 Michael Mifsud
- */
 trait ForeignModelTrait
 {
     use ForeignKeyTrait;
 
-    /**
-     * @var ModelInterface
-     */
-    private $_model = null;
+    private ?ModelInterface $_model = null;
 
 
-    /**
-     * @return int
-     */
-    public function getFid()
+    public function getFid(): int
     {
         return $this->fid;
     }
 
-    /**
-     * @param int $fid
-     * @return ForeignKeyTrait
-     */
-    public function setFid($fid)
+    public function setFid(int $fid): static
     {
         $this->fid = $fid;
         return $this;
     }
 
-
     /**
      * Alias to setForeignModel();
-     *
-     * @param Model|ModelInterface $model
-     * @return ForeignKeyTrait
      */
-    public function setModel($model)
+    public function setModel(ModelInterface $model): static
     {
         return $this->setForeignModel($model);
     }
 
     /**
-     * @param Model|ModelInterface $model
-     * @return ForeignKeyTrait
+     * Alias to getForeignModel();
      */
-    public function setForeignModel($model)
+    public function getModel(): ?ModelInterface
+    {
+        return $this->getForeignModel();
+    }
+
+    public function setForeignModel(ModelInterface $model): static
     {
         $this->setFkey(get_class($model));
         $this->setFid($model->getVolatileId());
@@ -62,22 +45,7 @@ trait ForeignModelTrait
         return $this;
     }
 
-    /**
-     * Alias to getForeignModel();
-     *
-     * @return null|Model|ModelInterface|StatusTrait
-     * @throws \Exception
-     */
-    public function getModel()
-    {
-        return $this->getForeignModel();
-    }
-
-    /**
-     * @return Model|ModelInterface|null
-     * @throws \Exception
-     */
-    public function getForeignModel()
+    public function getForeignModel(): ?ModelInterface
     {
         if (!$this->_model && class_exists($this->getFkey().'Map')) {
             $this->_model = $this->getForeignModelMapper()->find($this->getFid());
@@ -85,19 +53,13 @@ trait ForeignModelTrait
         return $this->_model;
     }
 
-
-    /**
-     * @param array $errors
-     * @return array
-     */
-    public function validateModelId($errors = [])
+    public function validateModelId(array $errors = []): array
     {
         $errors = $this->validateFkey($errors);
-        if ($this->getFid() === '' || $this->getFid() === null) {
-            $errors['fid'] = 'Invalid value: fid';
-        }
+//        if ($this->getFid()) {
+//            $errors['fid'] = 'Invalid value: fid';
+//        }
         return $errors;
     }
-
 
 }

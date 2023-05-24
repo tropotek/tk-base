@@ -3,6 +3,11 @@ use Symfony\Component\Routing\Loader\Configurator\CollectionConfigurator;
 
 return function (CollectionConfigurator $routes) {
 
+    $routes->add('file-manager', '/fileManager')
+        ->controller([\Bs\Controller\File\Manager::class, 'doDefault']);
+//    $routes->add('file-manager', '/fileEdit')
+//        ->controller([\Bs\Controller\File\Edit::class, 'doDefault']);
+
 //    // Install page, this should be disabled if the DB is installed
 //    $routes->add('install', '/install')
 //        ->controller([\Bs\Controller\Install::class, 'doDefault']);

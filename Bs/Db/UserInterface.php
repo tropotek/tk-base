@@ -5,6 +5,7 @@ use Tk\Db\Mapper\ModelInterface;
 
 interface UserInterface extends ModelInterface
 {
+	const PERM_ADMIN            = 0x00000001; // All permissions
 
     /**
 	 * permissions are bit masks that can include on or more bits

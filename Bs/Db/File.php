@@ -1,160 +1,97 @@
 <?php
-
 namespace Bs\Db;
 
-use Bs\Config;
 use Bs\Db\Traits\ForeignModelTrait;
 use Bs\Db\Traits\TimestampTrait;
 use Bs\Db\Traits\UserTrait;
-use DateTime;
-use Exception;
-use Tk\Db\Map\Model;
-use Tk\Db\ModelInterface;
+use Tk\Db\Mapper\Model;
+use Tk\Db\Mapper\ModelInterface;
+use Tk\Config;
 use Tk\Log;
 use Tk\Uri;
-use Tk\ValidInterface;
+use DateTime;
 
-/**
- *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @see http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
- */
-class File extends Model implements ValidInterface
+class File extends Model
 {
 
     use ForeignModelTrait;
     use TimestampTrait;
     use UserTrait;
 
-    /**
-     * @var int
-     */
-    public $id = 0;
+    public int $id = 0;
 
-    /**
-     * @var int
-     */
-    public $userId = 0;
+    public int $userId = 0;
 
-    /**
-     * @var string
-     */
-    public $fkey = '';
+    public string $fkey = '';
 
-    /**
-     * @var int
-     */
-    public $fid = 0;
+    public int $fid = 0;
 
-    /**
-     * @var string
-     */
-    public $path = '';
+    public string $path = '';
 
-    /**
-     * @var int
-     */
-    public $bytes = 0;
+    public int $bytes = 0;
 
-    /**
-     * @var string
-     */
-    public $mime = '';
+    public string $mime = '';
 
-    /**
-     * @var string
-     */
-    public $label = '';
+    public string $label = '';
 
-    /**
-     * @var string
-     */
-    public $notes = '';
+    public string $notes = '';
 
-    /**
-     * @var bool
-     */
-    public $selected = false;
+    public bool $selected = false;
 
-    /**
-     * @var string
-     */
-    public $hash = '';
+    public string $hash = '';
 
-    /**
-     * @var DateTime
-     */
-    public $modified = null;
+    public ?DateTime $modified = null;
 
-    /**
-     * @var DateTime
-     */
-    public $created = null;
+    public ?DateTime $created = null;
 
 
-    /**
-     * File constructor.
-     * @throws Exception
-     */
     public function __construct()
     {
         $this->_TimestampTrait();
     }
 
     /**
-     * @param ModelInterface $model
-     * @param string $file Relative/Full path to a valid file
+     * @param string $file     Relative/Full path to a valid file
      * @param string $dataPath (optional) if none then \App\Config::getInstance()->getDataPath() is used
-     * @param null|int $userId
-     * @return static
      */
-    public static function create($model, $file = '', $dataPath = '', $userId = null)
+    public static function create(ModelInterface $model, string $file = '', string $dataPath = '', int $userId = 0): static
     {
         $obj = new static();
-        $obj->setLabel(\Tk\File::removeExtension(basename($file)));
+        $obj->setLabel(\Tk\FileUtil::removeExtension(basename($file)));
         $obj->setForeignModel($model);
-        if ($userId === null) {
+        if (!$userId) {
             if (method_exists($model, 'getUserId')) {
                 $userId = $model->getUserId();
             } elseif (property_exists($model, 'userId')) {
                 $userId = $model->userId;
-            } else if ($obj->getConfig()->getAuthUser()) {
-                $userId = $obj->getConfig()->getAuthUser()->getId();
+            } else if ($obj->getFactory()->getAuthUser()) {
+                $userId = $obj->getFactory()->getAuthUser()->getId();
             }
-            $userId = 0;
         }
         $obj->setUserId($userId);
 
-        if (!$dataPath) $dataPath = Config::getInstance()->getDataPath();
+        if (!$dataPath) $dataPath = Config::instance()->getDataPath();
         if ($file) {
             $file = str_replace($dataPath, '', $file);
             $fullPath = $dataPath . $file;
             if (is_file($fullPath)) {
                 $obj->setPath($file);
                 $obj->setBytes(filesize($fullPath));
-                $obj->setMime(\Tk\File::getMimeType($fullPath));
+                $obj->setMime(\Tk\FileUtil::getMimeType($fullPath));
             }
         }
         return $obj;
     }
 
-    /**
-     * Save
-     */
-    public function save()
+    public function save(): void
     {
         $this->getHash();
         parent::save();
     }
 
-    /**
-     * @param null|string $dataPath
-     * @return int
-     */
-    public function delete($dataPath = null)
+    public function delete(string $dataPath = ''): int
     {
-        if (!$dataPath) $dataPath = Config::getInstance()->getDataPath();
+        if (!$dataPath) $dataPath = $this->getConfig()->getDataPath();
         if ($dataPath && is_file($dataPath . $this->getPath())) {
             unlink($dataPath . $this->getPath());
             Log::alert('File deleted: ' . $dataPath . $this->getPath());
@@ -164,12 +101,7 @@ class File extends Model implements ValidInterface
         return parent::delete();
     }
 
-    /**
-     * Get the user hash or generate one if needed
-     *
-     * @return string
-     */
-    public function getHash()
+    public function getHash(): string
     {
         if (!$this->hash) {
             $this->hash = $this->generateHash();
@@ -177,30 +109,19 @@ class File extends Model implements ValidInterface
         return $this->hash;
     }
 
-    /**
-     * @return Uri
-     */
-    public function getUrl()
+    public function getUrl(): Uri
     {
-        return Uri::create(Config::getInstance()->getDataUrl() . $this->getPath());
+        return Uri::create($this->getConfig()->getDataUrl() . $this->getPath());
     }
 
-
-    /**
-     * Helper method to generate user hash
-     *
-     * @return string
-     */
-    public function generateHash()
+    public function generateHash(): string
     {
-        // UNIQUE KEY (`fkey`, `fid`, `path`)
-        return Config::getInstance()->hash(sprintf('%s%s%s', $this->getFkey(), $this->getFid(), $this->getPath()));
+        return hash('md5', sprintf('%s%s%s', $this->getFkey(), $this->getFid(), $this->getPath()));
     }
 
-
-    public function getIcon()
+    public function getIcon(): string
     {
-        $ext = \Tk\File::getExtension($this->path);
+        $ext = \Tk\FileUtil::getExtension($this->path);
         switch ($ext) {
             case 'zip':
             case 'gz':
@@ -211,7 +132,7 @@ class File extends Model implements ValidInterface
             case 'jar':
             case 'pkg':
             case 'deb':
-                return 'fa-file-archive-o';
+                return 'fa fa-file-archive-o';
             case 'h':
             case 'c':
             case 'php':
@@ -222,7 +143,7 @@ class File extends Model implements ValidInterface
             case 'xml':
             case 'xslt':
             case 'json':
-                return 'fa-file-code-o';
+                return 'fa fa-file-code-o';
             case 'ods':
             case 'sdc':
             case 'sxc':
@@ -230,7 +151,7 @@ class File extends Model implements ValidInterface
             case 'xlsm':
             case 'xlsx':
             case 'csv':
-                return 'fa-file-excel-o';
+                return 'fa fa-file-excel-o';
             case 'bmp':
             case 'emf':
             case 'gif':
@@ -251,7 +172,7 @@ class File extends Model implements ValidInterface
             case 'svg':
             case 'svgz':
             case 'ai':
-                return 'fa-file-image-o';
+                return 'fa fa-file-image-o';
             case 'aiff':
             case 'cda':
             case 'dvf':
@@ -264,7 +185,7 @@ class File extends Model implements ValidInterface
             case 'pcm':
             case 'snd':
             case 'wav':
-                return 'fa-file-audio-o';
+                return 'fa fa-file-audio-o';
             case 'avi':
             case 'mov':
             case 'mp4':
@@ -276,9 +197,9 @@ class File extends Model implements ValidInterface
             case 'webm':
             case 'wmv':
             case 'asx':
-                return 'fa-file-video-o';
+                return 'fa fa-file-video-o';
             case 'pdf':
-                return 'fa-file-pdf-o';
+                return 'fa fa-file-pdf-o';
             case 'ppt':
             case 'pot':
             case 'potx':
@@ -286,7 +207,7 @@ class File extends Model implements ValidInterface
             case 'ppsx':
             case 'pptx':
             case 'pptm':
-                return 'fa-file-powerpoint-o';
+                return 'fa fa-file-powerpoint-o';
             case 'doc':
             case 'docm':
             case 'dotm':
@@ -295,146 +216,85 @@ class File extends Model implements ValidInterface
             case 'dot':
             case 'wri':
             case 'wps':
-                return 'fa-file-word-o';
+                return 'fa fa-file-word-o';
         }
-        return 'fa-file-o';
+        return 'fa fa-file-o';
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @param string $path
-     */
-    public function setPath(string $path): void
+    public function setPath(string $path): static
     {
         $this->path = $path;
+        return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getBytes(): int
     {
         return $this->bytes;
     }
 
-    /**
-     * @param int $bytes
-     */
-    public function setBytes(int $bytes): void
+    public function setBytes(int $bytes): static
     {
         $this->bytes = $bytes;
+        return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMime(): string
     {
         return $this->mime;
     }
 
-    /**
-     * @param string $mime
-     */
-    public function setMime(string $mime): void
+    public function setMime(string $mime): static
     {
         $this->mime = $mime;
+        return $this;
     }
 
-    public function isImage()
+    public function isImage(): bool
     {
         return preg_match('/^image\//', $this->getMime());
     }
 
-    /**
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * @param string $label
-     * @return File
-     */
-    public function setLabel(string $label): File
+    public function setLabel(string $label): static
     {
         $this->label = $label;
         return $this;
     }
 
-    /**
-     * Delete from your code
-     *
-     * @return bool
-     * @deprecated
-     */
-    public function isActive()
-    {
-        return false;
-    }
-
-    /**
-     * Delete from all code
-     *
-     * @param bool $active
-     * @return File
-     * @deprecated
-     */
-    public function setActive($active)
-    {
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getNotes(): string
     {
         return $this->notes;
     }
 
-    /**
-     * @param string $notes
-     */
-    public function setNotes(string $notes): void
+    public function setNotes(string $notes): static
     {
         $this->notes = $notes;
+        return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isSelected(): bool
     {
         return $this->selected;
     }
 
-    /**
-     * @param bool $selected
-     * @return File
-     */
-    public function setSelected(bool $selected): File
+    public function setSelected(bool $selected): static
     {
         $this->selected = $selected;
         return $this;
     }
 
-    /**
-     * @return array
-     * @throws Exception
-     */
-    public function validate()
+    public function validate(): array
     {
-        $errors = array();
+        $errors = [];
 
         if (!$this->getPath()) {
             $errors['path'] = 'Please enter a valid path';

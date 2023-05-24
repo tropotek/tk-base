@@ -37,10 +37,12 @@ class Dispatch extends \Tk\Mvc\Dispatch
         // Show total page bytes
         /** @var PageBytes $pageBytes */
         $pageBytes = $this->getFactory()->getTemplateModifier()->getFilter('pageBytes');
-        $this->getDispatcher()->addSubscriber(new PageBytesHandler(
-            $this->getFactory()->getLogger(),
-            $pageBytes
-        ));
+        if ($pageBytes) {
+            $this->getDispatcher()->addSubscriber(new PageBytesHandler(
+                $this->getFactory()->getLogger(),
+                $pageBytes
+            ));
+        }
 
     }
 

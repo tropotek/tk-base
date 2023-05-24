@@ -2,89 +2,165 @@
 namespace Bs\Table;
 
 use Bs\Db\FileMap;
-use Bs\Db\Permission;
-use Tk\Db\Map\ArrayObject;
-use Tk\Db\Tool;
-use Tk\Table\Action\ColumnSelect;
-use Tk\Table\Action\Csv;
+use Dom\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Tk\Alert;
+use Tk\Form;
+use Tk\Form\Field;
+use Tk\FormRenderer;
+use Tk\Table;
 use Tk\Table\Cell;
-use Tk\Table\Cell\Text;
+use Tk\Table\Action;
+use Tk\TableRenderer;
+use Tk\Traits\SystemTrait;
+use Tk\Ui\Link;
+use Tk\Uri;
 
-/**
- * Example:
- * <code>
- *   $table = new File::create();
- *   $table->init();
- *   $list = ObjectMap::getObjectListing();
- *   $table->setList($list);
- *   $tableTemplate = $table->show();
- *   $template->appendTemplate($tableTemplate);
- * </code>
- *
- * @author Mick Mifsud
- * @created 2019-05-23
- * @link http://tropotek.com.au/
- * @license Copyright 2019 Tropotek
- */
-class File extends \Bs\TableInterface
+class File
 {
+    use SystemTrait;
 
-    /**
-     * @return $this
-     * @throws \Exception
-     */
-    public function init()
+    protected Table $table;
+
+    protected ?Form $filter = null;
+
+    protected string $fkey = '';
+
+
+    public function __construct(string $fkey = '')
     {
-        $this->addCss('tk-file-table');
+        $this->table  = new Table('file');
+        $this->filter = new Form($this->table->getId() . '-filters');
+        $this->fkey = $fkey;
+    }
 
-        $this->appendCell(new Cell\Checkbox('id'));
-        $this->appendCell(new Text('path'))->setLabel('Status')
-            ->setLinkAttrs('target="_blank1"')
-            ->addOnPropertyValue(function(Text $cell, \Bs\Db\File $obj, $value) {
-                $value = '';
-                if ($obj->getPath()) {
-                    $value = basename($obj->getPath());
-                    $cell->setUrl($obj->getUrl());
-                }
-                return $value;
+    private function doDelete($id)
+    {
+        $file = FileMap::create()->find($id);
+        $file?->delete();
+
+        Alert::addSuccess('File removed successfully.');
+        Uri::create()->reset()->redirect();
+    }
+
+    public function doDefault(Request $request)
+    {
+        if ($request->query->has('del')) {
+            $this->doDelete($request->query->get('del'));
+        }
+
+        $this->getTable()->appendCell(new Cell\Checkbox('id'));
+        $this->getTable()->appendCell(new Cell\Text('actions'))
+            ->addOnShow(function (Cell\Text $cell) {
+                $cell->addCss('text-nowrap text-center');
+                /** @var \Bs\Db\File $obj */
+                $obj = $cell->getRow()->getData();
+
+                $template = $cell->getTemplate();
+                $btn = new Link('Edit');
+                $btn->setText('');
+                $btn->setIcon('fa fa-edit');
+                $btn->addCss('btn btn-primary');
+                $btn->setUrl('/fileEdit/'.$obj->getId());
+                $template->appendTemplate('td', $btn->show());
+                $template->appendHtml('td', '&nbsp;');
+
+                $btn = new Link('Delete');
+                $btn->setText('');
+                $btn->setIcon('fa fa-trash');
+                $btn->addCss('btn btn-danger');
+                $btn->setUrl(Uri::create()->set('del', $obj->getId()));
+                $btn->setAttr('data-confirm', 'Are you sure you want to delete \''.$obj->getPath().'\'');
+                $template->appendTemplate('td', $btn->show());
+
             });
-        $this->appendCell(new Text('userId'))->addOnPropertyValue(function(Text $cell, \Bs\Db\File $obj, $value) {
-            $value = '';
-            if ($obj->getUser())
-                $value = $obj->getUser()->getName();
-            return $value;
-        });
-        $this->appendCell(new Text('fkey'))->setLabel('Type');
-        $this->appendCell(new Text('mime'));
-        $this->appendCell(new Text('bytes'))->setLabel('Size');
-        $this->appendCell(new Text('notes'));
-        $this->appendCell(new Cell\Date('modified'));
-        $this->appendCell(new Cell\Date('created'));
 
-        // Filters
-        //$this->appendFilter(new Field\Input('keywords'))->setAttr('placeholder', 'Search');
+        $this->getTable()->appendCell(new Cell\Text('path'))->setLabel('Status')->setAttr('style', 'width: 100%;')
+            ->addOnShow(function (Cell\Text $cell) {
+                $obj = $cell->getRow()->getData();
+                $cell->setUrl('/fileEdit/'.$obj->getId());
+            });
 
-        // Actions
-        $this->appendAction(\Tk\Table\Action\Delete::create());
-        $this->appendAction(ColumnSelect::create()->setUnselected(['modified', 'notes', 'mime']));
-        $this->appendAction(Csv::create());
+        $this->getTable()->appendCell(new Cell\Text('userId'))
+            ->addOnShow(function (Cell\Text $cell) {
+                $obj = $cell->getRow()->getData();
+                $value = '';
+                if ($obj->getUser()) {
+                    $value = $obj->getUser()->getName();
+                }
+                $cell->setValue($value);
+            });
+        $this->getTable()->appendCell(new Cell\Text('fkey'))->setLabel('Key');
+        $this->getTable()->appendCell(new Cell\Text('fid'))->setLabel('Key ID');
+        $this->getTable()->appendCell(new Cell\Text('mime'));
+        $this->getTable()->appendCell(new Cell\Text('bytes'));
+        $this->getTable()->appendCell(new Cell\Boolean('active'));
+        $this->getTable()->appendCell(new Cell\Text('modified'));
+        $this->getTable()->appendCell(new Cell\Text('created'));
 
-        return $this;
-    }
 
-    /**
-     * @param array $filter
-     * @param null|Tool $tool
-     * @return ArrayObject|StatusAlias[]
-     * @throws \Exception
-     */
-    public function findList($filter = array(), $tool = null)
-    {
-        if (!$tool) $tool = $this->getTool('created DESC');
-        $filter = array_merge($this->getFilterValues(), $filter);
+        // Table filters
+        //$this->getFilter()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
+
+        // Load filter values
+//        $this->getFilter()->setFieldValues($this->getTable()->getTableSession()->get($this->getFilter()->getId(), []));
+//
+//        $this->getFilter()->appendField(new Form\Action\Submit('Search', function (Form $form, Form\Action\ActionInterface $action) {
+//            $this->getTable()->getTableSession()->set($this->getFilter()->getId(), $form->getFieldValues());
+//            Uri::create()->redirect();
+//        }))->setGroup('');
+//        $this->getFilter()->appendField(new Form\Action\Submit('Clear', function (Form $form, Form\Action\ActionInterface $action) {
+//            $this->getTable()->getTableSession()->set($this->getFilter()->getId(), []);
+//            Uri::create()->redirect();
+//        }))->setGroup('')->addCss('btn-secondary');
+//
+//        $this->getFilter()->execute($request->request->all());
+
+        // Table Actions
+        if ($this->getConfig()->isDebug()) {
+            $this->getTable()->appendAction(new Action\Link('reset', Uri::create()->set(Table::RESET_TABLE, $this->getTable()->getId()), 'fa fa-retweet'))
+                ->setLabel('')
+                ->setAttr('data-confirm', 'Are you sure you want to reset the Table`s session?')
+                ->setAttr('title', 'Reset table filters and order to default.');
+        }
+        //$this->table->appendAction(new Action\Button('Create'))->setUrl(Uri::create('/userEdit')->set('type', $this->type));
+        $this->getTable()->appendAction(new Action\Delete());
+        $this->getTable()->appendAction(new Action\Csv())->addExcluded('actions');
+
+        // Query
+        $tool = $this->getTable()->getTool();
+        $filter = $this->getFilter()->getFieldValues();
         $list = FileMap::create()->findFiltered($filter, $tool);
-        return $list;
+        $this->getTable()->setList($list, $tool->getFoundRows());
+
+        $this->getTable()->execute($request);
     }
 
+    public function show(): ?Template
+    {
+        $renderer = new TableRenderer($this->getTable());
+        //$renderer->setFooterEnabled(false);
+        $this->getTable()->getRow()->addCss('text-nowrap');
+        $this->getTable()->addCss('table-hover');
+
+        if ($this->getFilter()) {
+            $this->getFilter()->addCss('row gy-2 gx-3 align-items-center');
+            $filterRenderer = FormRenderer::createInlineRenderer($this->getFilter());
+            $renderer->getTemplate()->appendTemplate('filters', $filterRenderer->show());
+            $renderer->getTemplate()->setVisible('filters');
+        }
+
+        return $renderer->show();
+    }
+
+    public function getTable(): Table
+    {
+        return $this->table;
+    }
+
+    public function getFilter(): ?Form
+    {
+        return $this->filter;
+    }
 
 }
