@@ -130,6 +130,9 @@ class File
         // Query
         $tool = $this->getTable()->getTool();
         $filter = $this->getFilter()->getFieldValues();
+        if ($this->fkey) {
+            $filter['fkey'] = $this->fkey;
+        }
         $list = FileMap::create()->findFiltered($filter, $tool);
         $this->getTable()->setList($list, $tool->getFoundRows());
 

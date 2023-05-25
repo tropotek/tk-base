@@ -23,21 +23,21 @@ class File extends \Tk\Form\Field\File
         parent::__construct($name);
         $this->model = $model;
 
-        $this->setAttr('multiple', 'multiple');
+        //$this->setAttr('multiple', 'multiple');
         $this->setAttr('data-uploader', self::class);
-        $this->addCss('tk-multiinput');
+        //$this->addCss('tk-multiinput');
 
-        if ($this?->model->getId()) {
-            $files = $this->model->getFileList()->toArray();
-            usort($files, function ($a, $b) {
-                return $a->getLabel() <=> $b->getLabel();
-            });
-            $v = json_encode($files);
-            $this->setAttr('data-value', $v);
-            $this->setAttr('data-enable-select', 'true');
-            $this->setAttr('data-prop-path', 'path');
-            $this->setAttr('data-prop-id', 'id');
-        }
+//        if ($this?->model->getId()) {
+//            $files = $this->model->getFileList()->toArray();
+//            usort($files, function ($a, $b) {
+//                return $a->getLabel() <=> $b->getLabel();
+//            });
+//            $v = json_encode($files);
+//            $this->setAttr('data-value', $v);
+//            $this->setAttr('data-enable-select', 'true');
+//            $this->setAttr('data-prop-path', 'path');
+//            $this->setAttr('data-prop-id', 'id');
+//        }
     }
 
     public static function createFile($name, ?\Bs\Db\FileInterface $owner = null): static
