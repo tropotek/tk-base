@@ -13,22 +13,22 @@ class File extends \Tk\Form\Field\File
     /**
      * The file owner object that will be used as the fkey and fid for the file records
      */
-    protected ?\Bs\Db\FileInterface $owner = null;
+    protected ?\Bs\Db\FileInterface $model = null;
 
     protected bool $enableSelect = false;
 
 
-    public function __construct(string $name, ?\Bs\Db\FileInterface $owner = null)
+    public function __construct(string $name, ?\Bs\Db\FileInterface $model = null)
     {
         parent::__construct($name);
-        $this->owner = $owner;
+        $this->model = $model;
 
         $this->setAttr('multiple', 'multiple');
         $this->setAttr('data-uploader', self::class);
         $this->addCss('tk-multiinput');
 
-        if ($this->owner->getId()) {
-            $files = $this->owner->getFileList()->toArray();
+        if ($this?->model->getId()) {
+            $files = $this->model->getFileList()->toArray();
             usort($files, function ($a, $b) {
                 return $a->getLabel() <=> $b->getLabel();
             });
@@ -140,8 +140,8 @@ class File extends \Tk\Form\Field\File
 //        exit();
     }
 
-    public function getOwner(): ?\Bs\Db\FileInterface
+    public function getModel(): ?\Bs\Db\FileInterface
     {
-        return $this->owner;
+        return $this->model;
     }
 }

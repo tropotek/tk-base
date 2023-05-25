@@ -67,12 +67,12 @@ let tkbase = function () {
   "use strict";
 
   /**
-   * Enable the sugar utils
+   * Enable the sugar utils, date formatting, object exetion functions, etc
    * @link https://sugarjs.com/
    */
   let initSugar = function () {
     if (typeof Sugar === 'undefined') {
-      console.warn('Plugin not loaded: Sugar');
+      //console.warn('Plugin not loaded: Sugar');
       return;
     }
     Sugar.extend();
