@@ -1,11 +1,7 @@
 /*
  * Plugin: Example
- * Version: 1.0
- *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @see http://www.tropotek.com/
- * @license Copyright 2007 Michael Mifsud
- * @source http://stefangabos.ro/jquery/jquery-plugin-boilerplate-revisited/
+ * Version: 1.0s
+ * @author <http://www.tropotek.com/>
  */
 
 /**
@@ -63,7 +59,7 @@
  *
  *     // get the value of a property
  *     $('#element').data('tail').settings.foo;
- *   
+ *
  *   });
  * </code>
  *
@@ -82,11 +78,11 @@
       interval : 1000,      // Refresh interval in milliseconds 1000 = 1sec
       onRefresh : function(data) { },
       tplOutput: '<pre class="tail-out"></pre>',
-      tplControls: '<div class="btn-group" role="group">' +
-      '<button type="button" class="btn btn-xs btn-default t-pause" title="Pause"><i class="fa fa-pause"></i></button>' +
-      '<button type="button" class="btn btn-xs btn-default t-scroll" title="Scroll Lock"><i class="fa fa-lock"></i></button>' +
-      '<button type="button" class="btn btn-xs btn-default t-clear" title="Clear"><i class="fa fa-eraser"></i></button>' +
-      '<button type="button" class="btn btn-xs btn-default t-fullscreen" title="Fullscreen"><i class="fa fa-arrows-alt"></i></button>' +
+      tplControls: '<div class="btn-group btn-group-sm" role="group">' +
+      '<button type="button" class="btn btn-outline-secondary t-pause" title="Pause"><i class="fa fa-pause fa-fw"></i></button>' +
+      '<button type="button" class="btn btn-outline-secondary t-scroll" title="Scroll Lock"><i class="fa fa-lock fa-fw"></i></button>' +
+      '<button type="button" class="btn btn-outline-secondary t-clear" title="Clear"><i class="fa fa-eraser fa-fw"></i></button>' +
+      '<button type="button" class="btn btn-outline-secondary t-fullscreen" title="Fullscreen"><i class="fa fa-arrows-alt fa-fw"></i></button>' +
       '</div>'
     };
     var plugin = this;
@@ -132,9 +128,7 @@
         top: '10px',
         right: '30px'
       });
-      controls.find('.btn').css({
-        width: '30px'
-      });
+      controls.find('.btn');
 
       $(element).append(output);
       $(element).append(controls);
