@@ -2,7 +2,6 @@
 namespace Bs\Db\Traits;
 
 use Dom\Template;
-use Tk\Db\ModelInterface;
 use Tk\Db\Tool;
 use Bs\Db\Status;
 use Tk\ObjectUtil;
@@ -11,9 +10,6 @@ use Tk\ObjectUtil;
  * Any object implementing the Status event system should also use this trait
  * It should also implementStatusChangeInterface if you are not using an external object
  *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2019 Michael Mifsud
  */
 trait StatusTrait
 {

@@ -57,11 +57,12 @@ class File
                 $obj = $cell->getRow()->getData();
 
                 $template = $cell->getTemplate();
-                $btn = new Link('Edit');
+                $btn = new Link('View');
+                $btn->setAttr('target', '_blank');
                 $btn->setText('');
-                $btn->setIcon('fa fa-edit');
-                $btn->addCss('btn btn-primary');
-                $btn->setUrl('/fileEdit/'.$obj->getId());
+                $btn->setIcon('fa fa-eye');
+                $btn->addCss('btn btn-success');
+                $btn->setUrl($obj->getUrl());
                 $template->appendTemplate('td', $btn->show());
                 $template->appendHtml('td', '&nbsp;');
 
@@ -75,27 +76,20 @@ class File
 
             });
 
-        $this->getTable()->appendCell(new Cell\Text('path'))->setLabel('Status')->setAttr('style', 'width: 100%;')
+        $this->getTable()->appendCell(new Cell\Text('path'))->setAttr('style', 'width: 100%;')
+            ->setUrl(Uri::create('/fileEdit'))
             ->addOnShow(function (Cell\Text $cell) {
                 $obj = $cell->getRow()->getData();
-                $cell->setUrl('/fileEdit/'.$obj->getId());
+                $cell->setUrlProperty('');
+                $cell->setUrl($obj->getUrl());
+                $cell->getLink()->setAttr('target','_blank');
             });
 
-        $this->getTable()->appendCell(new Cell\Text('userId'))
-            ->addOnShow(function (Cell\Text $cell) {
-                $obj = $cell->getRow()->getData();
-                $value = '';
-                if ($obj->getUser()) {
-                    $value = $obj->getUser()->getName();
-                }
-                $cell->setValue($value);
-            });
+        $this->getTable()->appendCell(new Cell\Text('userId'));
         $this->getTable()->appendCell(new Cell\Text('fkey'))->setLabel('Key');
         $this->getTable()->appendCell(new Cell\Text('fid'))->setLabel('Key ID');
-        $this->getTable()->appendCell(new Cell\Text('mime'));
         $this->getTable()->appendCell(new Cell\Text('bytes'));
-        $this->getTable()->appendCell(new Cell\Boolean('active'));
-        $this->getTable()->appendCell(new Cell\Text('modified'));
+        $this->getTable()->appendCell(new Cell\Boolean('selected'));
         $this->getTable()->appendCell(new Cell\Text('created'));
 
 
@@ -142,7 +136,7 @@ class File
     public function show(): ?Template
     {
         $renderer = new TableRenderer($this->getTable());
-        //$renderer->setFooterEnabled(false);
+        $renderer->setFooterEnabled(false);
         $this->getTable()->getRow()->addCss('text-nowrap');
         $this->getTable()->addCss('table-hover');
 

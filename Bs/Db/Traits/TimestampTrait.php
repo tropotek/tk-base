@@ -1,15 +1,8 @@
 <?php
 namespace Bs\Db\Traits;
 
-
-
 use DateTime;
 
-/**
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2019 Michael Mifsud
- */
 trait TimestampTrait
 {
     use CreatedTrait;
@@ -27,21 +20,16 @@ trait TimestampTrait
     }
 
     /**
-     * @param null|string $format   If supplied then a string of the formatted date is returned
-     * @return DateTime|string
+     * @param string $format   If supplied then a string of the formatted date is returned
      */
-    public function getModified($format = null)
+    public function getModified(string $format = ''): string|DateTime
     {
         if ($format && $this->modified)
             return $this->modified->format($format);
         return $this->modified;
     }
 
-    /**
-     * @param DateTime $modified
-     * @return $this
-     */
-    public function setModified(DateTime $modified)
+    public function setModified(DateTime $modified): static
     {
         $this->modified = $modified;
         return $this;

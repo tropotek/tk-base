@@ -20,7 +20,6 @@ class Manager extends PageController
     protected string $fkey = '';
 
 
-
     public function __construct()
     {
         parent::__construct($this->getFactory()->getPublicPage());
@@ -35,8 +34,9 @@ class Manager extends PageController
         $this->table->doDefault($request);
 
         $this->setForm(Form::create('upload'));
-        $this->getForm()->appendField(new \Bs\Form\Field\File('file'))->setLabel('Create File');
+        $this->getForm()->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');
         $this->getForm()->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
+
         $this->getForm()->execute($request->request->all());
         $this->setFormRenderer(new FormRenderer($this->getForm()));
 
@@ -45,10 +45,8 @@ class Manager extends PageController
 
     public function onSubmit(Form $form, Form\Action\ActionInterface $action)
     {
-        //$this->getUser()->getMapper()->getFormMap()->loadObject($this->user, $form->getFieldValues());
-        //$this->getUser()->setPermissions(array_sum($form->getFieldValue('perm') ?? []));
+        // TODO: Validate files uploads
 
-        //$form->addFieldErrors($this->user->validate());
         if ($form->hasErrors()) {
             Alert::addError('Form contains errors.');
             return;

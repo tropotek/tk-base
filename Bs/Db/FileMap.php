@@ -31,8 +31,7 @@ CREATE TABLE IF NOT EXISTS file
     notes TEXT NULL,
     selected BOOL NOT NULL DEFAULT FALSE,
     hash VARCHAR(128) DEFAULT '' NOT NULL,
-    modified datetime NOT NULL,
-    created datetime NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY user_id (user_id),
     KEY fkey (fkey),
     KEY fkey_2 (fkey, fid),
@@ -58,7 +57,6 @@ SQL;
             $map->addDataType(new Db\Text('notes'));
             $map->addDataType(new Db\Text('hash'));
             $map->addDataType(new Db\Boolean('selected'));
-            $map->addDataType(new Db\Date('modified'));
             $map->addDataType(new Db\Date('created'));
             $this->addDataMap(self::DATA_MAP_DB, $map);
         }
@@ -90,7 +88,6 @@ SQL;
             $map->addDataType(new Form\Text('label'));
             $map->addDataType(new Form\Text('notes'));
             $map->addDataType(new Table\Boolean('selected'));
-            $map->addDataType(new Form\Date('modified'))->setDateFormat('d/m/Y h:i:s');
             $map->addDataType(new Form\Date('created'))->setDateFormat('d/m/Y h:i:s');
             $this->addDataMap(self::DATA_MAP_TABLE, $map);
         }

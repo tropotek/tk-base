@@ -1,22 +1,21 @@
 <?php
 namespace Bs\Db;
 
+use Bs\Db\Traits\CreatedTrait;
 use Bs\Db\Traits\ForeignModelTrait;
-use Bs\Db\Traits\TimestampTrait;
-use Bs\Db\Traits\UserTrait;
+use Bs\Db\Traits\HashTrait;
 use Tk\Db\Mapper\Model;
 use Tk\Db\Mapper\ModelInterface;
-use Tk\Config;
+use Tk\Exception;
 use Tk\Log;
 use Tk\Uri;
 use DateTime;
 
 class File extends Model
 {
-
     use ForeignModelTrait;
-    use TimestampTrait;
-    use UserTrait;
+    use CreatedTrait;
+    use HashTrait;
 
     public int $id = 0;
 
@@ -40,29 +39,39 @@ class File extends Model
 
     public string $hash = '';
 
-    public ?DateTime $modified = null;
-
     public ?DateTime $created = null;
+
+    private string $dataPath = '';
 
 
     public function __construct()
     {
-        $this->_TimestampTrait();
+        $this->_CreatedTrait();
+        $this->dataPath = $this->getConfig()->getDataPath();
     }
 
     /**
-     * @param string $file     Relative/Full path to a valid file
-     * @param string $dataPath (optional) if none then \App\Config::getInstance()->getDataPath() is used
+     * Create a File object form an existing file path
+     * Only the relative path from the system data path is stored (not the full path)
+     *
+     * @param string $file Full/Relative data path to a valid file
      */
-    public static function create(ModelInterface $model, string $file = '', string $dataPath = '', int $userId = 0): static
+    public static function create(string $file, ?ModelInterface $model = null, int $userId = 0): static
     {
+        if (empty($file)) {
+            throw new Exception('Invalid file path.');
+        }
+
         $obj = new static();
+        $obj->setPath($file);
         $obj->setLabel(\Tk\FileUtil::removeExtension(basename($file)));
-        $obj->setForeignModel($model);
+        if ($model) {
+            $obj->setForeignModel($model);
+        }
         if (!$userId) {
-            if (method_exists($model, 'getUserId')) {
+            if ($model && method_exists($model, 'getUserId')) {
                 $userId = $model->getUserId();
-            } elseif (property_exists($model, 'userId')) {
+            } elseif ($model && property_exists($model, 'userId')) {
                 $userId = $model->userId;
             } else if ($obj->getFactory()->getAuthUser()) {
                 $userId = $obj->getFactory()->getAuthUser()->getId();
@@ -70,16 +79,11 @@ class File extends Model
         }
         $obj->setUserId($userId);
 
-        if (!$dataPath) $dataPath = Config::instance()->getDataPath();
-        if ($file) {
-            $file = str_replace($dataPath, '', $file);
-            $fullPath = $dataPath . $file;
-            if (is_file($fullPath)) {
-                $obj->setPath($file);
-                $obj->setBytes(filesize($fullPath));
-                $obj->setMime(\Tk\FileUtil::getMimeType($fullPath));
-            }
+        if (is_file($obj->getFullPath())) {
+            $obj->setBytes(filesize($obj->getFullPath()));
+            $obj->setMime(\Tk\FileUtil::getMimeType($obj->getFullPath()));
         }
+
         return $obj;
     }
 
@@ -89,29 +93,13 @@ class File extends Model
         parent::save();
     }
 
-    public function delete(string $dataPath = ''): int
+    public function delete(): int
     {
-        if (!$dataPath) $dataPath = $this->getConfig()->getDataPath();
-        if ($dataPath && is_file($dataPath . $this->getPath())) {
-            unlink($dataPath . $this->getPath());
-            Log::alert('File deleted: ' . $dataPath . $this->getPath());
-        } else {
-            Log::warning('File not deleted: ' . $dataPath . $this->getPath());
+        if (is_file($this->getFullPath())) {
+            unlink($this->getFullPath());
+            Log::alert('File deleted: ' . $this->getPath());
         }
         return parent::delete();
-    }
-
-    public function getHash(): string
-    {
-        if (!$this->hash) {
-            $this->hash = $this->generateHash();
-        }
-        return $this->hash;
-    }
-
-    public function getUrl(): Uri
-    {
-        return Uri::create($this->getConfig()->getDataUrl() . $this->getPath());
     }
 
     public function generateHash(): string
@@ -119,13 +107,140 @@ class File extends Model
         return hash('md5', sprintf('%s%s%s', $this->getFkey(), $this->getFid(), $this->getPath()));
     }
 
-    public function getIcon(): string
+
+    public function getUserId(): int
     {
-        $ext = \Tk\FileUtil::getExtension($this->path);
+        return $this->userId;
+    }
+
+    public function setUserId(int $userId): File
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function getFullPath(): string
+    {
+        return $this->getDataPath() . $this->getPath();
+    }
+
+    public function getUrl(): Uri
+    {
+        return Uri::create($this->getConfig()->getDataUrl() . $this->getPath());
+    }
+
+    protected function setPath(string $path): static
+    {
+        // Clean the full path if supplied
+        if (str_starts_with($path, $this->getDataPath())) {
+            $this->path = str_replace($this->getDataPath(), '', $path);
+        }
+        if (str_starts_with($path, $this->getConfig()->get('path.data'))) {
+            $this->path = str_replace($this->getDataPath(), '', $path);
+        }
+        return $this;
+    }
+
+    public function getBytes(): int
+    {
+        return $this->bytes;
+    }
+
+    protected function setBytes(int $bytes): static
+    {
+        $this->bytes = $bytes;
+        return $this;
+    }
+
+    public function getMime(): string
+    {
+        return $this->mime;
+    }
+
+    protected function setMime(string $mime): static
+    {
+        $this->mime = $mime;
+        return $this;
+    }
+
+    public function isImage(): bool
+    {
+        return preg_match('/^image\//', $this->getMime());
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    protected function setLabel(string $label): static
+    {
+        $this->label = $label;
+        return $this;
+    }
+
+    public function getNotes(): string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(string $notes): static
+    {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    public function isSelected(): bool
+    {
+        return $this->selected;
+    }
+
+    protected function setSelected(bool $selected): static
+    {
+        $this->selected = $selected;
+        return $this;
+    }
+
+    public function getDataPath(): string
+    {
+        return $this->dataPath;
+    }
+
+    public function validate(): array
+    {
+        $errors = [];
+
+        if (!$this->getPath()) {
+            $errors['path'] = 'Please enter a valid path';
+        }
+        if (!$this->getBytes()) {
+            $errors['bytes'] = 'Please enter a file size';
+        }
+        if (!$this->getMime()) {
+            $errors['mime'] = 'Please enter a file type';
+        }
+
+        $hashed = FileMap::create()->findByHash($this->getHash());
+        if ($hashed && $hashed->getId() != $this->getVolatileId()) {
+            $errors['duplicate'] = 'Cannot overwrite an existing file. [ID: ' . $hashed->getId() . ']';
+        }
+
+        return $errors;
+    }
+
+    public static function getIcon($file): string
+    {
+        $ext = \Tk\FileUtil::getExtension($file);
         switch ($ext) {
             case 'zip':
             case 'gz':
             case 'tar':
+            case 'tar.gz':
             case 'gtz':
             case 'rar':
             case '7zip':
@@ -219,98 +334,5 @@ class File extends Model
                 return 'fa fa-file-word-o';
         }
         return 'fa fa-file-o';
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    public function setPath(string $path): static
-    {
-        $this->path = $path;
-        return $this;
-    }
-
-    public function getBytes(): int
-    {
-        return $this->bytes;
-    }
-
-    public function setBytes(int $bytes): static
-    {
-        $this->bytes = $bytes;
-        return $this;
-    }
-
-    public function getMime(): string
-    {
-        return $this->mime;
-    }
-
-    public function setMime(string $mime): static
-    {
-        $this->mime = $mime;
-        return $this;
-    }
-
-    public function isImage(): bool
-    {
-        return preg_match('/^image\//', $this->getMime());
-    }
-
-    public function getLabel(): string
-    {
-        return $this->label;
-    }
-
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-        return $this;
-    }
-
-    public function getNotes(): string
-    {
-        return $this->notes;
-    }
-
-    public function setNotes(string $notes): static
-    {
-        $this->notes = $notes;
-        return $this;
-    }
-
-    public function isSelected(): bool
-    {
-        return $this->selected;
-    }
-
-    public function setSelected(bool $selected): static
-    {
-        $this->selected = $selected;
-        return $this;
-    }
-
-    public function validate(): array
-    {
-        $errors = [];
-
-        if (!$this->getPath()) {
-            $errors['path'] = 'Please enter a valid path';
-        }
-        if (!$this->getBytes()) {
-            $errors['bytes'] = 'Please enter a file size';
-        }
-        if (!$this->getMime()) {
-            $errors['mime'] = 'Please enter a file type';
-        }
-
-        $hashed = FileMap::create()->findByHash($this->getHash());
-        if ($hashed && $hashed->getId() != $this->getVolatileId()) {
-            $errors['duplicate'] = 'Cannot overwrite an existing file. [ID: ' . $hashed->getId() . ']';
-        }
-
-        return $errors;
     }
 }
