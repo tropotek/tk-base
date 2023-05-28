@@ -1,17 +1,14 @@
 <?php
 namespace Bs;
 
-use App\Db\UserMap;
 use Bs\Db\UserInterface;
 use Dom\Mvc\Loader;
 use Dom\Mvc\Modifier;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
-use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
 use Tk\Mail\CurlyMessage;
-use Tk\Mail\Gateway;
 
 class Factory extends \Tk\Factory
 {
@@ -48,30 +45,17 @@ class Factory extends \Tk\Factory
      */
     public function getAuthAdapter(): AdapterInterface
     {
-        if (!$this->has('authAdapter')) {
-            //$adapter = new DbTable($this->getDb(), 'user', 'username', 'password');
-            $adapter = new AuthUser(UserMap::create());
-            $this->set('authAdapter', $adapter);
-        }
-        return $this->get('authAdapter');
+        return $this->get('authAdapter', null);
     }
 
     /**
      * Return a User object or record that is located from the Auth's getIdentity() method
      * Override this method in your own site's Factory object
-     * @return mixed|UserInterface Null if no user logged in
      */
-    public function getAuthUser(): mixed
+    public function getAuthUser(): ?UserInterface
     {
-        if (!$this->has('authUser')) {
-            if ($this->getAuthController()->hasIdentity()) {
-                $user = $this->getAuthController()->getIdentity();
-                $this->set('authUser', $user);
-            }
-        }
-        return $this->get('authUser');
+        return $this->get('authUser', null);
     }
-
 
     // Page/Template Methods
 
@@ -90,11 +74,15 @@ class Factory extends \Tk\Factory
         return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.admin')));
     }
 
+    public function getMaintenancePage(): Page
+    {
+        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.maintenance')));
+    }
+
     public function getLoginPage(): Page
     {
         return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.login')));
     }
-
 
     public function createPage($templatePath, callable $onCreate = null): Page
     {

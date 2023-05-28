@@ -47,7 +47,6 @@ interface UserInterface extends ModelInterface
      */
     public function getType(): string;
 
-
     public function getUsername(): string;
 
     /**

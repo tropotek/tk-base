@@ -1,82 +1,63 @@
 <?php
 namespace Bs\Controller;
 
-use Tk\Request;
+use Bs\PageController;
+use Dom\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- *
- *
- * @author Michael Mifsud <http://www.tropotek.com/>
- * @link http://www.tropotek.com/
- * @license Copyright 2015 Michael Mifsud
- */
-class Maintenance extends \Bs\Controller\Iface
+class Maintenance extends PageController
 {
-    /**
-     * @throws \Exception
-     */
+    protected string $message = '<p>The system is undergoing maintenance.<br/>Please try again soon.</p>';
+
     public function __construct()
     {
-        $this->setPageTitle('Maintenance');
+        parent::__construct($this->getFactory()->getMaintenancePage());
+        $this->getPage()->setTitle('Maintenance');
+        if ($this->getRegistry()->get('system.maintenance.message')) {
+            $this->message = $this->getRegistry()->get('system.maintenance.message');
+        }
     }
 
-
-    /**
-     * @param Request $request
-     */
     public function doDefault(Request $request)
     {
-        if (!$this->getConfig()->get('system.maintenance.enabled')) {
-            if ($this->getConfig()->getAuthUser()) {
-                $this->getConfig()->getUserHomeUrl()->redirect();
-            } else {
-                \Tk\Uri::create($this->getConfig()->get('url.auth.home'))->redirect();
-            }
+        if (!$this->getRegistry()->get('system.maintenance.enabled')) {
+            return new Response('Invalid URL location', Response::HTTP_NOT_FOUND);
         }
+        return $this->getPage();
     }
 
     /**
-     * For compatibility
-     * @return \Dom\Template
+     * This method is used to show API controllers a JSON error (searched for namespace \Api\)
+     * Used for the api calls (Can cause weird side effects if not stopped.)
+     *
+     * Note: If you have issues check your controller is not calling API outside the *\Api\* namespace.
      */
-    public function show()
+    public function doApi(Request $request)
     {
-        $template = parent::show();
-        $tpl = $this->getPage()->getTemplate();
+        $data = [
+            'msg' => $this->message
+        ];
+        return new JsonResponse($data, Response::HTTP_SERVICE_UNAVAILABLE);
+    }
 
-        if ($this->getConfig()->get('site.maintenance.message')) {
-            $tpl->appendHtml('message', $this->getConfig()->get('site.maintenance.message'));
-            $tpl->setVisible('message');
-        } else {
-            $tpl->setVisible('default-message');
-        }
+    public function show(): ?Template
+    {
+        $template = $this->getTemplate();
+        $template->insertHtml('message', $this->message);
         return $template;
     }
 
-
-    /**
-     * @return \Tk\Controller\Page|\Bs\Page
-     */
-    public function getPage()
+    public function __makeTemplate(): ?Template
     {
-        if (!$this->page) {
-            $this->page = $this->getConfig()->getPage($this->getConfig()->getSitePath() . $this->getConfig()->get('template.maintenance'));
-        }
-        return parent::getPage();
-    }
-
-    /**
-     * DomTemplate magic method
-     *
-     * @return \Dom\Template
-     */
-    public function __makeTemplate()
-    {
-        $xhtml = <<<HTML
-<div></div>
+        $html = <<<HTML
+<div>
+    <h1>Maintainence Mode</h1>
+    <div var="message"></div>
+</div>
 HTML;
-
-        return \Dom\Loader::load($xhtml);
+        return $this->loadTemplate($html);
     }
 
 }

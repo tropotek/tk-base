@@ -39,6 +39,22 @@ JS;
             $template->setVisible('loggedOut');
         }
 
+        // TODO: Show a maintenance ribbon on the site???
+//        if (!$this->getConfig()->get('system.maintenance.enabled')) return;
+//        $controller = \Tk\Event\Event::findControllerObject($event);
+//        if ($controller instanceof \Bs\Controller\Iface && !$controller instanceof \Bs\Controller\Maintenance) {
+//            $page = $controller->getPage();
+//            if (!$page) return;
+//            $template = $page->getTemplate();
+//
+//            $html = <<<HTML
+//<div class="tk-ribbon tk-ribbon-danger" style="z-index: 99999"><span>Maintenance</span></div>
+//HTML;
+//            $template->prependHtml($template->getBodyElement(), $html);
+//            $template->addCss($template->getBodyElement() ,'tk-ribbon-box');
+//        }
+
+
         return parent::show();
     }
 

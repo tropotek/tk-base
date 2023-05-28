@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Bs\Listener\MaintenanceHandler;
 use Dom\Mvc\EventListener\PageBytesHandler;
 use Dom\Mvc\EventListener\ViewHandler;
 use Dom\Mvc\Modifier\PageBytes;
@@ -15,8 +16,6 @@ class Dispatch extends \Tk\Mvc\Dispatch
     protected function commonInit()
     {
         parent::commonInit();
-
-
     }
 
     /**
@@ -25,6 +24,8 @@ class Dispatch extends \Tk\Mvc\Dispatch
     protected function httpInit()
     {
         parent::httpInit();
+
+        $this->getDispatcher()->addSubscriber(new MaintenanceHandler());
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
@@ -52,8 +53,6 @@ class Dispatch extends \Tk\Mvc\Dispatch
     protected function cliInit()
     {
         parent::cliInit();
-
-
     }
 
 }

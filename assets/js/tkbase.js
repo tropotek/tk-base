@@ -57,6 +57,8 @@
  * ```
  */
 
+const EVENT_INIT = 'tk-init';           // called to init Tk dynamic elements
+
 // Var dump function for debugging
 function vd() {
   if (!config.debug) return;
@@ -178,7 +180,7 @@ let tkbase = function () {
       statusbar: false,
     };
 
-    $('form').each(function () {
+    function init () {
       let form = $(this);
 
       // Tiny MCE with only the default editing no upload
@@ -192,8 +194,9 @@ let tkbase = function () {
           file_picker_callback : getMceElf(el.data()).browser,
         }));
       });
-    });
+    };
 
+    $('form').on(EVENT_INIT, document, init).each(init);
   };  // end initTinymce()
 
   /**
@@ -206,7 +209,7 @@ let tkbase = function () {
     }
 
     let form = $(this);
-    $('textarea.code', form).each(function () {
+    function init() {
       let el = this;
       this.cm = CodeMirror.fromTextArea(this, $.extend({}, {
         lineNumbers: true,
@@ -222,8 +225,9 @@ let tkbase = function () {
       $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
         this.refresh();
       }.bind(el.cm));
-    });
+    };
 
+    $('form').on(EVENT_INIT, document, init).each(init);
   };  // end initCodemirror()
 
 

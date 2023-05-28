@@ -1,16 +1,8 @@
 <?php
-
 namespace Bs\Controller;
 
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Tk\Traits\SystemTrait;
 
-/**
- *
- * @author Tropotek <http://www.tropotek.com/>
- */
 class Error
 {
     use SystemTrait;
@@ -18,12 +10,8 @@ class Error
     public function doDefault(\Throwable $e)
     {
         return $this->getExceptionHtml($e, $this->getConfig()->isDebug());
-        //return new Response($html, $e->getCode());
     }
 
-    /**
-     * @return mixed|string
-     */
     public function getExceptionHtml(\Throwable $e, bool $withTrace = false)
     {
         $config = $this->getConfig();
