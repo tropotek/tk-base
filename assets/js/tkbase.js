@@ -57,6 +57,16 @@
  * ```
  */
 
+/**
+ * When using AJAX queries to replace forms and tables
+ * you can trigger the init function on the element like:
+ * ```
+ *   $('form.myform').trigger(EVENT_INIT);
+ * ```
+ * This will then run the init scripts attached to the element
+ *
+ * @type {string}
+ */
 const EVENT_INIT = 'tk-init';           // called to init Tk dynamic elements
 
 // Var dump function for debugging
