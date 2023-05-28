@@ -19,7 +19,6 @@
     }
   },
   "require": {
-    "php": "^8.2",
     "ttek/tk-framework": "~8.0.0",
     "ttek/tk-auth": "~8.0.0",
     "ttek/tk-mail": "~8.0.0",
