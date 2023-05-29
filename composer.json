@@ -14,8 +14,8 @@
     }
   ],
   "autoload": {
-    "psr-0": {
-      "Bs\\": ""
+    "psr-4": {
+      "Bs\\": "Bs/"
     }
   },
   "require": {
