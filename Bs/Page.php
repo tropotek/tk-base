@@ -1,7 +1,9 @@
 <?php
 namespace Bs;
 
+use Bs\Ui\Crumbs;
 use Dom\Template;
+use Tk\Uri;
 
 class Page extends \Dom\Mvc\Page
 {
@@ -11,6 +13,7 @@ class Page extends \Dom\Mvc\Page
         $template = $this->getTemplate();
 
         $isDebug = $this->getConfig()->isDebug() ? 'true' : 'false';
+
         $js = <<<JS
 let config = {
   baseUrl        : '{$this->getConfig()->getBaseUrl()}',
@@ -18,7 +21,7 @@ let config = {
   templateUrl    : '{$this->getConfig()->getTemplateUrl()}',
   vendorUrl      : '{$this->getSystem()->makeUrl($this->getConfig()->get('path.vendor'))}',
   vendorOrgUrl   : '{$this->getSystem()->makeUrl($this->getConfig()->get('path.vendor.org'))}',
-  debug          : $isDebug,
+  debug          : {$isDebug},
   dateFormat: {
     jqDatepicker : 'dd/mm/yy',
     bsDatepicker : 'dd/mm/yyyy',
@@ -39,23 +42,18 @@ JS;
             $template->setVisible('loggedOut');
         }
 
-        // TODO: Show a maintenance ribbon on the site???
-//        if (!$this->getConfig()->get('system.maintenance.enabled')) return;
-//        $controller = \Tk\Event\Event::findControllerObject($event);
-//        if ($controller instanceof \Bs\Controller\Iface && !$controller instanceof \Bs\Controller\Maintenance) {
-//            $page = $controller->getPage();
-//            if (!$page) return;
-//            $template = $page->getTemplate();
-//
-//            $html = <<<HTML
-//<div class="tk-ribbon tk-ribbon-danger" style="z-index: 99999"><span>Maintenance</span></div>
-//HTML;
-//            $template->prependHtml($template->getBodyElement(), $html);
-//            $template->addCss($template->getBodyElement() ,'tk-ribbon-box');
-//        }
-
 
         return parent::show();
     }
 
+
+    public function getCrumbs(): ?Crumbs
+    {
+        return $this->getFactory()->getCrumbs();
+    }
+
+    public function getBackUrl(): Uri
+    {
+        return $this->getCrumbs()->getBackUrl();
+    }
 }

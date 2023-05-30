@@ -11,6 +11,12 @@ use Tk\Form\FormTrait;
 use Tk\FormRenderer;
 use Tk\Uri;
 
+
+/**
+ * This manager controller is an example of how to setup the
+ * \Bs\Db\File Table and \Bs\Form\Field\File field for your sites.
+ *
+ */
 class Manager extends PageController
 {
     use FormTrait;

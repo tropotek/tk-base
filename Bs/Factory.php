@@ -2,6 +2,7 @@
 namespace Bs;
 
 use Bs\Db\UserInterface;
+use Bs\Ui\Crumbs;
 use Dom\Mvc\Loader;
 use Dom\Mvc\Modifier;
 use Symfony\Component\Console\Application;
@@ -9,6 +10,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Auth;
 use Tk\Mail\CurlyMessage;
+use Tk\Uri;
 
 class Factory extends \Tk\Factory
 {
@@ -155,5 +157,30 @@ class Factory extends \Tk\Factory
         $message->set('sig', $this->getRegistry()->get('site.email.sig', ''));
 
         return $message;
+    }
+
+    /**
+     * get the breadcrumb storage object
+     */
+    public function getCrumbs(): ?Crumbs
+    {
+        //$this->getSession()->set('breadcrumbs', null);
+        if (!$this->has('breadcrumbs')) {
+            $crumbs = $this->getSession()->get('breadcrumbs');
+            if (!$crumbs instanceof Crumbs) {
+                $crumbs = Crumbs::create();
+                $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
+                //$crumbs->setHomeUrl(Uri::create('/home'));
+                $crumbs->addCrumb($crumbs->getHomeTitle(), $crumbs->getHomeUrl());
+                $this->getSession()->set('breadcrumbs', $crumbs);
+            }
+            $this->set('breadcrumbs', $crumbs);
+        }
+        return $this->get('breadcrumbs');
+    }
+
+    public function getBackUrl(): Uri
+    {
+        return $this->getCrumbs()->getBackUrl();
     }
 }
