@@ -65,7 +65,7 @@ class Manager extends PageController
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        $template->setText('title', $this->getPage()->getTitle());
+        $template->appendText('title', $this->getPage()->getTitle());
 
         $renderer = $this->getFormRenderer();
         $this->getForm()->addCss('mb-5');
