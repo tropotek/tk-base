@@ -52,7 +52,7 @@ class ListEvents extends PageController
         $this->getTable()->getRow()->addCss('text-nowrap');
         $this->getTable()->addCss('table-hover');
 
-        $template->appendTemplate('table', $renderer->show());
+        $template->appendTemplate('content', $renderer->show());
 
         return $template;
     }
@@ -60,8 +60,19 @@ class ListEvents extends PageController
     public function __makeTemplate()
     {
         $html = <<<HTML
-<div class="tk-panel" data-panel-icon="fa fa-empire" var="table">
-  <p>A list of Events that are available to the EventDispatcher:</p>
+<div>
+  <div class="card mb-3">
+    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
+    <div class="card-body" var="actions">
+      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-header" var="title"><i class="fa fa-empire"></i> </div>
+    <div class="card-body" var="content">
+        <p>A list of Events that are available to the EventDispatcher:</p>
+    </div>
+  </div>
 </div>
 HTML;
         return $this->loadTemplate($html);

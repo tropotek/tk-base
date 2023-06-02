@@ -104,8 +104,19 @@ CSS;
     public function __makeTemplate(): ?Template
     {
         $html = <<<HTML
-<div class="tk-panel" data-panel-icon="fa fa-road" var="panel">
-  <div class="tk-tail" id="tail" data-src="" var="tail"></div>
+<div>
+  <div class="card mb-3">
+    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
+    <div class="card-body" var="actions">
+      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-header" var="title"><i class="fa fa-road"></i> </div>
+    <div class="card-body" var="content">
+      <div class="tk-tail" id="tail" data-src="" var="tail"></div>
+    </div>
+  </div>
 </div>
 HTML;
         return $this->loadTemplate($html);
