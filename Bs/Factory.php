@@ -152,8 +152,8 @@ class Factory extends \Tk\Factory
         }
 
         $message = \Tk\Mail\CurlyMessage::create($template);
-        $message->setFrom($this->getRegistry()->get('system.email'));
-        $message->setReplyTo($this->getRegistry()->get('system.email'));
+        $message->setFrom($this->getRegistry()->getSiteEmail());
+        $message->setReplyTo($this->getRegistry()->getSiteEmail());
         $message->set('sig', $this->getRegistry()->get('site.email.sig', ''));
 
         return $message;

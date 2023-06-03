@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Ui;
 
+use Dom\Renderer\DisplayInterface;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\CallbackCollection;
@@ -12,7 +13,7 @@ use Tk\Ui\Traits\CssTrait;
 
 /**
  * This class uses the bootstrap dialog box model
- * @link http://getbootstrap.com/javascript/#modals
+ * @link https://getbootstrap.com/docs/5.3/components/modal/
  *
  * To create the dialog:
  *
@@ -34,11 +35,11 @@ use Tk\Ui\Traits\CssTrait;
  *
  *    <a href="#" data-bs-toggle="modal" data-bs-target="#{id}"><i class="fa fa-info-circle"></i> {title}</a>
  *
- *    $template->setAttr('modelBtn', 'data-toggle', 'modal');
- *    $template->setAttr('modelBtn', 'data-target', '#'.$this->dialog->getId());
+ *    $template->setAttr('modelBtn', 'data-bs-toggle', 'modal');
+ *    $template->setAttr('modelBtn', 'data-bs-target', '#'.$this->dialog->getId());
  *
  */
-class Dialog extends \Dom\Renderer\Renderer
+class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 {
     use AttributesTrait;
     use CssTrait;
