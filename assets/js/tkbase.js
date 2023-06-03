@@ -175,7 +175,7 @@ let tkbase = function () {
       ],
       toolbar1:
         'bold italic strikethrough | blocks | alignleft aligncenter ' +
-        'alignright alignjustify | bullist numlist outdent indent | link image media | fullscreen removeformat code ',
+        'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen',
       content_css: [
         '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
       ],

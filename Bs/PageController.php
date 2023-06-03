@@ -21,5 +21,9 @@ abstract class PageController extends \Dom\Mvc\PageController
         return $this;
     }
 
+    public function getAuthUser(): ?UserInterface
+    {
+        return $this->getFactory()->getAuthUser();
+    }
 
 }
