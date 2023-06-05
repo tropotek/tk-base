@@ -3,6 +3,7 @@ namespace Bs\Listener;
 
 use Bs\Ui\Crumbs;
 use Dom\Mvc\Page;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -12,6 +13,12 @@ use Tk\Uri;
 class CrumbsHandler implements EventSubscriberInterface
 {
     use SystemTrait;
+
+    public function onRequest(RequestEvent $event)
+    {
+        // Init the crumb stack
+        $this->getFactory()->getCrumbs();
+    }
 
     public function onView(ViewEvent $event)
     {
@@ -23,22 +30,22 @@ class CrumbsHandler implements EventSubscriberInterface
                 $crumbs->reset();
             }
 
-            $ignore = ['', '/'];
-            if (in_array(Uri::create()->getRelativePath(), $ignore)) return;
-
+            $url = Uri::create()->getRelativePath();
             $title = $page->getTitle();
-            $crumbs->trimByTitle($title);
-
-            $crumbs->trimByUrl(Uri::create());
-
-            $crumbs->addCrumb($title, \Tk\Uri::create());
-
+            $ignore = ['', '/'];
+            if (in_array($url, $ignore)) {
+                $url = $crumbs->getHomeUrl();
+            }
+            $crumbs->trimByUrl($url);
+            $crumbs->trim();
+            $crumbs->addCrumb($url, $title);
         }
     }
 
     public static function getSubscribedEvents()
     {
         return [
+            KernelEvents::REQUEST => 'onRequest',
             KernelEvents::VIEW => 'onView',
         ];
     }

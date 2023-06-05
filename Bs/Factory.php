@@ -170,8 +170,8 @@ class Factory extends \Tk\Factory
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
-                //$crumbs->setHomeUrl(Uri::create('/home'));
-                $crumbs->addCrumb($crumbs->getHomeTitle(), $crumbs->getHomeUrl());
+                //$crumbs->setHomeUrl('/home');
+                $crumbs->reset();
                 $this->getSession()->set('breadcrumbs', $crumbs);
             }
             $this->set('breadcrumbs', $crumbs);
@@ -181,6 +181,6 @@ class Factory extends \Tk\Factory
 
     public function getBackUrl(): Uri
     {
-        return $this->getCrumbs()->getBackUrl();
+        return Uri::create($this->getCrumbs()->getBackUrl());
     }
 }

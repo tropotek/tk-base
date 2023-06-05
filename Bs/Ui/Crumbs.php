@@ -3,10 +3,10 @@ namespace Bs\Ui;
 
 use Dom\Template;
 use Tk\Traits\SystemTrait;
-use Tk\Uri;
 
 /**
- * Use this object to track and render a crumb stack
+ * Use this object to track and render a crumb stack.
+ * All url's used should be relative to the site.
  */
 class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
@@ -25,20 +25,19 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
 
     protected bool $visible = true;
 
-    /**
-     * @var array|Uri[]
-     */
-    protected array $crumbList = [];
+    protected array $crumbStack = [];
 
-    protected string $homeTitle;
+    protected string $homeTitle = '';
 
-    protected Uri $homeUrl;
+    protected string $homeUrl = '';
+
+    protected int $trim = 0;
 
 
     protected function __construct()
     {
         $this->setHomeTitle('Home');
-        $this->setHomeUrl(Uri::create('/home'));
+        $this->setHomeUrl('/home');
     }
 
     public static function create(): static
@@ -50,43 +49,63 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
     {
         return [
             'visible'   => $this->visible,
-            'crumbList' => $this->crumbList,
+            'crumbList' => $this->crumbStack,
             'homeTitle' => $this->homeTitle,
             'homeUrl'   => $this->homeUrl,
+            'trim'      => $this->trim,
         ];
     }
 
     public function __unserialize($data)
     {
-        $this->visible   = $data['visible'];
-        $this->crumbList = $data['crumbList'];
-        $this->homeTitle = $data['homeTitle'];
-        $this->homeUrl   = $data['homeUrl'];
+        $this->visible    = $data['visible'];
+        $this->crumbStack = $data['crumbList'];
+        $this->homeTitle  = $data['homeTitle'];
+        $this->homeUrl    = $data['homeUrl'];
+        $this->trim       = $data['trim'];
     }
 
-    // TODO: This should be in the Factory so instance control is from there....
-//    public static function instance(): static
-//    {
-//        if (!self::$instance) {
-//            $crumbs = self::create($homeUrl, $homeTitle);
-//            if ($crumbs->getSession()->has($crumbs->getSid())) {
-//                $crumbs->setList($crumbs->getSession()->get($crumbs->getSid()));
-//            }
-//            if (!count($crumbs->getList())) {
-//                $crumbs->addCrumb($crumbs->getHomeTitle(), $crumbs->getHomeUrl());
-//            }
-//            self::$instance = $crumbs;
-//        }
-//        return self::$instance;
-//    }
-
-
-    public function reset(): static
+    public function getCrumbStack(): array
     {
-        if (!$this->getRequest()->query->has(self::CRUMB_IGNORE)) {
-            $this->setCrumbList([]);
-            $this->addCrumb($this->getHomeTitle(), $this->getHomeUrl());
-        }
+        return $this->crumbStack;
+    }
+
+    public function getHomeTitle(): string
+    {
+        return $this->homeTitle;
+    }
+
+    public function setHomeTitle(string $homeTitle): static
+    {
+        $this->homeTitle = $homeTitle;
+        return $this;
+    }
+
+    public function getHomeUrl(): string
+    {
+        return $this->homeUrl;
+    }
+
+    public function setHomeUrl(string $url): static
+    {
+        $url = \Tk\Uri::create($url)->getRelativePath();
+        $this->homeUrl = $url;
+        return $this;
+    }
+
+    public function getTrim(): int
+    {
+        return $this->trim;
+    }
+
+    /**
+     * Set a maximum number of crumbs the stack can have.
+     * When Crumbs::trim() is called then the first crumbs are removed
+     *  from the stack excluding the home page.
+     */
+    public function setTrim(int $trim): Crumbs
+    {
+        $this->trim = $trim;
         return $this;
     }
 
@@ -101,104 +120,78 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         return $this;
     }
 
-    public function getCrumbList(): array
+    public function getBackUrl(): string
     {
-        return $this->crumbList;
+        if (!count($this->getCrumbStack())) return '';
+
+        $cUrl = '';
+        $copy = array_keys($this->crumbStack);
+        do {
+            $bUrl = array_pop($copy);
+        } while (count($copy) && $cUrl == $bUrl);
+        return $bUrl;
     }
 
-    public function getHomeTitle(): string
+    /**
+     * Reset the crumb stack with the homepage as the first crumb
+     */
+    public function reset(): static
     {
-        return $this->homeTitle;
-    }
-
-    public function setHomeTitle(string $homeTitle): static
-    {
-        $this->homeTitle = $homeTitle;
+        if ($this->getRequest()->query->has(self::CRUMB_IGNORE))  return $this;
+        $this->crumbStack = [];
+        $this->crumbStack[$this->getHomeUrl()] = $this->getHomeTitle();
         return $this;
     }
 
-    public function getHomeUrl(): Uri
+    public function addCrumb(string $url, string $title = ''): static
     {
-        return $this->homeUrl;
-    }
-
-    public function setHomeUrl(Uri $url): static
-    {
-        $this->homeUrl = $url;
+        $url = \Tk\Uri::create($url)->getRelativePath();
+        //vd($url, $this->getHomeUrl());
+        if ($url == $this->getHomeUrl()) return $this;
+        if (!$title) $title = basename($url);
+        $this->crumbStack[$url] = $title;
         return $this;
     }
 
     /**
-     * Use to restore crumb list.
-     * format:
-     *   array(
-     *     'Page Name' => Uri::create('/page/url/pageUrl.html')
-     *   );
+     * @deprecated I do not think this is needed anymore
      */
-    public function setCrumbList(array $crumbList): static
-    {
-        $this->crumbList = $crumbList;
-        return $this;
-    }
-
-    public function getBackUrl(): Uri
-    {
-        $url = null;
-        if (count($this->crumbList) == 1) {
-            $url = end($this->crumbList);
-        }
-        if (count($this->crumbList) > 1) {
-            end($this->crumbList);
-            $url = prev($this->crumbList);
-        }
-        return Uri::create($url);
-    }
-
-    public function addCrumb(string $title, Uri|string $url): static
-    {
-        if ($url->getRelativePath() == $this->getHomeUrl()->getRelativePath()) {
-            $this->crumbList[$this->getHomeTitle()] = $this->getHomeUrl();
-        } else {
-            $url = Uri::create($url);
-            $this->crumbList[$title] = $url;
-        }
-        return $this;
-    }
-
-    public function replaceCrumb(string $title, Uri|string $url): static
-    {
-        array_pop($this->crumbList);
-        return $this->addCrumb($title, $url);
-    }
-
     public function trimByTitle(string $title): array
     {
         $l = [];
-        foreach ($this->crumbList as $t => $u) {
+        foreach ($this->crumbStack as $u => $t) {
+            $l[$u] = $t;
             if ($title == $t) break;
-            $l[$t] = $u;
         }
-        $this->crumbList = $l;
+        $this->crumbStack = $l;
         return $l;
     }
 
-    public function trimByUrl(Uri|string $url, bool $ignoreQuery = true): array
+    public function trimByUrl(string $url): array
     {
-        $url = Uri::create($url);
         $l = [];
-        foreach ($this->crumbList as $t => $u) {
-            if ($ignoreQuery) {
-                if (Uri::create($u)->getRelativePath() == $url->getRelativePath()) {
-                    break;
-                }
-            } else {
-                if (Uri::create($u)->toString() == $url->toString()) {
-                    break;
-                }
-            }
-            $l[$t] = $u;
+        foreach ($this->crumbStack as $u => $t) {
+            $l[$u] = $t;
+            if ($u == $url) break;
         }
-        $this->crumbList = $l;
+        $this->crumbStack = $l;
+        return $l;
+    }
+
+    public function trim(): array
+    {
+        $l = [];
+        $i = 0;
+        $start = count($this->getCrumbStack()) - $this->getTrim()+1;
+        if ($start < 1) return $this->getCrumbStack();
+        foreach ($this->crumbStack as $u => $t) {
+            if (!$i) $l[$u] = $t;
+            if ($i >= $start) {
+                $l[$u] = $t;
+            }
+            $i++;
+        }
+        $this->crumbStack = $l;
         return $l;
     }
 
@@ -207,10 +200,10 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         $template = $this->getTemplate();
 
         $i = 0;
-        foreach ($this->crumbList as $title => $url) {
+        $last = count($this->crumbStack) - 1;
+        foreach ($this->getCrumbStack() as $url => $title) {
             $repeat = $template->getRepeat('item');
-//            if (!$repeat) continue;         // ?? why and how does the repeat end up null.
-            if ($i < count($this->crumbList) - 1) {
+            if ($i < $last) {
                 $repeat->setAttr('url', 'href', $url);
                 $repeat->insertHtml('url', $title);
             } else {    // Last item
