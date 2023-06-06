@@ -31,7 +31,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
 
     protected string $homeUrl = '';
 
-    protected int $trim = 0;
+    protected int $trim = 8;
 
 
     protected function __construct()
@@ -180,6 +180,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
 
     public function trim(): array
     {
+        if (!$this->getTrim()) return $this->getCrumbStack();
         $l = [];
         $i = 0;
         $start = count($this->getCrumbStack()) - $this->getTrim()+1;
