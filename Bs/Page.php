@@ -54,6 +54,6 @@ JS;
 
     public function getBackUrl(): Uri
     {
-        return $this->getCrumbs()->getBackUrl();
+        return Uri::create($this->getCrumbs()->getBackUrl());
     }
 }
