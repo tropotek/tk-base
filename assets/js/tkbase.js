@@ -106,6 +106,35 @@ let tkbase = function () {
   };
 
   /**
+   * Add a view/hide toggle button to a password field for touch screen access
+   *
+   */
+  let initPasswordToggle = function () {
+    $('[type=password]').each(function () {
+
+      let input = $(this);
+      let tpl = $(`<div class="input-group" var="is-error input-group">
+        <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button"><i class="fa fa-fw fa-eye"></i></button>
+      </div>`);
+      input.before(tpl);
+      input.detach();
+      $('button', tpl).before(input);
+      $('button', tpl).on('click', function () {
+        let icon = $('.fa', this);
+        if (icon.is('.fa-eye')) {
+          icon.removeClass('fa-eye');
+          icon.addClass('fa-eye-slash')
+          input.attr('type', 'text');
+        } else {
+          icon.removeClass('fa-eye-slash');
+          icon.addClass('fa-eye')
+          input.attr('type', 'password');
+        }
+      });
+    });
+  };
+
+  /**
    * This is handy for showing and hiding elements for checkboxes:
    *   <input type="checkbox" data-toggle="hide" data-target=".children" />
    */
@@ -244,6 +273,7 @@ let tkbase = function () {
   return {
     initSugar: initSugar,
     initDialogConfirm: initDialogConfirm,
+    initPasswordToggle:initPasswordToggle,
     initDataToggle: initDataToggle,
     initTkInputLock: initTkInputLock,
     initTinymce: initTinymce,
