@@ -9,11 +9,16 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Auth;
+use Tk\DataMap\Db\TextEncrypt;
 use Tk\Mail\CurlyMessage;
 use Tk\Uri;
 
 class Factory extends \Tk\Factory
 {
+
+    protected function __construct() {
+        parent::__construct();
+    }
 
     public function initEventDispatcher(): ?EventDispatcher
     {
