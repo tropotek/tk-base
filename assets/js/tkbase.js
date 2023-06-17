@@ -245,14 +245,17 @@ let tkbase = function () {
         '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
       ],
       content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
+      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+      statusbar: false,
+      image_advtab: true,
+
       urlconverter_callback : function (url, node, on_save) {
         let parts = url.split(config.baseUrl);
         if (parts.length > 1) {
           url = config.baseUrl + parts[1];
         }
         return url;
-      },
-      statusbar: false,
+      }
     };
 
     function init () {
