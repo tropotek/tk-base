@@ -61,19 +61,40 @@
  * When using AJAX queries to replace forms and tables
  * you can trigger the init function on the element like:
  * ```
- *   $('form.myform').trigger(EVENT_INIT);
+ *   $('body').trigger(EVENT_INIT);
  * ```
- * This will then run the init scripts attached to the element
+ * This will then run the tk-init event and all registered scripts should execute
  *
  * @type {string}
  */
-const EVENT_INIT = 'tk-init';           // called to init Tk dynamic elements
+const EVENT_INIT            = 'tk-init';        // called to init Tk dynamic elements
+const EVENT_INIT_FORM       = 'tk-init-form';
+const EVENT_INIT_TABLE      = 'tk-init-table';
+
+// Use this to trigger all events
+const EVENT_INIT_ALL        = `${EVENT_INIT} ${EVENT_INIT_FORM} ${EVENT_INIT_TABLE}`;
+
 
 // Var dump function for debugging
 function vd() {
   if (!config.debug) return;
   for(let k in arguments) console.log(arguments[k]);
 }
+
+function clearForm(form) {
+  $(':input', form).each(function () {
+    var type = this.type;
+    var tag = this.tagName.toLowerCase(); // normalize case
+    if (type == 'text' || type == 'password' || tag == 'textarea')
+      this.value = "";
+    else if (type == 'checkbox' || type == 'radio')
+      this.checked = false;
+    else if (tag == 'select')
+      this.selectedIndex = 1;
+  });
+};
+
+
 
 let tkbase = function () {
   "use strict";
@@ -90,6 +111,7 @@ let tkbase = function () {
     Sugar.extend();
   };
 
+
   /**
    * Now we can have a button confirmation just by adding an attribute
    *  Eg:
@@ -105,59 +127,68 @@ let tkbase = function () {
     }
   };
 
+
   /**
    * Add a view/hide toggle button to a password field for touch screen access
-   *
    */
   let initPasswordToggle = function () {
-    $('[type=password]').each(function () {
-
-      let input = $(this);
-      let tpl = $(`<div class="input-group" var="is-error input-group">
-        <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button"><i class="fa fa-fw fa-eye"></i></button>
-      </div>`);
-      input.before(tpl);
-      input.detach();
-      $('button', tpl).before(input);
-      $('button', tpl).on('click', function () {
-        let icon = $('.fa', this);
-        if (icon.is('.fa-eye')) {
-          icon.removeClass('fa-eye');
-          icon.addClass('fa-eye-slash')
-          input.attr('type', 'text');
-        } else {
-          icon.removeClass('fa-eye-slash');
-          icon.addClass('fa-eye')
-          input.attr('type', 'password');
-        }
+    function init() {
+      $('[type=password]').each(function () {
+        let input = $(this);
+        let tpl = $(`<div class="input-group" var="is-error input-group">
+          <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button"><i class="fa fa-fw fa-eye"></i></button>
+        </div>`);
+        input.before(tpl);
+        input.detach();
+        $('button', tpl).before(input);
+        $('button', tpl).on('click', function () {
+          let icon = $('.fa', this);
+          if (icon.is('.fa-eye')) {
+            icon.removeClass('fa-eye');
+            icon.addClass('fa-eye-slash')
+            input.attr('type', 'text');
+          } else {
+            icon.removeClass('fa-eye-slash');
+            icon.addClass('fa-eye')
+            input.attr('type', 'password');
+          }
+        });
       });
-    });
+    }
+    init();
+    $('body').on(EVENT_INIT_FORM, init);
   };
+
 
   /**
    * This is handy for showing and hiding elements for checkboxes:
    *   <input type="checkbox" data-toggle="hide" data-target=".children" />
    */
   let initDataToggle = function () {
-    $('[data-toggle="hide"]').each(function () {
-      let target = $($(this).data('target'));
-      target.each(function() {
-        $(this).hide();
+    function init() {
+      $('[data-toggle="hide"]').each(function () {
+        let target = $($(this).data('target'));
+        target.each(function () {
+          $(this).hide();
+        });
+        $(this).on('click', function () {
+          target.toggle();
+        })
       });
-      $(this).on('click', function () {
-        target.toggle();
-      })
-    });
-    $('[data-toggle="show"]').each(function () {
-      let target = $($(this).data('target'));
-      target.each(function() {
-        $(this).show();
+      $('[data-toggle="show"]').each(function () {
+        let target = $($(this).data('target'));
+        target.each(function () {
+          $(this).show();
+        });
+        $(this).on('click', function () {
+          target.toggle();
+        })
       });
-      $(this).on('click', function () {
-        target.toggle();
-      })
-    });
+    }
+    init();
+    $('body').on(EVENT_INIT_FORM, init);
   };
+
 
   /**
    * Add an edit lock button to text fields
@@ -168,8 +199,13 @@ let tkbase = function () {
       console.warn('Plugin not loaded: tkInputLock');
       return;
     }
-    $('input.tk-input-lock').tkInputLock();
+    function init() {
+      $('input.tk-input-lock').tkInputLock();
+    }
+    init();
+    $('body').on(EVENT_INIT_FORM, init);
   };
+
 
   /**
    * Tiny MCE setup
@@ -220,7 +256,7 @@ let tkbase = function () {
     };
 
     function init () {
-      let form = $(this);
+      let form = 'form.tk-form';
 
       // Tiny MCE with only the default editing no upload
       //   functionality with elfinder
@@ -235,11 +271,14 @@ let tkbase = function () {
       });
     };
 
-    $('form').on(EVENT_INIT, document, init).each(init);
+    init();
+    $('body').on(EVENT_INIT_FORM, init);
   };  // end initTinymce()
+
 
   /**
    * Code Mirror setup
+   * @todo Implement this into our javascript and css textarea editors
    */
   let initCodemirror = function () {
     if (typeof CodeMirror === 'undefined') {
@@ -247,7 +286,6 @@ let tkbase = function () {
       return;
     }
 
-    let form = $(this);
     function init() {
       let el = this;
       this.cm = CodeMirror.fromTextArea(this, $.extend({}, {
@@ -266,9 +304,9 @@ let tkbase = function () {
       }.bind(el.cm));
     };
 
-    $('form').on(EVENT_INIT, document, init).each(init);
+    init();
+    $('body').on(EVENT_INIT_FORM, init);
   };  // end initCodemirror()
-
 
   return {
     initSugar: initSugar,

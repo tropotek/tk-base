@@ -49,8 +49,6 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 
     protected string $title = '';
 
-    protected string $sizeCss = '';
-
     protected Collection $buttonList;
 
     protected string|Template $content = '';
@@ -78,12 +76,6 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 
         $this->setAttr('aria-labelledby', $this->getId().'-Label');
         //$this->getButtonList()->append(\Tk\Ui\Button::createButton('Close')->setAttr('data-dismiss', 'modal'));
-    }
-
-
-    public static function create(string $title, string $dialogId = ''): static
-    {
-        return new static($title, $dialogId);
     }
 
     /**
@@ -141,23 +133,6 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
         }
         $this->getButtonList()->append($name, $btn);
         return $btn;
-    }
-
-    public function setLarge(): static
-    {
-        $this->sizeCss = 'modal-lg';
-        return $this;
-    }
-
-    public function getSizeCss(): string
-    {
-        return $this->sizeCss;
-    }
-
-    public function setSizeCss(string $sizeCss): static
-    {
-        $this->sizeCss = $sizeCss;
-        return $this;
     }
 
     public function getContent(): string|Template
@@ -229,10 +204,6 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
         $template = $this->getTemplate();
 
         $this->getOnShow()->execute($this);
-
-        if ($this->getSizeCss()) {
-            $this->addCss($this->getSizeCss());
-        }
 
         foreach ($this->getButtonList() as $btn) {
             $template->appendTemplate('footer', $btn->show());
