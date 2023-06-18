@@ -136,7 +136,7 @@ let tkbase = function () {
       $('[type=password]').each(function () {
         let input = $(this);
         let tpl = $(`<div class="input-group" var="is-error input-group">
-          <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button"><i class="fa fa-fw fa-eye"></i></button>
+          <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button" tabindex="-1"><i class="fa fa-fw fa-eye"></i></button>
         </div>`);
         input.before(tpl);
         input.detach();

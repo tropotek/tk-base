@@ -29,7 +29,7 @@
       unlockIcon: 'fa-unlock',
       groupTpl: /*html*/`
 <div class="input-group tki-iga">
-    <button type="button" class="btn btn-outline-secondary border" title="Click to edit field"><i class="fa"></i></button>
+    <button type="button" class="btn btn-outline-secondary border" title="Click to edit field" tabindex="-1"><i class="fa"></i></button>
 </div>
 `,
     };
