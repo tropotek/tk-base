@@ -122,6 +122,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
 
     public function getBackUrl(): string
     {
+        vd($this->getCrumbStack());
         if (!count($this->getCrumbStack())) return '';
         $copy = array_keys($this->getCrumbStack());
         $currentUrl = $copy[count($copy)-1];
