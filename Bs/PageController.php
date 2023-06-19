@@ -2,6 +2,7 @@
 namespace Bs;
 
 use Bs\Db\UserInterface;
+use Bs\Ui\Crumbs;
 use Tk\Alert;
 use Tk\Log;
 use Tk\Uri;
@@ -24,6 +25,16 @@ abstract class PageController extends \Dom\Mvc\PageController
     public function getAuthUser(): ?UserInterface
     {
         return $this->getFactory()->getAuthUser();
+    }
+
+    public function getCrumbs(): Crumbs
+    {
+        return $this->getFactory()->getCrumbs();
+    }
+
+    public function getBackUrl(): Uri
+    {
+        return $this->getFactory()->getBackUrl();
     }
 
 }
