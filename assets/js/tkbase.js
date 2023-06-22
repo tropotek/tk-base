@@ -157,6 +157,28 @@ let tkbase = function () {
 
 
   /**
+   * Setup the jquery datepicker UI
+   */
+  let initDatepicker = function () {
+    if ($.fn.datepicker === undefined) {
+      console.warn('jquery-ui.js is not installed.');
+      return;
+    }
+
+    function init() {
+      let defaults = { dateFormat: config.dateFormat.jqDatepicker };
+      $('input.date').each(function () {
+        let settings = $.extend({}, defaults, $(this).data());
+        $(this).datepicker(settings);
+      });
+    }
+
+    init();
+    $('body').on(EVENT_INIT_FORM, init);
+  };
+
+
+  /**
    * Add a view/hide toggle button to a password field for touch screen access
    */
   let initPasswordToggle = function () {
@@ -342,6 +364,7 @@ let tkbase = function () {
   return {
     initSugar: initSugar,
     initDialogConfirm: initDialogConfirm,
+    initDatepicker: initDatepicker,
     initPasswordToggle:initPasswordToggle,
     initDataToggle: initDataToggle,
     initTkInputLock: initTkInputLock,
