@@ -3,6 +3,7 @@ namespace Bs\Ui;
 
 use Dom\Template;
 use Tk\Traits\SystemTrait;
+use Tk\Uri;
 
 /**
  * Use this object to track and render a crumb stack.
@@ -124,9 +125,10 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
     {
         if (!count($this->getCrumbStack())) return '';
         $copy = array_keys($this->getCrumbStack());
-        $currentUrl = $copy[count($copy)-1];
+        $currentUrl = Uri::create()->getRelativePath();
         do {
             $bUrl = array_pop($copy);
+            vd($currentUrl, $bUrl);
         } while (count($copy) && $currentUrl == $bUrl);
         return $bUrl;
     }
