@@ -128,7 +128,6 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         $currentUrl = Uri::create()->getRelativePath();
         do {
             $bUrl = array_pop($copy);
-            vd($currentUrl, $bUrl);
         } while (count($copy) && $currentUrl == $bUrl);
         return $bUrl;
     }
