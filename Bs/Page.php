@@ -7,6 +7,7 @@ use Tk\Uri;
 
 class Page extends \Dom\Mvc\Page
 {
+    protected bool $crumbEnabled = true;
 
     public function show(): ?Template
     {
@@ -56,4 +57,16 @@ JS;
     {
         return Uri::create($this->getCrumbs()->getBackUrl());
     }
+
+    public function isCrumbEnabled(): bool
+    {
+        return $this->crumbEnabled;
+    }
+
+    public function setCrumbEnabled(bool $crumbEnabled): static
+    {
+        $this->crumbEnabled = $crumbEnabled;
+        return $this;
+    }
+
 }

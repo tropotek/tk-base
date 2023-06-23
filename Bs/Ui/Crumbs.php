@@ -146,7 +146,6 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
     public function addCrumb(string $url, string $title = ''): static
     {
         $url = \Tk\Uri::create($url)->getRelativePath();
-        //vd($url, $this->getHomeUrl());
         if ($url == $this->getHomeUrl()) return $this;
         if (!$title) $title = basename($url);
         $this->crumbStack[$url] = $title;
