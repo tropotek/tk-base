@@ -169,7 +169,7 @@ class Factory extends \Tk\Factory
      */
     public function getCrumbs(): ?Crumbs
     {
-        $this->getSession()->set('breadcrumbs', null);
+        //$this->getSession()->set('breadcrumbs', null);
         if (!$this->has('breadcrumbs')) {
             $crumbs = $this->getSession()->get('breadcrumbs');
             if (!$crumbs instanceof Crumbs) {
