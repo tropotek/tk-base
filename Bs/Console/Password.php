@@ -31,7 +31,7 @@ class Password extends Console
 
         $username = $input->getArgument('username');
 
-        $user = UserMap::create()->findByUsername($username);
+        $user = $this->getFactory()->getUserMap()->findByUsername($username);
         if (!$user) {
             $this->writeError('Error: No valid user found.');
             return self::FAILURE;

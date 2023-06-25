@@ -3,6 +3,7 @@ namespace Bs\Db\Traits;
 
 use Bs\Db\User;
 use Bs\Db\UserMap;
+use Bs\Factory;
 
 trait UserTrait
 {
@@ -24,7 +25,7 @@ trait UserTrait
     public function getUser(): ?User
     {
         if (!$this->_user) {
-            $this->_user = UserMap::create()->find($this->getUserId());
+            $this->_user = Factory::instance()->getUserMap()->find($this->getUserId());
         }
         return $this->_user;
     }

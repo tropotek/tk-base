@@ -398,10 +398,10 @@ class User extends Model implements UserInterface
 
     public function rememberMe(int $day = 30): void
     {
-        [$selector, $validator, $token] = UserMap::create()->generateToken();
+        [$selector, $validator, $token] = $this->getMapper()->generateToken();
 
         // remove all existing token associated with the user id
-        UserMap::create()->deleteToken($this->getId());
+        $this->getMapper()->deleteToken($this->getId());
 
         // set expiration date
         $expired_seconds = time() + 60 * 60 * 24 * $day;
@@ -410,7 +410,7 @@ class User extends Model implements UserInterface
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
         $expiry = date('Y-m-d H:i:s', $expired_seconds);
 
-        if (UserMap::create()->insertToken($this->getId(), $selector, $hash_validator, $expiry)) {
+        if ($this->getMapper()->insertToken($this->getId(), $selector, $hash_validator, $expiry)) {
             // TODO: we need to manage the response object so we can call on it when needed.
             //$cookie = Cookie::create('remember', $token, Date::create()->add(new \DateInterval('PT'.$expired_seconds.'S')));
             // use standard php cookie for now.
@@ -434,13 +434,14 @@ class User extends Model implements UserInterface
      */
     public static function retrieveMe(): ?User
     {
+        $map = Factory::instance()->getUserMap();
         $user = null;
         $token = Factory::instance()->getRequest()->cookies->get(UserMap::REMEMBER_CID, '');
         if ($token) {
-            [$selector, $validator] = UserMap::create()->parseToken($token);
-            $tokens = UserMap::create()->findTokenBySelector($selector);
+            [$selector, $validator] = $map->parseToken($token);
+            $tokens = $map->findTokenBySelector($selector);
             if (password_verify($validator, $tokens['hashed_validator'])) {
-                $user = UserMap::create()->findBySelector($selector);
+                $user = $map->findBySelector($selector);
                 if ($user) {
                     Factory::instance()->getAuthController()->getStorage()->write($user->getUsername());
                 }

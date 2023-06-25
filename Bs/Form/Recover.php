@@ -73,7 +73,7 @@ class Recover
             return;
         }
 
-        $user = UserMap::create()->findByUsername(strtolower($form->getFieldValue('username')));
+        $user = $this->getFactory()->getUserMap()->findByUsername(strtolower($form->getFieldValue('username')));
         if (!$user) {
             $form->addFieldError('username', 'Please enter a valid username.');
             return;
@@ -107,7 +107,7 @@ class Recover
             Uri::create('/home')->redirect();
         }
 
-        $this->user = UserMap::create()->findByHash($arr['h'] ?? '');
+        $this->user = $this->getFactory()->getUserMap()->findByHash($arr['h'] ?? '');
         if (!$this->user) {
             Alert::addError('Invalid user token');
             Uri::create('/home')->redirect();

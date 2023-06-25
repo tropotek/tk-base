@@ -100,7 +100,7 @@ class Masquerade
         if ($session->has(static::SID)) {
             $msqArr = current($session->get(static::SID));
             /** @var User $user */
-            $user = UserMap::create()->find($msqArr['userId']);
+            $user = Factory::instance()->getUserMap()->find($msqArr['userId']);
         }
         return $user;
     }
