@@ -10,4 +10,8 @@ return function (Config $config)
     $config->set('path.template.maintenance', '/html/public.html');
     $config->set('path.template.login',       '/html/login.html');
 
+    $config->set('sql.migrate.list', [
+        'App Sql' => $config->getBasePath() . '/src/config',
+        'Bs Sql'  => $config->get . '/src/config',
+    ]);
 };
