@@ -23,8 +23,9 @@ trait UserTrait
 
     public function getUser(): ?User
     {
-        if (!$this->_user)
+        if (!$this->_user) {
             $this->_user = UserMap::create()->find($this->getUserId());
+        }
         return $this->_user;
     }
 
