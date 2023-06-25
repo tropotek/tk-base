@@ -5,6 +5,7 @@ use Bs\Factory;
 use Bs\Util\Masquerade;
 use Bs\Db\Traits\HashTrait;
 use Bs\Db\Traits\TimestampTrait;
+use Tk\Config;
 use Tk\Db\Mapper\Model;
 use Tk\Db\Mapper\Result;
 use Tk\Encrypt;
@@ -339,26 +340,28 @@ class User extends Model implements UserInterface
         return $errors;
     }
 
-    public static function checkPassword(string $pwd, array &$errors = []): array
+    public static function validatePassword(string $pwd, array &$errors = []): array
     {
+        if (Config::instance()->isDebug()) return $errors;
+
         if (strlen($pwd) < 8) {
-            $errors[] = "Password too short!";
+            $errors[] = "Password too short";
         }
 
         if (!preg_match("#[0-9]+#", $pwd)) {
-            $errors[] = "Must include at least one number!";
+            $errors[] = "Must include at least one number";
         }
 
         if (!preg_match("#[a-zA-Z]+#", $pwd)) {
-            $errors[] = "Must include at least one letter!";
+            $errors[] = "Must include at least one letter";
         }
 
         if( !preg_match("#[A-Z]+#", $pwd) ) {
-            $errors[] = "Must include at least one Capital!";
+            $errors[] = "Must include at least one capital";
         }
 
         if( !preg_match("#\W+#", $pwd) ) {
-            $errors[] = "Must include at least one symbol!";
+            $errors[] = "Must include at least one symbol";
         }
 
         return $errors;

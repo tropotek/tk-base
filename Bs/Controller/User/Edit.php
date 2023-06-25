@@ -5,7 +5,6 @@ use Bs\Db\User;
 use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Tk\Uri;
 
 class Edit extends PageController
 {
