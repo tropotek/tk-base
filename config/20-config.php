@@ -12,6 +12,6 @@ return function (Config $config)
 
     $config->set('sql.migrate.list', [
         'App Sql' => $config->getBasePath() . '/src/config',
-        'Bs Sql'  => $config->get . '/src/config',
+        'Bs Sql'  => $config->getBasePath() . $config->get('path.vendor.org') . '/tk-base/config/sql',
     ]);
 };
