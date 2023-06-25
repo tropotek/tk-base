@@ -60,7 +60,7 @@ class User
         }
 
         if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(\Bs\Db\User::PERM_SYSADMIN)) {
-            $field = $this->getForm()->appendField(new Checkbox('perm', array_flip(\Bs\Db\User::PERMISSION_LIST)))
+            $field = $this->getForm()->appendField(new Checkbox('perm', array_flip($this->getUser()->getAvailablePermissions())))
                 ->setLabel('Permissions')
                 ->setGroup($group);
 

@@ -110,17 +110,17 @@ class User
 
         if ($this->type == \Bs\Db\User::TYPE_STAFF) {
             $this->getTable()->appendCell(new Cell\Text('permissions'))
-                ->addOnShow(function (Cell\Text $cell) {
+                ->addOnShow(function (Cell\Text $cell, mixed $value) {
                     /** @var \Bs\Db\User $user */
                     $user = $cell->getRow()->getData();
                     if ($user->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
-                        $cell->setValue(\Bs\Db\User::PERMISSION_LIST[\Bs\Db\User::PERM_ADMIN]);
-                        return;
+                        $list = $user->getAvailablePermissions();
+                        return $list[\Bs\Db\User::PERM_ADMIN];
                     }
-                    $list = array_filter(\Bs\Db\User::PERMISSION_LIST, function ($k) use ($user) {
+                    $list = array_filter($user->getAvailablePermissions(), function ($k) use ($user) {
                         return $user->hasPermission($k);
                     }, ARRAY_FILTER_USE_KEY);
-                    $cell->setValue(implode(', ', $list));
+                    return implode(', ', $list);
                 });
         }
 

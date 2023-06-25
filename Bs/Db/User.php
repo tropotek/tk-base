@@ -197,8 +197,22 @@ class User extends Model implements UserInterface
      */
     public function getPermissionList(): array
     {
-        return array_keys(array_filter(self::PERMISSION_LIST, fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
+        return array_keys(array_filter(static::PERMISSION_LIST, fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
     }
+
+    /**
+     * return a list of all available permissions for this user
+     * This is here, so we can get access to permissions from subclasses
+     * NOT: this may be refactored in the future
+     */
+    public function getAvailablePermissions(): array
+    {
+        if ($this->isStaff()) {
+            return static::PERMISSION_LIST;
+        }
+        return [];
+    }
+
 
     public function canMasqueradeAs(UserInterface $msqUser): bool
     {

@@ -44,7 +44,7 @@ class Profile
             ->setRequired();
 
         if ($this->user->isType(\Bs\Db\User::TYPE_STAFF)) {
-            $this->getForm()->appendField(new Checkbox('perm', array_flip(\Bs\Db\User::PERMISSION_LIST)))
+            $this->getForm()->appendField(new Checkbox('perm', array_flip($this->user->getAvailablePermissions())))
                 ->setGroup($tab)
                 ->setDisabled()
                 ->setReadonly();
