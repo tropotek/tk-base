@@ -181,7 +181,6 @@ class Factory extends \Tk\Factory
         return $message;
     }
 
-
     public function createUser(): User
     {
         return new User();
