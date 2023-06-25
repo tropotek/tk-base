@@ -123,7 +123,6 @@ function clearForm(form) {
 };
 
 
-
 let tkbase = function () {
   "use strict";
 
@@ -137,6 +136,24 @@ let tkbase = function () {
       return;
     }
     Sugar.extend();
+  };
+
+
+  /**
+   * Creates bootstrap 5 tabs around the \Tk\Form renderer groups (.tk-form-group) output
+   */
+  let initTkFormTabs = function () {
+    if ($.fn.tktabs === undefined) {
+      console.warn('jquery.tktabs.js is not installed.');
+      return;
+    }
+
+    function init() {
+      $(this).tktabs();
+    }
+
+    init();
+    $('form').on(EVENT_INIT, document, init).each(init);
   };
 
 
@@ -329,38 +346,6 @@ let tkbase = function () {
   };  // end initTinymce()
 
 
-  /**
-   * Code Mirror setup
-   * @todo Implement this into our javascript and css textarea editors
-   */
-  let initCodemirror = function () {
-    if (typeof CodeMirror === 'undefined') {
-      console.warn('Plugin not loaded: CodeMirror');
-      return;
-    }
-
-    function init() {
-      let el = this;
-      this.cm = CodeMirror.fromTextArea(this, $.extend({}, {
-        lineNumbers: true,
-        mode: 'javascript',
-        smartIndent: true,
-        indentUnit: 2,
-        tabSize: 2,
-        autoRefresh: true,
-        indentWithTabs: false,
-        dragDrop: false
-      }, $(this).data()));
-
-      $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
-        this.refresh();
-      }.bind(el.cm));
-    };
-
-    init();
-    $('body').on(EVENT_INIT_FORM, init);
-  };  // end initCodemirror()
-
   return {
     initSugar: initSugar,
     initDialogConfirm: initDialogConfirm,
@@ -369,7 +354,7 @@ let tkbase = function () {
     initDataToggle: initDataToggle,
     initTkInputLock: initTkInputLock,
     initTinymce: initTinymce,
-    initCodemirror: initCodemirror,
+    initTkFormTabs: initTkFormTabs,
   }
 }();
 

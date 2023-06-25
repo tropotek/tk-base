@@ -2,10 +2,12 @@
 namespace Bs;
 
 use Bs\Listener\MaintenanceHandler;
+use Bs\Listener\RememberMeHandler;
 use Dom\Mvc\EventListener\PageBytesHandler;
 use Dom\Mvc\EventListener\ViewHandler;
 use Dom\Mvc\Modifier\PageBytes;
 use Tk\Mvc\EventListener\ExceptionListener;
+use Bs\Listener\CrumbsHandler;
 
 class Dispatch extends \Tk\Mvc\Dispatch
 {
@@ -26,6 +28,8 @@ class Dispatch extends \Tk\Mvc\Dispatch
         parent::httpInit();
 
         $this->getDispatcher()->addSubscriber(new MaintenanceHandler());
+        $this->getDispatcher()->addSubscriber(new RememberMeHandler());
+        $this->getDispatcher()->addSubscriber(new CrumbsHandler());
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',

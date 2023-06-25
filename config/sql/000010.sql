@@ -56,6 +56,19 @@ SET SQL_SAFE_UPDATES = 1;
 SET FOREIGN_KEY_CHECKS = 1;
 
 
+-- TODO Add the following event to your sites event.sql
+-- Delete expired user 'remember me' login tokens
+# DROP EVENT IF EXISTS evt_delete_expired_user_tokens;
+# DELIMITER //
+# CREATE EVENT evt_delete_expired_user_tokens
+#   ON SCHEDULE EVERY 1 DAY
+#   COMMENT 'Delete expired user remember me login tokens'
+#   DO
+#   BEGIN
+#     DELETE FROM user_tokens WHERE expiry < NOW();
+#   END
+# //
+# DELIMITER ;
 
 
 

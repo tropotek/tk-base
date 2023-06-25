@@ -1,15 +1,18 @@
 <?php
 namespace Bs;
 
+use Bs\Db\User;
 use Bs\Db\UserInterface;
+use Bs\Db\UserMap;
+use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
 use Dom\Mvc\Loader;
 use Dom\Mvc\Modifier;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
+use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
-use Tk\DataMap\Db\TextEncrypt;
 use Tk\Mail\CurlyMessage;
 use Tk\Uri;
 
@@ -47,22 +50,35 @@ class Factory extends \Tk\Factory
     }
 
     /**
+     * Return a User object or record that is located from the Auth's getIdentity() method
+     * Override this method in your own site's Factory object
+     * @return null|UserInterface|User Null if no user logged in
+     */
+    public function getAuthUser(): null|UserInterface|User
+    {
+        if (!$this->has('authUser')) {
+            if ($this->getAuthController()->hasIdentity()) {
+                $user = UserMap::create()->findByUsername($this->getAuthController()->getIdentity());
+                $this->set('authUser', $user);
+            }
+        }
+        return $this->get('authUser');
+    }
+
+    /**
      * This is the default Authentication adapter
      * Override this method in your own site's Factory object
      */
     public function getAuthAdapter(): AdapterInterface
     {
-        return $this->get('authAdapter', null);
+        if (!$this->has('authAdapter')) {
+            //$adapter = new DbTable($this->getDb(), 'user', 'username', 'password');
+            $adapter = new AuthUser(UserMap::create());
+            $this->set('authAdapter', $adapter);
+        }
+        return $this->get('authAdapter');
     }
 
-    /**
-     * Return a User object or record that is located from the Auth's getIdentity() method
-     * Override this method in your own site's Factory object
-     */
-    public function getAuthUser(): ?UserInterface
-    {
-        return $this->get('authUser', null);
-    }
 
     // Page/Template Methods
 
@@ -117,6 +133,7 @@ class Factory extends \Tk\Factory
                 $dm->addFilter('scss', $scss);
             }
 
+            $dm->addFilter('appAttributes', new DomAttributes());
             $dm->addFilter('urlPath', new Modifier\UrlPath($this->getConfig()->getBaseUrl()));
             $dm->addFilter('jsLast', new Modifier\JsLast());
             if ($this->getConfig()->isDebug()) {
@@ -162,6 +179,17 @@ class Factory extends \Tk\Factory
         $message->set('sig', $this->getRegistry()->get('site.email.sig', ''));
 
         return $message;
+    }
+
+
+    public function createUser(): User
+    {
+        return new User();
+    }
+
+    public function getUserMap(): UserMap
+    {
+        return UserMap::create();
     }
 
     /**
