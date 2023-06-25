@@ -58,7 +58,7 @@ class Factory extends \Tk\Factory
     {
         if (!$this->has('authUser')) {
             if ($this->getAuthController()->hasIdentity()) {
-                $user = UserMap::create()->findByUsername($this->getAuthController()->getIdentity());
+                $user = $this->getUserMap()->findByUsername($this->getAuthController()->getIdentity());
                 $this->set('authUser', $user);
             }
         }
@@ -73,7 +73,7 @@ class Factory extends \Tk\Factory
     {
         if (!$this->has('authAdapter')) {
             //$adapter = new DbTable($this->getDb(), 'user', 'username', 'password');
-            $adapter = new AuthUser(UserMap::create());
+            $adapter = new AuthUser($this->getUserMap());
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');

@@ -49,7 +49,7 @@ class Register extends PageController
             Uri::create('/home')->redirect();
         }
 
-        $user = UserMap::create()->findByHash($arr['h'] ?? '');
+        $user = $this->getFactory()->getUserMap()->findByHash($arr['h'] ?? '');
         if (!$user) {
             Alert::addError('Invalid user registration');
             Uri::create('/home')->redirect();

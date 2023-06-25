@@ -37,7 +37,7 @@ class User
     private function doDelete($user_id)
     {
         /** @var \Bs\Db\User $user */
-        $user = UserMap::create()->find($user_id);
+        $user = $this->getFactory()->getUserMap()->find($user_id);
         $user?->delete();
 
         Alert::addSuccess('User removed successfully.');
@@ -47,7 +47,7 @@ class User
     private function doMsq($id)
     {
         /** @var \Bs\Db\User $msqUser */
-        $msqUser = UserMap::create()->find($id);
+        $msqUser = $this->getFactory()->getUserMap()->find($id);
         if ($msqUser && Masquerade::masqueradeLogin($this->getFactory()->getAuthUser(), $msqUser)) {
             Alert::addSuccess('You are now logged in as user ' . $msqUser->getUsername());
             Uri::create('/')->redirect();
@@ -170,7 +170,7 @@ class User
         $tool = $this->getTable()->getTool();
         $filter = $this->getFilter()->getFieldValues();
         $filter['type'] = $this->type;
-        $list = UserMap::create()->findFiltered($filter, $tool);
+        $list = $this->getFactory()->getUserMap()->findFiltered($filter, $tool);
         $this->getTable()->setList($list, $tool->getFoundRows());
 
         $this->getTable()->execute($request);
