@@ -280,7 +280,7 @@ let tkbase = function () {
    *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
    */
   let initTinymce = function () {
-    if (tinymce === undefined) {
+    if (typeof(tinymce) === 'undefined') {
       console.warn('Plugin not loaded: jquery.tinymce');
       return;
     }
