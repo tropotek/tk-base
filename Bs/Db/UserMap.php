@@ -12,7 +12,6 @@ use Tk\DataMap\Table;
 
 class UserMap extends Mapper
 {
-    const REMEMBER_CID = '__rmb';
 
     public function makeDataMaps(): void
     {

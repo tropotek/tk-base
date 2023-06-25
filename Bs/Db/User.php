@@ -17,6 +17,11 @@ class User extends Model implements UserInterface
     use HashTrait;
 
     /**
+     * The remember me cookie name
+     */
+    const REMEMBER_CID = '__rmb';
+
+    /**
      * permission values
 	 * permissions are bit masks that can include on or more bits
 	 * requests for permission are ANDed with the user's permissions
@@ -428,7 +433,7 @@ class User extends Model implements UserInterface
             // TODO: we need to manage the response object so we can call on it when needed.
             //$cookie = Cookie::create('remember', $token, Date::create()->add(new \DateInterval('PT'.$expired_seconds.'S')));
             // use standard php cookie for now.
-            setcookie(UserMap::REMEMBER_CID, $token, $expired_seconds);
+            setcookie(self::REMEMBER_CID, $token, $expired_seconds, $this->getConfig()->getBaseUrl(), $this->getConfig()->getHostname(), true, true);
         }
     }
 
@@ -438,7 +443,7 @@ class User extends Model implements UserInterface
     public function forgetMe(): void
     {
         $this->getMapper()->deleteToken($this->getId());
-        setcookie(UserMap::REMEMBER_CID, '', -1);
+        setcookie(self::REMEMBER_CID, '', time() - 3600, $this->getConfig()->getBaseUrl(), $this->getConfig()->getHostname(), true, true);
     }
 
     /**
@@ -450,7 +455,7 @@ class User extends Model implements UserInterface
     {
         $map = Factory::instance()->getUserMap();
         $user = null;
-        $token = Factory::instance()->getRequest()->cookies->get(UserMap::REMEMBER_CID, '');
+        $token = Factory::instance()->getRequest()->cookies->get(self::REMEMBER_CID, '');
         if ($token) {
             [$selector, $validator] = $map->parseToken($token);
             $tokens = $map->findTokenBySelector($selector);
