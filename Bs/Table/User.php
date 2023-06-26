@@ -119,21 +119,21 @@ class User
             $this->getTable()->appendCell(new Cell\Text('type'));
         }
 
-        if ($this->type != \Bs\Db\User::TYPE_MEMBER) {
-            $this->getTable()->appendCell(new Cell\Text('permissions'))
-                ->addOnShow(function (Cell\Text $cell, mixed $value) {
-                    /** @var \Bs\Db\User $obj */
-                    $obj = $cell->getRow()->getData();
-                    if ($obj->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
-                        $list = $obj->getAvailablePermissions();
-                        return $list[\Bs\Db\User::PERM_ADMIN];
-                    }
-                    $list = array_filter($obj->getAvailablePermissions(), function ($k) use ($obj) {
-                        return $obj->hasPermission($k);
-                    }, ARRAY_FILTER_USE_KEY);
-                    return implode(', ', $list);
-                });
-        }
+//        if ($this->type != \Bs\Db\User::TYPE_MEMBER) {
+//            $this->getTable()->appendCell(new Cell\Text('permissions'))
+//                ->addOnShow(function (Cell\Text $cell, mixed $value) {
+//                    /** @var \Bs\Db\User $obj */
+//                    $obj = $cell->getRow()->getData();
+//                    if ($obj->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
+//                        $list = $obj->getAvailablePermissions();
+//                        return $list[\Bs\Db\User::PERM_ADMIN];
+//                    }
+//                    $list = array_filter($obj->getAvailablePermissions(), function ($k) use ($obj) {
+//                        return $obj->hasPermission($k);
+//                    }, ARRAY_FILTER_USE_KEY);
+//                    return implode(', ', $list);
+//                });
+//        }
 
         $this->getTable()->appendCell(new Cell\Text('email'))
             ->addOnShow(function (Cell\Text $cell) {
