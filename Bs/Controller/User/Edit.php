@@ -10,7 +10,7 @@ class Edit extends PageController
 {
     protected \Bs\Form\User $form;
 
-    protected string $type = \Bs\Db\User::TYPE_USER;
+    protected string $type = \Bs\Db\User::TYPE_MEMBER;
 
 
     public function __construct()

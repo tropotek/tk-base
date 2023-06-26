@@ -21,7 +21,7 @@ class User
 
     protected ?\Bs\Db\User $user = null;
 
-    protected string $type = \Bs\Db\User::TYPE_USER;
+    protected string $type = \Bs\Db\User::TYPE_MEMBER;
 
 
     public function __construct()
@@ -29,7 +29,7 @@ class User
         $this->setForm(Form::create('user'));
     }
 
-    public function doDefault(Request $request, int $id, string $type = \Bs\Db\User::TYPE_USER)
+    public function doDefault(Request $request, int $id, string $type = \Bs\Db\User::TYPE_MEMBER)
     {
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();

@@ -11,7 +11,7 @@ class Manager extends PageController
 {
     protected \Bs\Table\User $table;
 
-    protected string $type = User::TYPE_USER;
+    protected string $type = User::TYPE_MEMBER;
 
     public function __construct()
     {
@@ -23,7 +23,7 @@ class Manager extends PageController
     public function doDefault(Request $request, string $type)
     {
         $this->type = $type;
-        if ($this->type == User::TYPE_USER) {
+        if ($this->type == User::TYPE_MEMBER) {
             $this->setAccess(User::PERM_MANAGE_USER);
         } else if ($this->type == User::TYPE_STAFF) {
             $this->setAccess(User::PERM_MANAGE_STAFF);

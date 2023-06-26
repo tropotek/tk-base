@@ -76,7 +76,7 @@ class Register
         $this->user = $this->getFactory()->createUser();
         $this->user->setActive(false);
         $this->user->setNotes('pending activation');
-        $this->user->setType(\Bs\Db\User::TYPE_USER);
+        $this->user->setType(\Bs\Db\User::TYPE_MEMBER);
 
         $this->user->getMapper()->getFormMap()->loadObject($this->user, $form->getFieldValues());
 

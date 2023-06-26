@@ -53,14 +53,14 @@ class User extends Model implements UserInterface
     /**
      * Base logged-in user type (Access to user pages)
      */
-    const TYPE_USER = 'user';
+    const TYPE_MEMBER = 'member';
 
 
     public int $id = 0;
 
     public string $uid = '';
 
-    public string $type = self::TYPE_USER;
+    public string $type = self::TYPE_MEMBER;
 
     public int $permissions = 0;
 
@@ -148,9 +148,9 @@ class User extends Model implements UserInterface
         return $this->isType(self::TYPE_STAFF);
     }
 
-    public function isUser(): bool
+    public function isMember(): bool
     {
-        return $this->isType(self::TYPE_USER);
+        return $this->isType(self::TYPE_MEMBER);
     }
 
     public function isType(string|array $type): bool
@@ -222,7 +222,7 @@ class User extends Model implements UserInterface
     public function canMasqueradeAs(UserInterface $msqUser): bool
     {
         if ($this->isAdmin()) return true;
-        if ($this->isStaff() && $msqUser->isType(self::TYPE_USER)) return true;
+        if ($this->isStaff() && $msqUser->isType(self::TYPE_MEMBER)) return true;
         return false;
     }
 

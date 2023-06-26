@@ -24,10 +24,10 @@ return function (CollectionConfigurator $routes) {
         ->controller([\Bs\Controller\User\Profile::class, 'doDefault']);
     $routes->add('user-manager', '/user/{type}Manager')
         ->controller([\Bs\Controller\User\Manager::class, 'doDefault'])
-        ->defaults(['type' => \Bs\Db\User::TYPE_USER]);
+        ->defaults(['type' => \Bs\Db\User::TYPE_MEMBER]);
     $routes->add('user-edit', '/user/{type}Edit')
         ->controller([\Bs\Controller\User\Edit::class, 'doDefault'])
-        ->defaults(['type' => \Bs\Db\User::TYPE_USER]);
+        ->defaults(['type' => \Bs\Db\User::TYPE_MEMBER]);
 
 
     $routes->add('tail-log', '/tailLog')

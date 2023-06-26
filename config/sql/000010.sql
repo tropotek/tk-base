@@ -39,21 +39,21 @@ CREATE TABLE IF NOT EXISTS user_tokens
 );
 
 
-
-SET FOREIGN_KEY_CHECKS = 0;
-SET SQL_SAFE_UPDATES = 0;
-
-TRUNCATE TABLE user;
-TRUNCATE TABLE user_tokens;
-
-INSERT INTO user (type, username, email, name, timezone, permissions) VALUES
-  ('staff', 'admin', 'admin@example.com', 'Admin', NULL, 1)
-;
-
-UPDATE `user` SET `hash` = MD5(CONCAT(username, id)) WHERE 1;
-
-SET SQL_SAFE_UPDATES = 1;
-SET FOREIGN_KEY_CHECKS = 1;
+# TODO: you need to instert data in the App migration scripts
+# SET FOREIGN_KEY_CHECKS = 0;
+# SET SQL_SAFE_UPDATES = 0;
+#
+# TRUNCATE TABLE user;
+# TRUNCATE TABLE user_tokens;
+#
+# INSERT INTO user (type, username, email, name, timezone, permissions) VALUES
+#   ('staff', 'admin', 'admin@example.com', 'Admin', NULL, 1)
+# ;
+#
+# UPDATE `user` SET `hash` = MD5(CONCAT(username, id)) WHERE 1;
+#
+# SET SQL_SAFE_UPDATES = 1;
+# SET FOREIGN_KEY_CHECKS = 1;
 
 
 -- TODO Add the following event to your sites event.sql
