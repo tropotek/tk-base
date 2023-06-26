@@ -99,7 +99,7 @@ class User extends Model implements UserInterface
     public function save(): void
     {
         $this->getHash();
-        
+
         if (!$this->getUsername() && $this->getEmail()) {
             $this->setUsername($this->getEmail());
         }

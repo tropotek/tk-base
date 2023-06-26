@@ -115,6 +115,10 @@ class User
 
         $this->getTable()->appendCell(new Cell\Text('name'));
 
+        if (!$this->type) {
+            $this->getTable()->appendCell(new Cell\Text('type'));
+        }
+
         if ($this->type != \Bs\Db\User::TYPE_MEMBER) {
             $this->getTable()->appendCell(new Cell\Text('permissions'))
                 ->addOnShow(function (Cell\Text $cell, mixed $value) {
