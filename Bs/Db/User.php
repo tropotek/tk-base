@@ -99,6 +99,10 @@ class User extends Model implements UserInterface
     public function save(): void
     {
         $this->getHash();
+        
+        if (!$this->getUsername() && $this->getEmail()) {
+            $this->setUsername($this->getEmail());
+        }
         // Remove permissions for non-staff users
         if ($this->isType(self::TYPE_MEMBER)) {
             $this->setPermissions(0);
