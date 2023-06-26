@@ -25,11 +25,12 @@ class User
 
     protected ?Form $filter = null;
 
-    protected string $type = \Bs\Db\User::TYPE_MEMBER;
+    protected string $type = '';
 
 
-    public function __construct()
+    public function __construct(string $type = '')
     {
+        $this->type = $type;
         $this->table = new Table('users');
         $this->filter = new Form($this->table->getId() . '-filters');
     }
@@ -57,15 +58,16 @@ class User
         Uri::create()->remove(Masquerade::QUERY_MSQ)->redirect();
     }
 
-    public function doDefault(Request $request, string $type)
+    public function doDefault(Request $request)
     {
-        $this->type = $type;
         if ($request->query->has('del')) {
             $this->doDelete($request->query->get('del'));
         }
+
         if ($request->query->has(Masquerade::QUERY_MSQ)) {
             $this->doMsq($request->query->get(Masquerade::QUERY_MSQ));
         }
+
         $editUrl = sprintf('/user/%sEdit', $this->type);
 
         $this->getTable()->appendCell(new Cell\Checkbox('id'));
@@ -79,7 +81,7 @@ class User
                 $btn->setText('');
                 $btn->setIcon('fa fa-edit');
                 $btn->addCss('btn btn-primary');
-                $btn->setUrl(Uri::create($editUrl)->set('id', $obj->getId()));
+                $btn->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('id', $obj->getId()));
                 $template->appendTemplate('td', $btn->show());
                 $template->appendHtml('td', '&nbsp;');
 
@@ -103,22 +105,27 @@ class User
             });
 
         $this->getTable()->appendCell(new Cell\Text('username'))
+            ->addOnShow(function (Cell\Text $cell, mixed $value) {
+                    /** @var \Bs\Db\User $obj */
+                    $obj = $cell->getRow()->getData();
+                    $cell->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('id', $obj->getId()));
+                })
             ->setUrl(Uri::create($editUrl))
             ->setAttr('style', 'width: 100%;');
 
         $this->getTable()->appendCell(new Cell\Text('name'));
 
-        if ($this->type == \Bs\Db\User::TYPE_STAFF) {
+        if ($this->type != \Bs\Db\User::TYPE_MEMBER) {
             $this->getTable()->appendCell(new Cell\Text('permissions'))
                 ->addOnShow(function (Cell\Text $cell, mixed $value) {
-                    /** @var \Bs\Db\User $user */
-                    $user = $cell->getRow()->getData();
-                    if ($user->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
-                        $list = $user->getAvailablePermissions();
+                    /** @var \Bs\Db\User $obj */
+                    $obj = $cell->getRow()->getData();
+                    if ($obj->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
+                        $list = $obj->getAvailablePermissions();
                         return $list[\Bs\Db\User::PERM_ADMIN];
                     }
-                    $list = array_filter($user->getAvailablePermissions(), function ($k) use ($user) {
-                        return $user->hasPermission($k);
+                    $list = array_filter($obj->getAvailablePermissions(), function ($k) use ($obj) {
+                        return $obj->hasPermission($k);
                     }, ARRAY_FILTER_USE_KEY);
                     return implode(', ', $list);
                 });
@@ -126,9 +133,9 @@ class User
 
         $this->getTable()->appendCell(new Cell\Text('email'))
             ->addOnShow(function (Cell\Text $cell) {
-                /** @var \Bs\Db\User $user */
-                $user = $cell->getRow()->getData();
-                $cell->setUrl('mailto:'.$user->getEmail());
+                /** @var \Bs\Db\User $obj */
+                $obj = $cell->getRow()->getData();
+                $cell->setUrl('mailto:'.$obj->getEmail());
             });
         $this->getTable()->appendCell(new Cell\Text('active'));
         //$this->getTable()->appendCell(new Cell\Text('modified'));
@@ -137,16 +144,19 @@ class User
 
         // Table filters
         $this->getFilter()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
-
+        if (!$this->type) {
+            $list = ['Staff' => \Bs\Db\User::TYPE_STAFF, 'Member' => \Bs\Db\User::TYPE_MEMBER];
+            $this->getFilter()->appendField(new Field\Select('type', $list))->prependOption('-- Type --', '');
+        }
 
         // Load filter values
         $this->getFilter()->setFieldValues($this->getTable()->getTableSession()->get($this->getFilter()->getId(), []));
 
-        $this->getFilter()->appendField(new Form\Action\Submit('Search', function (Form $form, Action\ActionInterface $action) {
+        $this->getFilter()->appendField(new Form\Action\Submit('Search', function (Form $form, Form\Action\ActionInterface $action) {
             $this->getTable()->getTableSession()->set($this->getFilter()->getId(), $form->getFieldValues());
             Uri::create()->redirect();
         }))->setGroup('');
-        $this->getFilter()->appendField(new Form\Action\Submit('Clear', function (Form $form, Action\ActionInterface $action) {
+        $this->getFilter()->appendField(new Form\Action\Submit('Clear', function (Form $form, Form\Action\ActionInterface $action) {
             $this->getTable()->getTableSession()->set($this->getFilter()->getId(), []);
             Uri::create()->redirect();
         }))->setGroup('')->addCss('btn-outline-secondary');
@@ -169,7 +179,8 @@ class User
         // Query
         $tool = $this->getTable()->getTool();
         $filter = $this->getFilter()->getFieldValues();
-        $filter['type'] = $this->type;
+        if ($this->type)
+            $filter['type'] = $this->type;
         $list = $this->getFactory()->getUserMap()->findFiltered($filter, $tool);
         $this->getTable()->setList($list, $tool->getFoundRows());
 

@@ -11,7 +11,7 @@ class Manager extends PageController
 {
     protected \Bs\Table\User $table;
 
-    protected string $type = User::TYPE_MEMBER;
+    protected string $type = '';
 
     public function __construct()
     {
@@ -20,22 +20,27 @@ class Manager extends PageController
         $this->getCrumbs()->reset();
     }
 
-    public function doDefault(Request $request, string $type)
+    public function doByType(Request $request, string $type)
     {
         $this->type = $type;
+        return $this->doDefault($request);
+    }
+
+    public function doDefault(Request $request)
+    {
         if ($this->type == User::TYPE_MEMBER) {
-            $this->setAccess(User::PERM_MANAGE_USER);
+            $this->setAccess(User::PERM_MANAGE_MEMBER);
         } else if ($this->type == User::TYPE_STAFF) {
             $this->setAccess(User::PERM_MANAGE_STAFF);
         } else {
             $this->setAccess(User::PERM_ADMIN);
         }
 
-        $this->getPage()->setTitle(ucfirst($this->type) . ' Manager');
+        $this->getPage()->setTitle(ucfirst($this->type ?: 'User') . ' Manager');
 
         // Get the form template
-        $this->table = new \Bs\Table\User();
-        $this->table->doDefault($request, $this->type);
+        $this->table = new \Bs\Table\User($this->type);
+        $this->table->doDefault($request);
 
         return $this->getPage();
     }
@@ -44,7 +49,14 @@ class Manager extends PageController
     {
         $template = $this->getTemplate();
         $template->appendText('title', $this->getPage()->getTitle());
-        $template->setAttr('create', 'href', Uri::create('/user/'.$this->type.'Edit'));
+        $template->setAttr('create-staff', 'href', Uri::create('/user/staffEdit'));
+        $template->setAttr('create-member', 'href', Uri::create('/user/memberEdit'));
+        if ($this->type == User::TYPE_STAFF) {
+            $template->setVisible('create-member', false);
+        }
+        if ($this->type == User::TYPE_MEMBER) {
+            $template->setVisible('create-staff', false);
+        }
 
         $template->appendTemplate('content', $this->table->show());
 
@@ -59,7 +71,8 @@ class Manager extends PageController
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-      <a href="/" title="Create User" class="btn btn-outline-secondary" var="create"><i class="fa fa-user"></i> Create User</a>
+      <a href="/" title="Create Staff" class="btn btn-outline-secondary" var="create-staff"><i class="fa fa-user"></i> Create Staff</a>
+      <a href="/" title="Create Member" class="btn btn-outline-secondary" var="create-member"><i class="fa fa-user"></i> Create Member</a>
     </div>
   </div>
   <div class="card mb-3">

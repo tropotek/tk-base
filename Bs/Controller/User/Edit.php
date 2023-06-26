@@ -17,7 +17,7 @@ class Edit extends PageController
     {
         parent::__construct($this->getFactory()->getPublicPage());
         $this->getPage()->setTitle('Edit User');
-        $this->setAccess(User::PERM_MANAGE_USER | User::PERM_MANAGE_STAFF);
+        $this->setAccess(User::PERM_MANAGE_MEMBER | User::PERM_MANAGE_STAFF);
     }
 
     public function doDefault(Request $request, string $type)
@@ -59,8 +59,7 @@ class Edit extends PageController
   <div class="card mb-3">
     <div class="card-header" var="title"><i class="fa fa-users"></i> </div>
     <div class="card-body" var="content">
-        <p choice="new-user"><b>NOTE:</b> New users will be sent an email requesting them to activate their account and create a new password.</p>
-
+      <p choice="new-user"><b>NOTE:</b> New users will be sent an email requesting them to activate their account and create a new password.</p>
     </div>
   </div>
 </div>

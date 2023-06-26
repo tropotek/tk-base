@@ -29,10 +29,10 @@ class User extends Model implements UserInterface
      *
      * high-level permissions for specific roles
      */
-	const PERM_ADMIN            = 0x00000001; // All permissions
-	const PERM_SYSADMIN         = 0x00000002; // Change system settings
-	const PERM_MANAGE_STAFF     = 0x00000004; // Manage staff users
-    const PERM_MANAGE_USER      = 0x00000008; // Manage base users
+	const PERM_ADMIN            = 0x00000001; // Admin
+	const PERM_SYSADMIN         = 0x00000002; // Change system
+	const PERM_MANAGE_STAFF     = 0x00000004; // Manage staff
+    const PERM_MANAGE_MEMBER    = 0x00000008; // Manage members
 	//                            0x00000010; // available
 
 	/**
@@ -42,7 +42,7 @@ class User extends Model implements UserInterface
         self::PERM_ADMIN            => "Admin",
         self::PERM_SYSADMIN         => "Manage Settings",
         self::PERM_MANAGE_STAFF     => "Manage Staff",
-        self::PERM_MANAGE_USER      => "Manage Users",
+        self::PERM_MANAGE_MEMBER    => "Manage Users",
     ];
 
     /**

@@ -22,10 +22,12 @@ return function (CollectionConfigurator $routes) {
 
     $routes->add('user-profile', '/profile')
         ->controller([\Bs\Controller\User\Profile::class, 'doDefault']);
-    $routes->add('user-manager', '/user/{type}Manager')
-        ->controller([\Bs\Controller\User\Manager::class, 'doDefault'])
+    $routes->add('user-manager', '/user/manager')
+        ->controller([\Bs\Controller\User\Manager::class, 'doDefault']);
+    $routes->add('user-type-manager', '/user/{type}Manager')
+        ->controller([\Bs\Controller\User\Manager::class, 'doByType'])
         ->defaults(['type' => \Bs\Db\User::TYPE_MEMBER]);
-    $routes->add('user-edit', '/user/{type}Edit')
+    $routes->add('user-type-edit', '/user/{type}Edit')
         ->controller([\Bs\Controller\User\Edit::class, 'doDefault'])
         ->defaults(['type' => \Bs\Db\User::TYPE_MEMBER]);
 
