@@ -47,11 +47,6 @@ class User
         $this->getForm()->appendField(new Input('name'))->setGroup($group)
             ->setRequired();
 
-//        if ($this->getFactory()->getAuthUser()->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
-//            $list = ['Staff' => \Bs\Db\User::TYPE_STAFF, 'Member' => \Bs\Db\User::TYPE_MEMBER];
-//            $this->getForm()->appendField(new Form\Field\Select('type', $list))->setGroup($group)->prependOption('-- Type --', '');
-//        }
-
         $l1 = $this->getForm()->appendField(new Input('username'))->setGroup($group)
             ->setRequired();
 

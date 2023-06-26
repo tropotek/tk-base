@@ -362,6 +362,11 @@ class User extends Model implements UserInterface
 
         if (!filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Please enter a valid email address';
+        } else {
+            $dup = $mapper->findByEmail($this->getEmail());
+            if ($dup && $dup->getId() != $this->getId()) {
+                $errors['email'] = 'This email is already in use';
+            }
         }
 
         if (!$this->getName()) {

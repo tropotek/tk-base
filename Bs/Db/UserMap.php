@@ -78,6 +78,11 @@ class UserMap extends Mapper
         return $this->findFiltered(['username' => $username])->current();
     }
 
+    public function findByEmail(string $email): ?User
+    {
+        return $this->findFiltered(['email' => $email])->current();
+    }
+
     public function findBySelector(string $selector): ?User
     {
         return $this->findFiltered(['selector' => $selector])->current();

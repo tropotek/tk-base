@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS user
   uid VARCHAR(128) NOT NULL DEFAULT '',
   type VARCHAR(32) NOT NULL DEFAULT '',
   permissions BIGINT NOT NULL DEFAULT 0,
-  username VARCHAR(128) NOT NULL DEFAULT '',
+  username VARCHAR(255) NOT NULL DEFAULT '',
   password VARCHAR(128) NOT NULL DEFAULT '',
   email VARCHAR(255) NOT NULL DEFAULT '',
   name VARCHAR(128) NOT NULL DEFAULT '',
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS user
   modified TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_username (username),
+  UNIQUE KEY uk_email (email),
   KEY k_uid (uid),
   KEY k_type (type),
   KEY k_email (email)
