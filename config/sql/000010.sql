@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS user_tokens
   id INT AUTO_INCREMENT PRIMARY KEY,
   selector VARCHAR(255) NOT NULL,
   hashed_validator VARCHAR(255) NOT NULL,
+  ip VARCHAR(128) NOT NULL,
   user_id INT UNSIGNED NOT NULL,
   expiry DATETIME NOT NULL,
   CONSTRAINT fk_user_tokens__user_id FOREIGN KEY (user_id) REFERENCES user (`id`) ON DELETE CASCADE

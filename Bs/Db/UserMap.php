@@ -179,7 +179,6 @@ class UserMap extends Mapper
     {
         $selector = bin2hex(random_bytes(16));
         $validator = bin2hex(random_bytes(32));
-
         return [$selector, $validator, $selector . ':' . $validator];
     }
 
@@ -189,7 +188,6 @@ class UserMap extends Mapper
     public function parseToken(string $token): ?array
     {
         $parts = explode(':', $token);
-
         if ($parts && count($parts) == 2) {
             return [$parts[0], $parts[1]];
         }
@@ -201,11 +199,14 @@ class UserMap extends Mapper
      */
     public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): bool
     {
-        $sql = 'INSERT INTO user_tokens(user_id, selector, hashed_validator, expiry)
-            VALUES(:user_id, :selector, :hashed_validator, :expiry)';
+        $ip = $this->getFactory()->getRequest()->getClientIp();
+        $ip = $this->getFactory()->getRequest()->getClientIp();
+        $sql = 'INSERT INTO user_tokens(user_id, ip, selector, hashed_validator, expiry)
+            VALUES(:user_id, :ip, :selector, :hashed_validator, :expiry)';
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
+        $statement->bindValue(':ip', $ip);
         $statement->bindValue(':selector', $selector);
         $statement->bindValue(':hashed_validator', $hashed_validator);
         $statement->bindValue(':expiry', $expiry);
@@ -220,14 +221,36 @@ class UserMap extends Mapper
      */
     public function findTokenBySelector(string $selector)
     {
-        $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
+        $ip = $this->getFactory()->getRequest()->getClientIp();
+        $sql = 'SELECT id, selector, hashed_validator, ip, user_id, expiry
             FROM user_tokens
             WHERE selector = :selector
+            AND ip = :ip
             AND expiry >= NOW()
             LIMIT 1';
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':selector', $selector);
+        $statement->bindValue(':ip', $ip);
+
+        $statement->execute();
+
+        return $statement->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function findTokenByUserId(string $userId)
+    {
+        $ip = $this->getFactory()->getRequest()->getClientIp();
+        $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
+            FROM user_tokens
+            WHERE user_id = :userId
+            AND ip = :ip
+            AND expiry >= NOW()
+            LIMIT 1';
+
+        $statement = $this->getDb()->prepare($sql);
+        $statement->bindValue(':userId', $userId);
+        $statement->bindValue(':ip', $ip);
 
         $statement->execute();
 
@@ -236,9 +259,11 @@ class UserMap extends Mapper
 
     public function deleteToken(int $user_id): bool
     {
-        $sql = 'DELETE FROM user_tokens WHERE user_id = :user_id';
+        $ip = $this->getFactory()->getRequest()->getClientIp();
+        $sql = 'DELETE FROM user_tokens WHERE user_id = :user_id AND ip = :ip';
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
+        $statement->bindValue(':ip', $ip);
 
         return $statement->execute();
     }
