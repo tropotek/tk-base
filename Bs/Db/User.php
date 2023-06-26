@@ -95,6 +95,17 @@ class User extends Model implements UserInterface
         $this->timezone = $this->getConfig()->get('php.date.timezone');
     }
 
+
+    public function save(): void
+    {
+        $this->getHash();
+        // Remove permissions for non-staff users
+        if ($this->isType(self::TYPE_MEMBER)) {
+            $this->setPermissions(0);
+        }
+        parent::save();
+    }
+
     /**
      * @param bool $cookie If true any stored login cookies will also be removed
      */

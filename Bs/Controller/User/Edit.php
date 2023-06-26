@@ -5,6 +5,8 @@ use Bs\Db\User;
 use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Tk\Alert;
+use Tk\Uri;
 
 class Edit extends PageController
 {
@@ -28,6 +30,19 @@ class Edit extends PageController
         $this->form = new \Bs\Form\User();
         $this->form->doDefault($request,  $request->query->getInt('id', 0), $type);
 
+        if ($request->query->get('cv')) {
+            $newType = trim($request->query->get('cv'));
+            if ($newType == User::TYPE_STAFF) {
+                $this->form->getUser()->setType(User::TYPE_STAFF);
+                Alert::addSuccess('User now set to type STAFF, please select and save the users new permissions.');
+            } else if ($newType == User::TYPE_MEMBER) {
+                $this->form->getUser()->setType(User::TYPE_MEMBER);
+                Alert::addSuccess('User now set to type MEMBER.');
+            }
+            $this->form->getUser()->save();
+            Uri::create()->remove('cv')->redirect();
+        }
+
         return $this->getPage();
     }
 
@@ -35,6 +50,19 @@ class Edit extends PageController
     {
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
+
+
+        if ($this->form->getUser()->getId() > 1 && $this->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
+            if ($this->form->getUser()->isType(User::TYPE_MEMBER)) {
+                $url = Uri::create()->set('cv', User::TYPE_STAFF);
+                $template->setAttr('to-staff', 'href', $url);
+                $template->setVisible('to-staff');
+            } else if ($this->form->getUser()->isType(User::TYPE_STAFF)) {
+                $url = Uri::create()->set('cv', User::TYPE_MEMBER);
+                $template->setAttr('to-member', 'href', $url);
+                $template->setVisible('to-member');
+            }
+        }
 
         $template->appendText('title', $this->getPage()->getTitle());
         $template->appendTemplate('content', $this->form->show());
@@ -54,6 +82,9 @@ class Edit extends PageController
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
+
+      <a href="/" title="Convert user to staff" data-confirm="Convert this user to staff" class="btn btn-outline-secondary" choice="to-staff"><i class="fa fa-retweet"></i> Convert To Staff</a>
+      <a href="/" title="Convert user to member" data-confirm="Convert this user to member" class="btn btn-outline-secondary" choice="to-member"><i class="fa fa-retweet"></i> Convert To Member</a>
     </div>
   </div>
   <div class="card mb-3">
