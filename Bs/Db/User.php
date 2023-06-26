@@ -450,10 +450,8 @@ class User extends Model implements UserInterface
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
 
         if ($this->getMapper()->insertToken($this->getId(), $selector, $hash_validator, $expiry)) {
-            // TODO: we need to manage the response object so we can call on it when needed.
-            //$cookie = Cookie::create('remember', $token, Date::create()->add(new \DateInterval('PT'.$expired_seconds.'S')));
-            // use standard php cookie for now.
             $opts = [
+                //'path' => $this->getConfig()->getBaseUrl(),
                 'expires' => $expired_seconds,
                 'secure' => true,
                 'httponly' => true,
