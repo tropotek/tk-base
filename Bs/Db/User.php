@@ -485,7 +485,7 @@ class User extends Model implements UserInterface
         if ($token) {
             [$selector, $validator] = $map->parseToken($token);
             $tokens = $map->findTokenBySelector($selector);
-            if (password_verify($validator, $tokens['hashed_validator'])) {
+            if ($tokens && password_verify($validator, $tokens['hashed_validator'])) {
                 $user = $map->findBySelector($selector);
                 if ($user) {
                     Factory::instance()->getAuthController()->getStorage()->write($user->getUsername());
