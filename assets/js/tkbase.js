@@ -132,7 +132,7 @@ let tkbase = function () {
    */
   let initSugar = function () {
     if (typeof Sugar === 'undefined') {
-      //console.warn('Plugin not loaded: Sugar');
+      vd('Plugin not loaded: Sugar');
       return;
     }
     Sugar.extend();
@@ -144,7 +144,7 @@ let tkbase = function () {
    */
   let initTkFormTabs = function () {
     if ($.fn.tktabs === undefined) {
-      console.warn('jquery.tktabs.js is not installed.');
+      vd('jquery.tktabs.js is not installed.');
       return;
     }
 
@@ -178,7 +178,7 @@ let tkbase = function () {
    */
   let initDatepicker = function () {
     if ($.fn.datepicker === undefined) {
-      console.warn('jquery-ui.js is not installed.');
+      vd('jquery-ui.js is not installed.');
       return;
     }
 
@@ -263,7 +263,7 @@ let tkbase = function () {
    */
   let initTkInputLock = function () {
     if ($.fn.tkInputLock === undefined) {
-      console.warn('Plugin not loaded: tkInputLock');
+      vd('Plugin not loaded: tkInputLock');
       return;
     }
     function init() {
@@ -281,7 +281,7 @@ let tkbase = function () {
    */
   let initTinymce = function () {
     if (typeof(tinymce) === 'undefined') {
-      console.warn('Plugin not loaded: jquery.tinymce');
+      vd('Plugin not loaded: jquery.tinymce');
       return;
     }
 

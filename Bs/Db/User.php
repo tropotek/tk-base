@@ -444,16 +444,22 @@ class User extends Model implements UserInterface
 
         // set expiration date
         $expired_seconds = time() + 60 * 60 * 24 * $day;
+        $expiry = date('Y-m-d H:i:s', $expired_seconds);
 
         // insert a token to the database
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
-        $expiry = date('Y-m-d H:i:s', $expired_seconds);
 
         if ($this->getMapper()->insertToken($this->getId(), $selector, $hash_validator, $expiry)) {
             // TODO: we need to manage the response object so we can call on it when needed.
             //$cookie = Cookie::create('remember', $token, Date::create()->add(new \DateInterval('PT'.$expired_seconds.'S')));
             // use standard php cookie for now.
-            setcookie(self::REMEMBER_CID, $token, $expired_seconds, $this->getConfig()->getBaseUrl(), $this->getConfig()->getHostname(), true, true);
+            $opts = [
+                'expires' => $expired_seconds,
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict',   // None || Lax  || Strict
+            ];
+            setcookie(self::REMEMBER_CID, $token, $opts);
         }
     }
 
@@ -463,7 +469,7 @@ class User extends Model implements UserInterface
     public function forgetMe(): void
     {
         $this->getMapper()->deleteToken($this->getId());
-        setcookie(self::REMEMBER_CID, '', time() - 3600, $this->getConfig()->getBaseUrl(), $this->getConfig()->getHostname(), true, true);
+        setcookie(self::REMEMBER_CID, '', time() - 3600);
     }
 
     /**
