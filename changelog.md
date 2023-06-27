@@ -1,5 +1,22 @@
 #CHANGELOG#
 
+Ver 8.0.0 [2023-06-27]:
+-------------------------------
+  - Fixed remember me on multiple clients
+  - Modify user system
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Added secret edit functions
+  - Add user can change own password
+  - Added new Menu system
+  - Add crumb fix
+  - Fixed breadcrumbs
+  - Added breadcrumb object
+  - Added maintenance and form tabs
+  - Cleaned up File object
+  - Added new alert object for flash messages
+  - Added account recover page
+
+
 Ver 3.4.58 [2022-11-03]:
 -------------------------------
 
