@@ -194,19 +194,24 @@ class UserMap extends Mapper
         return null;
     }
 
+    private function getIdent(): string
+    {
+        $ip = $this->getFactory()->getRequest()->getClientIp();
+        $agent = $this->getFactory()->getRequest()->server->get('HTTP_USER_AGENT');
+        return md5($ip.$agent);
+    }
+
     /**
      * Add a new row to the user_tokens table
      */
     public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): bool
     {
-        $ip = $this->getFactory()->getRequest()->getClientIp();
-        $ip = $this->getFactory()->getRequest()->getClientIp();
         $sql = 'INSERT INTO user_tokens(user_id, ip, selector, hashed_validator, expiry)
             VALUES(:user_id, :ip, :selector, :hashed_validator, :expiry)';
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':ip', $ip);
+        $statement->bindValue(':ip', $this->getIdent());
         $statement->bindValue(':selector', $selector);
         $statement->bindValue(':hashed_validator', $hashed_validator);
         $statement->bindValue(':expiry', $expiry);
@@ -221,7 +226,6 @@ class UserMap extends Mapper
      */
     public function findTokenBySelector(string $selector)
     {
-        $ip = $this->getFactory()->getRequest()->getClientIp();
         $sql = 'SELECT id, selector, hashed_validator, ip, user_id, expiry
             FROM user_tokens
             WHERE selector = :selector
@@ -231,7 +235,7 @@ class UserMap extends Mapper
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':selector', $selector);
-        $statement->bindValue(':ip', $ip);
+        $statement->bindValue(':ip', $this->getIdent());
 
         $statement->execute();
 
@@ -240,7 +244,6 @@ class UserMap extends Mapper
 
     public function findTokenByUserId(string $userId)
     {
-        $ip = $this->getFactory()->getRequest()->getClientIp();
         $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
             FROM user_tokens
             WHERE user_id = :userId
@@ -250,7 +253,7 @@ class UserMap extends Mapper
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':userId', $userId);
-        $statement->bindValue(':ip', $ip);
+        $statement->bindValue(':ip', $this->getIdent());
 
         $statement->execute();
 
@@ -259,11 +262,10 @@ class UserMap extends Mapper
 
     public function deleteToken(int $user_id): bool
     {
-        $ip = $this->getFactory()->getRequest()->getClientIp();
         $sql = 'DELETE FROM user_tokens WHERE user_id = :user_id AND ip = :ip';
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':ip', $ip);
+        $statement->bindValue(':ip', $this->getIdent());
 
         return $statement->execute();
     }
