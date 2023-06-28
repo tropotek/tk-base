@@ -75,9 +75,8 @@ class User
         $this->getForm()->appendField(new Form\Field\Textarea('notes'))
             ->setGroup($group);
 
-
         $this->getForm()->appendField(new Form\Action\SubmitExit('save', [$this, 'onSubmit']));
-        $this->getForm()->appendField(new Form\Action\Link('back', $this->getFactory()->getBackUrl()));
+        $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
         $load['id'] = $this->getUser()->getId();

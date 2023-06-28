@@ -101,8 +101,7 @@ class Recover
             Uri::create('/home')->redirect();
         }
 
-        if ((($arr['t'] ?? 0) + 60*60*2) < time()) { // submit before form token times out
-            //if ((($arr['t'] ?? time()) + 60*1) < time()) { // submit before form token times out
+        if ((($arr['t'] ?? 0) + 60*60*24*1) < time()) { // submit before form token times out (1 day)
             Alert::addError('Recovery URL has expired, please try again.');
             Uri::create('/home')->redirect();
         }
@@ -141,7 +140,7 @@ class Recover
             $form->addFieldError('confPassword', 'Passwords do not match');
         } else {
             if (!$this->getConfig()->isDebug()) {
-                $errors = User::checkPassword($form->getFieldValue('newPassword'));
+                $errors = User::validatePassword($form->getFieldValue('newPassword'));
                 if (count($errors)) {
                     $form->addFieldError('confPassword', implode('<br/>', $errors));
                 }

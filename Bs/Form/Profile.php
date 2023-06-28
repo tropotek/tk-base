@@ -28,7 +28,6 @@ class Profile
 
     public function doDefault(Request $request)
     {
-
         $tab = 'Details';
         $this->getForm()->appendField(new Hidden('id'))->setGroup($tab);
 
@@ -52,7 +51,6 @@ class Profile
 
         if ($this->getConfig()->get('user.profile.password')) {
             $tab = 'Password';
-
             $this->getForm()->appendField(new Form\Field\Password('currentPass'))->setGroup($tab)
                 ->setLabel('Current Password')
                 ->setAttr('autocomplete', 'new-password');
@@ -68,7 +66,7 @@ class Profile
         //$this->getForm()->appendField(new Form\Field\Textarea('notes'))->setGroup($group);
 
         $this->getForm()->appendField(new Form\Action\SubmitExit('save', [$this, 'onSubmit']));
-        $this->getForm()->appendField(new Form\Action\Link('back', Uri::create('/'.$this->getUser()->getType().'Manager')));
+        $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
         $load['id'] = $this->getUser()->getId();

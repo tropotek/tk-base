@@ -93,7 +93,7 @@ class Register
             $form->addFieldError('confPassword', 'Passwords do not match');
         } else {
             if (!$this->getConfig()->isDebug()) {
-                $errors = \Bs\Db\User::checkPassword($form->getFieldValue('password'));
+                $errors = \Bs\Db\User::validatePassword($form->getFieldValue('password'));
                 if (count($errors)) {
                     $form->addFieldError('confPassword', implode('<br/>', $errors));
                 }
