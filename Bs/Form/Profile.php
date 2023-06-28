@@ -50,18 +50,19 @@ class Profile
                 ->setReadonly();
         }
 
-        $tab = 'Password';
+        if ($this->getConfig()->get('user.profile.password')) {
+            $tab = 'Password';
 
-        $this->getForm()->appendField(new Form\Field\Password('currentPass'))->setGroup($tab)
-            ->setLabel('Current Password')
-            ->setAttr('autocomplete', 'off');
-        $this->getForm()->appendField(new Form\Field\Password('newPass'))->setGroup($tab)
-            ->setLabel('New Password')
-            ->setAttr('autocomplete', 'off');
-        $this->getForm()->appendField(new Form\Field\Password('confPass'))->setGroup($tab)
-            ->setLabel('Confirm Password')
-            ->setAttr('autocomplete', 'off');
-
+            $this->getForm()->appendField(new Form\Field\Password('currentPass'))->setGroup($tab)
+                ->setLabel('Current Password')
+                ->setAttr('autocomplete', 'new-password');
+            $this->getForm()->appendField(new Form\Field\Password('newPass'))->setGroup($tab)
+                ->setLabel('New Password')
+                ->setAttr('autocomplete', 'new-password');
+            $this->getForm()->appendField(new Form\Field\Password('confPass'))->setGroup($tab)
+                ->setLabel('Confirm Password')
+                ->setAttr('autocomplete', 'new-password');
+        }
 
         //$this->getForm()->appendField(new Checkbox('active', ['Enable User Login' => 'active']))->setDisabled();
         //$this->getForm()->appendField(new Form\Field\Textarea('notes'))->setGroup($group);
@@ -83,18 +84,21 @@ class Profile
     public function onSubmit(Form $form, Form\Action\ActionInterface $action)
     {
         $this->getUser()->getMapper()->getFormMap()->loadObject($this->user, $form->getFieldValues());
-        $this->getUser()->setPermissions(array_sum($form->getFieldValue('perm') ?? []));
 
-        if ($form->getFieldValue('newPass')) {
+        if ($form->getField('currentPass') && $form->getFieldValue('currentPass')) {
             if (!password_verify($form->getFieldValue('currentPass'), $this->user->getPassword())) {
                 $form->addFieldError('currentPass', 'Invalid current password, password not updated');
             }
-            if ($form->getFieldValue('newPass') != $form->getFieldValue('confPass')) {
-                $form->addFieldError('newPass', 'Passwords do not match');
-            } else {
-                if (!$e = \Bs\Db\User::checkPassword($form->getFieldValue('newPass'))) {
-                    $form->addFieldError('newPass', 'Week password: ' . implode(', ' , $e));
+            if ($form->getField('newPass') && $form->getFieldValue('newPass')) {
+                if ($form->getFieldValue('newPass') != $form->getFieldValue('confPass')) {
+                    $form->addFieldError('newPass', 'Passwords do not match');
+                } else {
+                    if (!$e = \Bs\Db\User::validatePassword($form->getFieldValue('newPass'))) {
+                        $form->addFieldError('newPass', 'Week password: ' . implode(', ', $e));
+                    }
                 }
+            } else {
+                $form->addFieldError('newPass', 'Please supply a new password');
             }
         }
 
