@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Tk\Cookie;
 use Tk\DataMap\DataMap;
 use Tk\Db\Mapper\Filter;
 use Tk\Db\Mapper\Mapper;
@@ -194,13 +195,6 @@ class UserMap extends Mapper
         return null;
     }
 
-    private function getIdent(): string
-    {
-        $ip = $this->getFactory()->getRequest()->getClientIp();
-        $agent = $this->getFactory()->getRequest()->server->get('HTTP_USER_AGENT');
-        return md5($ip.$agent);
-    }
-
     /**
      * Add a new row to the user_tokens table
      */
@@ -211,7 +205,7 @@ class UserMap extends Mapper
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':ip', $this->getIdent());
+        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
         $statement->bindValue(':selector', $selector);
         $statement->bindValue(':hashed_validator', $hashed_validator);
         $statement->bindValue(':expiry', $expiry);
@@ -235,7 +229,7 @@ class UserMap extends Mapper
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':selector', $selector);
-        $statement->bindValue(':ip', $this->getIdent());
+        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
 
         $statement->execute();
 
@@ -253,7 +247,7 @@ class UserMap extends Mapper
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':userId', $userId);
-        $statement->bindValue(':ip', $this->getIdent());
+        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
 
         $statement->execute();
 
@@ -265,7 +259,7 @@ class UserMap extends Mapper
         $sql = 'DELETE FROM user_tokens WHERE user_id = :user_id AND ip = :ip';
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':ip', $this->getIdent());
+        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
 
         return $statement->execute();
     }

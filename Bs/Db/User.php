@@ -443,19 +443,12 @@ class User extends Model implements UserInterface
         $this->getMapper()->deleteToken($this->getId());
 
         // set expiration date
-        $expired_seconds = time() + 60 * 60 * 24 * $day;
-        $expiry = date('Y-m-d H:i:s', $expired_seconds);
+        $expires_sec = time() + 60 * 60 * 24 * $day;
+        $expiry = date('Y-m-d H:i:s', $expires_sec);
         // insert a token to the database
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
         if ($this->getMapper()->insertToken($this->getId(), $selector, $hash_validator, $expiry)) {
-            $opts = [
-                //'path' => $this->getConfig()->getBaseUrl(),
-                'expires' => $expired_seconds,
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict',   // None || Lax  || Strict
-            ];
-            setcookie(self::REMEMBER_CID, $token, $opts);
+            $this->getCookie()->set(self::REMEMBER_CID, $token, $expires_sec);
         }
     }
 
@@ -465,7 +458,7 @@ class User extends Model implements UserInterface
     public function forgetMe(): void
     {
         $this->getMapper()->deleteToken($this->getId());
-        setcookie(self::REMEMBER_CID, '', time() - 3600);
+        $this->getCookie()->delete(self::REMEMBER_CID);
     }
 
     /**
