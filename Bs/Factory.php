@@ -52,7 +52,7 @@ class Factory extends \Tk\Factory
     /**
      * Return a User object or record that is located from the Auth's getIdentity() method
      * Override this method in your own site's Factory object
-     * @return null|UserInterface|User Null if no user logged in
+     * @return null|UserInterface|User|\App\Db\User Null if no user logged in
      */
     public function getAuthUser(): null|UserInterface|User
     {
