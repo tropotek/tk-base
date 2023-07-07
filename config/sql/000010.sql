@@ -5,7 +5,7 @@
 -- install the default tk lib user table
 CREATE TABLE IF NOT EXISTS user
 (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   uid VARCHAR(128) NOT NULL DEFAULT '',
   type VARCHAR(32) NOT NULL DEFAULT '',
   permissions BIGINT NOT NULL DEFAULT 0,
@@ -34,10 +34,10 @@ CREATE TABLE IF NOT EXISTS user_tokens
   id INT AUTO_INCREMENT PRIMARY KEY,
   selector VARCHAR(255) NOT NULL,
   hashed_validator VARCHAR(255) NOT NULL,
-  ip VARCHAR(128) NOT NULL,
+  browser_id VARCHAR(128) NOT NULL,
   user_id INT UNSIGNED NOT NULL,
   expiry DATETIME NOT NULL,
-  CONSTRAINT fk_user_tokens__user_id FOREIGN KEY (user_id) REFERENCES user (`id`) ON DELETE CASCADE
+  CONSTRAINT fk_user_tokens__user_id FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
 );
 
 
