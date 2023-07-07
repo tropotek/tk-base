@@ -1,8 +1,7 @@
 <?php
 namespace Bs\Util;
 
-use App\Db\User;
-use App\Db\UserMap;
+use Bs\Db\User;
 use Bs\Db\UserInterface;
 use Bs\Factory;
 use Tk\Traits\SystemTrait;
@@ -79,12 +78,12 @@ class Masquerade
     {
         $factory = Factory::instance();
         if (!$msqUser->isActive()) return false;
-        if ($user->getId() == $msqUser->getId()) return false;
+        if ($user->getUserId() == $msqUser->getUserId()) return false;
 
         $msqArr = $factory->getSession()->get(static::SID);
         if (is_array($msqArr)) {    // Check if we are already masquerading as this user in the queue
             foreach ($msqArr as $data) {
-                if ($data['userId'] == $msqUser->getId()) return false;
+                if ($data['userId'] == $msqUser->getUserId()) return false;
             }
         }
         return $user->canMasqueradeAs($msqUser);

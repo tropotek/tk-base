@@ -56,7 +56,7 @@ class User extends Model implements UserInterface
     const TYPE_MEMBER = 'member';
 
 
-    public int $id = 0;
+    public int $userId = 0;
 
     public string $uid = '';
 
@@ -140,6 +140,17 @@ class User extends Model implements UserInterface
     public function getDataPath(): string
     {
         return sprintf('/user/%s/data', $this->getVolatileId());
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(int $userId): User
+    {
+        $this->userId = $userId;
+        return $this;
     }
 
     public function getUid(): string

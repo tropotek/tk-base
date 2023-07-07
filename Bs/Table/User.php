@@ -35,20 +35,20 @@ class User
         $this->filter = new Form($this->table->getId() . '-filters');
     }
 
-    private function doDelete($user_id)
+    private function doDelete($userId)
     {
         /** @var \Bs\Db\User $user */
-        $user = $this->getFactory()->getUserMap()->find($user_id);
+        $user = $this->getFactory()->getUserMap()->find($userId);
         $user?->delete();
 
         Alert::addSuccess('User removed successfully.');
         Uri::create()->reset()->redirect();
     }
 
-    private function doMsq($id)
+    private function doMsq($userId)
     {
         /** @var \Bs\Db\User $msqUser */
-        $msqUser = $this->getFactory()->getUserMap()->find($id);
+        $msqUser = $this->getFactory()->getUserMap()->find($userId);
         if ($msqUser && Masquerade::masqueradeLogin($this->getFactory()->getAuthUser(), $msqUser)) {
             Alert::addSuccess('You are now logged in as user ' . $msqUser->getUsername());
             Uri::create('/')->redirect();
@@ -68,11 +68,12 @@ class User
             $this->doMsq($request->query->get(Masquerade::QUERY_MSQ));
         }
 
-        $editUrl = sprintf('/user/%sEdit', $this->type);
+        // TODO: How will we manage this with various ID's LOOK INTO IT!!!!!!!!
+        //       Also check into Actions `delete`, `csv`, etc....
+        $this->getTable()->appendCell(new Cell\Checkbox('userId'));
 
-        $this->getTable()->appendCell(new Cell\Checkbox('id'));
         $this->getTable()->appendCell(new Cell\Text('actions'))
-            ->addOnShow(function (Cell\Text $cell) use ($editUrl) {
+            ->addOnShow(function (Cell\Text $cell) {
                 $cell->addCss('text-nowrap text-center');
                 $obj = $cell->getRow()->getData();
 
@@ -81,7 +82,7 @@ class User
                 $btn->setText('');
                 $btn->setIcon('fa fa-edit');
                 $btn->addCss('btn btn-primary');
-                $btn->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('id', $obj->getId()));
+                $btn->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('userId', $obj->getId()));
                 $template->appendTemplate('td', $btn->show());
                 $template->appendHtml('td', '&nbsp;');
 
@@ -108,9 +109,8 @@ class User
             ->addOnShow(function (Cell\Text $cell, mixed $value) {
                     /** @var \Bs\Db\User $obj */
                     $obj = $cell->getRow()->getData();
-                    $cell->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('id', $obj->getId()));
+                    $cell->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('userId', $obj->getId()));
                 })
-            ->setUrl(Uri::create($editUrl))
             ->setAttr('style', 'width: 100%;');
 
         $this->getTable()->appendCell(new Cell\Text('name'));
@@ -119,21 +119,21 @@ class User
             $this->getTable()->appendCell(new Cell\Text('type'));
         }
 
-//        if ($this->type != \Bs\Db\User::TYPE_MEMBER) {
-//            $this->getTable()->appendCell(new Cell\Text('permissions'))
-//                ->addOnShow(function (Cell\Text $cell, mixed $value) {
-//                    /** @var \Bs\Db\User $obj */
-//                    $obj = $cell->getRow()->getData();
-//                    if ($obj->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
-//                        $list = $obj->getAvailablePermissions();
-//                        return $list[\Bs\Db\User::PERM_ADMIN];
-//                    }
-//                    $list = array_filter($obj->getAvailablePermissions(), function ($k) use ($obj) {
-//                        return $obj->hasPermission($k);
-//                    }, ARRAY_FILTER_USE_KEY);
-//                    return implode(', ', $list);
-//                });
-//        }
+        if ($this->type != \Bs\Db\User::TYPE_MEMBER) {
+            $this->getTable()->appendCell(new Cell\Text('permissions'))
+                ->addOnShow(function (Cell\Text $cell, mixed $value) {
+                    /** @var \Bs\Db\User $obj */
+                    $obj = $cell->getRow()->getData();
+                    if ($obj->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
+                        $list = $obj->getAvailablePermissions();
+                        return $list[\Bs\Db\User::PERM_ADMIN];
+                    }
+                    $list = array_filter($obj->getAvailablePermissions(), function ($k) use ($obj) {
+                        return $obj->hasPermission($k);
+                    }, ARRAY_FILTER_USE_KEY);
+                    return implode(', <br/>', $list);
+                });
+        }
 
         $this->getTable()->appendCell(new Cell\Text('email'))
             ->addOnShow(function (Cell\Text $cell) {
@@ -175,9 +175,9 @@ class User
                 ->setAttr('data-confirm', 'Are you sure you want to reset the Table`s session?')
                 ->setAttr('title', 'Reset table filters and order to default.');
         }
-        //$this->getTable()->appendAction(new Action\Button('Create'))->setUrl(Uri::create('/userEdit')->set('type', $this->type));
-        $this->getTable()->appendAction(new Action\Delete());
-        $this->getTable()->appendAction(new Action\Csv())->addExcluded('actions');
+        //$this->getTable()->appendAction(new Action\Button('Create'))->setUrl(Uri::create('/'.$this->>type.'Edit'));
+        $this->getTable()->appendAction(new Action\Delete('delete', 'userId'));
+        $this->getTable()->appendAction(new Action\Csv('csv', 'userId'))->addExcluded('actions');
 
 
         // Query

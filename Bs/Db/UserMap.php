@@ -18,7 +18,7 @@ class UserMap extends Mapper
     {
         if (!$this->getDataMappers()->has(self::DATA_MAP_DB)) {
             $map = new DataMap();
-            $map->addDataType(new Db\Integer('id'));
+            $map->addDataType(new Db\Integer('userId', 'user_id'));
             $map->addDataType(new Db\Text('uid'));
             $map->addDataType(new Db\Text('type'));
             $map->addDataType(new Db\Integer('permissions'));
@@ -42,7 +42,7 @@ class UserMap extends Mapper
 
         if (!$this->getDataMappers()->has(self::DATA_MAP_FORM)) {
             $map = new DataMap();
-            $map->addDataType(new Form\Text('id'));
+            $map->addDataType(new Form\Text('userId'));
             $map->addDataType(new Form\Text('uid'));
             $map->addDataType(new Form\Text('type'));
             $map->addDataType(new Form\Integer('permissions'));
@@ -58,7 +58,7 @@ class UserMap extends Mapper
 
         if (!$this->getDataMappers()->has(self::DATA_MAP_TABLE)) {
             $map = new DataMap();
-            $map->addDataType(new Form\Text('id'));
+            $map->addDataType(new Form\Text('userId'));
             $map->addDataType(new Form\Text('uid'));
             $map->addDataType(new Form\Text('type'));
             $map->addDataType(new Form\Integer('permissions'));
@@ -115,16 +115,16 @@ class UserMap extends Mapper
             $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
             if (is_numeric($filter['search'])) {
                 $id = (int)$filter['search'];
-                $w .= sprintf('a.id = %d OR ', $id);
+                $w .= sprintf('a.user_id = %d OR ', $id);
             }
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
-        if (!empty($filter['userId'])) {
-            $filter['id'] = $filter['userId'];
-        }
         if (!empty($filter['id'])) {
-            $w = $this->makeMultiQuery($filter['id'], 'a.id');
+            $filter['userId'] = $filter['id'];
+        }
+        if (!empty($filter['userId'])) {
+            $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
@@ -160,7 +160,7 @@ class UserMap extends Mapper
 
         // Filter for any remember me saved token selectors
         if (!empty($filter['selector'])) {
-            $filter->appendFrom('INNER JOIN %s z ON (z.user_id = a.id) ', $this->quoteParameter('user_tokens'));
+            $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_tokens'));
             $filter->appendWhere('z.selector = %s AND expiry > NOW() AND ', $this->quote($filter['selector']));
         }
 
@@ -200,12 +200,12 @@ class UserMap extends Mapper
      */
     public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): bool
     {
-        $sql = 'INSERT INTO user_tokens(user_id, ip, selector, hashed_validator, expiry)
-            VALUES(:user_id, :ip, :selector, :hashed_validator, :expiry)';
+        $sql = 'INSERT INTO user_tokens(user_id, browser_id, selector, hashed_validator, expiry)
+            VALUES(:user_id, :browser_id, :selector, :hashed_validator, :expiry)';
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
+        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
         $statement->bindValue(':selector', $selector);
         $statement->bindValue(':hashed_validator', $hashed_validator);
         $statement->bindValue(':expiry', $expiry);
@@ -223,13 +223,13 @@ class UserMap extends Mapper
         $sql = 'SELECT id, selector, hashed_validator, ip, user_id, expiry
             FROM user_tokens
             WHERE selector = :selector
-            AND ip = :ip
+            AND browser_id = :browser_id
             AND expiry >= NOW()
             LIMIT 1';
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':selector', $selector);
-        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
+        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
 
         $statement->execute();
 
@@ -241,13 +241,13 @@ class UserMap extends Mapper
         $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
             FROM user_tokens
             WHERE user_id = :userId
-            AND ip = :ip
+            AND browser_id = :browser_id
             AND expiry >= NOW()
             LIMIT 1';
 
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':userId', $userId);
-        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
+        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
 
         $statement->execute();
 
@@ -256,10 +256,10 @@ class UserMap extends Mapper
 
     public function deleteToken(int $user_id): bool
     {
-        $sql = 'DELETE FROM user_tokens WHERE user_id = :user_id AND ip = :ip';
+        $sql = 'DELETE FROM user_tokens WHERE user_id = :user_id AND browser_id = :browser_id';
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':ip', $this->getFactory()->getCookie()->getBrowserId());
+        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
 
         return $statement->execute();
     }

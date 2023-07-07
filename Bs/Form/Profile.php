@@ -29,7 +29,7 @@ class Profile
     public function doDefault(Request $request)
     {
         $tab = 'Details';
-        $this->getForm()->appendField(new Hidden('id'))->setGroup($tab);
+        $this->getForm()->appendField(new Hidden('userId'))->setGroup($tab);
 
         $this->getForm()->appendField(new Input('name'))->setGroup($tab)
             ->setRequired();
@@ -69,7 +69,7 @@ class Profile
         $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
-        $load['id'] = $this->getUser()->getId();
+        $load['userId'] = $this->getUser()->getUserId();
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 

@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Form;
 
-use Bs\Db\UserMap;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -29,21 +28,21 @@ class User
         $this->setForm(Form::create('user'));
     }
 
-    public function doDefault(Request $request, int $id, string $type = \Bs\Db\User::TYPE_MEMBER)
+    public function doDefault(Request $request, int $userId, string $type = \Bs\Db\User::TYPE_MEMBER)
     {
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();
         $this->getUser()->setType($type);
 
-        if ($id > 0) {
-            $this->user = $this->getFactory()->getUserMap()->find($id);
+        if ($userId > 0) {
+            $this->user = $this->getFactory()->getUserMap()->find($userId);
             if (!$this->getUser()) {
-                throw new Exception('Invalid User ID: ' . $id);
+                throw new Exception('Invalid User ID: ' . $userId);
             }
         }
 
         $group = 'Details';
-        $this->getForm()->appendField(new Hidden('id'))->setGroup($group);
+        $this->getForm()->appendField(new Hidden('userId'))->setGroup($group);
         $this->getForm()->appendField(new Input('name'))->setGroup($group)
             ->setRequired();
 
@@ -79,7 +78,7 @@ class User
         $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
-        $load['id'] = $this->getUser()->getId();
+        $load['userId'] = $this->getUser()->getUserId();
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
@@ -116,7 +115,7 @@ class User
         }
 
         Alert::addSuccess('Form save successfully.');
-        $action->setRedirect(Uri::create('/user/'.$this->type.'Edit')->set('id', $this->getUser()->getId()));
+        $action->setRedirect(Uri::create('/user/'.$this->type.'Edit')->set('userId', $this->getUser()->getUserId()));
         if ($form->getTriggeredAction()->isExit()) {
             $action->setRedirect($this->getFactory()->getBackUrl());
         }

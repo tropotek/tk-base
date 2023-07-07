@@ -12,7 +12,7 @@ class Edit extends PageController
 {
     protected \Bs\Form\User $form;
 
-    protected string $type = \Bs\Db\User::TYPE_MEMBER;
+    protected string $type = User::TYPE_MEMBER;
 
 
     public function __construct()
@@ -28,7 +28,7 @@ class Edit extends PageController
 
         // Get the form template
         $this->form = new \Bs\Form\User();
-        $this->form->doDefault($request,  $request->query->getInt('id', 0), $type);
+        $this->form->doDefault($request,  $request->query->getInt('userId', 0), $type);
 
         if ($request->query->get('cv')) {
             $newType = trim($request->query->get('cv'));
