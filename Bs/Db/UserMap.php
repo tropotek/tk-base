@@ -160,7 +160,7 @@ class UserMap extends Mapper
 
         // Filter for any remember me saved token selectors
         if (!empty($filter['selector'])) {
-            $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_tokens'));
+            $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_token'));
             $filter->appendWhere('z.selector = %s AND expiry > NOW() AND ', $this->quote($filter['selector']));
         }
 
@@ -196,7 +196,7 @@ class UserMap extends Mapper
     }
 
     /**
-     * Add a new row to the user_tokens table
+     * Add a new row to the user_token table
      */
     public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): bool
     {
@@ -214,7 +214,7 @@ class UserMap extends Mapper
     }
 
     /**
-     * Find a row in the user_tokens table by a selector.
+     * Find a row in the user_token table by a selector.
      * It only returns the match selector if the token is not expired
      *   by comparing the expiry with the current time
      */

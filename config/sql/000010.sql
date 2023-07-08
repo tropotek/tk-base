@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS user
 );
 
 -- User tokens to enable the 'Remember Me' functionality
-CREATE TABLE IF NOT EXISTS user_tokens
+CREATE TABLE IF NOT EXISTS user_token
 (
   id INT AUTO_INCREMENT PRIMARY KEY,
   selector VARCHAR(255) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS user_tokens
   browser_id VARCHAR(128) NOT NULL,
   user_id INT UNSIGNED NOT NULL,
   expiry DATETIME NOT NULL,
-  CONSTRAINT fk_user_tokens__user_id FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
+  CONSTRAINT fk_user_token__user_id FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
 );
 
 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS user_tokens
 # SET SQL_SAFE_UPDATES = 0;
 #
 # TRUNCATE TABLE user;
-# TRUNCATE TABLE user_tokens;
+# TRUNCATE TABLE user_token;
 #
 # INSERT INTO user (type, username, email, name, timezone, permissions) VALUES
 #   ('staff', 'admin', 'admin@example.com', 'Admin', NULL, 1)
@@ -60,14 +60,14 @@ CREATE TABLE IF NOT EXISTS user_tokens
 
 -- TODO Add the following event to your sites event.sql
 -- Delete expired user 'remember me' login tokens
-# DROP EVENT IF EXISTS evt_delete_expired_user_tokens;
+# DROP EVENT IF EXISTS evt_delete_expired_user_token;
 # DELIMITER //
-# CREATE EVENT evt_delete_expired_user_tokens
+# CREATE EVENT evt_delete_expired_user_token
 #   ON SCHEDULE EVERY 1 DAY
-#   COMMENT 'Delete expired user remember me login tokens'
+#   COMMENT 'Delete expired user remember me login token'
 #   DO
 #   BEGIN
-#     DELETE FROM user_tokens WHERE expiry < NOW();
+#     DELETE FROM user_token WHERE expiry < NOW();
 #   END
 # //
 # DELIMITER ;
