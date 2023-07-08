@@ -60,11 +60,11 @@ CREATE TABLE IF NOT EXISTS user_token
 
 -- TODO Add the following event to your sites event.sql
 -- Delete expired user 'remember me' login tokens
-# DROP EVENT IF EXISTS evt_delete_expired_user_token;
+# DROP EVENT IF EXISTS evt_delete_expired_user_tokens;
 # DELIMITER //
-# CREATE EVENT evt_delete_expired_user_token
+# CREATE EVENT evt_delete_expired_user_tokens
 #   ON SCHEDULE EVERY 1 DAY
-#   COMMENT 'Delete expired user remember me login token'
+#   COMMENT 'Delete expired user remember me login tokens'
 #   DO
 #   BEGIN
 #     DELETE FROM user_token WHERE expiry < NOW();
