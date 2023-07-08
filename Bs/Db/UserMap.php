@@ -128,6 +128,11 @@ class UserMap extends Mapper
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
+        if (!empty($filter['exclude'])) {
+            $w = $this->makeMultiQuery($filter['exclude'], 'a.user_id', 'AND', '!=');
+            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        }
+
         if (!empty($filter['uid'])) {
             $filter->appendWhere('a.uid = %s AND ', $this->quote($filter['uid']));
         }
@@ -151,11 +156,6 @@ class UserMap extends Mapper
 
         if (is_bool($filter['active'] ?? '')) {
             $filter->appendWhere('a.active = %s AND ', (int)$filter['active']);
-        }
-
-        if (!empty($filter['exclude'])) {
-            $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         // Filter for any remember me saved token selectors
