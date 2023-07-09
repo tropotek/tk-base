@@ -86,8 +86,6 @@ class Login
             return;
         }
 
-vd($result, $this->getFactory()->getAuthUser());
-
         // Login successful
         $user = $this->getFactory()->getAuthUser();
         $user->setLastLogin(Date::create('now', $user->getTimezone() ?: null));
