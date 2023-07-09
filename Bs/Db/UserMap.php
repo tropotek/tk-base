@@ -220,7 +220,7 @@ class UserMap extends Mapper
      */
     public function findTokenBySelector(string $selector)
     {
-        $sql = 'SELECT id, selector, hashed_validator, ip, user_id, expiry
+        $sql = 'SELECT id, selector, hashed_validator, browser_id, user_id, expiry
             FROM user_remember
             WHERE selector = :selector
             AND browser_id = :browser_id
