@@ -160,7 +160,7 @@ class UserMap extends Mapper
 
         // Filter for any remember me saved token selectors
         if (!empty($filter['selector'])) {
-            $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_token'));
+            $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_remember'));
             $filter->appendWhere('z.selector = %s AND expiry > NOW() AND ', $this->quote($filter['selector']));
         }
 
@@ -196,11 +196,11 @@ class UserMap extends Mapper
     }
 
     /**
-     * Add a new row to the user_token table
+     * Add a new row to the user_remember table
      */
     public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): bool
     {
-        $sql = 'INSERT INTO user_token(user_id, browser_id, selector, hashed_validator, expiry)
+        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
             VALUES(:user_id, :browser_id, :selector, :hashed_validator, :expiry)';
 
         $statement = $this->getDb()->prepare($sql);
@@ -214,14 +214,14 @@ class UserMap extends Mapper
     }
 
     /**
-     * Find a row in the user_token table by a selector.
+     * Find a row in the user_remember table by a selector.
      * It only returns the match selector if the token is not expired
      *   by comparing the expiry with the current time
      */
     public function findTokenBySelector(string $selector)
     {
         $sql = 'SELECT id, selector, hashed_validator, ip, user_id, expiry
-            FROM user_token
+            FROM user_remember
             WHERE selector = :selector
             AND browser_id = :browser_id
             AND expiry >= NOW()
@@ -239,7 +239,7 @@ class UserMap extends Mapper
     public function findTokenByUserId(string $userId)
     {
         $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
-            FROM user_token
+            FROM user_remember
             WHERE user_id = :userId
             AND browser_id = :browser_id
             AND expiry >= NOW()
@@ -256,7 +256,7 @@ class UserMap extends Mapper
 
     public function deleteToken(int $user_id): bool
     {
-        $sql = 'DELETE FROM user_token WHERE user_id = :user_id AND browser_id = :browser_id';
+        $sql = 'DELETE FROM user_remember WHERE user_id = :user_id AND browser_id = :browser_id';
         $statement = $this->getDb()->prepare($sql);
         $statement->bindValue(':user_id', $user_id);
         $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());

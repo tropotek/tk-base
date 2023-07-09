@@ -1,5 +1,5 @@
 -- --------------------------------------------
--- @version 0.0.0
+-- @version 8.0.0
 -- --------------------------------------------
 
 -- install the default tk lib user table
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS user
 );
 
 -- User tokens to enable the 'Remember Me' functionality
-CREATE TABLE IF NOT EXISTS user_token
+CREATE TABLE IF NOT EXISTS user_remember
 (
   id INT AUTO_INCREMENT PRIMARY KEY,
   selector VARCHAR(255) NOT NULL,
@@ -37,16 +37,30 @@ CREATE TABLE IF NOT EXISTS user_token
   browser_id VARCHAR(128) NOT NULL,
   user_id INT UNSIGNED NOT NULL,
   expiry DATETIME NOT NULL,
-  CONSTRAINT fk_user_token__user_id FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
+  CONSTRAINT fk_user_remember__user_id FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
 );
 
+-- TODO Add the following event to your project's `event.sql`
+# DROP EVENT IF EXISTS evt_delete_expired_user_remember;
+# DELIMITER //
+# CREATE EVENT evt_delete_expired_user_remember
+#   ON SCHEDULE EVERY 1 DAY
+#   COMMENT 'Delete expired user remember me login tokens'
+#   DO
+#   BEGIN
+#     DELETE FROM user_remember WHERE expiry < NOW();
+#   END
+# //
+# DELIMITER ;
 
-# TODO: you need to instert data in the App migration scripts
+
+-- ------------------------------------------------------------------------------------
+# TODO: if you need to instert data in the App migration scripts
 # SET FOREIGN_KEY_CHECKS = 0;
 # SET SQL_SAFE_UPDATES = 0;
 #
 # TRUNCATE TABLE user;
-# TRUNCATE TABLE user_token;
+# TRUNCATE TABLE user_remember;
 #
 # INSERT INTO user (type, username, email, name, timezone, permissions) VALUES
 #   ('staff', 'admin', 'admin@example.com', 'Admin', NULL, 1)
@@ -57,20 +71,6 @@ CREATE TABLE IF NOT EXISTS user_token
 # SET SQL_SAFE_UPDATES = 1;
 # SET FOREIGN_KEY_CHECKS = 1;
 
-
--- TODO Add the following event to your sites event.sql
--- Delete expired user 'remember me' login tokens
-# DROP EVENT IF EXISTS evt_delete_expired_user_tokens;
-# DELIMITER //
-# CREATE EVENT evt_delete_expired_user_tokens
-#   ON SCHEDULE EVERY 1 DAY
-#   COMMENT 'Delete expired user remember me login tokens'
-#   DO
-#   BEGIN
-#     DELETE FROM user_token WHERE expiry < NOW();
-#   END
-# //
-# DELIMITER ;
 
 
 
