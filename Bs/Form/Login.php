@@ -2,31 +2,20 @@
 namespace Bs\Form;
 
 use Bs\Db\User;
-use Bs\Util\Masquerade;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Auth\Result;
 use Tk\Date;
 use Tk\Form;
-use Tk\FormRenderer;
 use Tk\Form\Field;
 use Tk\Form\Action;
 use Tk\Log;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
-class Login
+class Login extends EditInterface
 {
-    use SystemTrait;
-    use Form\FormTrait;
 
-    public function __construct()
-    {
-        $this->setForm(Form::create('login'));
-    }
-
-    public function doDefault(Request $request)
+    public function init(): void
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
         $this->getSession()->set('login', time());
@@ -60,12 +49,13 @@ class Login
         $this->getForm()->appendField(new Field\Html('links', $html))->setLabel('')->addFieldCss('text-center');
         $this->getForm()->appendField(new Action\Submit('login', [$this, 'onSubmit']));
 
+    }
+
+    public function execute(array $values = []): void
+    {
         $load = [];
         $this->getForm()->setFieldValues($load);
-
-        $this->getForm()->execute($request->request->all());
-
-        $this->setFormRenderer(new FormRenderer($this->getForm()));
+        parent::execute($values);
     }
 
     public function onSubmit(Form $form, Action\ActionInterface $action)
@@ -104,7 +94,6 @@ class Login
     public function show(): ?Template
     {
         $renderer =$this->getFormRenderer();
-
         return $renderer->show();
     }
 

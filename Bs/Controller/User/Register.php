@@ -2,6 +2,7 @@
 namespace Bs\Controller\User;
 
 use Bs\Db\UserMap;
+use Bs\Form\EditTrait;
 use Dom\Mvc\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +12,8 @@ use Tk\Uri;
 
 class Register extends PageController
 {
-    protected ?\Bs\Form\Register $form;
+    use EditTrait;
+
 
     public function __construct()
     {
@@ -19,16 +21,15 @@ class Register extends PageController
         $this->getPage()->setTitle('Register');
     }
 
-    public function doDefault(Request $request)
+    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
     {
         if (!$this->getRegistry()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
         }
 
-        $this->form = new \Bs\Form\Register();
-
-        $this->form->doDefault($request);
+        $this->setForm(new \Bs\Form\Register());
+        $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
     }

@@ -2,7 +2,9 @@
 namespace Bs\Controller\File;
 
 use Bs\Db\UserInterface;
+use Bs\Form\EditTrait;
 use Bs\PageController;
+use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -19,12 +21,11 @@ use Tk\Uri;
  */
 class Manager extends PageController
 {
-    use FormTrait;
-
-    protected \Bs\Table\File $table;
+    use ManagerTrait;
 
     protected string $fkey = '';
 
+    protected ?Form $form = null;
 
     public function __construct()
     {
@@ -36,15 +37,20 @@ class Manager extends PageController
     public function doDefault(Request $request)
     {
         // Get the form template
-        $this->table = new \Bs\Table\File($this->fkey);
-        $this->table->doDefault($request);
+        $this->setTable(new \Bs\Table\File());
+        $this->getTable()->setFkey($this->fkey);
+        $filter = [];
+        if ($this->fkey) {
+            $filter['fkey'] = $this->fkey;
+        }
+        $this->getTable()->findList($filter, $this->getTable()->getTool('path'));
+        $this->getTable()->execute($request);
 
-        $this->setForm(Form::create('upload'));
-        $this->getForm()->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');
-        $this->getForm()->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
 
-        $this->getForm()->execute($request->request->all());
-        $this->setFormRenderer(new FormRenderer($this->getForm()));
+        $this->form = Form::create('upload');
+        $this->form->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');
+        $this->form->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
+        $this->form->execute($request->request->all());
 
         return $this->getPage();
     }
@@ -67,11 +73,11 @@ class Manager extends PageController
         $template = $this->getTemplate();
         $template->appendText('title', $this->getPage()->getTitle());
 
-        $renderer = $this->getFormRenderer();
-        $this->getForm()->addCss('mb-5');
+        $renderer = new FormRenderer($this->form);
+        $this->form->addCss('mb-5');
         $template->appendTemplate('upload', $renderer->show());
 
-        $template->appendTemplate('content', $this->table->show());
+        $template->appendTemplate('content', $this->getTable()->show());
 
         return $template;
     }

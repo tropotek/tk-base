@@ -1,13 +1,15 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\Form\EditTrait;
 use Dom\Mvc\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 class Recover extends PageController
 {
-    protected ?\Bs\Form\Recover $form;
+    use EditTrait;
+
 
     public function __construct()
     {
@@ -15,20 +17,18 @@ class Recover extends PageController
         $this->getPage()->setTitle('Recover');
     }
 
-    public function doDefault(Request $request)
+    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
     {
-        $this->form = new \Bs\Form\Recover();
-
-        $this->form->doDefault($request);
+        $this->setForm(new \Bs\Form\Recover());
+        $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
     }
 
-    public function doRecover(Request $request)
+    public function doRecover(Request $request): \App\Page|\Dom\Mvc\Page
     {
-        $this->form = new \Bs\Form\Recover();
-
-        $this->form->doRecover($request);
+        $this->setForm(new \Bs\Form\RecoverPassword());
+        $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
     }

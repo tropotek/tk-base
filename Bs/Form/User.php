@@ -2,45 +2,21 @@
 namespace Bs\Form;
 
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
-use Tk\Exception;
+use Tk\Db\Mapper\Model;
 use Tk\Form;
-use Tk\FormRenderer;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Checkbox;
 use Tk\Form\Field\Hidden;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
-class User
+class User extends EditInterface
 {
-    use SystemTrait;
-    use Form\FormTrait;
-
-    protected ?\Bs\Db\User $user = null;
-
     protected string $type = \Bs\Db\User::TYPE_MEMBER;
 
 
-    public function __construct()
+    public function init(): void
     {
-        $this->setForm(Form::create('user'));
-    }
-
-    public function doDefault(Request $request, int $userId, string $type = \Bs\Db\User::TYPE_MEMBER)
-    {
-        $this->type = $type;
-        $this->user = $this->getFactory()->createUser();
-        $this->getUser()->setType($type);
-
-        if ($userId > 0) {
-            $this->user = $this->getFactory()->getUserMap()->find($userId);
-            if (!$this->getUser()) {
-                throw new Exception('Invalid User ID: ' . $userId);
-            }
-        }
-
         $group = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($group);
         $this->getForm()->appendField(new Input('name'))->setGroup($group)
@@ -77,29 +53,30 @@ class User
         $this->getForm()->appendField(new Form\Action\SubmitExit('save', [$this, 'onSubmit']));
         $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
+    }
+
+    public function execute(array $values = []): void
+    {
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
         $load['userId'] = $this->getUser()->getUserId();
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
-        $this->getForm()->execute($request->request->all());
-
-        $this->setFormRenderer(new FormRenderer($this->getForm()));
-
+        parent::execute($values);
     }
 
-    public function onSubmit(Form $form, Form\Action\ActionInterface $action)
+    public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
     {
         if ($this->getUser()->getUsername() == 'admin') {
             $form->removeField('perm');
         }
 
-        $this->getUser()->getMapper()->getFormMap()->loadObject($this->user, $form->getFieldValues());
+        $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
         if ($form->getField('perm')) {
             $this->getUser()->setPermissions(array_sum($form->getFieldValue('perm') ?? []));
         }
 
-        $form->addFieldErrors($this->user->validate());
+        $form->addFieldErrors($this->getUser()->validate());
         if ($form->hasErrors()) {
             Alert::addError('Form contains errors.');
             return;
@@ -115,7 +92,7 @@ class User
         }
 
         Alert::addSuccess('Form save successfully.');
-        $action->setRedirect(Uri::create('/user/'.$this->type.'Edit')->set('userId', $this->getUser()->getUserId()));
+        $action->setRedirect(Uri::create('/user/'.$this->getType().'Edit')->set('userId', $this->getUser()->getUserId()));
         if ($form->getTriggeredAction()->isExit()) {
             $action->setRedirect($this->getFactory()->getBackUrl());
         }
@@ -123,20 +100,26 @@ class User
 
     public function show(): ?Template
     {
-        // Setup field group widths with bootstrap classes
-        //$this->getForm()->getField('type')->addFieldCss('col-6');
-        //$this->getForm()->getField('name')->addFieldCss('col-6');
         $this->getForm()->getField('username')->addFieldCss('col-6');
         $this->getForm()->getField('email')->addFieldCss('col-6');
-
         $renderer = $this->getFormRenderer();
         $renderer->addFieldCss('mb-3');
-
         return $renderer->show();
     }
 
-    public function getUser(): \Bs\Db\User
+    public function getType(): string
     {
-        return $this->user;
+        return $this->type;
+    }
+
+    public function setType(string $type): User
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getUser(): \Bs\Db\User|Model
+    {
+        return $this->getModel();
     }
 }

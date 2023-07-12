@@ -11,7 +11,7 @@ use Tk\Db\Mapper\Result;
 use Tk\Encrypt;
 use Tk\Uri;
 
-class User extends Model implements UserInterface
+class User extends Model implements UserInterface, FileInterface
 {
     use TimestampTrait;
     use HashTrait;

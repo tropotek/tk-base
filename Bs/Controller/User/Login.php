@@ -2,6 +2,7 @@
 namespace Bs\Controller\User;
 
 use Bs\Db\User;
+use Bs\Form\EditTrait;
 use Dom\Mvc\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +11,7 @@ use Tk\Uri;
 
 class Login extends PageController
 {
-    protected ?\Bs\Form\Login $form;
+    use EditTrait;
 
     public function __construct()
     {
@@ -21,9 +22,8 @@ class Login extends PageController
 
     public function doLogin(Request $request)
     {
-        $this->form = new \Bs\Form\Login();
-
-        $this->form->doDefault($request);
+        $this->setForm(new \Bs\Form\Login());
+        $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
     }

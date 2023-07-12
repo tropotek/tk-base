@@ -2,15 +2,19 @@
 namespace Bs\Controller\User;
 
 use Bs\Db\User;
+use Bs\Form\EditTrait;
 use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
+use Tk\Exception;
 use Tk\Uri;
 
 class Edit extends PageController
 {
-    protected \Bs\Form\User $form;
+    use EditTrait;
+
+    protected ?User $user = null;
 
     protected string $type = User::TYPE_MEMBER;
 
@@ -25,25 +29,42 @@ class Edit extends PageController
     public function doDefault(Request $request, string $type)
     {
         $this->type = $type;
+        $this->user = $this->getFactory()->createUser();
+        $this->getUser()->setType($type);
+
+        if ($request->query->getInt('userId')) {
+            $this->user = $this->getFactory()->getUserMap()->find($request->query->getInt('userId'));
+        }
+        if (!$this->getUser()) {
+            throw new Exception('Invalid User ID: ' . $request->query->getInt('userId'));
+        }
 
         // Get the form template
-        $this->form = new \Bs\Form\User();
-        $this->form->doDefault($request,  $request->query->getInt('userId', 0), $type);
+        $this->setForm(new \Bs\Form\User($this->getUser()));
+        $this->getForm()->setType($this->type);
+        $this->getForm()->execute($request->request->all());
+//        $this->form = new \Bs\Form\User();
+//        $this->form->doDefault($request,  $request->query->getInt('userId', 0), $type);
 
         if ($request->query->get('cv')) {
             $newType = trim($request->query->get('cv'));
             if ($newType == User::TYPE_STAFF) {
-                $this->form->getUser()->setType(User::TYPE_STAFF);
+                $this->getUser()->setType(User::TYPE_STAFF);
                 Alert::addSuccess('User now set to type STAFF, please select and save the users new permissions.');
             } else if ($newType == User::TYPE_MEMBER) {
-                $this->form->getUser()->setType(User::TYPE_MEMBER);
+                $this->getUser()->setType(User::TYPE_MEMBER);
                 Alert::addSuccess('User now set to type MEMBER.');
             }
-            $this->form->getUser()->save();
+            $this->getUser()->save();
             Uri::create()->remove('cv')->redirect();
         }
 
         return $this->getPage();
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
     public function show(): ?Template
@@ -51,13 +72,12 @@ class Edit extends PageController
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-
-        if ($this->form->getUser()->getId() > 1 && $this->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
-            if ($this->form->getUser()->isType(User::TYPE_MEMBER)) {
+        if ($this->getUser()->getId() > 1 && $this->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
+            if ($this->getUser()->isType(User::TYPE_MEMBER)) {
                 $url = Uri::create()->set('cv', User::TYPE_STAFF);
                 $template->setAttr('to-staff', 'href', $url);
                 $template->setVisible('to-staff');
-            } else if ($this->form->getUser()->isType(User::TYPE_STAFF)) {
+            } else if ($this->getUser()->isType(User::TYPE_STAFF)) {
                 $url = Uri::create()->set('cv', User::TYPE_MEMBER);
                 $template->setAttr('to-member', 'href', $url);
                 $template->setVisible('to-member');
@@ -67,7 +87,7 @@ class Edit extends PageController
         $template->appendText('title', $this->getPage()->getTitle());
         $template->appendTemplate('content', $this->form->show());
 
-        if (!$this->form->getUser()->getId()) {
+        if (!$this->getUser()->getId()) {
             $template->setVisible('new-user');
         }
 

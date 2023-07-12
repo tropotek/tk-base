@@ -2,32 +2,22 @@
 namespace Bs\Form;
 
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Encrypt;
 use Tk\Form;
-use Tk\FormRenderer;
 use Tk\Form\Field;
 use Tk\Form\Action;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
-class Register
+class Register extends EditInterface
 {
-    use SystemTrait;
-    use Form\FormTrait;
 
-    protected ?\Bs\Db\User $user = null;
 
-    public function __construct()
+    public function init(): void
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
         $this->getSession()->set('recover', time());
-        $this->setForm(Form::create('register'));
-    }
 
-    public function doDefault(Request $request)
-    {
         $this->form->appendField(new Field\Input('name'))
             ->setRequired()
             ->setAttr('placeholder', 'Name');
@@ -58,12 +48,13 @@ class Register
         $this->getForm()->appendField(new Field\Html('links', $html))->setLabel('')->addFieldCss('text-center');
         $this->getForm()->appendField(new Action\Submit('register', [$this, 'onSubmit']));
 
+    }
+
+    public function execute(array $values = []): void
+    {
         $load = [];
         $this->getForm()->setFieldValues($load);
-
-        $this->getForm()->execute($request->request->all());
-
-        $this->setFormRenderer(new FormRenderer($this->getForm()));
+        parent::execute($values);
     }
 
     public function onSubmit(Form $form, Action\ActionInterface $action)
@@ -73,12 +64,12 @@ class Register
             Uri::create('/home')->redirect();
         }
 
-        $this->user = $this->getFactory()->createUser();
-        $this->user->setActive(false);
-        $this->user->setNotes('pending activation');
-        $this->user->setType(\Bs\Db\User::TYPE_MEMBER);
+        $user = $this->getFactory()->createUser();
+        $user->setActive(false);
+        $user->setNotes('pending activation');
+        $user->setType(\Bs\Db\User::TYPE_MEMBER);
 
-        $this->user->getMapper()->getFormMap()->loadObject($this->user, $form->getFieldValues());
+        $user->getMapper()->getFormMap()->loadObject($user, $form->getFieldValues());
 
         $token = $this->getSession()->get('recover', 0);
         $this->getSession()->remove('recover');
@@ -100,14 +91,14 @@ class Register
             }
         }
 
-        $form->addFieldErrors($this->user->validate());
+        $form->addFieldErrors($user->validate());
 
         if ($form->hasErrors()) {
             return;
         }
 
-        $this->user->setPassword(\Bs\Db\User::hashPassword($this->user->getPassword()));
-        $this->user->save();
+        $user->setPassword(\Bs\Db\User::hashPassword($user->getPassword()));
+        $user->save();
 
         // send email to user
         $content = <<<HTML
@@ -125,10 +116,11 @@ class Register
         $message = $this->getFactory()->createMessage();
         $message->set('content', $content);
         $message->setSubject($this->getRegistry()->getSiteName() . ' Account Registration');
-        $message->addTo($this->user->getEmail());
-        $message->set('name', $this->user->getName());
+        $message->addTo($user->getEmail());
+        $message->set('name', $user->getName());
 
-        $hashToken = Encrypt::create($this->getConfig()->get('system.encrypt'))->encrypt(serialize(['h' => $this->user->getHash(), 't' => time()]));
+        $hashToken = Encrypt::create($this->getConfig()->get('system.encrypt'))
+            ->encrypt(serialize(['h' => $user->getHash(), 't' => time()]));
         $url = Uri::create('/registerActivate')->set('t', $hashToken);
         $message->set('activate-url', $url->toString());
 
@@ -140,7 +132,8 @@ class Register
 
     public function show(): ?Template
     {
-        return $this->getFormRenderer()->show();
+        $renderer = $this->getFormRenderer();
+        return $renderer->show();
     }
 
 }

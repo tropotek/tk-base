@@ -3,13 +3,14 @@ namespace Bs\Controller\User;
 
 use Bs\Db\User;
 use Bs\PageController;
+use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
 
 class Manager extends PageController
 {
-    protected \Bs\Table\User $table;
+    use ManagerTrait;
 
     protected string $type = '';
 
@@ -39,8 +40,14 @@ class Manager extends PageController
         $this->getPage()->setTitle(ucfirst($this->type ?: 'User') . ' Manager');
 
         // Get the form template
-        $this->table = new \Bs\Table\User($this->type);
-        $this->table->doDefault($request);
+        $this->setTable(new \Bs\Table\User());
+        $this->getTable()->setType($this->type);
+        $filter = [];
+        if ($this->type) {
+            $filter['type'] = $this->type;
+        }
+        $this->getTable()->findList($filter, $this->getTable()->getTool('name'));
+        $this->getTable()->execute($request);
 
         return $this->getPage();
     }
@@ -58,7 +65,7 @@ class Manager extends PageController
             $template->setVisible('create-staff', false);
         }
 
-        $template->appendTemplate('content', $this->table->show());
+        $template->appendTemplate('content', $this->getTable()->show());
 
         return $template;
     }

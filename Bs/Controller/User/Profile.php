@@ -1,31 +1,33 @@
 <?php
 namespace Bs\Controller\User;
 
-use Bs\Db\User;
+use Bs\Form\EditTrait;
 use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Tk\Alert;
+use Tk\Uri;
 
-/**
- * TODO: Create a user profile edit page.
- */
 class Profile extends PageController
 {
-    protected \Bs\Form\Profile $form;
-
+    use EditTrait;
 
     public function __construct()
     {
         parent::__construct($this->getFactory()->getPublicPage());
         $this->getPage()->setTitle('My Profile');
-
     }
 
     public function doDefault(Request $request)
     {
+        if (!$this->getAuthUser()) {
+            Alert::addError('You do not have access to this page.');
+            Uri::create('/')->redirect();
+        }
+
         // Get the form template
-        $this->form = new \Bs\Form\Profile();
-        $this->form->doDefault($request);
+        $this->setForm(new \Bs\Form\Profile($this->getFactory()->getAuthUser()));
+        $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
     }

@@ -4,6 +4,7 @@ namespace Bs\Form;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
+use Tk\Db\Mapper\Model;
 use Tk\Form;
 use Tk\FormRenderer;
 use Tk\Form\Field\Input;
@@ -12,21 +13,10 @@ use Tk\Form\Field\Hidden;
 use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
-class Profile
+class Profile extends EditInterface
 {
-    use SystemTrait;
-    use Form\FormTrait;
 
-    protected \Bs\Db\User $user;
-
-
-    public function __construct()
-    {
-        $this->setForm(Form::create('user'));
-        $this->user = $this->getFactory()->getAuthUser();
-    }
-
-    public function doDefault(Request $request)
+    public function init(): void
     {
         $tab = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($tab);
@@ -42,8 +32,8 @@ class Profile
             ->addCss('tk-input-lock')
             ->setRequired();
 
-        if ($this->user->isType(\Bs\Db\User::TYPE_STAFF)) {
-            $this->getForm()->appendField(new Checkbox('perm', array_flip($this->user->getAvailablePermissions())))
+        if ($this->getUser()->isType(\Bs\Db\User::TYPE_STAFF)) {
+            $this->getForm()->appendField(new Checkbox('perm', array_flip($this->getUser()->getAvailablePermissions())))
                 ->setGroup($tab)
                 ->setDisabled()
                 ->setReadonly();
@@ -68,23 +58,24 @@ class Profile
         $this->getForm()->appendField(new Form\Action\SubmitExit('save', [$this, 'onSubmit']));
         $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
+    }
+
+    public function execute(array $values = []): void
+    {
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
         $load['userId'] = $this->getUser()->getUserId();
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
-        $this->getForm()->execute($request->request->all());
-
-        $this->setFormRenderer(new FormRenderer($this->getForm()));
-
+        parent::execute($values);
     }
 
     public function onSubmit(Form $form, Form\Action\ActionInterface $action)
     {
-        $this->getUser()->getMapper()->getFormMap()->loadObject($this->user, $form->getFieldValues());
+        $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
 
         if ($form->getField('currentPass') && $form->getFieldValue('currentPass')) {
-            if (!password_verify($form->getFieldValue('currentPass'), $this->user->getPassword())) {
+            if (!password_verify($form->getFieldValue('currentPass'), $this->getUser()->getPassword())) {
                 $form->addFieldError('currentPass', 'Invalid current password, password not updated');
             }
             if ($form->getField('newPass') && $form->getFieldValue('newPass')) {
@@ -100,7 +91,7 @@ class Profile
             }
         }
 
-        $form->addFieldErrors($this->user->validate());
+        $form->addFieldErrors($this->getUser()->validate());
         if ($form->hasErrors()) {
             Alert::addError('Form contains errors.');
             return;
@@ -120,18 +111,15 @@ class Profile
 
     public function show(): ?Template
     {
-        // Setup field group widths with bootstrap classes
         $this->getForm()->getField('username')->addFieldCss('col-6');
         $this->getForm()->getField('email')->addFieldCss('col-6');
-
         $renderer = $this->getFormRenderer();
         $renderer->addFieldCss('mb-3');
-
         return $renderer->show();
     }
 
-    public function getUser(): \Bs\Db\User
+    public function getUser(): \Bs\Db\User|Model
     {
-        return $this->user;
+        return $this->getModel();
     }
 }
