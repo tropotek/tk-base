@@ -13,7 +13,7 @@ class Register extends EditInterface
 {
 
 
-    public function init(): void
+    protected function initFields(): void
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
         $this->getSession()->set('recover', time());
@@ -50,14 +50,15 @@ class Register extends EditInterface
 
     }
 
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         $load = [];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
+        return $this;
     }
 
-    public function onSubmit(Form $form, Action\ActionInterface $action)
+    public function onSubmit(Form $form, Action\ActionInterface $action): void
     {
         if (!$this->getRegistry()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');

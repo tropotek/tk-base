@@ -18,7 +18,7 @@ class File extends ManagerInterface
     protected string $fkey = '';
 
 
-    public function init(): void
+    protected function initCells(): void
     {
         $this->appendCell(new Cell\Checkbox('id'));
         $this->appendCell(new Cell\Text('actions'))
@@ -73,13 +73,14 @@ class File extends ManagerInterface
 
     }
 
-    public function execute(Request $request): void
+    public function execute(Request $request): static
     {
         if ($request->query->has('del')) {
             $this->doDelete($request->query->get('del'));
         }
 
         parent::execute($request);
+        return $this;
     }
 
     public function findList(array $filter = [], ?Tool $tool = null): null|array|Result

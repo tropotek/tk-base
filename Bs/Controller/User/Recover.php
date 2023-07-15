@@ -20,6 +20,7 @@ class Recover extends PageController
     public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
     {
         $this->setForm(new \Bs\Form\Recover());
+        $this->getForm()->init();
         $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
@@ -28,7 +29,7 @@ class Recover extends PageController
     public function doRecover(Request $request): \App\Page|\Dom\Mvc\Page
     {
         $this->setForm(new \Bs\Form\RecoverPassword());
-        $this->getForm()->execute($request->request->all());
+        $this->getForm()->init()->execute($request->request->all());
 
         return $this->getPage();
     }

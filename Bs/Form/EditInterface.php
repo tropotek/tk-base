@@ -25,22 +25,31 @@ abstract class EditInterface extends Form implements DisplayInterface
         if (!$formId) {
             $formId = \Tk\ObjectUtil::basename(get_class($this));
             $formId = strtolower(preg_replace('/[A-Z]/', '_$0', $formId));
+            $formId = trim($formId, '_');
         }
         parent::__construct($formId);
-        $this->model = $model;
-        $this->init();
+        $this->setModel($model);
+    }
+
+    public function init(): static
+    {
+        $this->initFields();
         $this->initFormRenderer();
+
+        return $this;
     }
 
     /**
-     * init all your form fields here
+     * Add form fields, events here
      */
-    abstract public function init(): void;
+    abstract protected function initFields(): void;
 
-//    public function execute(array $values = []): void
-//    {
-//        parent::execute($values);
-//    }
+    public function execute(array $values = []): static
+    {
+        parent::execute($values);
+
+        return $this;
+    }
 
     public function show(): ?Template
     {
@@ -65,6 +74,17 @@ abstract class EditInterface extends Form implements DisplayInterface
     public function getModel(): null|array|Model|ModelInterface
     {
         return $this->model;
+    }
+
+    public function setModel(Model|array|null $model): EditInterface
+    {
+        $this->model = $model;
+        return $this;
+    }
+
+    public function getBackUrl(): \Tk\Uri
+    {
+        return $this->getFactory()->getBackUrl();
     }
 
 }

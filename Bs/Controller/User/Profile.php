@@ -18,7 +18,7 @@ class Profile extends PageController
         $this->getPage()->setTitle('My Profile');
     }
 
-    public function doDefault(Request $request)
+    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
     {
         if (!$this->getAuthUser()) {
             Alert::addError('You do not have access to this page.');
@@ -27,7 +27,7 @@ class Profile extends PageController
 
         // Get the form template
         $this->setForm(new \Bs\Form\Profile($this->getFactory()->getAuthUser()));
-        $this->getForm()->execute($request->request->all());
+        $this->getForm()->init()->execute($request->request->all());
 
         return $this->getPage();
     }

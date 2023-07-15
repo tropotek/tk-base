@@ -26,7 +26,7 @@ class Edit extends PageController
         $this->setAccess(User::PERM_MANAGE_MEMBER | User::PERM_MANAGE_STAFF);
     }
 
-    public function doDefault(Request $request, string $type)
+    public function doDefault(Request $request, string $type): \App\Page|\Dom\Mvc\Page
     {
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();
@@ -41,6 +41,7 @@ class Edit extends PageController
 
         // Get the form template
         $this->setForm(new \Bs\Form\User($this->getUser()));
+        $this->getForm()->init();
         $this->getForm()->setType($this->type);
         $this->getForm()->execute($request->request->all());
 //        $this->form = new \Bs\Form\User();

@@ -149,11 +149,12 @@ let tkbase = function () {
     }
 
     function init() {
+      console.log('init_tabs');
       $(this).tktabs();
     }
 
     init();
-    $('form').on(EVENT_INIT, document, init).each(init);
+    $('form').on(EVENT_INIT_FORM, document, init).each(init);
   };
 
 

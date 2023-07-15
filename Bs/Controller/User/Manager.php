@@ -21,13 +21,13 @@ class Manager extends PageController
         $this->getCrumbs()->reset();
     }
 
-    public function doByType(Request $request, string $type)
+    public function doByType(Request $request, string $type): \Dom\Mvc\Page|\App\Page
     {
         $this->type = $type;
         return $this->doDefault($request);
     }
 
-    public function doDefault(Request $request)
+    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
     {
         if ($this->type == User::TYPE_MEMBER) {
             $this->setAccess(User::PERM_MANAGE_MEMBER);
@@ -47,7 +47,7 @@ class Manager extends PageController
             $filter['type'] = $this->type;
         }
         $this->getTable()->findList($filter, $this->getTable()->getTool('name'));
-        $this->getTable()->execute($request);
+        $this->getTable()->init()->execute($request);
 
         return $this->getPage();
     }

@@ -15,7 +15,7 @@ class User extends EditInterface
     protected string $type = \Bs\Db\User::TYPE_MEMBER;
 
 
-    public function init(): void
+    protected function initFields(): void
     {
         $group = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($group);
@@ -55,7 +55,7 @@ class User extends EditInterface
 
     }
 
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
         $load['userId'] = $this->getUser()->getUserId();
@@ -63,6 +63,7 @@ class User extends EditInterface
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
         parent::execute($values);
+        return $this;
     }
 
     public function onSubmit(Form $form, Form\Action\ActionInterface $action): void

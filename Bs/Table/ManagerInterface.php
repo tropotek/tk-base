@@ -26,15 +26,21 @@ abstract class ManagerInterface extends Table implements DisplayInterface
     {
         parent::__construct($tableId);
         $this->addCss('table-hover');
-        $this->init();
+    }
+
+    public function init(): static
+    {
+        $this->initCells();
+
+        return $this;
     }
 
     /**
-     * init all your table cells here
+     * Add table cells, actions, and filters here
      */
-    abstract public function init(): void;
+    abstract protected function initCells(): void;
 
-    public function execute(Request $request): void
+    public function execute(Request $request): static
     {
         if (count($this->getFilterForm()->getFields())) {
             // Load filter values
@@ -60,7 +66,7 @@ abstract class ManagerInterface extends Table implements DisplayInterface
                 ->setAttr('title', 'Reset table filters and order to default.');
         }
 
-        parent::execute($request);
+        return parent::execute($request);
     }
 
     public function findList(array $filter = [], ?Tool $tool = null): null|array|Result
@@ -114,6 +120,11 @@ abstract class ManagerInterface extends Table implements DisplayInterface
     {
         if (!$this->filterForm) $this->initFilterForm();
         return $this->filterForm;
+    }
+
+    public function getBackUrl(): \Tk\Uri
+    {
+        return $this->getFactory()->getBackUrl();
     }
 
 }

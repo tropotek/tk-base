@@ -16,7 +16,7 @@ use Tk\Uri;
 class Profile extends EditInterface
 {
 
-    public function init(): void
+    protected function initFields(): void
     {
         $tab = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($tab);
@@ -60,7 +60,7 @@ class Profile extends EditInterface
 
     }
 
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
         $load['userId'] = $this->getUser()->getUserId();
@@ -68,9 +68,10 @@ class Profile extends EditInterface
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
         parent::execute($values);
+        return $this;
     }
 
-    public function onSubmit(Form $form, Form\Action\ActionInterface $action)
+    public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
     {
         $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
 

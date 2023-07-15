@@ -29,7 +29,7 @@ class Register extends PageController
         }
 
         $this->setForm(new \Bs\Form\Register());
-        $this->getForm()->execute($request->request->all());
+        $this->getForm()->init()->execute($request->request->all());
 
         return $this->getPage();
     }

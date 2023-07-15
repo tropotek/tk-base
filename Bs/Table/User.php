@@ -18,9 +18,8 @@ class User extends ManagerInterface
     protected string $type = '';
 
 
-    public function init(): void
+    protected function initCells(): void
     {
-
         // TODO: How will we manage this with various ID's LOOK INTO IT!!!!!!!!
         //       Also check into Actions `delete`, `csv`, etc....
         $this->appendCell(new Cell\Checkbox('userId'));
@@ -113,7 +112,7 @@ class User extends ManagerInterface
 
     }
 
-    public function execute(Request $request): void
+    public function execute(Request $request): static
     {
         if ($request->query->has('del')) {
             $this->doDelete($request->query->get('del'));
@@ -124,6 +123,8 @@ class User extends ManagerInterface
         }
 
         parent::execute($request);
+
+        return $this;
     }
 
     public function findList(array $filter = [], ?Tool $tool = null): null|array|Result

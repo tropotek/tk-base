@@ -20,15 +20,16 @@ class Login extends PageController
 
     }
 
-    public function doLogin(Request $request)
+    public function doLogin(Request $request): \App\Page|\Dom\Mvc\Page
     {
         $this->setForm(new \Bs\Form\Login());
+        $this->getForm()->init();
         $this->getForm()->execute($request->request->all());
 
         return $this->getPage();
     }
 
-    public function doLogout(Request $request)
+    public function doLogout(Request $request): void
     {
         User::logout(true);
         Alert::addSuccess('Logged out successfully');

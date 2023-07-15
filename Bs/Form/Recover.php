@@ -17,7 +17,7 @@ use Tk\Uri;
 class Recover extends EditInterface
 {
 
-    public function init(): void
+    protected function initFields(): void
     {
         // logout any existing user
         User::logout();
@@ -43,14 +43,15 @@ class Recover extends EditInterface
 
     }
 
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         $load = [];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
+        return $this;
     }
 
-    public function onSubmit(Form $form, Action\ActionInterface $action)
+    public function onSubmit(Form $form, Action\ActionInterface $action): void
     {
         if (!$form->getFieldValue('username')) {
             $form->addError('Please enter a valid username.');

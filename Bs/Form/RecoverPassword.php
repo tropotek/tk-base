@@ -19,7 +19,7 @@ class RecoverPassword extends EditInterface
 
     protected ?User $user = null;
 
-    public function init(): void
+    protected function initFields(): void
     {
         // logout any existing user
         User::logout();
@@ -56,13 +56,14 @@ class RecoverPassword extends EditInterface
         $this->getForm()->appendField(new Action\Submit('recover-update', [$this, 'onRecover']));
     }
 
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         $load = [
             't' => $_REQUEST['t'] ?? ''
         ];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
+        return $this;
     }
 
     public function onRecover(Form $form, Action\ActionInterface $action): void

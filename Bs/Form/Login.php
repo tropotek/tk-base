@@ -15,7 +15,7 @@ use Tk\Uri;
 class Login extends EditInterface
 {
 
-    public function init(): void
+    protected function initFields(): void
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
         $this->getSession()->set('login', time());
@@ -51,14 +51,16 @@ class Login extends EditInterface
 
     }
 
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         $load = [];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
+
+        return $this;
     }
 
-    public function onSubmit(Form $form, Action\ActionInterface $action)
+    public function onSubmit(Form $form, Action\ActionInterface $action): void
     {
         $values = $form->getFieldValues();
 
