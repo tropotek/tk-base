@@ -33,7 +33,7 @@ class User extends ManagerInterface
                 $btn = new Link('Edit');
                 $btn->setText('');
                 $btn->setIcon('fa fa-edit');
-                $btn->addCss('btn btn-primary');
+                $btn->addCss('btn btn-xs btn-primary');
                 $btn->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('userId', $obj->getId()));
                 $template->appendTemplate('td', $btn->show());
                 $template->appendHtml('td', '&nbsp;');
@@ -41,7 +41,7 @@ class User extends ManagerInterface
                 $btn = new Link('Masquerade');
                 $btn->setText('');
                 $btn->setIcon('fa fa-user-secret');
-                $btn->addCss('btn btn-outline-dark');
+                $btn->addCss('btn btn-xs btn-outline-dark');
                 $btn->setUrl(Uri::create()->set(Masquerade::QUERY_MSQ, $obj->getId()));
                 $btn->setAttr('data-confirm', 'Are you sure you want to log-in as user \''.$obj->getName().'\'');
                 $template->appendTemplate('td', $btn->show());
@@ -50,7 +50,7 @@ class User extends ManagerInterface
                 $btn = new Link('Delete');
                 $btn->setText('');
                 $btn->setIcon('fa fa-trash');
-                $btn->addCss('btn btn-danger');
+                $btn->addCss('btn btn-xs btn-danger');
                 $btn->setUrl(Uri::create()->set('del', $obj->getId()));
                 $btn->setAttr('data-confirm', 'Are you sure you want to delete \''.$obj->getName().'\'');
                 $template->appendTemplate('td', $btn->show());
