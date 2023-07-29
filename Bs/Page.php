@@ -38,11 +38,16 @@ JS;
             $template->setTitleText('DEBUG: ' . $template->getTitleText());
         }
 
+        $template->setText('site-name', $this->getRegistry()->getSiteName());
+        $template->setText('site-short-name', $this->getRegistry()->getSiteShortName());
+        $template->setText('site-name-letter', $this->getRegistry()->getSitename()[0]);
+        $template->setText('page-title', $this->getTitle());
+
         $user = $this->getFactory()->getAuthUser();
         if ($user) {
             $template->setText('username', $user->getUsername());
             $template->setText('user-name', $user->getName());
-            // TODO get user image/avatar URL
+            $template->setAttr('user-image', 'src', $user->getImageUrl());
 
             $template->setVisible('loggedIn');
         } else {

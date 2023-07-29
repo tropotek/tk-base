@@ -5,10 +5,12 @@ use Bs\Factory;
 use Bs\Util\Masquerade;
 use Bs\Db\Traits\HashTrait;
 use Bs\Db\Traits\TimestampTrait;
+use Tk\Color;
 use Tk\Config;
 use Tk\Db\Mapper\Model;
 use Tk\Db\Mapper\Result;
 use Tk\Encrypt;
+use Tk\Image;
 use Tk\Uri;
 
 class User extends Model implements UserInterface, FileInterface
@@ -140,6 +142,14 @@ class User extends Model implements UserInterface, FileInterface
     public function getDataPath(): string
     {
         return sprintf('/user/%s/data', $this->getVolatileId());
+    }
+
+    public function getImageUrl(): Uri
+    {
+        $color = Color::createRandom($this->getVolatileId());
+        $img = Image::createAvatar($this->getName(), $color, 128);
+        $b64 = base64_encode($img->getContents());
+        return Uri::create('data:image/png;base64,' . $b64);
     }
 
     public function getUserId(): int

@@ -36,7 +36,7 @@ class File extends \Tk\Form\Field\File
      * This is called only once the form has been submitted
      *   and new data loaded into the fields
      */
-    public function execute(array $values = []): void
+    public function execute(array $values = []): static
     {
         if ($this->hasFile()) {
             /** @var UploadedFile $uploaded */
@@ -51,6 +51,7 @@ class File extends \Tk\Form\Field\File
                 $file->save();
             }
         }
+        return $this;
     }
 
     public function getModel(): ?\Bs\Db\FileInterface
