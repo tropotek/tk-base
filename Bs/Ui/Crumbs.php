@@ -3,6 +3,8 @@ namespace Bs\Ui;
 
 use Dom\Template;
 use Tk\Traits\SystemTrait;
+use Tk\Ui\Traits\AttributesTrait;
+use Tk\Ui\Traits\CssTrait;
 use Tk\Uri;
 
 /**
@@ -12,6 +14,8 @@ use Tk\Uri;
 class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
     use SystemTrait;
+    use CssTrait;
+    use AttributesTrait;
 
     /**
      * Request param: Reset the crumb stack
@@ -216,6 +220,9 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
             $i++;
         }
 
+        $template->setAttr('crumbs', $this->getAttrList());
+        $template->addCss('crumbs', $this->getCssList());
+
         return $template;
     }
 
@@ -224,7 +231,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         $html = <<<HTML
 <div>
   <nav aria-label="breadcrumb">
-    <ol class="breadcrumb p-3 bg-body-tertiary rounded-3">
+    <ol class="breadcrumb" var="crumbs">
       <li class="breadcrumb-item" repeat="item"><a href="#" var="url"></a></li>
     </ol>
   </nav>

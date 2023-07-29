@@ -2,6 +2,7 @@
 namespace Bs;
 
 use Bs\Ui\Crumbs;
+use Dom\Mvc\Modifier\JsLast;
 use Dom\Template;
 use Tk\Uri;
 
@@ -30,18 +31,26 @@ let config = {
   }
 }
 JS;
-        $template->appendJs($js, array('data-jsl-priority' => -1000));
+        $template->appendJs($js, array(JsLast::$ATTR_PRIORITY => -1000));
 
         $template->setTitleText($this->getTitle());
         if ($this->getConfig()->isDebug()) {
             $template->setTitleText('DEBUG: ' . $template->getTitleText());
         }
 
-        if ($this->getFactory()->getAuthUser()) {
+        $user = $this->getFactory()->getAuthUser();
+        if ($user) {
+            $template->setText('username', $user->getUsername());
+            $template->setText('user-name', $user->getName());
+            // TODO get user image/avatar URL
+
             $template->setVisible('loggedIn');
         } else {
             $template->setVisible('loggedOut');
         }
+
+        // Default crumbs css (probably not the best place for this...
+        $this->getFactory()->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
 
 
         return parent::show();

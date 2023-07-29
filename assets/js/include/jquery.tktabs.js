@@ -69,7 +69,7 @@
 
         // CSS FIX:  Need to create a container and a row to avoid layout issues with .tab-pane class
         let children = $(this).children().detach();
-        let container = $('<div class="container-fluid"><div class="row"></div></div>');
+        let container = $('<div class=""><div class="row"></div></div>');
         container.find('.row').append(children);
         $(this).append(container);
 

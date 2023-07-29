@@ -149,7 +149,6 @@ let tkbase = function () {
     }
 
     function init() {
-      console.log('init_tabs');
       $(this).tktabs();
     }
 
