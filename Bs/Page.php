@@ -56,6 +56,7 @@ JS;
         if ($user) {
             $template->setText('username', $user->getUsername());
             $template->setText('user-name', $user->getName());
+            $template->setText('user-type', ucfirst($user->getType()));
             $template->setAttr('user-image', 'src', $user->getImageUrl());
             $template->setAttr('user-home-url', 'href', $user->getHomeUrl());
 
