@@ -13,8 +13,9 @@ class Maintenance extends PageController
 
     public function __construct()
     {
-        parent::__construct($this->getFactory()->getMaintenancePage());
+        parent::__construct();
         $this->getPage()->setTitle('Maintenance');
+        $this->getCrumbs()->reset();
         if ($this->getRegistry()->get('system.maintenance.message')) {
             $this->message = $this->getRegistry()->get('system.maintenance.message');
         }

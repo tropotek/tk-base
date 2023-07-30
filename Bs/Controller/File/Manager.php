@@ -2,23 +2,15 @@
 namespace Bs\Controller\File;
 
 use Bs\Db\UserInterface;
-use Bs\Form\EditTrait;
 use Bs\PageController;
 use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Form;
-use Tk\Form\FormTrait;
 use Tk\FormRenderer;
 use Tk\Uri;
 
-
-/**
- * This manager controller is an example of how to setup the
- * \Bs\Db\File Table and \Bs\Form\Field\File field for your sites.
- *
- */
 class Manager extends PageController
 {
     use ManagerTrait;
@@ -29,7 +21,7 @@ class Manager extends PageController
 
     public function __construct()
     {
-        parent::__construct($this->getFactory()->getAdminPage());
+        parent::__construct();
         $this->getPage()->setTitle('File Manager');
         $this->setAccess(UserInterface::PERM_ADMIN);
     }

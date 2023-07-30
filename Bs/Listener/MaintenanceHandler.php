@@ -2,6 +2,7 @@
 namespace Bs\Listener;
 
 use Bs\Db\UserInterface;
+use Bs\Page;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Registry;
@@ -33,6 +34,13 @@ class MaintenanceHandler implements EventSubscriberInterface
         // check if the controller is an API controller (return JSON response)
         if (str_contains($class, '\\Api\\')) {
             $method = 'doApi';
+        }
+
+        if ($this->getConfig()->get('path.template.'.Page::TEMPLATE_MAINTENANCE)) {
+            $event->getRequest()->attributes->set('template', Page::TEMPLATE_MAINTENANCE);
+            $params = $event->getRequest()->attributes->get('_route_params');
+            $params['template'] = Page::TEMPLATE_MAINTENANCE;
+            $event->getRequest()->attributes->set('_route_params', $params);
         }
 
         $c = new \Bs\Controller\Maintenance();

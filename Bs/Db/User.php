@@ -152,6 +152,11 @@ class User extends Model implements UserInterface, FileInterface
         return Uri::create('data:image/png;base64,' . $b64);
     }
 
+    public function getHomeUrl(): Uri
+    {
+        return Uri::create('/dashboard');
+    }
+
     public function getUserId(): int
     {
         return $this->userId;

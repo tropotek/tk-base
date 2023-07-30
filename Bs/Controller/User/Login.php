@@ -3,7 +3,7 @@ namespace Bs\Controller\User;
 
 use Bs\Db\User;
 use Bs\Form\EditTrait;
-use Dom\Mvc\PageController;
+use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -15,7 +15,7 @@ class Login extends PageController
 
     public function __construct()
     {
-        parent::__construct($this->getFactory()->getLoginPage());
+        parent::__construct();
         $this->getPage()->setTitle('Login');
 
     }

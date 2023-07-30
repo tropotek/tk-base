@@ -32,7 +32,7 @@
 
     // plugin settings
     let defaults = {
-      navTabsTpl: `<ul class="nav nav-tabs mb-3" role="tablist" id="">`,
+      navTabsTpl: `<ul class="nav nav-tabs nav-bordered mb-3" role="tablist" id="">`,
       tabItemTpl: `<li class="nav-item" role="presentation">
         <a class="nav-link" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#" id="" href="#" aria-controls="" aria-selected="false"></a>
       </li>`,

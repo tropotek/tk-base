@@ -79,41 +79,22 @@ class Factory extends \Tk\Factory
         return $this->get('authAdapter');
     }
 
-
-    // Page/Template Methods
-
-    public function getPublicPage(): Page
+    /**
+     * You can select the page's template by adding `->defaults(['template' => '{public|admin|user|login|maintenance|error}'])`.
+     *
+     * Other options may be available if you have created new template paths in the `20-config.php` file.
+     * Create a new path with `$config->set('path.template.custom', '/html/newTemplate/index.html');`
+     * then add `->defaults(['template' => 'custom'])` to the route. (case-sensitive)
+     */
+    public function createPageFromType(string $pageType): Page
     {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.public')));
+        if (empty($pageType)) $pageType = Page::TEMPLATE_PUBLIC;
+        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.'.$pageType)));
     }
 
-    public function getUserPage(): Page
+    public function createPage($templatePath = ''): Page
     {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.user')));
-    }
-
-    public function getAdminPage(): Page
-    {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.admin')));
-    }
-
-    public function getMaintenancePage(): Page
-    {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.maintenance')));
-    }
-
-    public function getLoginPage(): Page
-    {
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.login')));
-    }
-
-    public function createPage($templatePath, callable $onCreate = null): Page
-    {
-        $page = Page::create($templatePath);
-        if ($onCreate) {
-            call_user_func_array($onCreate, [$page]);
-        }
-        return $page;
+        return Page::create($templatePath);
     }
 
     public function getTemplateModifier(): Modifier
@@ -192,23 +173,27 @@ class Factory extends \Tk\Factory
     }
 
     /**
-     * get the breadcrumb storage object
+     * Get a breadcrumb object by page type
      */
     public function getCrumbs(): ?Crumbs
     {
-        //$this->getSession()->set('breadcrumbs', null);
-        if (!$this->has('breadcrumbs')) {
-            $crumbs = $this->getSession()->get('breadcrumbs');
+        $type = $this->getRequest()->get('template', '');
+        $id = 'breadcrumbs.' . $type;
+        //$this->getSession()->set($id, null);
+        if (!$this->has($id)) {
+            $crumbs = $this->getSession()->get($id);
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
-                //$crumbs->setHomeUrl('/home');
+                if ($type == Page::TEMPLATE_ADMIN) {
+                    $crumbs->setHomeUrl('/dashboard');
+                }
                 $crumbs->reset();
-                $this->getSession()->set('breadcrumbs', $crumbs);
+                $this->getSession()->set($id, $crumbs);
             }
-            $this->set('breadcrumbs', $crumbs);
+            $this->set($id, $crumbs);
         }
-        return $this->get('breadcrumbs');
+        return $this->get($id);
     }
 
     public function getBackUrl(): Uri

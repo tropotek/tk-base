@@ -14,7 +14,7 @@ class Profile extends PageController
 
     public function __construct()
     {
-        parent::__construct($this->getFactory()->getAdminPage());
+        parent::__construct();
         $this->getPage()->setTitle('My Profile');
     }
 

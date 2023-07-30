@@ -1,9 +1,8 @@
 <?php
 namespace Bs\Controller\User;
 
-use Bs\Db\UserMap;
 use Bs\Form\EditTrait;
-use Dom\Mvc\PageController;
+use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -17,7 +16,7 @@ class Register extends PageController
 
     public function __construct()
     {
-        parent::__construct($this->getFactory()->getLoginPage());
+        parent::__construct();
         $this->getPage()->setTitle('Register');
     }
 

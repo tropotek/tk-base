@@ -14,7 +14,7 @@ class TailLog extends PageController
 
     public function __construct()
     {
-        parent::__construct($this->getFactory()->getAdminPage());
+        parent::__construct();
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(UserInterface::PERM_ADMIN);
 

@@ -8,6 +8,15 @@ use Tk\Uri;
 
 class Page extends \Dom\Mvc\Page
 {
+    const TEMPLATE_PUBLIC      = 'public';
+    const TEMPLATE_ADMIN       = 'admin';
+    const TEMPLATE_USER        = 'user';
+    const TEMPLATE_MAINTENANCE = 'maintenance';
+    const TEMPLATE_LOGIN       = 'login';
+    const TEMPLATE_ERROR       = 'error';
+
+    protected string $type = self::TEMPLATE_PUBLIC;
+
     protected bool $crumbEnabled = true;
 
     public function show(): ?Template
@@ -48,6 +57,7 @@ JS;
             $template->setText('username', $user->getUsername());
             $template->setText('user-name', $user->getName());
             $template->setAttr('user-image', 'src', $user->getImageUrl());
+            $template->setAttr('user-home-url', 'href', $user->getHomeUrl());
 
             $template->setVisible('loggedIn');
         } else {
@@ -55,12 +65,22 @@ JS;
         }
 
         // Default crumbs css (probably not the best place for this...
-        $this->getFactory()->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
+        $this->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
 
 
         return parent::show();
     }
 
+    public function setType(string $type): Page
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
 
     public function getCrumbs(): ?Crumbs
     {
