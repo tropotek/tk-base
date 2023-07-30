@@ -92,7 +92,7 @@ class Factory extends \Tk\Factory
         return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.'.$pageType)));
     }
 
-    public function createPage($templatePath = ''): Page
+    public function createPage(string $templatePath = ''): Page
     {
         return Page::create($templatePath);
     }
