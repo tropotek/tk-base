@@ -1,36 +1,36 @@
 {
-  "name": "ttek/tk-base",
-  "type": "library",
-  "description": "Base site library for the Tk lib",
-  "keywords": [
-    "tropotek"
-  ],
-  "time": "2022-11-13",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Michael Mifsud",
-      "homepage": "http://www.tropotek.com/"
+    "name": "ttek/tk-base",
+    "type": "library",
+    "description": "Base site library for the Tk lib",
+    "keywords":  [
+        "tropotek"
+    ],
+    "time": "2023-07-30",
+    "license": "MIT",
+    "authors":  [
+         {
+            "name": "Michael Mifsud",
+            "homepage": "http://www.tropotek.com/"
+        }
+    ],
+    "autoload":  {
+        "psr-4":  {
+            "Bs\\": "Bs/"
+        }
+    },
+    "require":  {
+        "ttek/tk-framework": "~8.0.0",
+        "ttek/tk-auth": "~8.0.0",
+        "ttek/tk-mail": "~8.0.0",
+        "ttek/tk-domtemplate": "~8.0.0",
+        "ttek/tk-form": "~8.0.0",
+        "ttek/tk-table": "~8.0.0",
+        "studio-42/elfinder": "~2.1.0",
+        "tinymce/tinymce": "~6.4.0"
+    },
+    "extra":  {
+        "branch-alias":  {
+            "dev-master": "8.0.x-dev"
+        }
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "Bs\\": "Bs/"
-    }
-  },
-  "require": {
-    "ttek/tk-framework": "~8.0.0",
-    "ttek/tk-auth": "~8.0.0",
-    "ttek/tk-mail": "~8.0.0",
-    "ttek/tk-domtemplate": "~8.0.0",
-    "ttek/tk-form": "~8.0.0",
-    "ttek/tk-table": "~8.0.0",
-    "studio-42/elfinder": "~2.1.0",
-    "tinymce/tinymce": "~6.4.0"
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "8.0.x-dev"
-    }
-  }
 }
