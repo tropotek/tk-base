@@ -177,7 +177,7 @@ class Factory extends \Tk\Factory
      */
     public function getCrumbs(): ?Crumbs
     {
-        $type = $this->getRequest()->get('template', '');
+        $type = $this->getRequest()->get('template', 'public');
         $id = 'breadcrumbs.' . $type;
         //$this->getSession()->set($id, null);
         if (!$this->has($id)) {
