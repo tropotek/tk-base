@@ -36,7 +36,6 @@ class Profile extends PageController
     {
         $template = $this->getTemplate();
         $template->appendText('title', $this->getPage()->getTitle());
-        vd($this->getBackUrl());
         $template->setAttr('back', 'href', $this->getBackUrl());
 
         $template->appendTemplate('content', $this->form->show());
