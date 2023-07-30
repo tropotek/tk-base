@@ -64,6 +64,7 @@ class Manager extends PageController
     {
         $template = $this->getTemplate();
         $template->appendText('title', $this->getPage()->getTitle());
+        $template->setAttr('back', 'href', $this->getBackUrl());
 
         $renderer = new FormRenderer($this->form);
         $this->form->addCss('mb-5');

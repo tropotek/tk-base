@@ -56,6 +56,8 @@ class Manager extends PageController
     {
         $template = $this->getTemplate();
         $template->appendText('title', $this->getPage()->getTitle());
+        $template->setAttr('back', 'href', $this->getBackUrl());
+
         $template->setAttr('create-staff', 'href', Uri::create('/user/staffEdit'));
         $template->setAttr('create-member', 'href', Uri::create('/user/memberEdit'));
         if ($this->type == User::TYPE_STAFF) {

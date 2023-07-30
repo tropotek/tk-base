@@ -72,6 +72,7 @@ class TailLog extends PageController
     public function show(): ?Template
     {
         $template = $this->getTemplate();
+        $template->setAttr('back', 'href', $this->getBackUrl());
 
         $template->setAttr('tail', 'data-src', Uri::create()->set(\Tk\Log::NO_LOG)->set('refresh'));
         $template->appendJsUrl(Uri::create($this->getConfig()->get('path.vendor.org') . '/tk-base/Bs/Controller/Admin/Dev/jquery.tkTail.js'));

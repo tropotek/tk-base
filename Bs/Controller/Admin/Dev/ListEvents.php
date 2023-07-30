@@ -46,6 +46,7 @@ class ListEvents extends PageController
     public function show(): ?Template
     {
         $template = $this->getTemplate();
+        $template->setAttr('back', 'href', $this->getBackUrl());
 
         $renderer = new TableRenderer($this->getTable());
         $renderer->setFooterEnabled(false);
