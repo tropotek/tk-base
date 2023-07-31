@@ -42,12 +42,15 @@ class Manager extends PageController
         // Get the form template
         $this->setTable(new \Bs\Table\User());
         $this->getTable()->setType($this->type);
+        $this->getTable()->init();
+
         $filter = [];
         if ($this->type) {
             $filter['type'] = $this->type;
         }
         $this->getTable()->findList($filter, $this->getTable()->getTool('name'));
-        $this->getTable()->init()->execute($request);
+
+        $this->getTable()->execute($request);
 
         return $this->getPage();
     }

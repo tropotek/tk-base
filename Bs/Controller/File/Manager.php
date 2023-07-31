@@ -31,13 +31,15 @@ class Manager extends PageController
         // Get the form template
         $this->setTable(new \Bs\Table\File());
         $this->getTable()->setFkey($this->fkey);
+        $this->getTable()->init();
+
         $filter = [];
         if ($this->fkey) {
             $filter['fkey'] = $this->fkey;
         }
         $this->getTable()->findList($filter, $this->getTable()->getTool('path'));
-        $this->getTable()->execute($request);
 
+        $this->getTable()->execute($request);
 
         $this->form = Form::create('upload');
         $this->form->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');

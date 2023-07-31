@@ -124,17 +124,28 @@ class UserMap extends Mapper
             $filter['userId'] = $filter['id'];
         }
         if (!empty($filter['userId'])) {
+            // TODO: we need to start using the in `IN` keyword when OR'ing params
+            //  if (!is_array($filter['userId'])) $filter['userId'] = array($filter['userId']);
+            //  $filter->appendWhere('(a.user_id IN (:userId)) AND ');
             $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['exclude'])) {
+            // TODO: we need to start using the in `NOT IN` keyword when AND'ing params
+            //  if (!is_array($filter['exclude'])) $filter['exclude'] = array($filter['exclude']);
+            //  $filter->appendWhere('(a.user_id NOT IN (:exclude)) AND ');
+
             $w = $this->makeMultiQuery($filter['exclude'], 'a.user_id', 'AND', '!=');
             if ($w) $filter->appendWhere('(%s) AND ', $w);
         }
 
         if (!empty($filter['uid'])) {
             $filter->appendWhere('a.uid = %s AND ', $this->quote($filter['uid']));
+
+            // TODO: Proposed new prepare query syntax
+            //   $filter['uid'] = $filter['uid'];             // modify variable if needed (most time this can be just removed)
+            //   $filter->appendWhere('a.uid = :uid AND ');   // append where with variable
         }
 
         if (!empty($filter['hash'])) {

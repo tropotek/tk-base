@@ -32,16 +32,13 @@ abstract class ManagerInterface extends Table implements DisplayInterface
     {
         $this->initCells();
 
-        return $this;
-    }
+        if ($this->getConfig()->isDebug()) {
+            $this->prependAction(new Action\Link('reset', Uri::create()->set(Table::RESET_TABLE, $this->getId()), 'fa fa-retweet'))
+                ->setLabel('')
+                ->setAttr('data-confirm', 'Are you sure you want to reset the Table`s session?')
+                ->setAttr('title', 'Reset table filters and order to default.');
+        }
 
-    /**
-     * Add table cells, actions, and filters here
-     */
-    abstract protected function initCells(): void;
-
-    public function execute(Request $request): static
-    {
         if (count($this->getFilterForm()->getFields())) {
             // Load filter values
             $this->getFilterForm()->setFieldValues($this->getTableSession()->get($this->getFilterForm()->getId(), []));
@@ -56,18 +53,21 @@ abstract class ManagerInterface extends Table implements DisplayInterface
                 Uri::create()->redirect();
             }))->setGroup('')->addCss('btn-outline-secondary');
 
-            $this->getFilterForm()->execute($request->request->all());
+            $this->getFilterForm()->execute($this->getRequest()->request->all());
         }
 
-        if ($this->getConfig()->isDebug()) {
-            $this->prependAction(new Action\Link('reset', Uri::create()->set(Table::RESET_TABLE, $this->getId()), 'fa fa-retweet'))
-                ->setLabel('')
-                ->setAttr('data-confirm', 'Are you sure you want to reset the Table`s session?')
-                ->setAttr('title', 'Reset table filters and order to default.');
-        }
-
-        return parent::execute($request);
+        return $this;
     }
+
+    /**
+     * Add table cells, actions, and filters here
+     */
+    abstract protected function initCells(): void;
+
+//    public function execute(Request $request): static
+//    {
+//        return parent::execute($request);
+//    }
 
     public function findList(array $filter = [], ?Tool $tool = null): null|array|Result
     {
