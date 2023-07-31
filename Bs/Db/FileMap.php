@@ -20,7 +20,7 @@ class FileMap extends Mapper
             $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS file
 (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    file_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT(10) UNSIGNED NOT NULL DEFAULT 0,
     fkey VARCHAR(64) DEFAULT '' NOT NULL,
     fid INT DEFAULT 0 NOT NULL,
@@ -46,7 +46,7 @@ SQL;
     {
         if (!$this->getDataMappers()->has(self::DATA_MAP_DB)) {
             $map = new DataMap();
-            $map->addDataType(new Db\Integer('id'));
+            $map->addDataType(new Db\Integer('fileId', 'file_id'));
             $map->addDataType(new Db\Integer('userId', 'user_id'));
             $map->addDataType(new Db\Text('fkey'));
             $map->addDataType(new Db\Integer('fid'));
@@ -63,7 +63,7 @@ SQL;
 
         if (!$this->getDataMappers()->has(self::DATA_MAP_FORM)) {
             $map = new DataMap();
-            $map->addDataType(new Form\Integer('id'));
+            $map->addDataType(new Form\Integer('fileId'));
             $map->addDataType(new Form\Integer('userId'));
             $map->addDataType(new Form\Text('fkey'));
             $map->addDataType(new Form\Integer('fid'));
@@ -78,7 +78,7 @@ SQL;
 
         if (!$this->getDataMappers()->has(self::DATA_MAP_TABLE)) {
             $map = new DataMap();
-            $map->addDataType(new Form\Integer('id'));
+            $map->addDataType(new Form\Integer('fileId'));
             $map->addDataType(new Form\Integer('userId'));
             $map->addDataType(new Form\Text('fkey'));
             $map->addDataType(new Form\Integer('fid'));
@@ -103,51 +103,44 @@ SQL;
      */
     public function findFiltered($filter, $tool = null): \Tk\Db\Mapper\Result
     {
-        return $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
+        return $this->prepareFromFilter($this->makeQuery(Filter::create($filter)), $tool);
     }
 
     public function makeQuery(Filter $filter): Filter
     {
         $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
 
-        if (!empty($filter['keywords'])) {
-            $kw = '%' . $this->getDb()->escapeString($filter['keywords']) . '%';
-            $w = '';
-            $w .= sprintf('a.path LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.mime LIKE %s OR ', $this->quote($kw));
-            if (is_numeric($filter['keywords'])) {
-                $id = (int)$filter['keywords'];
-                $w .= sprintf('a.id = %d OR ', $id);
-            }
+        if (!empty($filter['search'])) {
+            $filter['search'] = '%' . $this->getDb()->escapeString($filter['search']) . '%';
+            $w  = 'a.file_id LIKE :search OR ';
+            $w .= 'a.path LIKE :search OR ';
+            $w .= 'a.mime LIKE :search OR ';
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
-        if (isset($filter['id'])) {
-            $w = $this->makeMultiQuery($filter['id'], 'a.id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        if (!empty($filter['id'])) {
+            $filter['fileId'] = $filter['id'];
         }
-        if (isset($filter['userId'])) {
-            $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
-        if (isset($filter['label'])) {
-            $w = $this->makeMultiQuery($filter['label'], 'a.label');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
-        if (isset($filter['mime'])) {
-            $w = $this->makeMultiQuery($filter['mime'], 'a.mime');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+        if (!empty($filter['fileId'])) {
+            $filter->appendWhere('(a.file_id IN (:userId)) AND ');
         }
 
-        if (isset($filter['selected']) && $filter['selected'] !== '' && $filter['selected'] !== null) {
-            $filter->appendWhere('a.selected = %s AND ', (int)$filter['selected']);
+        if (isset($filter['label'])) {
+            $filter->appendWhere('(a.label IN (:label)) AND ');
+        }
+        if (isset($filter['mime'])) {
+            $filter->appendWhere('(a.mime IN (:mime)) AND ');
+        }
+
+        if (!$this->isEmpty($filter['selected'] ?? null)) {
+            $filter->appendWhere('a.selected = :selected AND ');
         }
 
         if (!empty($filter['path'])) {
-            $filter->appendWhere('a.path = %s AND ', $this->quote($filter['path']));
+            $filter->appendWhere('a.path = :path AND ');
         }
         if (!empty($filter['hash'])) {
-            $filter->appendWhere('a.hash = %s AND ', $this->quote($filter['hash']));
+            $filter->appendWhere('a.hash = :hash AND ');
         }
 
         if (!empty($filter['model']) && $filter['model'] instanceof ModelInterface) {
@@ -155,15 +148,14 @@ SQL;
             $filter['fkey'] = get_class($filter['model']);
         }
         if (isset($filter['fid'])) {
-            $filter->appendWhere('a.fid = %d AND ', (int)$filter['fid']);
+            $filter->appendWhere('a.fid = :fid AND ');
         }
         if (isset($filter['fkey'])) {
-            $filter->appendWhere('a.fkey = %s AND ', $this->quote($filter['fkey']));
+            $filter->appendWhere('a.fkey = :fkey AND ');
         }
 
         if (!empty($filter['exclude'])) {
-            $w = $this->makeMultiQuery($filter['exclude'], 'a.id', 'AND', '!=');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+            $filter->appendWhere('(a.file_id NOT IN (:exclude)) AND ');
         }
 
         return $filter;

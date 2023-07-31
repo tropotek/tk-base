@@ -17,7 +17,7 @@ class File extends Model
     use CreatedTrait;
     use HashTrait;
 
-    public int $id = 0;
+    public int $fileId = 0;
 
     public int $userId = 0;
 
@@ -107,6 +107,16 @@ class File extends Model
         return hash('md5', sprintf('%s%s%s', $this->getFkey(), $this->getFid(), $this->getPath()));
     }
 
+    public function getFileId(): int
+    {
+        return $this->fileId;
+    }
+
+    public function setFileId(int $fileId): File
+    {
+        $this->fileId = $fileId;
+        return $this;
+    }
 
     public function getUserId(): int
     {

@@ -120,7 +120,6 @@ class UserMap extends Mapper
             $filter['userId'] = $filter['id'];
         }
         if (!empty($filter['userId'])) {
-            if (!is_array($filter['userId'])) $filter['userId'] = array($filter['userId']);
             $filter->appendWhere('(a.user_id IN (:userId)) AND ');
         }
 
@@ -133,7 +132,6 @@ class UserMap extends Mapper
         }
 
         if (!empty($filter['type'])) {
-            if (!is_array($filter['type'])) $filter['type'] = array($filter['type']);
             $filter->appendWhere('(a.type IN (:type)) AND ');
         }
 
@@ -145,12 +143,11 @@ class UserMap extends Mapper
             $filter->appendWhere('a.email = :email AND ');
         }
 
-        if (is_bool($filter['active'] ?? '')) {
+        if (!$this->isEmpty($filter['active'] ?? null)) {
             $filter->appendWhere('a.active = :active AND ');
         }
 
         if (!empty($filter['exclude'])) {
-            if (!is_array($filter['exclude'])) $filter['exclude'] = array($filter['exclude']);
             $filter->appendWhere('(a.user_id NOT IN (:exclude)) AND ');
         }
 
@@ -194,19 +191,13 @@ class UserMap extends Mapper
     /**
      * Add a new row to the user_remember table
      */
-    public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): bool
+    public function insertToken(int $userId, string $selector, string $hashedValidator, string $expiry): bool
     {
-        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
-            VALUES(:user_id, :browser_id, :selector, :hashed_validator, :expiry)';
-
+        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashedValidator, expiry)
+            VALUES(:userId, :browserId, :selector, :hashedValidator, :expiry)';
         $statement = $this->getDb()->prepare($sql);
-        $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
-        $statement->bindValue(':selector', $selector);
-        $statement->bindValue(':hashed_validator', $hashed_validator);
-        $statement->bindValue(':expiry', $expiry);
-
-        return $statement->execute();
+        $browserId = $this->getFactory()->getCookie()->getBrowserId();
+        return $statement->execute(compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
     }
 
     /**
@@ -219,16 +210,13 @@ class UserMap extends Mapper
         $sql = 'SELECT id, selector, hashed_validator, browser_id, user_id, expiry
             FROM user_remember
             WHERE selector = :selector
-            AND browser_id = :browser_id
+            AND browser_id = :browserId
             AND expiry >= NOW()
             LIMIT 1';
 
         $statement = $this->getDb()->prepare($sql);
-        $statement->bindValue(':selector', $selector);
-        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
-
-        $statement->execute();
-
+        $browserId = $this->getFactory()->getCookie()->getBrowserId();
+        $statement->execute(compact('selector', 'browserId'));
         return $statement->fetch(\PDO::FETCH_ASSOC);
     }
 
@@ -237,26 +225,21 @@ class UserMap extends Mapper
         $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
             FROM user_remember
             WHERE user_id = :userId
-            AND browser_id = :browser_id
+            AND browser_id = :browserId
             AND expiry >= NOW()
             LIMIT 1';
 
         $statement = $this->getDb()->prepare($sql);
-        $statement->bindValue(':userId', $userId);
-        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
-
-        $statement->execute();
-
+        $browserId = $this->getFactory()->getCookie()->getBrowserId();
+        $statement->execute(compact('userId', 'browserId'));
         return $statement->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function deleteToken(int $user_id): bool
+    public function deleteToken(int $userId): bool
     {
         $sql = 'DELETE FROM user_remember WHERE user_id = :user_id AND browser_id = :browser_id';
         $statement = $this->getDb()->prepare($sql);
-        $statement->bindValue(':user_id', $user_id);
-        $statement->bindValue(':browser_id', $this->getFactory()->getCookie()->getBrowserId());
-
-        return $statement->execute();
+        $browserId = $this->getFactory()->getCookie()->getBrowserId();
+        return $statement->execute(compact('userId', 'browserId'));
     }
 }
