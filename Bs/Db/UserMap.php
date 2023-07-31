@@ -99,7 +99,7 @@ class UserMap extends Mapper
      */
     public function findFiltered(array|Filter $filter, ?Tool $tool = null): Result
     {
-        return $this->selectFromFilter($this->makeQuery(Filter::create($filter)), $tool);
+        return $this->prepareFromFilter($this->makeQuery(Filter::create($filter)), $tool);
     }
 
     public function makeQuery(Filter $filter): Filter
@@ -107,16 +107,12 @@ class UserMap extends Mapper
         $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
 
         if (!empty($filter['search'])) {
-            $kw = '%' . $this->getDb()->escapeString($filter['search']) . '%';
-            $w = '';
-            $w .= sprintf('a.uid LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.name LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.username LIKE %s OR ', $this->quote($kw));
-            $w .= sprintf('a.email LIKE %s OR ', $this->quote($kw));
-            if (is_numeric($filter['search'])) {
-                $id = (int)$filter['search'];
-                $w .= sprintf('a.user_id = %d OR ', $id);
-            }
+            $filter['search'] = '%' . $this->getDb()->escapeString($filter['search']) . '%';
+            $w  = 'a.uid LIKE :search OR ';
+            $w .= 'a.name LIKE :search OR ';
+            $w .= 'a.username LIKE :search OR ';
+            $w .= 'a.email LIKE :search OR ';
+            $w .= 'a.user_id LIKE :search OR ';
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
@@ -124,55 +120,44 @@ class UserMap extends Mapper
             $filter['userId'] = $filter['id'];
         }
         if (!empty($filter['userId'])) {
-            // TODO: we need to start using the in `IN` keyword when OR'ing params
-            //  if (!is_array($filter['userId'])) $filter['userId'] = array($filter['userId']);
-            //  $filter->appendWhere('(a.user_id IN (:userId)) AND ');
-            $w = $this->makeMultiQuery($filter['userId'], 'a.user_id');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
-        }
-
-        if (!empty($filter['exclude'])) {
-            // TODO: we need to start using the in `NOT IN` keyword when AND'ing params
-            //  if (!is_array($filter['exclude'])) $filter['exclude'] = array($filter['exclude']);
-            //  $filter->appendWhere('(a.user_id NOT IN (:exclude)) AND ');
-
-            $w = $this->makeMultiQuery($filter['exclude'], 'a.user_id', 'AND', '!=');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+            if (!is_array($filter['userId'])) $filter['userId'] = array($filter['userId']);
+            $filter->appendWhere('(a.user_id IN (:userId)) AND ');
         }
 
         if (!empty($filter['uid'])) {
-            $filter->appendWhere('a.uid = %s AND ', $this->quote($filter['uid']));
-
-            // TODO: Proposed new prepare query syntax
-            //   $filter['uid'] = $filter['uid'];             // modify variable if needed (most time this can be just removed)
-            //   $filter->appendWhere('a.uid = :uid AND ');   // append where with variable
+            $filter->appendWhere('a.uid = :uid AND ');
         }
 
         if (!empty($filter['hash'])) {
-            $filter->appendWhere('a.hash = %s AND ', $this->quote($filter['hash']));
+            $filter->appendWhere('a.hash = :hash AND ');
         }
 
         if (!empty($filter['type'])) {
-            $w = $this->makeMultiQuery($filter['type'], 'a.type');
-            if ($w) $filter->appendWhere('(%s) AND ', $w);
+            if (!is_array($filter['type'])) $filter['type'] = array($filter['type']);
+            $filter->appendWhere('(a.type IN (:type)) AND ');
         }
 
         if (!empty($filter['username'])) {
-            $filter->appendWhere('a.username = %s AND ', $this->quote($filter['username']));
+            $filter->appendWhere('a.username = :username AND ');
         }
 
         if (!empty($filter['email'])) {
-            $filter->appendWhere('a.email = %s AND ', $this->quote($filter['email']));
+            $filter->appendWhere('a.email = :email AND ');
         }
 
         if (is_bool($filter['active'] ?? '')) {
-            $filter->appendWhere('a.active = %s AND ', (int)$filter['active']);
+            $filter->appendWhere('a.active = :active AND ');
+        }
+
+        if (!empty($filter['exclude'])) {
+            if (!is_array($filter['exclude'])) $filter['exclude'] = array($filter['exclude']);
+            $filter->appendWhere('(a.user_id NOT IN (:exclude)) AND ');
         }
 
         // Filter for any remember me saved token selectors
         if (!empty($filter['selector'])) {
             $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_remember'));
-            $filter->appendWhere('z.selector = %s AND expiry > NOW() AND ', $this->quote($filter['selector']));
+            $filter->appendWhere('z.selector = :selector AND expiry > NOW() AND ');
         }
 
         return $filter;
