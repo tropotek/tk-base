@@ -76,21 +76,6 @@ SQL;
             $this->addDataMap(self::DATA_MAP_FORM, $map);
         }
 
-        if (!$this->getDataMappers()->has(self::DATA_MAP_TABLE)) {
-            $map = new DataMap();
-            $map->addDataType(new Form\Integer('fileId'));
-            $map->addDataType(new Form\Integer('userId'));
-            $map->addDataType(new Form\Text('fkey'));
-            $map->addDataType(new Form\Integer('fid'));
-            $map->addDataType(new Form\Text('path'));
-            $map->addDataType(new Form\Integer('bytes'));
-            $map->addDataType(new Form\Text('mime'));
-            $map->addDataType(new Form\Text('label'));
-            $map->addDataType(new Form\Text('notes'));
-            $map->addDataType(new Table\Boolean('selected'));
-            $map->addDataType(new Form\Date('created'))->setDateFormat('d/m/Y h:i:s');
-            $this->addDataMap(self::DATA_MAP_TABLE, $map);
-        }
     }
 
     public function findByHash($hash): ?File

@@ -22,7 +22,7 @@ class User extends ManagerInterface
     {
         // TODO: How will we manage this with various ID's LOOK INTO IT!!!!!!!!
         //       Also check into Actions `delete`, `csv`, etc....
-        $this->appendCell(new Cell\Checkbox('userId'));
+        $this->appendCell(new Cell\RowSelect('userId'));
 
         $this->appendCell(new Cell\Text('actions'))
             ->addOnShow(function (Cell\Text $cell) {
@@ -94,8 +94,8 @@ class User extends ManagerInterface
                 $cell->setUrl('mailto:'.$obj->getEmail());
             });
         $this->appendCell(new Cell\Text('active'));
-        //$this->appendCell(new Cell\Text('modified'));
-        $this->appendCell(new Cell\Text('created'));
+        //$this->appendCell(new Cell\Date('modified'));
+        $this->appendCell(new Cell\Date('created'));
 
 
         // Table filters

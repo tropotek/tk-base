@@ -36,7 +36,7 @@ class Status extends \Bs\TableInterface
         $this->addCss('tk-status-table');
 
         if ($this->getAuthUser()->hasPermission(Permission::MANAGE_SITE)) {
-            $this->appendCell(new Cell\Checkbox('id'));
+            $this->appendCell(new Cell\RowSelect('id'));
         }
         $this->appendCell(new Text('name'))->setLabel('Status')->setUrl($this->getEditUrl());
 

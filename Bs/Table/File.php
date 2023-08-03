@@ -20,7 +20,7 @@ class File extends ManagerInterface
 
     protected function initCells(): void
     {
-        $this->appendCell(new Cell\Checkbox('id'));
+        $this->appendCell(new Cell\RowSelect('id'));
         $this->appendCell(new Cell\Text('actions'))
             ->addOnShow(function (Cell\Text $cell) {
                 $cell->addCss('text-nowrap text-center');
@@ -61,7 +61,7 @@ class File extends ManagerInterface
         $this->appendCell(new Cell\Text('fid'))->setLabel('Key ID');
         $this->appendCell(new Cell\Text('bytes'));
         $this->appendCell(new Cell\Boolean('selected'));
-        $this->appendCell(new Cell\Text('created'));
+        $this->appendCell(new Cell\Date('created'));
 
         // Table filters
         //$this->getFilterForm()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
