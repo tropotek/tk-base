@@ -176,7 +176,7 @@ class UserMap extends Mapper
      */
     public function insertToken(int $userId, string $selector, string $hashedValidator, string $expiry): bool
     {
-        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashedValidator, expiry)
+        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
             VALUES(:userId, :browserId, :selector, :hashedValidator, :expiry)';
         $statement = $this->getDb()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
@@ -220,7 +220,7 @@ class UserMap extends Mapper
 
     public function deleteToken(int $userId): bool
     {
-        $sql = 'DELETE FROM user_remember WHERE user_id = :user_id AND browser_id = :browser_id';
+        $sql = 'DELETE FROM user_remember WHERE user_id = :userId AND browser_id = :browserId';
         $statement = $this->getDb()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
         return $statement->execute(compact('userId', 'browserId'));
