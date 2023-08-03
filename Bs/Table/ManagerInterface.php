@@ -14,6 +14,10 @@ use Tk\Table\Action;
 use Tk\TableRenderer;
 use Tk\Uri;
 
+/**
+
+ * @todo See if we can use a \Tk\Table\TableTrait with this pattern
+ */
 abstract class ManagerInterface extends Table implements DisplayInterface
 {
 

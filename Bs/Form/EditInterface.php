@@ -11,6 +11,8 @@ use Tk\FormRenderer;
 
 /**
  * Use this interface to create edit Forms using a model object
+ *
+ * @todo See if we can use \Tk\Form\FormTrait with this pattern
  */
 abstract class EditInterface extends Form implements DisplayInterface
 {
