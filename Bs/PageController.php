@@ -16,7 +16,6 @@ abstract class PageController extends \Dom\Mvc\PageController
         if (!$page) {
             $pageType = $this->getFactory()->getRequest()->get('template', Page::TEMPLATE_PUBLIC);
             $page = $this->getFactory()->createPageFromType($pageType);
-            $page->setType($pageType);
         }
         if (!$page) {
             //$page = $this->getFactory()->createPage();    // use this if we want to render pages with default template?

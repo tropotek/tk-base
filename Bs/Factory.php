@@ -89,7 +89,9 @@ class Factory extends \Tk\Factory
     public function createPageFromType(string $pageType): Page
     {
         if (empty($pageType)) $pageType = Page::TEMPLATE_PUBLIC;
-        return $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.'.$pageType)));
+        $page = $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.'.$pageType)));
+        $page->setType($pageType);
+        return $page;
     }
 
     public function createPage(string $templatePath = ''): Page
