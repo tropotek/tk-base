@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 8.0.24 [2023-08-09]:
+-------------------------------
+  - removed table map requirement
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Added prepared stmt to filter functions
+
+
 Ver 8.0.22 [2023-07-30]:
 -------------------------------
   - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
