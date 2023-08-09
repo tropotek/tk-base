@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 8.0.28 [2023-08-09]:
+-------------------------------
+  - Convert to prepared statements
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Update data mapper objects
+
+
 Ver 8.0.26 [2023-08-09]:
 -------------------------------
   - Added global default template select to settings
