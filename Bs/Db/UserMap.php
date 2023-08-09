@@ -88,8 +88,8 @@ class UserMap extends Mapper
 
         if (!empty($filter['search'])) {
             $filter['search'] = '%' . $this->getDb()->escapeString($filter['search']) . '%';
-            $w  = 'a.uid LIKE :search OR ';
-            $w .= 'a.name LIKE :search OR ';
+            $w  = 'a.name LIKE :search OR ';
+            $w .= 'a.uid LIKE :search OR ';
             $w .= 'a.username LIKE :search OR ';
             $w .= 'a.email LIKE :search OR ';
             $w .= 'a.user_id LIKE :search OR ';
