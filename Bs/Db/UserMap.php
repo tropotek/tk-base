@@ -27,16 +27,13 @@ class UserMap extends Mapper
             $map->addDataType(new Db\Text('email'));
             $map->addDataType(new Db\Text('name'));
             $map->addDataType(new Db\Text('notes'));
-            $map->addDataType(new Db\Text('timezone'))->setNullable(true);
+            $map->addDataType(new Db\Text('timezone'));
             $map->addDataType(new Db\Boolean('active'));
             $map->addDataType(new Db\Text('sessionId', 'session_id'));
             $map->addDataType(new Db\Text('hash'));
-            $map->addDataType(new Db\Date('lastLogin', 'last_login'))->setNullable(true);
-            //$map->addDataType(new Db\Boolean('del'));
+            $map->addDataType(new Db\Date('lastLogin', 'last_login'));
             $map->addDataType(new Db\Date('modified'));
             $map->addDataType(new Db\Date('created'));
-//            $del = $map->addDataType(new Db\Boolean('del'));
-//            $this->setDeleteType($del);
             $this->addDataMap(self::DATA_MAP_DB, $map);
         }
 
@@ -52,7 +49,7 @@ class UserMap extends Mapper
             $map->addDataType(new Form\Text('name'));
             $map->addDataType(new Form\Boolean('active'));
             $map->addDataType(new Form\Text('notes'));
-            $map->addDataType(new Form\Text('timezone'))->setNullable(true);
+            $map->addDataType(new Form\Text('timezone'));
             $this->addDataMap(self::DATA_MAP_FORM, $map);
         }
     }
