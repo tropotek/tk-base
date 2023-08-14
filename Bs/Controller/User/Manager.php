@@ -48,7 +48,7 @@ class Manager extends PageController
         if ($this->type) {
             $filter['type'] = $this->type;
         }
-        $this->getTable()->findList($filter, $this->getTable()->getTool('name'));
+        $this->getTable()->findList($filter, $this->getTable()->getTool('name_last'));
 
         $this->getTable()->execute($request);
 

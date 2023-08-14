@@ -57,6 +57,14 @@ class User extends Model implements UserInterface, FileInterface
      */
     const TYPE_MEMBER = 'member';
 
+	/**
+     * User type list
+     */
+	const TYPE_LIST = [
+        self::TYPE_STAFF            => "Staff",
+        self::TYPE_MEMBER           => "Member",
+    ];
+
 
     public int $userId = 0;
 

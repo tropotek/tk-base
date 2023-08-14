@@ -20,8 +20,6 @@ class User extends ManagerInterface
 
     protected function initCells(): void
     {
-        // TODO: How will we manage this with various ID's LOOK INTO IT!!!!!!!!
-        //       Also check into Actions `delete`, `csv`, etc....
         $this->appendCell(new Cell\RowSelect('userId'));
 
         $this->appendCell(new Cell\Text('actions'))
@@ -65,7 +63,7 @@ class User extends ManagerInterface
                 })
             ->setAttr('style', 'width: 100%;');
 
-        $this->appendCell(new Cell\Text('name'));
+        $this->appendCell(new Cell\Text('name'))->setOrderByName('name_last');
 
         if (!$this->getType()) {
             $this->appendCell(new Cell\Text('type'));
@@ -102,7 +100,7 @@ class User extends ManagerInterface
         $this->getFilterForm()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
         if (!$this->getType()) {
             // TODO: Will need to get this list from a `User` or `Permission` static class
-            $list = ['Staff' => \Bs\Db\User::TYPE_STAFF, 'Member' => \Bs\Db\User::TYPE_MEMBER];
+            $list = array_flip(\Bs\Db\User::TYPE_LIST);
             $this->getFilterForm()->appendField(new Field\Select('type', $list))->prependOption('-- Type --', '');
         }
 
