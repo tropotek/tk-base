@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Db;
 
-use Tk\Cookie;
 use Tk\DataMap\DataMap;
 use Tk\Db\Mapper\Filter;
 use Tk\Db\Mapper\Mapper;
@@ -9,7 +8,6 @@ use Tk\Db\Mapper\Result;
 use Tk\Db\Tool;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
-use Tk\DataMap\Table;
 
 class UserMap extends Mapper
 {
@@ -25,14 +23,10 @@ class UserMap extends Mapper
             $map->addDataType(new Db\Text('username'));
             $map->addDataType(new Db\Text('password'));
             $map->addDataType(new Db\Text('email'));
-
-            $map->addDataType(new Db\Text('name'));     // deprecated
-
             $map->addDataType(new Db\Text('nameTitle', 'name_title'));
             $map->addDataType(new Db\Text('nameFirst', 'name_first'));
             $map->addDataType(new Db\Text('nameLast', 'name_last'));
             $map->addDataType(new Db\Text('nameDisplay', 'name_display'));
-
             $map->addDataType(new Db\Text('notes'));
             $map->addDataType(new Db\Text('timezone'));
             $map->addDataType(new Db\Boolean('active'));
@@ -53,7 +47,10 @@ class UserMap extends Mapper
             $map->addDataType(new Form\Text('username'));
             $map->addDataType(new Form\Text('password'));
             $map->addDataType(new Form\Text('email'));
-            $map->addDataType(new Form\Text('name'));
+            $map->addDataType(new Form\Text('nameTitle'));
+            $map->addDataType(new Form\Text('nameFirst'));
+            $map->addDataType(new Form\Text('nameLast'));
+            $map->addDataType(new Form\Text('nameDisplay'));
             $map->addDataType(new Form\Boolean('active'));
             $map->addDataType(new Form\Text('notes'));
             $map->addDataType(new Form\Text('timezone'));

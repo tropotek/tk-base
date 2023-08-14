@@ -19,8 +19,25 @@ class User extends EditInterface
     {
         $group = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($group);
-        $this->getForm()->appendField(new Input('name'))->setGroup($group)
+
+        $list = \Bs\Db\User::getTitleList();
+        $this->getForm()->appendField(new Form\Field\Select('nameTitle', $list))
+            ->setGroup($group)
+            ->setLabel('Title')
+            ->prependOption('', '');
+
+        $this->getForm()->appendField(new Input('nameFirst'))
+            ->setGroup($group)
+            ->setLabel('First Name')
             ->setRequired();
+
+        $this->getForm()->appendField(new Input('nameLast'))
+            ->setGroup($group)
+            ->setLabel('Last Name');
+
+//        $this->getForm()->appendField(new Input('nameDisplay'))
+//            ->setGroup($group)
+//            ->setLabel('Preferred Name');
 
         $l1 = $this->getForm()->appendField(new Input('username'))->setGroup($group)
             ->setRequired();
@@ -35,11 +52,12 @@ class User extends EditInterface
         }
 
         if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(\Bs\Db\User::PERM_SYSADMIN)) {
-            $field = $this->getForm()->appendField(new Checkbox('perm', array_flip($this->getUser()->getAvailablePermissions())))
-                ->setLabel('Permissions')
-                ->setGroup($group);
 
-            if ($this->getUser()->getUsername() == 'admin') {
+            $list = array_flip($this->getUser()->getAvailablePermissions());
+            $field = $this->getForm()->appendField(new Checkbox('perm', $list))
+                ->setLabel('Permissions')
+                ->setGroup('Permissions');
+            if ($this->getUser()->getUsername() == 'admin') {   // disable permission change for admin user
                 $field->setDisabled();
             }
 
@@ -101,6 +119,11 @@ class User extends EditInterface
 
     public function show(): ?Template
     {
+        $this->getForm()->getField('nameTitle')->addFieldCss('col-1');
+        $this->getForm()->getField('nameFirst')->addFieldCss('col-5');
+        $this->getForm()->getField('nameLast')->addFieldCss('col-6');
+        //$this->getForm()->getField('nameDisplay')->addFieldCss('col-5');
+
         $this->getForm()->getField('username')->addFieldCss('col-6');
         $this->getForm()->getField('email')->addFieldCss('col-6');
         $renderer = $this->getFormRenderer();

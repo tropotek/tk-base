@@ -152,6 +152,9 @@ class User extends ManagerInterface
         $msqUser = $this->getFactory()->getUserMap()->find($userId);
         if ($msqUser && Masquerade::masqueradeLogin($this->getFactory()->getAuthUser(), $msqUser)) {
             Alert::addSuccess('You are now logged in as user ' . $msqUser->getUsername());
+            if ($msqUser->getHomeUrl()) {
+                $msqUser->getHomeUrl()->redirect();
+            }
             Uri::create('/')->redirect();
         }
 

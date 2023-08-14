@@ -72,7 +72,7 @@ class User extends Model implements UserInterface, FileInterface
 
     public string $email = '';
 
-    public string $name = '';
+    //public string $name = '';
 
     public string $nameTitle = '';
 
@@ -312,39 +312,39 @@ class User extends Model implements UserInterface, FileInterface
         return $this;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): User
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-//    public function getName(bool $withTitle = false): string
+//    public function getName(): string
 //    {
-//        $name = [];
-//        if ($withTitle) {
-//            if ($this->getNameTitle()) $name[] = $this->getNameTitle();
-//        }
-//        if ($this->getNameFirst()) $name[] = $this->getNameFirst();
-//        if ($this->getNameLast()) $name[] = $this->getNameLast();
-//        return implode(' ', $name);
+//        return $this->name;
 //    }
 //
-//    public function setName(?string $name): static
+//    public function setName(string $name): User
 //    {
-//        $name = trim($name);
-//        if (preg_match('/\s/',$name)) {
-//            $this->setNameFirst(substr($name, 0, strpos($name, ' ')));
-//            $this->setNameLast(substr($name, strpos($name, ' ') + 1));
-//        } else {
-//            $this->setNameFirst($name);
-//        }
+//        $this->name = $name;
 //        return $this;
 //    }
+
+    public function getName(bool $withTitle = false): string
+    {
+        $name = [];
+        if ($withTitle) {
+            if ($this->getNameTitle()) $name[] = $this->getNameTitle();
+        }
+        if ($this->getNameFirst()) $name[] = $this->getNameFirst();
+        if ($this->getNameLast()) $name[] = $this->getNameLast();
+        return implode(' ', $name);
+    }
+
+    public function setName(?string $name): static
+    {
+        $name = trim($name);
+        if (preg_match('/\s/',$name)) {
+            $this->setNameFirst(substr($name, 0, strpos($name, ' ')));
+            $this->setNameLast(substr($name, strpos($name, ' ') + 1));
+        } else {
+            $this->setNameFirst($name);
+        }
+        return $this;
+    }
 
     /**
      * Use this to populate a select field for a users title

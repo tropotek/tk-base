@@ -21,8 +21,24 @@ class Profile extends EditInterface
         $tab = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($tab);
 
-        $this->getForm()->appendField(new Input('name'))->setGroup($tab)
+        $list = \Bs\Db\User::getTitleList();
+        $this->getForm()->appendField(new Form\Field\Select('nameTitle', $list))
+            ->setGroup($tab)
+            ->setLabel('Title')
+            ->prependOption('', '');
+
+        $this->getForm()->appendField(new Input('nameFirst'))
+            ->setGroup($tab)
+            ->setLabel('First Name')
             ->setRequired();
+
+        $this->getForm()->appendField(new Input('nameLast'))
+            ->setGroup($tab)
+            ->setLabel('Last Name');
+
+//        $this->getForm()->appendField(new Input('nameDisplay'))
+//            ->setGroup($group)
+//            ->setLabel('Preferred Name');
 
         $this->getForm()->appendField(new Input('username'))->setGroup($tab)
             ->setDisabled()
@@ -33,8 +49,9 @@ class Profile extends EditInterface
             ->setRequired();
 
         if ($this->getUser()->isType(\Bs\Db\User::TYPE_STAFF)) {
-            $this->getForm()->appendField(new Checkbox('perm', array_flip($this->getUser()->getAvailablePermissions())))
-                ->setGroup($tab)
+            $list = array_flip($this->getUser()->getAvailablePermissions());
+            $this->getForm()->appendField(new Checkbox('perm', $list))
+                ->setGroup('Permissions')
                 ->setDisabled()
                 ->setReadonly();
         }
@@ -112,6 +129,11 @@ class Profile extends EditInterface
 
     public function show(): ?Template
     {
+        $this->getForm()->getField('nameTitle')->addFieldCss('col-1');
+        $this->getForm()->getField('nameFirst')->addFieldCss('col-5');
+        $this->getForm()->getField('nameLast')->addFieldCss('col-6');
+        //$this->getForm()->getField('nameDisplay')->addFieldCss('col-5');
+
         $this->getForm()->getField('username')->addFieldCss('col-6');
         $this->getForm()->getField('email')->addFieldCss('col-6');
         $renderer = $this->getFormRenderer();
