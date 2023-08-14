@@ -25,7 +25,14 @@ class UserMap extends Mapper
             $map->addDataType(new Db\Text('username'));
             $map->addDataType(new Db\Text('password'));
             $map->addDataType(new Db\Text('email'));
-            $map->addDataType(new Db\Text('name'));
+
+            $map->addDataType(new Db\Text('name'));     // deprecated
+
+            $map->addDataType(new Db\Text('nameTitle', 'name_title'));
+            $map->addDataType(new Db\Text('nameFirst', 'name_first'));
+            $map->addDataType(new Db\Text('nameLast', 'name_last'));
+            $map->addDataType(new Db\Text('nameDisplay', 'name_display'));
+
             $map->addDataType(new Db\Text('notes'));
             $map->addDataType(new Db\Text('timezone'));
             $map->addDataType(new Db\Boolean('active'));
@@ -88,7 +95,10 @@ class UserMap extends Mapper
 
         if (!empty($filter['search'])) {
             $filter['search'] = '%' . $this->getDb()->escapeString($filter['search']) . '%';
-            $w  = 'a.name LIKE :search OR ';
+            $w  = 'a.name_title LIKE :search OR ';
+            $w  = 'a.name_first LIKE :search OR ';
+            $w  = 'a.name_last LIKE :search OR ';
+            $w  = 'a.name_display LIKE :search OR ';
             $w .= 'a.uid LIKE :search OR ';
             $w .= 'a.username LIKE :search OR ';
             $w .= 'a.email LIKE :search OR ';

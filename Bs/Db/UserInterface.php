@@ -2,6 +2,7 @@
 namespace Bs\Db;
 
 use Tk\Db\Mapper\ModelInterface;
+use Tk\Uri;
 
 interface UserInterface extends ModelInterface
 {
@@ -49,20 +50,24 @@ interface UserInterface extends ModelInterface
 
     public function getUsername(): string;
 
+    public function getEmail(): string;
+
     /**
-     * This should return the concatenated strings:
-     * $this->>getTitle() . ' ' . $this->getFirstName() . ' ' . $this->>getLastName()
+     * This should return the users full name as:
+     * $this->>getNameTitle() . ' ' . $this->getFirstName() . ' ' . $this->>getLastName()
      */
     public function getName(): string;
 
-    public function getEmail(): string;
+    public function getNameTitle(): string;
 
-    public function isActive(): bool;
+    public function getNameFirst(): string;
+
+    public function getNameLast(): string;
 
     /**
-     * A unique has to identify the user in URLS and external comm`s
+     * Get a user's profile/logo image
      */
-    public function getHash(): string;
+    public function getImageUrl(): ?Uri;
 
     /**
      * Get this users local timezone for date formatting
@@ -72,5 +77,12 @@ interface UserInterface extends ModelInterface
     public function getTimezone(): ?string;
 
     public function getLastLogin(): ?\DateTime;
+
+    public function isActive(): bool;
+
+    /**
+     * A unique has to identify the user in URLS and external comm`s
+     */
+    public function getHash(): string;
 
 }

@@ -12,7 +12,10 @@ CREATE TABLE IF NOT EXISTS user
   username VARCHAR(255) NOT NULL DEFAULT '',
   password VARCHAR(128) NOT NULL DEFAULT '',
   email VARCHAR(255) NOT NULL DEFAULT '',
-  name VARCHAR(128) NOT NULL DEFAULT '',
+  name_title VARCHAR(16) NOT NULL DEFAULT '',
+  name_first VARCHAR(128) NOT NULL DEFAULT '',
+  name_last VARCHAR(128) NOT NULL DEFAULT '',
+  name_display VARCHAR(128) NOT NULL DEFAULT '',
   notes TEXT DEFAULT '',
   timezone VARCHAR(64) NULL,
   active BOOL NOT NULL DEFAULT TRUE,
@@ -62,7 +65,7 @@ CREATE TABLE IF NOT EXISTS user_remember
 # TRUNCATE TABLE user;
 # TRUNCATE TABLE user_remember;
 #
-# INSERT INTO user (type, username, email, name, timezone, permissions) VALUES
+# INSERT INTO user (type, username, email, name_first, timezone, permissions) VALUES
 #   ('staff', 'admin', 'admin@example.com', 'Admin', NULL, 1)
 # ;
 #

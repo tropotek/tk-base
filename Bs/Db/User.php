@@ -74,6 +74,14 @@ class User extends Model implements UserInterface, FileInterface
 
     public string $name = '';
 
+    public string $nameTitle = '';
+
+    public string $nameFirst = '';
+
+    public string $nameLast = '';
+
+    public string $nameDisplay = '';
+
     public string $notes = '';
 
     public ?string $timezone = null;
@@ -144,10 +152,10 @@ class User extends Model implements UserInterface, FileInterface
         return sprintf('/user/%s/data', $this->getVolatileId());
     }
 
-    public function getImageUrl(): Uri
+    public function getImageUrl(): ?Uri
     {
         $color = Color::createRandom($this->getVolatileId());
-        $img = Image::createAvatar($this->getName(), $color, 128);
+        $img = Image::createAvatar($this->getName(), $color);
         $b64 = base64_encode($img->getContents());
         return Uri::create('data:image/png;base64,' . $b64);
     }
@@ -259,7 +267,6 @@ class User extends Model implements UserInterface, FileInterface
         return [];
     }
 
-
     public function canMasqueradeAs(UserInterface $msqUser): bool
     {
         if ($this->isAdmin()) return true;
@@ -310,9 +317,91 @@ class User extends Model implements UserInterface, FileInterface
         return $this->name;
     }
 
-    public function setName(?string $name): static
+    public function setName(string $name): User
     {
         $this->name = $name;
+        return $this;
+    }
+
+//    public function getName(bool $withTitle = false): string
+//    {
+//        $name = [];
+//        if ($withTitle) {
+//            if ($this->getNameTitle()) $name[] = $this->getNameTitle();
+//        }
+//        if ($this->getNameFirst()) $name[] = $this->getNameFirst();
+//        if ($this->getNameLast()) $name[] = $this->getNameLast();
+//        return implode(' ', $name);
+//    }
+//
+//    public function setName(?string $name): static
+//    {
+//        $name = trim($name);
+//        if (preg_match('/\s/',$name)) {
+//            $this->setNameFirst(substr($name, 0, strpos($name, ' ')));
+//            $this->setNameLast(substr($name, strpos($name, ' ') + 1));
+//        } else {
+//            $this->setNameFirst($name);
+//        }
+//        return $this;
+//    }
+
+    /**
+     * Use this to populate a select field for a users title
+     */
+    public static function getTitleList(): array
+    {
+        $arr = array('Mr', 'Mrs', 'Ms', 'Dr', 'Prof', 'Esq', 'Hon', 'Messrs',
+            'Mmes', 'Msgr', 'Rev', 'Jr', 'Sr', 'St');
+        $arr = array_combine($arr, $arr);
+        $titles = array();
+        foreach ($arr as $k => $v) {
+            $titles[$k . '.'] = $v;
+        }
+        return $titles;
+    }
+
+    public function getNameTitle(): string
+    {
+        return $this->nameTitle;
+    }
+
+    public function setNameTitle(string $nameTitle): User
+    {
+        $this->nameTitle = $nameTitle;
+        return $this;
+    }
+
+    public function getNameFirst(): string
+    {
+        return $this->nameFirst;
+    }
+
+    public function setNameFirst(string $nameFirst): User
+    {
+        $this->nameFirst = $nameFirst;
+        return $this;
+    }
+
+    public function getNameLast(): string
+    {
+        return $this->nameLast;
+    }
+
+    public function setNameLast(string $nameLast): User
+    {
+        $this->nameLast = $nameLast;
+        return $this;
+    }
+
+    public function getNameDisplay(): string
+    {
+        return $this->nameDisplay;
+    }
+
+    public function setNameDisplay(string $nameDisplay): User
+    {
+        $this->nameDisplay = $nameDisplay;
         return $this;
     }
 
