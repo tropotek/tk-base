@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.30 [2023-08-15]:
+-------------------------------
+  - Update ObjectUril to get value from accessors
+  - Added title, first, last and display names to user obj
+
+
 Ver 8.0.28 [2023-08-09]:
 -------------------------------
   - Convert to prepared statements
