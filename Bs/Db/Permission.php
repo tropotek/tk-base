@@ -131,5 +131,13 @@ class Permission
         return self::getInstance()->getDefaultUserPermissions($type);
     }
 
+    public function getPermissionDescriptions(): array
+    {
+        return [
+            self::MANAGE_SITE => 'Can manage site settings and manage site configuration (Notes, Cms content)',
+            self::MANAGE_PLUGINS => 'Can manage site plugins (deprecated)',
+            self::CAN_MASQUERADE => 'Can masquerade as lower permission users to view their data',
+        ];
+    }
 
 }
