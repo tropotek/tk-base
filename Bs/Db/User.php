@@ -80,8 +80,6 @@ class User extends Model implements UserInterface, FileInterface
 
     public string $email = '';
 
-    //public string $name = '';
-
     public string $nameTitle = '';
 
     public string $nameFirst = '';
