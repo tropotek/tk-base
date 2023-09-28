@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.32 [2023-09-28]:
+-------------------------------
+  - Some template updates
+
+
 Ver 8.0.30 [2023-08-15]:
 -------------------------------
   - Update ObjectUril to get value from accessors
