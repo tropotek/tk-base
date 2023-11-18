@@ -1,5 +1,32 @@
 #CHANGELOG#
 
+Ver 3.4.88 [2023-11-18]:
+-------------------------------
+  - Tagging and releasing branch `3.4` with version `3.4.86`.
+  - Tagging and releasing branch `3.4` with version `3.4.84`.
+  - Add permission descriptions
+  - Tagging and releasing branch `3.4` with version `3.4.82`.
+  - Tagging and releasing branch `3.4` with version `3.4.80`.
+  - Fixed Azure MS logout issue
+  - Tagging and releasing branch `3.4` with version `3.4.78`.
+  - Tagging and releasing branch `3.4` with version `3.4.76`.
+  - Merge branch '3.4' of https://github.com/tropotek/tk-base into 3.4
+  - Tagging and releasing branch `3.4` with version `3.4.74`.
+  - Tagging and releasing branch `3.4` with version `3.4.72`.
+  - Tagging and releasing branch `3.4` with version `3.4.70`.
+  - Tagging and releasing branch `3.4` with version `3.4.68`.
+  - Added timeout on password recovery
+  - Added timeout on recovery links
+  - Fixed recover password pages
+  - Tagging and releasing branch `3.4` with version `3.4.66`.
+  - Tagging and releasing branch `3.4` with version `3.4.64`.
+  - Mirror command now supports data file backup
+  - Tagging and releasing branch `3.4` with version `3.4.62`.
+  - added activate account email for user accounts with no password
+  - Added new activate page and tests for dbTable authentication
+  - Tagging and releasing branch `3.4` with version `3.4.60`.
+
+
 Ver 3.4.86 [2023-11-18]:
 -------------------------------
   - Tagging and releasing branch `3.4` with version `3.4.84`.
