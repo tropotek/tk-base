@@ -57,5 +57,6 @@ class Maintenance extends Iface
         \Bs\Listener\MaintenanceHandler::enableMaintenanceMode($b);
 
         $this->write();
+        return 0;
     }
 }

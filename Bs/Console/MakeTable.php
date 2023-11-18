@@ -36,5 +36,6 @@ class MakeTable extends MakerIface
         parent::execute($input, $output);
         $this->makeTable();
 
+        return 0;
     }
 }

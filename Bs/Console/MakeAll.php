@@ -35,6 +35,7 @@ class MakeAll extends MakerIface
     {
         parent::execute($input, $output);
         $this->makeAll();
+        return 0;
     }
 
 }

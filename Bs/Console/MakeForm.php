@@ -36,5 +36,6 @@ class MakeForm extends MakerIface
         parent::execute($input, $output);
         $this->makeForm();
 
+        return 0;
     }
 }

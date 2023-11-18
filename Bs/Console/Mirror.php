@@ -43,11 +43,11 @@ class Mirror extends Iface
         $config = $this->getConfig();
         if (!$config->isDebug()) {
             $this->writeError('Only run this command in a debug environment.');
-            return;
+            return 1;
         }
         if (!$this->getConfig()->get('db.skey')) {
             $this->writeError('Secret key not valid: ' . $this->getConfig()->get('db.skey'));
-            return;
+            return 1;
         }
 
         $backupSqlFile = $config->getTempPath() . '/tmpt.sql';
@@ -72,7 +72,7 @@ class Mirror extends Iface
             if (!is_file($mirrorFileSQL) || $input->getOption('no-cache')) {
                 if (!$this->getConfig()->get('mirror.db')) {
                     $this->writeError('Invalid DB source mirror URL: ' . $this->getConfig()->get('mirror.db'));
-                    return;
+                    return 1;
                 }
                 $this->writeComment('Download fresh mirror file: ' . $mirrorFileGz);
                 // get a copy of the remote DB to be mirrored
@@ -128,7 +128,7 @@ class Mirror extends Iface
 
             if (!$this->getConfig()->get('mirror.data')) {
                 $this->writeError('Invalid data source mirror URL: ' . $this->getConfig()->get('mirror.data'));
-                return;
+                return 1;
             }
 
             $dataPath = $config->getDataPath();
@@ -172,6 +172,7 @@ class Mirror extends Iface
         }
 
         $this->write('Complete!!!');
+        return 0;
     }
 
     protected function postRequest($srcUrl, $destPath)

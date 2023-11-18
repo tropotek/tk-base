@@ -94,6 +94,7 @@ class Migrate extends Iface
 
         $this->write('Database Migration Complete.');
         $this->write('Open the site in a browser to complete the site setup: ' . \Tk\Uri::create('/')->toString());
+        return 0;
     }
 
 }

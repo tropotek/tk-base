@@ -58,6 +58,7 @@ class MakerIface extends Iface
             $input->getOption('namespace'),
             $input->getOption('classname')
         );
+        return 0;
     }
 
     /**

@@ -39,7 +39,7 @@ class Debug extends Iface
 
         if (!$config->isDebug()) {
             $this->writeError('Error: Only run this command in a debug environment.');
-            return;
+            return 1;
         }
 
         $debugSql = $config->getSitePath().'/bin/assets/debug.sql';
@@ -48,6 +48,7 @@ class Debug extends Iface
         $this->writeComment('  - Running SQL: `bin/assets/debug.sql`');
         $bak->restore($debugSql);
 
+        return 0;
     }
 
 }

@@ -36,6 +36,7 @@ class MakeEdit extends MakerIface
         parent::execute($input, $output);
         $this->makeEdit();
 
+        return 0;
     }
 
 }

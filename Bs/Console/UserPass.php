@@ -60,13 +60,13 @@ class UserPass extends \Tk\Console\Console
         if (count($userList) > 1) {
             if ($institutionId == 0) {
                 $this->writeError('Please supply an institution ID as the username is not unique');
-                return;
+                return 1;
             }
             $this->writeError('Error: user is not unique: ' . count($userList) . ' users found.');
             return;
         }  else if (!count($userList)) {
             $this->writeError('Error: No valid user found.');
-            return;
+            return 1;
         }
 
         /** @var \Bs\Db\User $user */
@@ -74,6 +74,7 @@ class UserPass extends \Tk\Console\Console
         $user->setNewPassword($password);
         $user->save();
 
+        return 0;
     }
 
 }

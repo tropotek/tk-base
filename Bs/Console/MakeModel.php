@@ -36,6 +36,7 @@ class MakeModel extends MakerIface
         parent::execute($input, $output);
         $this->makeModels();
 
+        return 0;
     }
 
 }

@@ -36,6 +36,7 @@ class MakeManager extends MakerIface
         parent::execute($input, $output);
         $this->makeManager();
 
+        return 0;
     }
 
 }

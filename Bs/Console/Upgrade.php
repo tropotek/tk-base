@@ -39,7 +39,7 @@ class Upgrade extends Iface
         $config = $this->getConfig();
         if ($config->isDebug()) {
             $this->writeError('Error: Only run this command in a live environment.');
-            return;
+            return 1;
         }
 
 
@@ -81,7 +81,7 @@ class Upgrade extends Iface
                 }
                 if (!$tag) {
                     $this->writeError('Error: Cannot find version tag.');
-                    return;
+                    return 1;
                 }
             } else {
                 if ($tag) {
@@ -99,6 +99,7 @@ class Upgrade extends Iface
                 }
             }
         }
+        return 0;
 
     }
 

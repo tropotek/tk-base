@@ -58,6 +58,7 @@ class DbBackup extends \Tk\Console\Console
             //TODO: This could be a rather large dump and could produce memory errors????
             $this->write($bak->dump($options));
         }
+        return 0;
     }
 
 }
