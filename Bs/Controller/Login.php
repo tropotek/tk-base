@@ -116,12 +116,12 @@ class Login extends Iface
             if ($user instanceof User && !$user->getPassword()) {
                 $e->set('user', $user);
                 $e->set('activateUrl', $this->getActivateUrl($user));
-                $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::ACTIVATE, $e);
+                $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::ACTIVATE);
                 $form->addError('Your account requires activation, an email has been sent to your nominated account.');
                 return;
             }
 
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN, $e);
+            $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::LOGIN);
 
             // Use the event to process the login like below....
             $result = $e->getResult();
@@ -139,7 +139,7 @@ class Login extends Iface
             $e2->replace($e->all());
             $e2->setResult($e->getResult());
             $e2->setRedirect($e->getRedirect());
-            $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e2);
+            $this->getConfig()->getEventDispatcher()->dispatch($e2, AuthEvents::LOGIN_SUCCESS);
             if ($e2->getRedirect())
                 $e2->getRedirect()->redirect();
 

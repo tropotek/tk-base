@@ -159,7 +159,7 @@ class MasqueradeHandler implements Subscriber
         $result = new \Tk\Auth\Result(\Tk\Auth\Result::SUCCESS, $config->getUserIdentity($msqUser));
         $e->setResult($result);
         $e->setRedirect($url);
-        $config->getEventDispatcher()->dispatch(AuthEvents::LOGIN_SUCCESS, $e);
+        $config->getEventDispatcher()->dispatch($e, AuthEvents::LOGIN_SUCCESS);
 
         if ($e->getRedirect())
             $e->getRedirect()->redirect();

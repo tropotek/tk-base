@@ -109,7 +109,7 @@ class Recover extends Iface
         $e = new \Tk\Event\Event();
         $e->set('form', $form);
         $e->set('user', $user);
-        $this->getConfig()->getEventDispatcher()->dispatch(AuthEvents::RECOVER, $e);
+        $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::RECOVER);
 
         // Enable the activation page
         $this->getConfig()->getUserMapper()->cleanRecover();
