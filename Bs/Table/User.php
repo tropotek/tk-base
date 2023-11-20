@@ -3,6 +3,7 @@ namespace Bs\Table;
 
 use Bs\Db\UserIface;
 use Tk\Form\Field;
+use Tk\Table\Action\Delete;
 use Tk\Table\Cell;
 
 /**
@@ -116,7 +117,15 @@ class User extends \Bs\TableIface
         /** @var \Tk\Table\Action\ColumnSelect $cs */
         $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected($arr));
 
-        $this->appendAction(\Tk\Table\Action\Delete::create()->setExcludeIdList(array('1')));
+        $this->appendAction(Delete::create('Disable')->setExcludeIdList(array('1'))
+            ->addOnDelete(function (Delete $action, \Bs\Db\User $obj) {
+                $obj->setActive(false);
+                $obj->save();
+                return false;
+            })
+            ->setConfirmStr('Are you sure you want to disable selected users?')
+
+        );
         //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
         $this->appendAction(\Tk\Table\Action\Csv::create());
 
