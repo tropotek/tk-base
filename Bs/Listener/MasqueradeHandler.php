@@ -147,6 +147,7 @@ class MasqueradeHandler implements Subscriber
 //            if ($config->getSubject() && $this->getConfig()->isLti()) {
 //                $config->getSession()->set('lti.subjectId', $this->getConfig()->getSubject()->getId());   // Limit the dashboard to one subject for LTI logins
 //            }
+        vd($userData, \Tk\Uri::create()->toString());
         array_push($msqArr, $userData);
         // Save the updated masquerade queue
         $config->getSession()->set(static::SID, $msqArr);
@@ -183,7 +184,7 @@ class MasqueradeHandler implements Subscriber
         $userData = array_pop($msqArr);
         if (empty($userData['userId']) || empty($userData['url']))
             throw new \Tk\Exception('Session data corrupt. Clear session data and try again.');
-
+vd($userData);
         // Save the updated masquerade queue
         $config->getSession()->set(static::SID, $msqArr);
 
