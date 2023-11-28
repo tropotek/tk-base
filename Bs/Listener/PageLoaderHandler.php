@@ -47,7 +47,8 @@ $(document).ready(function() {
     if (e.target && e.target.activeElement &&
         ((e.target.activeElement.href && (
           e.target.activeElement.href.indexOf(config.dataUrl) >= 0 ||
-          e.target.activeElement.href.indexOf('mailto:') >= 0)) ||
+          e.target.activeElement.href.indexOf('mailto:') >= 0 ||
+          e.target.activeElement.href.indexOf('tel:') >= 0)) ||
           $(e.target.activeElement).hasClass('no-loader'))
         ) {
       $('body').addClass('loaded');
