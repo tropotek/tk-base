@@ -100,7 +100,6 @@ class User extends \Bs\TableIface
         $this->appendCell(new \Tk\Table\Cell\Text('perms'))->setLabel('Permissions')->setOrderProperty('')
             ->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \Bs\Db\User $obj, $html) {
                 $html = implode('<br/>', $obj->getPermissions());
-                vd($html);
                 return sprintf('<small>%s</small>', $html);
             });
         $this->appendCell(new \Tk\Table\Cell\Email('email'));
