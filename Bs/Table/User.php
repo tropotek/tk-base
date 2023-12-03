@@ -16,11 +16,6 @@ use Tk\Table\Cell;
  *   $tableTemplate = $table->show();
  *   $template->appendTemplate($tableTemplate);
  * </code>
- * 
- * @author Mick Mifsud
- * @created 2018-11-19
- * @link http://tropotek.com.au/
- * @license Copyright 2018 Tropotek
  */
 class User extends \Bs\TableIface
 {
