@@ -97,9 +97,14 @@ class User extends \Bs\TableIface
         })->addCss('key')->setUrl($this->getEditUrl());
         $this->appendCell(new \Tk\Table\Cell\Text('username'));
         $this->appendCell(new \Tk\Table\Cell\Text('uid'))->setLabel('UID');
+        $this->appendCell(new \Tk\Table\Cell\Text('perms'))->setLabel('Permissions')->setOrderProperty('')
+            ->addOnCellHtml(function (\Tk\Table\Cell\Iface $cell, \Bs\Db\User $obj, $html) {
+                $html = implode('<br/>', $obj->getPermissions());
+                vd($html);
+                return sprintf('<small>%s</small>', $html);
+            });
         $this->appendCell(new \Tk\Table\Cell\Email('email'));
         $this->appendCell(new \Tk\Table\Cell\Text('phone'));
-        //$this->appendCell(new \Tk\Table\Cell\Text('type'));
         $this->appendCell(new \Tk\Table\Cell\Boolean('active'));
         $this->appendCell(new \Tk\Table\Cell\Date('lastLogin'));
         $this->appendCell(new \Tk\Table\Cell\Date('created'));
@@ -112,7 +117,6 @@ class User extends \Bs\TableIface
 
 
         // Actions
-        //$this->appendAction(\Tk\Table\Action\Link::createLink('New User', 'fa fa-plus', \Bs\Uri::createHomeUrl('/userEdit.html')));
         $arr = array('modified', 'created');
         /** @var \Tk\Table\Action\ColumnSelect $cs */
         $this->appendAction(\Tk\Table\Action\ColumnSelect::create()->setUnselected($arr));
@@ -126,7 +130,7 @@ class User extends \Bs\TableIface
             ->setConfirmStr('Are you sure you want to disable selected users?')
 
         );
-        //$this->appendAction(\Tk\Table\Action\Delete::create())->setExcludeIdList(array(1));
+
         $this->appendAction(\Tk\Table\Action\Csv::create());
 
         
