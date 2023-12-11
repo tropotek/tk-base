@@ -134,6 +134,9 @@ form.tk-form .form-group label {
 .table-hover tbody tr:hover {
   background-color: rgba(235, 235, 235, 0.25);
 }
+.tk-table .tk-column-select .columnSelect.dropdown-menu {
+  min-width: 13rem !important;
+}
 
 
 // Form
