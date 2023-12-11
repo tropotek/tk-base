@@ -72,7 +72,6 @@ var project_core = function () {
       });
     }
     $('form').on('init', document, init).each(init);
-
   };
 
 

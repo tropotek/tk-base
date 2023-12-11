@@ -72,6 +72,7 @@ JS;
 
 
 
+
             $template->prependHtml($template->getBodyElement(), '<div id="loader-wrapper">
     <div id="loader"></div>
     <div class="loader-section section-left"></div>
