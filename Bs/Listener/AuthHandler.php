@@ -279,10 +279,11 @@ class AuthHandler implements Subscriber
         $user->getMapper()->addRecover($user->getId());
 
         // Send an email to confirm account active
-        $url = $this->getActivateUrl()->set('h', $user->getHash());
+        $url = $this->getActivateUrl();
         if ($event->has('activateUrl')) {
             $url = $event->get('activateUrl');
         }
+        $url->set('h', $user->getHash());
 
         $message = $config->createMessage();
         $content = sprintf('

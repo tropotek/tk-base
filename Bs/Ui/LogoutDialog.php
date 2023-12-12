@@ -2,6 +2,8 @@
 namespace Bs\Ui;
 
 
+use Bs\Uri;
+
 /**
  * @author Michael Mifsud <http://www.tropotek.com/>
  * @see http://www.tropotek.com/
@@ -17,9 +19,17 @@ class LogoutDialog extends \Tk\Ui\Dialog\Dialog
     {
         parent::__construct('Ready To Leave', 'logoutModal');
         $config = \Bs\Config::getInstance();
+        $logoutUrl = Uri::create($config->get('url.auth.logout'));
+//        if ($this->getConfig()->get('auth.microsoft.enabled', false)) {
+//            $logoutUrl = Uri::create($this->getConfig()->get('auth.microsoft.logout', '/'))
+//                ->set('client_id', $this->getConfig()->get('auth.microsoft.clientid'))
+//                ->set('id_token_hint', $this->getConfig()->get('auth.microsoft.clientid'))
+//                ->set('post_logout_redirect_uri', Uri::create('/index.html')->toString());
+//        }
+
         $this->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')
             ->addCss('btn-primary')
-            ->setUrl(\Tk\Uri::create($config->get('url.auth.logout'))));
+            ->setUrl($logoutUrl));
     }
 
     /**

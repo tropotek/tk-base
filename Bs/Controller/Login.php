@@ -197,7 +197,8 @@ JS;
 
   <div var="form"></div>
   <div class="external row">
-    <a href="/microsoftLogin.html" class="btn btn-lg btn-default col-12" choice="microsoft">Microsoft</a>
+<!--    <a href="/microsoftLogin.html" class="btn btn-lg btn-default col-12" choice="microsoft">Microsoft</a>-->
+    <a href="/microsoftLogin.html" class="btn btn-lg btn-default col-12" title="Login using your Microsoft account" choice="microsoft"><img src="/html/app/img/mslogo.png" style="width: 1em;margin-bottom: 4px;"/> Microsoft</a>
 <!--    <a href="/googleLogin.html" class="btn btn-lg btn-warning col-12" choice="google">Google</a>-->
 <!--    <a href="/githubLogin.html" class="btn btn-lg btn-default col-12" choice="github">Github</a>-->
   </div>
