@@ -114,10 +114,10 @@ class Login extends Iface
             // Check if there is a null password and send activation email
             $user = $this->findUser($form);
             if ($user instanceof User && !$user->getPassword()) {
-                $e->set('user', $user);
-                $e->set('activateUrl', $this->getActivateUrl($user));
-                $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::ACTIVATE);
-                $form->addError('Your account requires activation, an email has been sent to your nominated account.');
+//                $e->set('user', $user);
+//                $e->set('activateUrl', $this->getActivateUrl($user));
+//                $this->getConfig()->getEventDispatcher()->dispatch($e, AuthEvents::ACTIVATE);
+                $form->addError('Click the forgot password link to activate your account.');
                 return;
             }
 
