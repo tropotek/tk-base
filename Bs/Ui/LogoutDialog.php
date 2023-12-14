@@ -22,9 +22,9 @@ class LogoutDialog extends \Tk\Ui\Dialog\Dialog
         $logoutUrl = Uri::create($config->get('url.auth.logout'));
 //        if ($this->getConfig()->get('auth.microsoft.enabled', false)) {
 //            $logoutUrl = Uri::create($this->getConfig()->get('auth.microsoft.logout', '/'))
-//                ->set('client_id', $this->getConfig()->get('auth.microsoft.clientid'))
-//                ->set('id_token_hint', $this->getConfig()->get('auth.microsoft.clientid'))
-//                ->set('post_logout_redirect_uri', Uri::create('/index.html')->toString());
+//                //->set('client_id', $this->getConfig()->get('auth.microsoft.clientid'))
+//                //->set('id_token_hint', $this->getConfig()->get('auth.microsoft.clientid'))
+//                ->set('post_logout_redirect_uri', Uri::create('/microsoftLogout.html')->toString());
 //        }
 
         $this->getButtonList()->append(\Tk\Ui\Link::createBtn('Logout', 'fa fa-sign-out')

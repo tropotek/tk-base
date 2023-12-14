@@ -33,7 +33,7 @@ class Activate extends Iface
      */
     public function __construct()
     {
-        $this->setPageTitle('Activate');
+        $this->setPageTitle('Recover Account');
     }
 
     /**
@@ -93,10 +93,11 @@ class Activate extends Iface
             $this->form = $this->getConfig()->createForm('activate-form');
         }
 
-        $this->form->appendField(new Field\Input('newPassword'));
-        $this->form->appendField(new Field\Input('confPassword'));
+        $this->form->appendField(new Field\Password('newPassword'));
+        $this->form->appendField(new Field\Password('confPassword'));
 
-        $this->form->appendField(new Event\Submit('activate', array($this, 'doActivate')))->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
+        $this->form->appendField(new Event\Submit('activate', array($this, 'doActivate')))
+            ->removeCss('btn-default')->addCss('btn btn-lg btn-primary btn-ss');
 
     }
 

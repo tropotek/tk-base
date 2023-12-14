@@ -59,11 +59,13 @@ class User extends \Bs\FormIface
         $this->appendField(new Field\Input('phone'))->setTabGroup($tab)->setNotes('Enter a phone number that you can be contacted on directly.');
         $this->appendField(new Field\Input('credentials'))->setTabGroup($tab)->setNotes('Enter your professional credentials. EG: BVSc, MPhil, MANZCVSc, Dip ACV');
         $this->appendField(new Field\Input('position'))->setTabGroup($tab)->setNotes('Enter your work position/Department. EG: Senior Lecturer');
-        $this->appendField(Field\Checkbox::create('active')->setLabel('Enabled')
-            ->setCheckboxLabel('Enable/Disable User'))
-            ->setTabGroup($tab)
-            ->setNotes('Disabling a user prevents login, and removes them from user select lists.');
 
+        if ($this->getUser()->getId()) {
+            $this->appendField(Field\Checkbox::create('active')->setLabel('Enabled')
+                ->setCheckboxLabel('Enable/Disable User'))
+                ->setTabGroup($tab)
+                ->setNotes('Disabling a user prevents login, and removes them from user select lists.');
+        }
 
         $tab = 'Password';
 

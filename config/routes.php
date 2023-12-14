@@ -32,6 +32,8 @@ $routes->add('logout', Route::create('/logout.html', 'Bs\Controller\Logout::doDe
 
 $routes->add('login-microsoft', Route::create('/microsoftLogin.html', 'Tk\ExtAuth\Microsoft\Controller::doLogin'));
 $routes->add('auth-microsoft', Route::create('/microsoftAuth.html',  'Tk\ExtAuth\Microsoft\Controller::doAuth'));
+$routes->add('logout-microsoft', Route::create('/microsoftLogout.html',  'Tk\ExtAuth\Microsoft\Controller::doLogout'));
+
 // TODO:
 //$routes->add('auth-google', Route::create('/googleAuth.html', 'Tk\ExtAuth\Google\Controller::doLogin'));
 //$routes->add('auth-github', Route::create('/githubAuth.html', 'Tk\ExtAuth\Github\Controller::doLogin'));
