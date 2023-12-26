@@ -57,24 +57,6 @@
  * ```
  */
 
-/**
- * When using AJAX queries to replace forms and tables
- * you can trigger the init function on the element like:
- * ```
- *   $('body').trigger(EVENT_INIT);
- * ```
- * This will then run the tk-init event and all registered scripts should execute
- *
- * @type {string}
- */
-const EVENT_INIT            = 'tk-init';        // called to init Tk dynamic elements
-const EVENT_INIT_FORM       = 'tk-init-form';
-const EVENT_INIT_TABLE      = 'tk-init-table';
-
-// Use this to trigger all events
-const EVENT_INIT_ALL        = `${EVENT_INIT} ${EVENT_INIT_FORM} ${EVENT_INIT_TABLE}`;
-
-
 // Var dump function for debugging
 function vd() {
   if (!config.debug) return;
@@ -123,8 +105,49 @@ function clearForm(form) {
 };
 
 
+/**
+ * When using AJAX queries to replace forms and tables
+ * you can trigger the init function on the element like:
+ * ```
+ *   $('body').trigger(EVENT_INIT);
+ * ```
+ * This will then run the tk-init event and all registered scripts should execute
+ *
+ * @type {string}
+ */
+const EVENT_INIT_FORM       = 'tk-init-form';
+const EVENT_INIT_TABLE      = 'tk-init-table';
+let formEvents = [];
+let tableEvents = [];
+
 let tkbase = function () {
   "use strict";
+
+  // Run all form and table init functions,
+  // should be called at end of page after all scripts are executed
+  // @see \Bs\Page::show()
+  $('body').on(EVENT_INIT_FORM, function (e, sel) {
+    $('form').each(function () {
+      if (sel !== undefined && !$(this).is(sel)) return;
+      if (typeof $(this).data(EVENT_INIT_FORM) !== 'undefined') return;
+      $(this).data(EVENT_INIT_FORM, true);
+      for (var i in formEvents) {
+        formEvents[i].apply(this);
+      }
+    });
+  });
+
+  $('body').on(EVENT_INIT_TABLE, function (e, sel) {
+    $('table').each(function () {
+      if (sel !== undefined && !$(this).is(sel)) return;
+      if (typeof $(this).data(EVENT_INIT_TABLE) !== 'undefined') return;
+      $(this).data(EVENT_INIT_TABLE, true);
+      for (var i in tableEvents) {
+        tableEvents[i].apply(this);
+      }
+    });
+  });
+
 
   /**
    * Enable the sugar utils, date formatting, object exetion functions, etc
@@ -132,7 +155,7 @@ let tkbase = function () {
    */
   let initSugar = function () {
     if (typeof Sugar === 'undefined') {
-      vd('Plugin not loaded: Sugar');
+      console.warn('Plugin not loaded: Sugar');
       return;
     }
     Sugar.extend();
@@ -144,16 +167,14 @@ let tkbase = function () {
    */
   let initTkFormTabs = function () {
     if ($.fn.tktabs === undefined) {
-      vd('jquery.tktabs.js is not installed.');
+      console.warn('jquery.tktabs.js is not installed.');
       return;
     }
 
     function init() {
       $(this).tktabs();
     }
-
-    init();
-    $('form').on(EVENT_INIT_FORM, document, init).each(init);
+    formEvents.push(init);
   };
 
 
@@ -178,7 +199,7 @@ let tkbase = function () {
    */
   let initDatepicker = function () {
     if ($.fn.datepicker === undefined) {
-      vd('jquery-ui.js is not installed.');
+      console.warn('jquery-ui.js is not installed.');
       return;
     }
 
@@ -190,8 +211,7 @@ let tkbase = function () {
       });
     }
 
-    init();
-    $('body').on(EVENT_INIT_FORM, init);
+    formEvents.push(init);
   };
 
 
@@ -222,8 +242,8 @@ let tkbase = function () {
         });
       });
     }
-    init();
-    $('body').on(EVENT_INIT_FORM, init);
+
+    formEvents.push(init);
   };
 
 
@@ -252,8 +272,8 @@ let tkbase = function () {
         })
       });
     }
-    init();
-    $('body').on(EVENT_INIT_FORM, init);
+
+    formEvents.push(init);
   };
 
 
@@ -263,16 +283,15 @@ let tkbase = function () {
    */
   let initTkInputLock = function () {
     if ($.fn.tkInputLock === undefined) {
-      vd('Plugin not loaded: tkInputLock');
+      console.warn('Plugin not loaded: tkInputLock');
       return;
     }
     function init() {
       $('input.tk-input-lock').tkInputLock();
     }
-    init();
-    $('body').on(EVENT_INIT_FORM, init);
-  };
 
+    formEvents.push(init);
+  };
 
   /**
    * Tiny MCE setup
@@ -281,7 +300,7 @@ let tkbase = function () {
    */
   let initTinymce = function () {
     if (typeof(tinymce) === 'undefined') {
-      vd('Plugin not loaded: jquery.tinymce');
+      console.warn('Plugin not loaded: jquery.tinymce');
       return;
     }
 
@@ -341,8 +360,7 @@ let tkbase = function () {
       });
     };
 
-    init();
-    $('body').on(EVENT_INIT_FORM, init);
+    formEvents.push(init);
   };  // end initTinymce()
 
 
@@ -357,7 +375,3 @@ let tkbase = function () {
     initTkFormTabs: initTkFormTabs,
   }
 }();
-
-
-
-

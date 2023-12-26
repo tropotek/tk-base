@@ -40,7 +40,16 @@ let config = {
   }
 }
 JS;
-        $template->appendJs($js, array(JsLast::$ATTR_PRIORITY => -1000));
+        $template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
+
+        // Trigger form and table init events
+        $js = <<<JS
+jQuery(function($) {
+    $('body').trigger(EVENT_INIT_FORM);
+    $('body').trigger(EVENT_INIT_TABLE);
+});
+JS;
+        $template->appendJs($js, [JsLast::$ATTR_PRIORITY => 9999]);
 
         $template->setTitleText($this->getTitle());
         if ($this->getConfig()->isDebug()) {
