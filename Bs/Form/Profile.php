@@ -2,15 +2,12 @@
 namespace Bs\Form;
 
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Db\Mapper\Model;
 use Tk\Form;
-use Tk\FormRenderer;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Checkbox;
 use Tk\Form\Field\Hidden;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
 class Profile extends EditInterface

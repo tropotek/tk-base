@@ -7,7 +7,8 @@ use Dom\Template;
 use Tk\Db\Mapper\Model;
 use Tk\Db\Mapper\ModelInterface;
 use Tk\Form;
-use Tk\FormRenderer;
+//use Tk\FormRenderer;
+use Tk\Form\Renderer\Dom\Renderer;
 
 /**
  * Use this interface to create edit Forms using a model object
@@ -17,7 +18,7 @@ use Tk\FormRenderer;
 abstract class EditInterface extends Form implements DisplayInterface
 {
 
-    protected FormRenderer $formRenderer;
+    protected Renderer $formRenderer;
 
     protected null|array|Model $model;
 
@@ -61,11 +62,11 @@ abstract class EditInterface extends Form implements DisplayInterface
 
     protected function initFormRenderer(): static
     {
-        $this->formRenderer = new FormRenderer($this->getForm());
+        $this->formRenderer = new Renderer($this->getForm());
         return $this;
     }
 
-    public function getFormRenderer(): FormRenderer
+    public function getFormRenderer(): Renderer
     {
         return $this->formRenderer;
     }

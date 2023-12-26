@@ -4,11 +4,9 @@ namespace Bs\Table;
 
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Db\Mapper\Result;
 use Tk\Db\Tool;
 use Tk\Form;
-use Tk\FormRenderer;
 use Tk\Table;
 use Tk\Table\Action;
 use Tk\TableRenderer;
@@ -95,8 +93,9 @@ abstract class ManagerInterface extends Table implements DisplayInterface
     {
         if (count($this->getFilterForm()->getFields())) {
             $this->getFilterForm()->addCss('row gy-2 gx-3 align-items-center');
-            $filterRenderer = FormRenderer::createInlineRenderer($this->getFilterForm());
-            $this->getTableRenderer()->getTemplate()->appendTemplate('filters', $filterRenderer->show());
+            $filterRenderer = Form\Renderer\Dom\Renderer::createInlineRenderer($this->getFilterForm());
+            //$filterRenderer = Form\Renderer\Std\Renderer::createInlineRenderer($this->getFilterForm());
+            $this->getTableRenderer()->getTemplate()->appendHtml('filters', $filterRenderer->show());
             $this->getTableRenderer()->getTemplate()->setVisible('filters');
         }
     }

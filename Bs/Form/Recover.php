@@ -2,16 +2,11 @@
 namespace Bs\Form;
 
 use Bs\Db\User;
-use Bs\Db\UserMap;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
-use Tk\Encrypt;
 use Tk\Form;
 use Tk\Form\Field;
 use Tk\Form\Action;
-use Tk\FormRenderer;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
 class Recover extends EditInterface

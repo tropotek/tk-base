@@ -8,7 +8,6 @@ use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Form;
-use Tk\FormRenderer;
 use Tk\Uri;
 
 class Manager extends PageController
@@ -68,7 +67,7 @@ class Manager extends PageController
         $template->appendText('title', $this->getPage()->getTitle());
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-        $renderer = new FormRenderer($this->form);
+        $renderer = new Form\Renderer\Dom\Renderer($this->form);
         $this->form->addCss('mb-5');
         $template->appendTemplate('upload', $renderer->show());
 
