@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.34 [2024-04-16]:
+-------------------------------
+  - Fix form init js
+  - Added new Dom and Std form renderers
+
+
 Ver 8.0.32 [2023-09-28]:
 -------------------------------
   - Some template updates
