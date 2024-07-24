@@ -86,7 +86,7 @@ class User extends Model implements UserInterface, FileInterface
 
     public string $nameLast = '';
 
-    public string $nameDisplay = '';
+    public ?string $nameDisplay = '';
 
     public string $notes = '';
 
