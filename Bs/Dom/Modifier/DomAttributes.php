@@ -14,6 +14,7 @@ use Tk\Traits\SystemTrait;
  * - app-has-perm="User::PERM_SYSADMIN":  remove a node if the current user does not have the permissions
  *
  * @experimental
+ * @todo Look further into this, I think we can deprecated it and prefer this at the App level
  */
 class DomAttributes extends FilterInterface
 {

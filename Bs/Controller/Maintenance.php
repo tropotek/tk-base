@@ -1,32 +1,30 @@
 <?php
 namespace Bs\Controller;
 
-use Bs\PageController;
+use Bs\ControllerDomInterface;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Maintenance extends PageController
+class Maintenance extends ControllerDomInterface
 {
     protected string $message = '<p>The system is undergoing maintenance.<br/>Please try again soon.</p>';
 
-    public function __construct()
+
+    public function doDefault(Request $request)
     {
-        parent::__construct();
         $this->getPage()->setTitle('Maintenance');
         $this->getCrumbs()->reset();
         if ($this->getRegistry()->get('system.maintenance.message')) {
             $this->message = $this->getRegistry()->get('system.maintenance.message');
         }
-    }
 
-    public function doDefault(Request $request)
-    {
+
         if (!$this->getRegistry()->get('system.maintenance.enabled')) {
             return new Response('Invalid URL location', Response::HTTP_NOT_FOUND);
         }
-        return $this->getPage();
+
     }
 
     /**
@@ -37,6 +35,7 @@ class Maintenance extends PageController
      */
     public function doApi(Request $request)
     {
+        $this->getFactory()->getPage()->setEnabled(false);
         $data = [
             'msg' => $this->message
         ];
@@ -46,7 +45,7 @@ class Maintenance extends PageController
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        $template->insertHtml('message', $this->message);
+        $template->setHtml('message', $this->message);
         return $template;
     }
 

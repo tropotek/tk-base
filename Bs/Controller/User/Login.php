@@ -1,32 +1,26 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\ControllerDomInterface;
 use Bs\Db\User;
 use Bs\Form\EditTrait;
-use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Uri;
 
-class Login extends PageController
+class Login extends ControllerDomInterface
 {
     use EditTrait;
 
-    public function __construct()
+    public function doLogin(Request $request): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('Login');
 
-    }
-
-    public function doLogin(Request $request): \App\Page|\Dom\Mvc\Page
-    {
         $this->setForm(new \Bs\Form\Login());
         $this->getForm()->init();
         $this->getForm()->execute($request->request->all());
 
-        return $this->getPage();
     }
 
     public function doLogout(Request $request): void
@@ -59,5 +53,3 @@ HTML;
     }
 
 }
-
-

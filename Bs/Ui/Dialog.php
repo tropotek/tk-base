@@ -9,7 +9,6 @@ use Tk\Collection;
 use Tk\Traits\SystemTrait;
 use Tk\Ui\Button;
 use Tk\Ui\Traits\AttributesTrait;
-use Tk\Ui\Traits\CssTrait;
 
 /**
  * This class uses the bootstrap dialog box model
@@ -42,7 +41,6 @@ use Tk\Ui\Traits\CssTrait;
 class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 {
     use AttributesTrait;
-    use CssTrait;
     use SystemTrait;
 
     protected string $id = '';

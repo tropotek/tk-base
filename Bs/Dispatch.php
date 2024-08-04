@@ -2,6 +2,7 @@
 namespace Bs;
 
 use Bs\Listener\MaintenanceHandler;
+use Bs\Listener\PageHandler;
 use Bs\Listener\RememberMeHandler;
 use Dom\Mvc\EventListener\PageBytesHandler;
 use Dom\Mvc\EventListener\ViewHandler;
@@ -29,14 +30,16 @@ class Dispatch extends \Tk\Mvc\Dispatch
 
         $this->getDispatcher()->addSubscriber(new MaintenanceHandler());
         $this->getDispatcher()->addSubscriber(new RememberMeHandler());
-        $this->getDispatcher()->addSubscriber(new CrumbsHandler());
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
             $this->getConfig()->isDebug()
         ));
 
-        // Handle DomTemplate renders and templates in controller returns
+        // render the page template with controller HTML content if enabled/exists
+        $this->getDispatcher()->addSubscriber(new PageHandler());
+
+        // renders DomTemplates from controller returns if page template disabled or not exists
         $this->getDispatcher()->addSubscriber(new ViewHandler($this->getFactory()->getTemplateModifier()));
 
         // Show total page bytes
@@ -48,6 +51,7 @@ class Dispatch extends \Tk\Mvc\Dispatch
                 $pageBytes
             ));
         }
+        $this->getDispatcher()->addSubscriber(new CrumbsHandler());
 
     }
 

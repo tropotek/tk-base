@@ -13,6 +13,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
+use Tk\Exception;
 use Tk\Mail\CurlyMessage;
 use Tk\Uri;
 
@@ -79,24 +80,25 @@ class Factory extends \Tk\Factory
         return $this->get('authAdapter');
     }
 
-    /**
-     * You can select the page's template by adding `->defaults(['template' => '{public|admin|user|login|maintenance|error}'])`.
-     *
-     * Other options may be available if you have created new template paths in the `20-config.php` file.
-     * Create a new path with `$config->set('path.template.custom', '/html/newTemplate/index.html');`
-     * then add `->defaults(['template' => 'custom'])` to the route. (case-sensitive)
-     */
-    public function createPageFromType(string $pageType): Page
+    public function createPage(string $templatePath = ''): PageInterface
     {
-        if (empty($pageType)) $pageType = Page::TEMPLATE_PUBLIC;
-        $page = $this->createPage($this->getSystem()->makePath($this->getConfig()->get('path.template.'.$pageType)));
-        $page->setType($pageType);
+        $page = new Page($templatePath);
+        $page->setDomModifier($this->getTemplateModifier());
         return $page;
     }
 
-    public function createPage(string $templatePath = ''): Page
+    public function getPage(string $templatePath = ''): ?PageInterface
     {
-        return Page::create($templatePath);
+        if (!$this->get('pageTemplate') && !empty($templatePath)) {
+            if (str_ends_with($templatePath, '.php')) {
+                $page = new PagePhp($templatePath);
+                $this->set('pageTemplate', $page);
+            } elseif (str_ends_with($templatePath, '.html') || str_ends_with($templatePath, '.xtpl')) {
+                $page = $this->createPage($templatePath);
+                $this->set('pageTemplate', $page);
+            }
+        }
+        return $this->get('pageTemplate');
     }
 
     public function getTemplateModifier(): Modifier

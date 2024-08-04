@@ -1,34 +1,30 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\ControllerDomInterface;
 use Bs\Db\User;
-use Bs\PageController;
 use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
 
-class Manager extends PageController
+class Manager extends ControllerDomInterface
 {
     use ManagerTrait;
 
     protected string $type = '';
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->getPage()->setTitle('User Manager');
-        $this->getCrumbs()->reset();
-    }
-
-    public function doByType(Request $request, string $type): \Dom\Mvc\Page|\App\Page
+    public function doByType(Request $request, string $type): void
     {
         $this->type = $type;
-        return $this->doDefault($request);
+        $this->doDefault($request);
     }
 
-    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
+    public function doDefault(Request $request): void
     {
+        $this->getPage()->setTitle('User Manager');
+        $this->getCrumbs()->reset();
+
         if ($this->type == User::TYPE_MEMBER) {
             $this->setAccess(User::PERM_MANAGE_MEMBER);
         } else if ($this->type == User::TYPE_STAFF) {
@@ -52,7 +48,6 @@ class Manager extends PageController
 
         $this->getTable()->execute($request);
 
-        return $this->getPage();
     }
 
     public function show(): ?Template

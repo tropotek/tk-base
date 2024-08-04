@@ -1,37 +1,33 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\ControllerDomInterface;
 use Bs\Form\EditTrait;
-use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 
-class Recover extends PageController
+class Recover extends ControllerDomInterface
 {
     use EditTrait;
 
 
-    public function __construct()
+    public function doDefault(Request $request): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('Recover');
-    }
 
-    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
-    {
         $this->setForm(new \Bs\Form\Recover());
         $this->getForm()->init();
         $this->getForm()->execute($request->request->all());
 
-        return $this->getPage();
     }
 
-    public function doRecover(Request $request): \App\Page|\Dom\Mvc\Page
+    public function doRecover(Request $request): void
     {
+        $this->getPage()->setTitle('Recover');
+
         $this->setForm(new \Bs\Form\RecoverPassword());
         $this->getForm()->init()->execute($request->request->all());
 
-        return $this->getPage();
     }
 
     public function show(): ?Template
@@ -57,5 +53,3 @@ HTML;
     }
 
 }
-
-

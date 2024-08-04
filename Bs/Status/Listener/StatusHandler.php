@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Listener;
+namespace Bs\Status\Listener;
 
 use Bs\Db\Traits\StatusTrait;
 use Bs\DbEvents;

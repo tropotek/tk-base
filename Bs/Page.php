@@ -6,8 +6,15 @@ use Dom\Mvc\Modifier\JsLast;
 use Dom\Template;
 use Tk\Uri;
 
-class Page extends \Dom\Mvc\Page
+class Page extends PageDomInterface
 {
+    /**
+     * You can select the page's template by adding `->defaults(['template' => '{public|admin|user|login|maintenance|error}'])`.
+     *
+     * Other options may be available if you have created new template paths in the `20-config.php` file.
+     * Create a new path with `$config->set('path.template.custom', '/html/newTemplate/index.html');`
+     * then add `->defaults(['template' => 'custom'])` to the route. (case-sensitive)
+     */
     const TEMPLATE_PUBLIC      = 'public';
     const TEMPLATE_ADMIN       = 'admin';
     const TEMPLATE_USER        = 'user';
@@ -77,11 +84,10 @@ JS;
         // Default crumbs css (probably not the best place for this...
         $this->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
 
-
         return parent::show();
     }
 
-    public function setType(string $type): Page
+    public function setType(string $type): PageInterface
     {
         $this->type = $type;
         return $this;
@@ -99,7 +105,7 @@ JS;
 
     public function getBackUrl(): Uri
     {
-        return Uri::create($this->getCrumbs()->getBackUrl());
+        return $this->getFactory()->getBackUrl();
     }
 
     public function isCrumbEnabled(): bool

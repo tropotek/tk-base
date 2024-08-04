@@ -1,16 +1,16 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\ControllerDomInterface;
 use Bs\Db\User;
 use Bs\Form\EditTrait;
-use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Exception;
 use Tk\Uri;
 
-class Edit extends PageController
+class Edit extends ControllerDomInterface
 {
     use EditTrait;
 
@@ -19,15 +19,12 @@ class Edit extends PageController
     protected string $type = User::TYPE_MEMBER;
 
 
-    public function __construct()
+    public function doDefault(Request $request, string $type): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('Edit User');
         $this->setAccess(User::PERM_MANAGE_MEMBER | User::PERM_MANAGE_STAFF);
-    }
 
-    public function doDefault(Request $request, string $type): \App\Page|\Dom\Mvc\Page
-    {
+
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();
         $this->getUser()->setType($type);
@@ -60,7 +57,6 @@ class Edit extends PageController
             Uri::create()->remove('cv')->redirect();
         }
 
-        return $this->getPage();
     }
 
     public function getUser(): User

@@ -108,6 +108,7 @@ class User extends ManagerInterface
         $this->appendAction(new Action\Delete('delete', 'userId'));
         $this->appendAction(new Action\Csv('csv', 'userId'))->addExcluded('actions');
 
+        //$this->resetTableSession();
     }
 
     public function execute(Request $request): static

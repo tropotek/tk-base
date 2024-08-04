@@ -3,6 +3,7 @@ namespace Bs\Listener;
 
 use Bs\Db\UserInterface;
 use Bs\Page;
+use Bs\PageInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Registry;
@@ -15,6 +16,8 @@ class MaintenanceHandler implements EventSubscriberInterface
     public function onController(\Symfony\Component\HttpKernel\Event\ControllerEvent $event)
     {
         $controller = $event->getController();
+
+        if (!is_array($controller)) return;
         $class = get_class($controller[0]);
 
         // Allow admin users access

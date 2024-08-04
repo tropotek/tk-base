@@ -89,10 +89,10 @@ class UserMap extends Mapper
 
     public function makeQuery(Filter $filter): Filter
     {
-        $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
+        $filter->appendFrom('%s a ', \Tt\Db::escapeTable($this->getTable()));
 
         if (!empty($filter['search'])) {
-            $filter['search'] = '%' . $this->getDb()->escapeString($filter['search']) . '%';
+            $filter['search'] = '%' . $filter['search'] . '%';
             $w  = 'a.name_title LIKE :search OR ';
             $w  = 'a.name_first LIKE :search OR ';
             $w  = 'a.name_last LIKE :search OR ';
@@ -108,7 +108,8 @@ class UserMap extends Mapper
             $filter['userId'] = $filter['id'];
         }
         if (!empty($filter['userId'])) {
-            $filter->appendWhere('(a.user_id IN (:userId)) AND ');
+            $filter->appendWhere('a.user_id IN %s AND ', $filter->getIn($filter['userId']));
+            unset($filter['userId']);
         }
 
         if (!empty($filter['uid'])) {
@@ -120,7 +121,8 @@ class UserMap extends Mapper
         }
 
         if (!empty($filter['type'])) {
-            $filter->appendWhere('(a.type IN (:type)) AND ');
+            $filter->appendWhere('a.type IN %s AND ', $filter->getIn($filter['type']));
+            unset($filter['type']);
         }
 
         if (!empty($filter['username'])) {
@@ -136,18 +138,18 @@ class UserMap extends Mapper
         }
 
         if (!empty($filter['exclude'])) {
-            $filter->appendWhere('(a.user_id NOT IN (:exclude)) AND ');
+            $filter->appendWhere('a.user_id NOT IN %s AND ', $filter->getIn($filter['exclude']));
+            unset($filter['exclude']);
         }
 
         // Filter for any remember me saved token selectors
         if (!empty($filter['selector'])) {
-            $filter->appendFrom('INNER JOIN %s z USING (user_id) ', $this->quoteParameter('user_remember'));
+            $filter->appendFrom('INNER JOIN user_remember z USING (user_id) ');
             $filter->appendWhere('z.selector = :selector AND expiry > NOW() AND ');
         }
 
         return $filter;
     }
-
 
     /*
      * Functions to manage the "remember me" tokens
@@ -183,7 +185,7 @@ class UserMap extends Mapper
     {
         $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
             VALUES(:userId, :browserId, :selector, :hashedValidator, :expiry)';
-        $statement = $this->getDb()->prepare($sql);
+        $statement = $this->getDb()->getPdo()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
         return $statement->execute(compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
     }
@@ -202,7 +204,7 @@ class UserMap extends Mapper
             AND expiry >= NOW()
             LIMIT 1';
 
-        $statement = $this->getDb()->prepare($sql);
+        $statement = $this->getDb()->getPdo()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
         $statement->execute(compact('selector', 'browserId'));
         return $statement->fetch(\PDO::FETCH_ASSOC);
@@ -217,7 +219,7 @@ class UserMap extends Mapper
             AND expiry >= NOW()
             LIMIT 1';
 
-        $statement = $this->getDb()->prepare($sql);
+        $statement = $this->getDb()->getPdo()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
         $statement->execute(compact('userId', 'browserId'));
         return $statement->fetch(\PDO::FETCH_ASSOC);
@@ -226,7 +228,7 @@ class UserMap extends Mapper
     public function deleteToken(int $userId): bool
     {
         $sql = 'DELETE FROM user_remember WHERE user_id = :userId AND browser_id = :browserId';
-        $statement = $this->getDb()->prepare($sql);
+        $statement = $this->getDb()->getPdo()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
         return $statement->execute(compact('userId', 'browserId'));
     }

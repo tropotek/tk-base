@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
+use Bs\ControllerDomInterface;
 use Bs\Db\UserInterface;
-use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Table;
@@ -10,22 +10,18 @@ use Tk\Table\Cell;
 use Tk\Table\Action;
 use Tk\TableRenderer;
 
-class ListEvents extends PageController
+class ListEvents extends ControllerDomInterface
 {
     protected Table $table;
 
-    public function __construct()
+    public function doDefault(Request $request): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(UserInterface::PERM_ADMIN);
 
         $this->table = new \Tk\Table('event-list');
 
-    }
 
-    public function doDefault(Request $request)
-    {
         $this->getTable()->appendCell(new Cell\Text('name'));
         $this->getTable()->appendCell(new Cell\Text('value'));
         $this->getTable()->appendCell(new Cell\Text('eventClass'));
@@ -40,7 +36,6 @@ class ListEvents extends PageController
         $list = $this->convertEventData($this->getAvailableEvents($path));
         $this->getTable()->setList($list);
 
-        return $this->getPage();
     }
 
     public function show(): ?Template
@@ -58,7 +53,7 @@ class ListEvents extends PageController
         return $template;
     }
 
-    public function __makeTemplate()
+    public function __makeTemplate(): ?Template
     {
         $html = <<<HTML
 <div>
@@ -83,8 +78,6 @@ HTML;
     {
         return $this->table;
     }
-
-
 
     protected function convertEventData(array $eventData): array
     {

@@ -1,27 +1,23 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\ControllerDomInterface;
 use Bs\Form\EditTrait;
-use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Encrypt;
 use Tk\Uri;
 
-class Register extends PageController
+class Register extends ControllerDomInterface
 {
     use EditTrait;
 
 
-    public function __construct()
+    public function doDefault(Request $request): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('Register');
-    }
 
-    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
-    {
         if (!$this->getRegistry()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
@@ -30,11 +26,12 @@ class Register extends PageController
         $this->setForm(new \Bs\Form\Register());
         $this->getForm()->init()->execute($request->request->all());
 
-        return $this->getPage();
     }
 
-    public function doActivate(Request $request)
+    public function doActivate(Request $request): void
     {
+        $this->getPage()->setTitle('Register');
+
         if (!$this->getRegistry()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
@@ -62,7 +59,6 @@ class Register extends PageController
         Alert::addSuccess('You account has been successfully activated, please login.');
         Uri::create('/login')->redirect();
 
-        return $this->getPage();
     }
 
     public function show(): ?Template
@@ -88,5 +84,3 @@ HTML;
     }
 
 }
-
-

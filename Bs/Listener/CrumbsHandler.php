@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Listener;
 
-use Bs\Page;
 use Bs\Ui\Crumbs;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -22,8 +21,10 @@ class CrumbsHandler implements EventSubscriberInterface
 
     public function onView(ViewEvent $event)
     {
-        $page = $event->getControllerResult();
-        if ($page instanceof Page && $page->isCrumbEnabled()) {
+        $page = $this->getFactory()->getPage();
+        if (!$page) return;
+
+        if ($page->isEnabled() && $page->isCrumbEnabled()) {
             $crumbs = $page->getCrumbs();
             if (!$crumbs || $event->getRequest()->query->get(Crumbs::CRUMB_IGNORE)) return;
             if ($event->getRequest()->query->get(Crumbs::CRUMB_RESET)) {

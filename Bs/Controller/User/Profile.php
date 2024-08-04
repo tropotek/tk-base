@@ -1,25 +1,22 @@
 <?php
 namespace Bs\Controller\User;
 
+use Bs\ControllerDomInterface;
 use Bs\Form\EditTrait;
-use Bs\PageController;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Uri;
 
-class Profile extends PageController
+class Profile extends ControllerDomInterface
 {
     use EditTrait;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->getPage()->setTitle('My Profile');
-    }
 
-    public function doDefault(Request $request): \App\Page|\Dom\Mvc\Page
+    public function doDefault(Request $request): void
     {
+        $this->getPage()->setTitle('My Profile');
+
         if (!$this->getAuthUser()) {
             Alert::addError('You do not have access to this page.');
             Uri::create('/')->redirect();
@@ -29,7 +26,6 @@ class Profile extends PageController
         $this->setForm(new \Bs\Form\Profile($this->getFactory()->getAuthUser()));
         $this->getForm()->init()->execute($request->request->all());
 
-        return $this->getPage();
     }
 
     public function show(): ?Template
@@ -61,6 +57,5 @@ class Profile extends PageController
 HTML;
         return $this->loadTemplate($html);
     }
-
 
 }

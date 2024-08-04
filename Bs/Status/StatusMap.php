@@ -11,7 +11,6 @@ use Tk\Date;
 use Tk\Db\Filter;
 use Tk\Db\Map\ArrayObject;
 use Tk\Db\Map\Model;
-use Tk\Db\Pdo;
 use Tk\Db\Tool;
 use Tk\ObjectUtil;
 
@@ -23,11 +22,7 @@ use Tk\ObjectUtil;
 class StatusMap extends Mapper
 {
 
-    /**
-     * @param Pdo|null $db
-     * @throws Exception
-     */
-    public function __construct($db = null)
+    public function __construct(\Tt\Db $db = null)
     {
         parent::__construct($db);
         $this->initTable($this->getDb());
@@ -35,8 +30,6 @@ class StatusMap extends Mapper
 
     /**
      * init table
-     * @param Pdo|null $db
-     * @throws Exception
      */
     public function initTable($db)
     {
@@ -47,12 +40,12 @@ CREATE TABLE IF NOT EXISTS `status` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT UNSIGNED NOT NULL DEFAULT 0,              -- The user who performed the activity
   `msq_user_id` INT UNSIGNED NOT NULL DEFAULT 0,          -- If the user was masquerading who was the root masquerading user
-  
+
   -- For tkuni lib only
-  `institution_id` INTEGER NOT NULL DEFAULT 0,            
+  `institution_id` INTEGER NOT NULL DEFAULT 0,
   `course_id` INTEGER NOT NULL DEFAULT 0,
   `subject_id` INTEGER NOT NULL DEFAULT 0,
-  
+
   `fkey` VARCHAR(64) NOT NULL DEFAULT '',                 -- A foreign key as a string (usually the object name)
   `fid` INTEGER NOT NULL DEFAULT 0,                       -- foreign_id
   `name` VARCHAR(32) NOT NULL DEFAULT '',                 -- pending|approved|not_approved
@@ -67,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `status` (
   KEY (`fid`),
   KEY (`fkey`),
   KEY (`fid`, `id`)
-) ENGINE = InnoDB;
+);
 SQL;
             $db->query($sql);
         } else {

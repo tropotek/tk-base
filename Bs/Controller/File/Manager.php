@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Controller\File;
 
+use Bs\ControllerDomInterface;
 use Bs\Db\UserInterface;
-use Bs\PageController;
 use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +10,7 @@ use Tk\Alert;
 use Tk\Form;
 use Tk\Uri;
 
-class Manager extends PageController
+class Manager extends ControllerDomInterface
 {
     use ManagerTrait;
 
@@ -18,15 +18,13 @@ class Manager extends PageController
 
     protected ?Form $form = null;
 
-    public function __construct()
+
+    public function doDefault(Request $request): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('File Manager');
         $this->setAccess(UserInterface::PERM_ADMIN);
-    }
 
-    public function doDefault(Request $request)
-    {
+
         // Get the form template
         $this->setTable(new \Bs\Table\File());
         $this->getTable()->setFkey($this->fkey);
@@ -45,10 +43,9 @@ class Manager extends PageController
         $this->form->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
         $this->form->execute($request->request->all());
 
-        return $this->getPage();
     }
 
-    public function onSubmit(Form $form, Form\Action\ActionInterface $action)
+    public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
     {
         // TODO: Validate files uploads
 

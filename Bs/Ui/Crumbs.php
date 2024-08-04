@@ -4,7 +4,6 @@ namespace Bs\Ui;
 use Dom\Template;
 use Tk\Traits\SystemTrait;
 use Tk\Ui\Traits\AttributesTrait;
-use Tk\Ui\Traits\CssTrait;
 use Tk\Uri;
 
 /**
@@ -14,7 +13,6 @@ use Tk\Uri;
 class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
     use SystemTrait;
-    use CssTrait;
     use AttributesTrait;
 
     /**
@@ -209,9 +207,9 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
             $repeat = $template->getRepeat('item');
             if ($i < $last) {
                 $repeat->setAttr('url', 'href', $url);
-                $repeat->insertHtml('url', $title);
+                $repeat->setHtml('url', $title);
             } else {    // Last item
-                $repeat->insertHtml('item', $title);
+                $repeat->setHtml('item', $title);
                 $repeat->addCss('item', 'active');
                 $repeat->setAttr('item', 'aria-current', 'page');
             }

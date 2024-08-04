@@ -8,15 +8,14 @@ use Tk\DataMap\Table;
 use Tk\Db\Mapper\Filter;
 use Tk\Db\Mapper\Mapper;
 use Tk\Db\Mapper\ModelInterface;
-use Tk\Db\Pdo;
 
 class FileMap extends Mapper
 {
 
-    public function __construct(?Pdo $db = null)
+    public function __construct(?\Tt\Db $db = null)
     {
         parent::__construct($db);
-        if (!$this->getDb()->hasTable('file')) {
+        if (!$this->getDb()->tableExists('file')) {
             $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS file
 (
@@ -38,7 +37,7 @@ CREATE TABLE IF NOT EXISTS file
     KEY fkey_3 (fkey, fid, label)
 );
 SQL;
-            $this->getDb()->exec($sql);
+            $this->getDb()->getPdo()->exec($sql);
         }
     }
 
@@ -93,10 +92,10 @@ SQL;
 
     public function makeQuery(Filter $filter): Filter
     {
-        $filter->appendFrom('%s a ', $this->quoteParameter($this->getTable()));
+        $filter->appendFrom('%s a ', \Tt\Db::escapeTable($this->getTable()));
 
         if (!empty($filter['search'])) {
-            $filter['search'] = '%' . $this->getDb()->escapeString($filter['search']) . '%';
+            $filter['search'] = '%' . $filter['search'] . '%';
             $w  = 'a.file_id LIKE :search OR ';
             $w .= 'a.path LIKE :search OR ';
             $w .= 'a.mime LIKE :search OR ';
@@ -107,14 +106,17 @@ SQL;
             $filter['fileId'] = $filter['id'];
         }
         if (!empty($filter['fileId'])) {
-            $filter->appendWhere('(a.file_id IN (:userId)) AND ');
+            $filter->appendWhere('a.file_id IN :fileId AND ', $filter->getIn($filter['fileId']));
+            unset($filter['fileId']);
         }
 
         if (isset($filter['label'])) {
-            $filter->appendWhere('(a.label IN (:label)) AND ');
+            $filter->appendWhere('a.label IN :label AND ', $filter->getIn($filter['label']));
+            unset($filter['label']);
         }
         if (isset($filter['mime'])) {
-            $filter->appendWhere('(a.mime IN (:mime)) AND ');
+            $filter->appendWhere('a.mime IN :mime AND ', $filter->getIn($filter['mime']));
+            unset($filter['mime']);
         }
 
         if (!$this->isEmpty($filter['selected'] ?? null)) {
@@ -140,7 +142,8 @@ SQL;
         }
 
         if (!empty($filter['exclude'])) {
-            $filter->appendWhere('(a.file_id NOT IN (:exclude)) AND ');
+            $filter->appendWhere('a.file_id NOT IN %s AND ', $filter->getIn($filter['exclude']));
+            unset($filter['exclude']);
         }
 
         return $filter;

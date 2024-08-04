@@ -1,28 +1,25 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
+use Bs\ControllerDomInterface;
 use Bs\Db\UserInterface;
-use Bs\PageController;
 use Dom\Template;
+use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
 
-class TailLog extends PageController
+class TailLog extends ControllerDomInterface
 {
-
     protected string $logPath = '';
 
-    public function __construct()
+    public function doDefault(Request $request): void
     {
-        parent::__construct();
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(UserInterface::PERM_ADMIN);
 
         $this->logPath = ini_get('error_log');
-    }
 
-    public function doDefault(Request $request)
-    {
+
         if ($request->query->get('seek')) {
             $this->doSeek($request);
         }
@@ -32,10 +29,9 @@ class TailLog extends PageController
             $this->doSeek($request);
         }
 
-        return $this->getPage();
     }
 
-    public function doRefresh(Request $request)
+    #[NoReturn] public function doRefresh(Request $request): void
     {
         if (!is_readable($this->logPath)) {
             echo sprintf('Cannot read log file: ' . $this->logPath . "\n");
@@ -56,7 +52,7 @@ class TailLog extends PageController
         exit();
     }
 
-    public function doSeek(Request $request, $seekAdjust = 0)
+    public function doSeek(Request $request, $seekAdjust = 0): void
     {
         $session = $this->getSession();
         $handle = fopen($this->logPath, 'r');
