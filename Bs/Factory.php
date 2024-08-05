@@ -73,7 +73,6 @@ class Factory extends \Tk\Factory
     public function getAuthAdapter(): AdapterInterface
     {
         if (!$this->has('authAdapter')) {
-            //$adapter = new DbTable($this->getDb(), 'user', 'username', 'password');
             $adapter = new AuthUser($this->getUserMap());
             $this->set('authAdapter', $adapter);
         }

@@ -15,7 +15,7 @@ class FileMap extends Mapper
     public function __construct(?\Tt\Db $db = null)
     {
         parent::__construct($db);
-        if (!$this->getDb()->tableExists('file')) {
+        if (!\Tt\Db::tableExists('file')) {
             $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS file
 (
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS file
     KEY fkey_3 (fkey, fid, label)
 );
 SQL;
-            $this->getDb()->getPdo()->exec($sql);
+            \Tt\Db::execute($sql);
         }
     }
 

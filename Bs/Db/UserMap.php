@@ -181,13 +181,14 @@ class UserMap extends Mapper
     /**
      * Add a new row to the user_remember table
      */
-    public function insertToken(int $userId, string $selector, string $hashedValidator, string $expiry): bool
+    public function insertToken(int $userId, string $selector, string $hashedValidator, string $expiry): int|bool
     {
-        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
-            VALUES(:userId, :browserId, :selector, :hashedValidator, :expiry)';
-        $statement = $this->getDb()->getPdo()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
-        return $statement->execute(compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
+        return \Tt\Db::insert('user_remember', compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
+//        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
+//            VALUES(:userId, :browserId, :selector, :hashedValidator, :expiry)';
+//        $statement = $this->getDb()->getPdo()->prepare($sql);
+//        return $statement->execute(compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
     }
 
     /**
@@ -195,23 +196,25 @@ class UserMap extends Mapper
      * It only returns the match selector if the token is not expired
      *   by comparing the expiry with the current time
      */
-    public function findTokenBySelector(string $selector)
+    public function findTokenBySelector(string $selector): array
     {
+        $browserId = $this->getFactory()->getCookie()->getBrowserId();
         $sql = 'SELECT id, selector, hashed_validator, browser_id, user_id, expiry
             FROM user_remember
             WHERE selector = :selector
             AND browser_id = :browserId
             AND expiry >= NOW()
             LIMIT 1';
+        return (array)\Tt\Db::queryOne($sql, compact('selector', 'browserId'));
 
-        $statement = $this->getDb()->getPdo()->prepare($sql);
-        $browserId = $this->getFactory()->getCookie()->getBrowserId();
-        $statement->execute(compact('selector', 'browserId'));
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+//        $statement = $this->getDb()->getPdo()->prepare($sql);
+//        $statement->execute(compact('selector', 'browserId'));
+//        return $statement->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function findTokenByUserId(string $userId)
+    public function findTokenByUserId(string $userId): array
     {
+        $browserId = $this->getFactory()->getCookie()->getBrowserId();
         $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
             FROM user_remember
             WHERE user_id = :userId
@@ -219,17 +222,20 @@ class UserMap extends Mapper
             AND expiry >= NOW()
             LIMIT 1';
 
-        $statement = $this->getDb()->getPdo()->prepare($sql);
-        $browserId = $this->getFactory()->getCookie()->getBrowserId();
-        $statement->execute(compact('userId', 'browserId'));
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+        return (array)\Tt\Db::queryOne($sql, compact('userId', 'browserId'));
+
+//        $statement = $this->getDb()->getPdo()->prepare($sql);
+//        $statement->execute(compact('userId', 'browserId'));
+//        return $statement->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function deleteToken(int $userId): bool
+    public function deleteToken(int $userId): bool|int
     {
-        $sql = 'DELETE FROM user_remember WHERE user_id = :userId AND browser_id = :browserId';
-        $statement = $this->getDb()->getPdo()->prepare($sql);
         $browserId = $this->getFactory()->getCookie()->getBrowserId();
-        return $statement->execute(compact('userId', 'browserId'));
+        return \Tt\Db::delete('user_remember', compact('userId', 'browserId'));
+
+//        $sql = 'DELETE FROM user_remember WHERE user_id = :userId AND browser_id = :browserId';
+//        $statement = $this->getDb()->getPdo()->prepare($sql);
+//        return $statement->execute(compact('userId', 'browserId'));
     }
 }
