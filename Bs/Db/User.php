@@ -31,11 +31,11 @@ class User extends Model implements UserInterface, FileInterface
      *
      * high-level permissions for specific roles
      */
-	const PERM_ADMIN            = 0x00000001; // Admin
-	const PERM_SYSADMIN         = 0x00000002; // Change system
-	const PERM_MANAGE_STAFF     = 0x00000004; // Manage staff
-    const PERM_MANAGE_MEMBER    = 0x00000008; // Manage members
-	//                            0x00000010; // available
+	const PERM_ADMIN            = 0x1; // Admin
+	const PERM_SYSADMIN         = 0x2; // Change system
+	const PERM_MANAGE_STAFF     = 0x4; // Manage staff
+    const PERM_MANAGE_MEMBER    = 0x8; // Manage members
+	//                            0x10; // available
 
 	/**
      * permission groups and descriptions
