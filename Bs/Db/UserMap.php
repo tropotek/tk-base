@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Bs\Factory;
 use Tk\DataMap\DataMap;
 use Tk\Db\Mapper\Filter;
 use Tk\Db\Mapper\Mapper;
@@ -181,14 +182,10 @@ class UserMap extends Mapper
     /**
      * Add a new row to the user_remember table
      */
-    public function insertToken(int $userId, string $selector, string $hashedValidator, string $expiry): int|bool
+    public function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): int|bool
     {
-        $browserId = $this->getFactory()->getCookie()->getBrowserId();
-        return \Tt\Db::insert('user_remember', compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
-//        $sql = 'INSERT INTO user_remember (user_id, browser_id, selector, hashed_validator, expiry)
-//            VALUES(:userId, :browserId, :selector, :hashedValidator, :expiry)';
-//        $statement = $this->getDb()->getPdo()->prepare($sql);
-//        return $statement->execute(compact('userId', 'browserId', 'selector', 'hashedValidator', 'expiry'));
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        return \Tt\Db::insert('user_remember', compact('user_id', 'browser_id', 'selector', 'hashed_validator', 'expiry'));
     }
 
     /**
@@ -198,44 +195,32 @@ class UserMap extends Mapper
      */
     public function findTokenBySelector(string $selector): array
     {
-        $browserId = $this->getFactory()->getCookie()->getBrowserId();
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
         $sql = 'SELECT id, selector, hashed_validator, browser_id, user_id, expiry
             FROM user_remember
             WHERE selector = :selector
-            AND browser_id = :browserId
+            AND browser_id = :browser_id
             AND expiry >= NOW()
             LIMIT 1';
-        return (array)\Tt\Db::queryOne($sql, compact('selector', 'browserId'));
-
-//        $statement = $this->getDb()->getPdo()->prepare($sql);
-//        $statement->execute(compact('selector', 'browserId'));
-//        return $statement->fetch(\PDO::FETCH_ASSOC);
+        return (array)\Tt\Db::queryOne($sql, compact('selector', 'browser_id'));
     }
 
-    public function findTokenByUserId(string $userId): array
+    public function findTokenByUserId(string $user_id): array
     {
-        $browserId = $this->getFactory()->getCookie()->getBrowserId();
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
         $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
             FROM user_remember
-            WHERE user_id = :userId
-            AND browser_id = :browserId
+            WHERE user_id = :user_id
+            AND browser_id = :browser_id
             AND expiry >= NOW()
             LIMIT 1';
 
-        return (array)\Tt\Db::queryOne($sql, compact('userId', 'browserId'));
-
-//        $statement = $this->getDb()->getPdo()->prepare($sql);
-//        $statement->execute(compact('userId', 'browserId'));
-//        return $statement->fetch(\PDO::FETCH_ASSOC);
+        return (array)\Tt\Db::queryOne($sql, compact('user_id', 'browser_id'));
     }
 
-    public function deleteToken(int $userId): bool|int
+    public function deleteToken(int $user_id): bool|int
     {
-        $browserId = $this->getFactory()->getCookie()->getBrowserId();
-        return \Tt\Db::delete('user_remember', compact('userId', 'browserId'));
-
-//        $sql = 'DELETE FROM user_remember WHERE user_id = :userId AND browser_id = :browserId';
-//        $statement = $this->getDb()->getPdo()->prepare($sql);
-//        return $statement->execute(compact('userId', 'browserId'));
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        return \Tt\Db::delete('user_remember', compact('user_id', 'browser_id'));
     }
 }

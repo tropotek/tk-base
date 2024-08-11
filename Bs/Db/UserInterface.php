@@ -6,7 +6,7 @@ use Tk\Uri;
 
 interface UserInterface extends ModelInterface
 {
-	const PERM_ADMIN            = 0x00000001; // All permissions
+	const PERM_ADMIN            = 0x1; // All permissions
 
     /**
 	 * permissions are bit masks that can include on or more bits
