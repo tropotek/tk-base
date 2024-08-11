@@ -17,7 +17,7 @@ class RememberMeHandler implements EventSubscriberInterface
         if (!$this->getFactory()->getAuthUser()) {
             $user = \Bs\Db\User::retrieveMe();
             if ($user) {
-                Log::alert('user `' . $user->getUsername() . '` auto logged in via cookie');
+                Log::alert('user `' . $user->username . '` auto logged in via cookie');
             }
         }
 

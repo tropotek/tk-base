@@ -1,9 +1,8 @@
 <?php
 namespace Bs\Listener;
 
-use Bs\Db\UserInterface;
+use Bs\Db\User;
 use Bs\Page;
-use Bs\PageInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Registry;
@@ -21,7 +20,7 @@ class MaintenanceHandler implements EventSubscriberInterface
         $class = get_class($controller[0]);
 
         // Allow admin users access
-        if ($this->getFactory()->getAuthUser() && $this->getFactory()->getAuthUser()->hasPermission(UserInterface::PERM_ADMIN)) {
+        if ($this->getFactory()->getAuthUser() && $this->getFactory()->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
             return;
         }
 

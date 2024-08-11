@@ -55,7 +55,7 @@ class Password extends Console
         } while($pass != $passConf);
 
         $this->writeGreen('Password for user \''.$username.'\' updated');
-        $user->setPassword(User::hashPassword($pass));
+        $user->password = User::hashPassword($pass);
         $user->save();
 
         return self::SUCCESS;

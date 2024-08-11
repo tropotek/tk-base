@@ -52,8 +52,8 @@ class Register extends ControllerDomInterface
             Uri::create('/home')->redirect();
         }
 
-        $user->setActive(true);
-        $user->setNotes('');
+        $user->active = true;
+        $user->notes = '';
         $user->save();
 
         Alert::addSuccess('You account has been successfully activated, please login.');

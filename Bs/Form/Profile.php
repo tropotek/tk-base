@@ -77,7 +77,7 @@ class Profile extends EditInterface
     public function execute(array $values = []): static
     {
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
-        $load['userId'] = $this->getUser()->getUserId();
+        $load['userId'] = $this->getUser()->userId;
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
@@ -90,7 +90,7 @@ class Profile extends EditInterface
         $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
 
         if ($form->getField('currentPass') && $form->getFieldValue('currentPass')) {
-            if (!password_verify($form->getFieldValue('currentPass'), $this->getUser()->getPassword())) {
+            if (!password_verify($form->getFieldValue('currentPass'), $this->getUser()->password)) {
                 $form->addFieldError('currentPass', 'Invalid current password, password not updated');
             }
             if ($form->getField('newPass') && $form->getFieldValue('newPass')) {
@@ -112,7 +112,7 @@ class Profile extends EditInterface
             return;
         }
         if ($form->getFieldValue('currentPass')) {
-            $this->getUser()->setPassword(\Bs\Db\User::hashPassword($form->getFieldValue('newPass')));
+            $this->getUser()->password = \Bs\Db\User::hashPassword($form->getFieldValue('newPass'));
             Alert::addSuccess('Your password has been updated, remember to use this on your next login.');
         }
         $this->getUser()->save();

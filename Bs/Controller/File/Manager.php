@@ -2,7 +2,7 @@
 namespace Bs\Controller\File;
 
 use Bs\ControllerDomInterface;
-use Bs\Db\UserInterface;
+use Bs\Db\User;
 use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ class Manager extends ControllerDomInterface
     public function doDefault(Request $request): void
     {
         $this->getPage()->setTitle('File Manager');
-        $this->setAccess(UserInterface::PERM_ADMIN);
+        $this->setAccess(User::PERM_ADMIN);
 
 
         // Get the form template

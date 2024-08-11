@@ -36,7 +36,7 @@ interface UserInterface extends ModelInterface
     /**
      * A check to see if this user can masquerade as the supplied user
      */
-    public function canMasqueradeAs(UserInterface $msqUser): bool;
+    public function canMasqueradeAs(User $msqUser): bool;
 
     /**
      * return true if this user type = or is in the supplied type(s)

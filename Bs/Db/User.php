@@ -13,7 +13,7 @@ use Tk\Encrypt;
 use Tk\Image;
 use Tk\Uri;
 
-class User extends Model implements UserInterface, FileInterface
+class User extends Model // implements UserInterface, FileInterface
 {
     use TimestampTrait;
     use HashTrait;
@@ -28,8 +28,6 @@ class User extends Model implements UserInterface, FileInterface
 	 * permissions are bit masks that can include on or more bits
 	 * requests for permission are ANDed with the user's permissions
 	 * if the result is non-zero the user has permission.
-     *
-     * high-level permissions for specific roles
      */
 	const PERM_ADMIN            = 0x1; // Admin
 	const PERM_SYSADMIN         = 0x2; // Change system
@@ -53,56 +51,35 @@ class User extends Model implements UserInterface, FileInterface
     const TYPE_STAFF = 'staff';
 
     /**
-     * Base logged-in user type (Access to user pages)
+     * Basic site user
      */
     const TYPE_MEMBER = 'member';
 
-	/**
-     * User type list
-     */
 	const TYPE_LIST = [
         self::TYPE_STAFF            => "Staff",
         self::TYPE_MEMBER           => "Member",
     ];
 
+    public int        $userId        = 0;
+    public string     $uid           = '';
+    public string     $type          = self::TYPE_MEMBER;
+    public int        $permissions   = 0;
+    public string     $username      = '';
+    public string     $password      = '';
+    public string     $email         = '';
+    public string     $nameTitle     = '';
+    public string     $nameFirst     = '';
+    public string     $nameLast      = '';
+    public ?string    $nameDisplay   = '';
+    public string     $notes         = '';
+    public ?string    $timezone      = null;
+    public bool       $active        = true;
+    public string     $sessionId     = '';
+    public string     $hash          = '';      // todo: chould get this from the view
+    public ?\DateTime $lastLogin     = null;
 
-    public int $userId = 0;
-
-    public string $uid = '';
-
-    public string $type = self::TYPE_MEMBER;
-
-    public int $permissions = 0;
-
-    public string $username = '';
-
-    public string $password = '';
-
-    public string $email = '';
-
-    public string $nameTitle = '';
-
-    public string $nameFirst = '';
-
-    public string $nameLast = '';
-
-    public ?string $nameDisplay = '';
-
-    public string $notes = '';
-
-    public ?string $timezone = null;
-
-    public bool $active = true;
-
-    public string $sessionId = '';
-
-    public string $hash = '';
-
-    public ?\DateTime $lastLogin = null;
-
-    public ?\DateTime $modified = null;
-
-    public ?\DateTime $created = null;
+    public \DateTime $modified;
+    public \DateTime $created;
 
 
     public function __construct()
@@ -111,17 +88,16 @@ class User extends Model implements UserInterface, FileInterface
         $this->timezone = $this->getConfig()->get('php.date.timezone');
     }
 
-
     public function save(): void
     {
         $this->getHash();
 
-        if (!$this->getUsername() && $this->getEmail()) {
-            $this->setUsername($this->getEmail());
+        if (!$this->username && $this->email) {
+            $this->username = $this->email;
         }
         // Remove permissions for non-staff users
         if ($this->isType(self::TYPE_MEMBER)) {
-            $this->setPermissions(0);
+            $this->permissions = 0;
         }
         parent::save();
     }
@@ -141,7 +117,7 @@ class User extends Model implements UserInterface, FileInterface
             if ($cookie) {
                 $user->forgetMe();
             }
-            $user->setSessionId('');
+            $user->sessionId = '';
             $user->save();
             Uri::create()->redirect();
         }
@@ -161,7 +137,7 @@ class User extends Model implements UserInterface, FileInterface
     public function getImageUrl(): ?Uri
     {
         $color = Color::createRandom($this->getVolatileId());
-        $img = Image::createAvatar($this->getName() ?: $this->getUsername(), $color);
+        $img = Image::createAvatar($this->getName() ?: $this->username, $color);
         $b64 = base64_encode($img->getContents());
         return Uri::create('data:image/png;base64,' . $b64);
     }
@@ -169,28 +145,6 @@ class User extends Model implements UserInterface, FileInterface
     public function getHomeUrl(): Uri
     {
         return Uri::create('/dashboard');
-    }
-
-    public function getUserId(): int
-    {
-        return $this->userId;
-    }
-
-    public function setUserId(int $userId): User
-    {
-        $this->userId = $userId;
-        return $this;
-    }
-
-    public function getUid(): string
-    {
-        return $this->uid;
-    }
-
-    public function setUid(string $uid): static
-    {
-        $this->uid = $uid;
-        return $this;
     }
 
     public function isAdmin(): bool
@@ -212,42 +166,20 @@ class User extends Model implements UserInterface, FileInterface
     {
         if (!is_array($type)) $type = [$type];
         foreach ($type as $r) {
-            if (trim($r) == trim($this->getType())) {
+            if (trim($r) == trim($this->type)) {
                 return true;
             }
         }
         return false;
     }
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
-        return $this;
-    }
-
     public function hasPermission(int $permission): bool
     {
-		// non-logged in users have no permissions
-		if (!$this->isActive()) return false;
-		// admin users have all permissions
-		if ((self::PERM_ADMIN & $this->getPermissions()) != 0) return true;
-		return ($permission & $this->getPermissions()) != 0;
-    }
-
-    public function getPermissions(): int
-    {
-        return $this->permissions;
-    }
-
-    public function setPermissions(int $permissions): static
-    {
-        $this->permissions = $permissions;
-        return $this;
+        // non-logged in users have no permissions
+        if (!$this->active) return false;
+        // admin users have all permissions
+        if ((self::PERM_ADMIN & $this->permissions) != 0) return true;
+        return ($permission & $this->permissions) != 0;
     }
 
     /**
@@ -273,87 +205,30 @@ class User extends Model implements UserInterface, FileInterface
         return [];
     }
 
-    public function canMasqueradeAs(UserInterface $msqUser): bool
+    public function canMasqueradeAs(User $msqUser): bool
     {
         if ($this->isAdmin()) return true;
         if ($this->isStaff() && $msqUser->isType(self::TYPE_MEMBER)) return true;
         return false;
     }
 
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(?string $username): static
-    {
-        $this->username = $username;
-        return $this;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-        return $this;
-    }
-
-    public static function hashPassword(string $password): string
-    {
-        return password_hash($password, PASSWORD_DEFAULT);
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-//    public function getName(): string
-//    {
-//        return $this->name;
-//    }
-//
-//    public function setName(string $name): User
-//    {
-//        $this->name = $name;
-//        return $this;
-//    }
-
+    /**
+     * @todo Move this to the view when model updated
+     */
     public function getName(bool $withTitle = false): string
     {
         $name = [];
         if ($withTitle) {
-            if ($this->getNameTitle()) $name[] = $this->getNameTitle();
+            if ($this->nameTitle) $name[] = $this->nameTitle;
         }
-        if ($this->getNameFirst()) $name[] = $this->getNameFirst();
-        if ($this->getNameLast()) $name[] = $this->getNameLast();
+        if ($this->nameFirst) $name[] = $this->nameFirst;
+        if ($this->nameLast) $name[] = $this->nameLast;
         return implode(' ', $name);
-    }
-
-    public function setName(?string $name): static
-    {
-        $name = trim($name);
-        if (preg_match('/\s/',$name)) {
-            $this->setNameFirst(substr($name, 0, strpos($name, ' ')));
-            $this->setNameLast(substr($name, strpos($name, ' ') + 1));
-        } else {
-            $this->setNameFirst($name);
-        }
-        return $this;
     }
 
     /**
      * Use this to populate a select field for a users title
+     * @todo Move these into a constant property
      */
     public static function getTitleList(): array
     {
@@ -367,104 +242,11 @@ class User extends Model implements UserInterface, FileInterface
         return $titles;
     }
 
-    public function getNameTitle(): string
+    public static function hashPassword(string $password): string
     {
-        return $this->nameTitle;
+        return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public function setNameTitle(string $nameTitle): User
-    {
-        $this->nameTitle = $nameTitle;
-        return $this;
-    }
-
-    public function getNameFirst(): string
-    {
-        return $this->nameFirst;
-    }
-
-    public function setNameFirst(string $nameFirst): User
-    {
-        $this->nameFirst = $nameFirst;
-        return $this;
-    }
-
-    public function getNameLast(): string
-    {
-        return $this->nameLast;
-    }
-
-    public function setNameLast(string $nameLast): User
-    {
-        $this->nameLast = $nameLast;
-        return $this;
-    }
-
-    public function getNameDisplay(): string
-    {
-        return $this->nameDisplay;
-    }
-
-    public function setNameDisplay(string $nameDisplay): User
-    {
-        $this->nameDisplay = $nameDisplay;
-        return $this;
-    }
-
-    public function getNotes(): string
-    {
-        return $this->notes;
-    }
-
-    public function setNotes(string $notes): static
-    {
-        $this->notes = $notes;
-        return $this;
-    }
-
-    public function getTimezone(): ?string
-    {
-        return $this->timezone;
-    }
-
-    public function setTimezone(?string $timezone): static
-    {
-        $this->timezone = $timezone;
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): static
-    {
-        $this->active = $active;
-        return $this;
-    }
-
-    public function getSessionId(): string
-    {
-        return $this->sessionId;
-    }
-
-    public function setSessionId(string $sessionId): static
-    {
-        $this->sessionId = $sessionId;
-        return $this;
-    }
-
-    public function getLastLogin(): ?\DateTime
-    {
-        return $this->lastLogin;
-    }
-
-    public function setLastLogin(?\DateTime $lastLogin): static
-    {
-        $this->lastLogin = $lastLogin;
-        return $this;
-    }
 
     /**
      * Validate this object's current state and return an array
@@ -476,20 +258,20 @@ class User extends Model implements UserInterface, FileInterface
         $errors = [];
         $mapper = $this->getMapper();
 
-        if (!$this->getUsername()) {
+        if (!$this->username) {
             $errors['username'] = 'Invalid field username value';
         } else {
-            $dup = $mapper->findByUsername($this->getUsername());
-            if ($dup && $dup->getId() != $this->getId()) {
+            $dup = $mapper->findByUsername($this->username);
+            if ($dup && $dup->userId != $this->userId) {
                 $errors['username'] = 'This username is already in use';
             }
         }
 
-        if (!filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Please enter a valid email address';
         } else {
-            $dup = $mapper->findByEmail($this->getEmail());
-            if ($dup && $dup->getId() != $this->getId()) {
+            $dup = $mapper->findByEmail($this->email);
+            if ($dup && $dup->userId != $this->userId) {
                 $errors['email'] = 'This email is already in use';
             }
         }
@@ -545,7 +327,7 @@ class User extends Model implements UserInterface, FileInterface
         $message = $this->getFactory()->createMessage();
         $message->set('content', $content);
         $message->setSubject($this->getConfig()->get('site.title') . ' Password Recovery');
-        $message->addTo($this->getEmail());
+        $message->addTo($this->email);
         $message->set('name', $this->getName());
 
         $hashToken = Encrypt::create($this->getConfig()->get('system.encrypt'))->encrypt(serialize(['h' => $this->getHash(), 't' => time()]));
@@ -598,7 +380,7 @@ class User extends Model implements UserInterface, FileInterface
             if ($tokens && password_verify($validator, $tokens['hashed_validator'])) {
                 $user = $map->findBySelector($selector);
                 if ($user) {
-                    Factory::instance()->getAuthController()->getStorage()->write($user->getUsername());
+                    Factory::instance()->getAuthController()->getStorage()->write($user->username);
                 }
             }
         }

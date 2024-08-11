@@ -57,7 +57,7 @@ class User extends EditInterface
             $field = $this->getForm()->appendField(new Checkbox('perm', $list))
                 ->setLabel('Permissions')
                 ->setGroup('Permissions');
-            if ($this->getUser()->getUsername() == 'admin') {   // disable permission change for admin user
+            if ($this->getUser()->username == 'admin') {   // disable permission change for admin user
                 $field->setDisabled();
             }
 
@@ -76,7 +76,7 @@ class User extends EditInterface
     public function execute(array $values = []): static
     {
         $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
-        $load['userId'] = $this->getUser()->getUserId();
+        $load['userId'] = $this->getUser()->userId;
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
 
@@ -86,13 +86,13 @@ class User extends EditInterface
 
     public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
     {
-        if ($this->getUser()->getUsername() == 'admin') {
+        if ($this->getUser()->username == 'admin') {
             $form->removeField('perm');
         }
 
         $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
         if ($form->getField('perm')) {
-            $this->getUser()->setPermissions(array_sum($form->getFieldValue('perm') ?? []));
+            $this->getUser()->permissions = array_sum($form->getFieldValue('perm') ?? []);
         }
 
         $form->addFieldErrors($this->getUser()->validate());
@@ -107,11 +107,11 @@ class User extends EditInterface
         // Send email to update password
         if ($isNew) {
             $this->getUser()->sendRecoverEmail(true);
-            Alert::addSuccess('An email has been sent to ' . $this->getUser()->getEmail() . ' to create their password.');
+            Alert::addSuccess('An email has been sent to ' . $this->getUser()->email . ' to create their password.');
         }
 
         Alert::addSuccess('Form save successfully.');
-        $action->setRedirect(Uri::create('/user/'.$this->getType().'Edit')->set('userId', $this->getUser()->getUserId()));
+        $action->setRedirect(Uri::create('/user/'.$this->getType().'Edit')->set('userId', $this->getUser()->userId));
         if ($form->getTriggeredAction()->isExit()) {
             $action->setRedirect($this->getFactory()->getBackUrl());
         }

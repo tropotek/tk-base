@@ -2,7 +2,7 @@
 namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
-use Bs\Db\UserInterface;
+use Bs\Db\User;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Table;
@@ -17,7 +17,7 @@ class ListEvents extends ControllerDomInterface
     public function doDefault(Request $request): void
     {
         $this->getPage()->setTitle('Tail Log');
-        $this->setAccess(UserInterface::PERM_ADMIN);
+        $this->setAccess(User::PERM_ADMIN);
 
         $this->table = new \Tk\Table('event-list');
 

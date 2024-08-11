@@ -81,7 +81,7 @@ class RecoverPassword extends EditInterface
             return;
         }
 
-        $this->user->setPassword(User::hashPassword($form->getFieldValue('newPassword')));
+        $this->user->password = User::hashPassword($form->getFieldValue('newPassword'));
         $this->user->save();
 
         Alert::addSuccess('Successfully account recovery. Please login.');

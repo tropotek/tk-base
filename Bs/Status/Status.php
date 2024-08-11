@@ -287,7 +287,7 @@ class Status extends Model
         foreach ($statusList as $status) {
             if (!$status->getUser()) continue;
             if ($userType && $status->getUser()->getType() == $userType) {
-                $userList[$status->getUserId()] = $status->getUser();
+                $userList[$status->userId] = $status->getUser();
             }
         }
         return $userList;

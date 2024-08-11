@@ -1,7 +1,6 @@
 <?php
 namespace Bs;
 
-use Bs\Db\UserInterface;
 use Bs\Ui\Crumbs;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;

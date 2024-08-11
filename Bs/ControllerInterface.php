@@ -1,7 +1,7 @@
 <?php
 namespace Bs;
 
-use Bs\Db\UserInterface;
+use Bs\Db\User;
 use Bs\Ui\Crumbs;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -36,7 +36,7 @@ abstract class ControllerInterface
         return $this->getFactory()->getBackUrl();
     }
 
-    public function getAuthUser(): ?UserInterface
+    public function getAuthUser(): ?User
     {
         return $this->getFactory()->getAuthUser();
     }

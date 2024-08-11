@@ -2,7 +2,6 @@
 namespace Bs;
 
 use Bs\Db\User;
-use Bs\Db\UserInterface;
 use Bs\Db\UserMap;
 use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
@@ -13,7 +12,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
-use Tk\Exception;
 use Tk\Mail\CurlyMessage;
 use Tk\Uri;
 
@@ -53,9 +51,9 @@ class Factory extends \Tk\Factory
     /**
      * Return a User object or record that is located from the Auth's getIdentity() method
      * Override this method in your own site's Factory object
-     * @return null|UserInterface|User|\App\Db\User Null if no user logged in
+     * @return null|User Null if no user logged in
      */
-    public function getAuthUser(): null|UserInterface|User
+    public function getAuthUser(): null|User
     {
         if (!$this->has('authUser')) {
             if ($this->getAuthController()->hasIdentity()) {

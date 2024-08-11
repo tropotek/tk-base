@@ -70,9 +70,9 @@ JS;
 
         $user = $this->getFactory()->getAuthUser();
         if ($user) {
-            $template->setText('username', $user->getUsername());
+            $template->setText('username', $user->username);
             $template->setText('user-name', $user->getName());
-            $template->setText('user-type', ucfirst($user->getType()));
+            $template->setText('user-type', ucfirst($user->type));
             $template->setAttr('user-image', 'src', $user->getImageUrl());
             $template->setAttr('user-home-url', 'href', $user->getHomeUrl());
 

@@ -66,9 +66,9 @@ class Register extends EditInterface
         }
 
         $user = $this->getFactory()->createUser();
-        $user->setActive(false);
-        $user->setNotes('pending activation');
-        $user->setType(\Bs\Db\User::TYPE_MEMBER);
+        $user->active = false;
+        $user->notes = 'pending activation';
+        $user->type = \Bs\Db\User::TYPE_MEMBER;
 
         $user->getMapper()->getFormMap()->loadObject($user, $form->getFieldValues());
 
@@ -98,7 +98,7 @@ class Register extends EditInterface
             return;
         }
 
-        $user->setPassword(\Bs\Db\User::hashPassword($user->getPassword()));
+        $user->password = \Bs\Db\User::hashPassword($user->password);
         $user->save();
 
         // send email to user
@@ -117,7 +117,7 @@ class Register extends EditInterface
         $message = $this->getFactory()->createMessage();
         $message->set('content', $content);
         $message->setSubject($this->getRegistry()->getSiteName() . ' Account Registration');
-        $message->addTo($user->getEmail());
+        $message->addTo($user->email);
         $message->set('name', $user->getName());
 
         $hashToken = Encrypt::create($this->getConfig()->get('system.encrypt'))

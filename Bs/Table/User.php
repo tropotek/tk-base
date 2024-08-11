@@ -32,7 +32,7 @@ class User extends ManagerInterface
                 $btn->setText('');
                 $btn->setIcon('fa fa-edit');
                 $btn->addCss('btn btn-xs btn-primary');
-                $btn->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('userId', $obj->getId()));
+                $btn->setUrl(Uri::create('/user/'.$obj->type.'Edit')->set('userId', $obj->userId));
                 $template->appendTemplate('td', $btn->show());
                 $template->appendHtml('td', '&nbsp;');
 
@@ -40,7 +40,7 @@ class User extends ManagerInterface
                 $btn->setText('');
                 $btn->setIcon('fa fa-user-secret');
                 $btn->addCss('btn btn-xs btn-outline-dark');
-                $btn->setUrl(Uri::create()->set(Masquerade::QUERY_MSQ, $obj->getId()));
+                $btn->setUrl(Uri::create()->set(Masquerade::QUERY_MSQ, $obj->userId));
                 $btn->setAttr('data-confirm', 'Are you sure you want to log-in as user \''.$obj->getName().'\'');
                 $template->appendTemplate('td', $btn->show());
                 $template->appendHtml('td', '&nbsp;');
@@ -49,7 +49,7 @@ class User extends ManagerInterface
                 $btn->setText('');
                 $btn->setIcon('fa fa-trash');
                 $btn->addCss('btn btn-xs btn-danger');
-                $btn->setUrl(Uri::create()->set('del', $obj->getId()));
+                $btn->setUrl(Uri::create()->set('del', $obj->userId));
                 $btn->setAttr('data-confirm', 'Are you sure you want to delete \''.$obj->getName().'\'');
                 $template->appendTemplate('td', $btn->show());
 
@@ -59,7 +59,7 @@ class User extends ManagerInterface
             ->addOnShow(function (Cell\Text $cell, mixed $value) {
                     /** @var \Bs\Db\User $obj */
                     $obj = $cell->getRow()->getData();
-                    $cell->setUrl(Uri::create('/user/'.$obj->getType().'Edit')->set('userId', $obj->getId()));
+                    $cell->setUrl(Uri::create('/user/'.$obj->type.'Edit')->set('userId', $obj->userId));
                 })
             ->setAttr('style', 'width: 100%;');
 
@@ -89,7 +89,7 @@ class User extends ManagerInterface
             ->addOnShow(function (Cell\Text $cell) {
                 /** @var \Bs\Db\User $obj */
                 $obj = $cell->getRow()->getData();
-                $cell->setUrl('mailto:'.$obj->getEmail());
+                $cell->setUrl('mailto:'.$obj->email);
             });
         $this->appendCell(new Cell\Text('active'));
         //$this->appendCell(new Cell\Date('modified'));
@@ -150,14 +150,14 @@ class User extends ManagerInterface
         /** @var \Bs\Db\User $msqUser */
         $msqUser = $this->getFactory()->getUserMap()->find($userId);
         if ($msqUser && Masquerade::masqueradeLogin($this->getFactory()->getAuthUser(), $msqUser)) {
-            Alert::addSuccess('You are now logged in as user ' . $msqUser->getUsername());
+            Alert::addSuccess('You are now logged in as user ' . $msqUser->username);
             if ($msqUser->getHomeUrl()) {
                 $msqUser->getHomeUrl()->redirect();
             }
             Uri::create('/')->redirect();
         }
 
-        Alert::addWarning('You cannot login as user ' . $msqUser->getUsername() . ' invalid permissions');
+        Alert::addWarning('You cannot login as user ' . $msqUser->username . ' invalid permissions');
         Uri::create()->remove(Masquerade::QUERY_MSQ)->redirect();
     }
 

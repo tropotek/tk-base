@@ -2,7 +2,6 @@
 namespace Bs\Util;
 
 use Bs\Db\User;
-use Bs\Db\UserInterface;
 use Bs\Factory;
 use Tk\Traits\SystemTrait;
 
@@ -25,7 +24,7 @@ class Masquerade
      * Masquerade as another user
      * return true on success, remember to redirect to the required page on success
      */
-    public static function masqueradeLogin(UserInterface $user, UserInterface $msqUser): bool
+    public static function masqueradeLogin(User $user, User $msqUser): bool
     {
         if (!self::canMasqueradeAs($user, $msqUser)) return false;
         $factory = Factory::instance();
@@ -35,7 +34,7 @@ class Masquerade
 
         // Save the current user and url to the session, to allow logout
         $userData = [
-            'userId' => $user->getUsername(),
+            'userId' => $user->username,
             'url' => \Tk\Uri::create()->toString(),
         ];
         $msqArr[] = $userData;
@@ -43,7 +42,7 @@ class Masquerade
         // Save the updated masquerade queue
         $factory->getSession()->set(static::SID, $msqArr);
         // Simulates an AuthAdapter authenticate() method
-        $factory->getAuthController()->getStorage()->write($msqUser->getUsername());
+        $factory->getAuthController()->getStorage()->write($msqUser->username);
 
         return true;
     }
@@ -74,16 +73,16 @@ class Masquerade
     /**
      * Check if this user can masquerade as the supplied msqUser
      */
-    public static function canMasqueradeAs(UserInterface $user, UserInterface $msqUser): bool
+    public static function canMasqueradeAs(User $user, User $msqUser): bool
     {
         $factory = Factory::instance();
-        if (!$msqUser->isActive()) return false;
-        if ($user->getUserId() == $msqUser->getUserId()) return false;
+        if (!$msqUser->active) return false;
+        if ($user->userId == $msqUser->userId) return false;
 
         $msqArr = $factory->getSession()->get(static::SID);
         if (is_array($msqArr)) {    // Check if we are already masquerading as this user in the queue
             foreach ($msqArr as $data) {
-                if ($data['userId'] == $msqUser->getUserId()) return false;
+                if ($data['userId'] == $msqUser->userId) return false;
             }
         }
         return $user->canMasqueradeAs($msqUser);
@@ -92,7 +91,7 @@ class Masquerade
     /**
      * Get the user who is masquerading, ignoring any nested masqueraded users
      */
-    public static function getMasqueradingUser(): ?UserInterface
+    public static function getMasqueradingUser(): ?User
     {
         $session = Factory::instance()->getSession();
         $user = null;

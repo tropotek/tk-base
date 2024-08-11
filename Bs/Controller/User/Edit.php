@@ -27,7 +27,7 @@ class Edit extends ControllerDomInterface
 
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();
-        $this->getUser()->setType($type);
+        $this->getUser()->type = $type;
 
         if ($request->query->getInt('userId')) {
             $this->user = $this->getFactory()->getUserMap()->find($request->query->getInt('userId'));
@@ -47,10 +47,10 @@ class Edit extends ControllerDomInterface
         if ($request->query->get('cv')) {
             $newType = trim($request->query->get('cv'));
             if ($newType == User::TYPE_STAFF) {
-                $this->getUser()->setType(User::TYPE_STAFF);
+                $this->getUser()->type = User::TYPE_STAFF;
                 Alert::addSuccess('User now set to type STAFF, please select and save the users new permissions.');
             } else if ($newType == User::TYPE_MEMBER) {
-                $this->getUser()->setType(User::TYPE_MEMBER);
+                $this->getUser()->type = User::TYPE_MEMBER;
                 Alert::addSuccess('User now set to type MEMBER.');
             }
             $this->getUser()->save();

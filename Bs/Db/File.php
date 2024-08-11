@@ -69,12 +69,10 @@ class File extends Model
             $obj->setForeignModel($model);
         }
         if (!$userId) {
-            if ($model && method_exists($model, 'getUserId')) {
-                $userId = $model->getUserId();
-            } elseif ($model && property_exists($model, 'userId')) {
+            if ($model && property_exists($model, 'userId')) {
                 $userId = $model->userId;
             } else if ($obj->getFactory()->getAuthUser()) {
-                $userId = $obj->getFactory()->getAuthUser()->getId();
+                $userId = $obj->getFactory()->getAuthUser()->userId;
             }
         }
         $obj->setUserId($userId);

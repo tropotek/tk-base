@@ -2,7 +2,7 @@
 namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
-use Bs\Db\UserInterface;
+use Bs\Db\User;
 use Dom\Template;
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +15,7 @@ class TailLog extends ControllerDomInterface
     public function doDefault(Request $request): void
     {
         $this->getPage()->setTitle('Tail Log');
-        $this->setAccess(UserInterface::PERM_ADMIN);
+        $this->setAccess(User::PERM_ADMIN);
 
         $this->logPath = ini_get('error_log');
 
