@@ -13,7 +13,7 @@ trait UserTrait
     public function getUser(): ?User
     {
         if (!$this->_user) {
-            $this->_user = Factory::instance()->getUserMap()->find($this->userId);
+            $this->_user = User::find($this->userId);
         }
         return $this->_user;
     }

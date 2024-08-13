@@ -9,6 +9,7 @@ use Tk\Form;
 use Tk\Traits\SystemTrait;
 use Tk\Uri;
 use Tt\DbFilter;
+use Tt\Table\Action;
 use Tt\Table\DomRenderer;
 use Tk\Form\Renderer\Dom\Renderer;
 
@@ -37,10 +38,37 @@ class Table extends \Tt\Table
 
     }
 
+    /**
+     * Override this method to add your cells, filters, actions
+     */
     public function init(Request $request): static
     {
-        $values = [];
-        if (!is_null($this->form)) {
+        return $this;
+    }
+
+    public function execute(Request $request): static
+    {
+        // add reset table session action
+        // todo: not working for some reason????
+        if ($this->getConfig()->isDebug()) {
+            $this->addResetAction();
+        }
+
+        // init cells, filters and actions
+        $this->init($request);
+
+        // init filter from request if not already done
+        $this->initForm($request);
+
+        // execute actions and get orderby from request
+        parent::execute($request);
+
+        return $this;
+    }
+
+    public function initForm(Request $request): static
+    {
+        if (!(is_null($this->form) || $this->form->getField('filter'))) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
                 $_SESSION[$this->makeRequestKey('filter')] = $values;
@@ -52,22 +80,14 @@ class Table extends \Tt\Table
             }))->addCss('btn-outline-secondary');
 
             $this->form->execute($request->request->all());
-            if (!$this->form->isSubmitted() && isset($_SESSION[$this->makeRequestKey('filter')])) {
-                $this->form->setFieldValues($_SESSION[$this->makeRequestKey('filter')]);
-            }
-            $values = $this->form->getFieldValues();
-
         }
 
-        // create DbFilter
-        $this->dbFilter = DbFilter::createFromTable($values, $this);
+        if (!$this->form->isSubmitted() && isset($_SESSION[$this->makeRequestKey('filter')])) {
+            $this->form->setFieldValues($_SESSION[$this->makeRequestKey('filter')]);
+        }
 
-        return $this;
-    }
-
-    public function execute(Request $request): static
-    {
-        parent::execute($request);
+        // init DbFilter
+        $this->dbFilter = DbFilter::createFromTable($this->form->getFieldValues(), $this);
 
         return $this;
     }
@@ -88,12 +108,15 @@ class Table extends \Tt\Table
     public function __makeTemplate(): ?Template
     {
         $html = <<<HTML
-<div class="tk-table-panel" var="table"></div>
+<div class="bs-table-wrap" var="table"></div>
 HTML;
         return $this->loadTemplate($html);
     }
 
-    public function getFilterForm(): Form
+    /**
+     * get the filter form, create instance if null
+     */
+    public function getForm(): Form
     {
         if (!$this->form) {
             $this->form = new Form($this->getId().'f');
@@ -103,6 +126,11 @@ HTML;
             $this->formRenderer = new Renderer($this->form, $tplFile);
         }
         return $this->form;
+    }
+
+    public function getFormRenderer(): ?Renderer
+    {
+        return $this->formRenderer;
     }
 
     public function getRows(): ?array
@@ -126,9 +154,31 @@ HTML;
         return $this->renderer;
     }
 
-    public function getFormRenderer(): ?Renderer
+    public function addResetAction(): Action
     {
-        return $this->formRenderer;
+        return $this->appendAction('reset')
+            ->addOnExecute(function (Action $action, Request $request) {
+                $val = $action->getTable()->makeRequestKey($action->getName());
+                $action->setActive($request->get($action->getName(), '') == $val);
+                if (!$action->isActive()) return;
+                unset($_SESSION[$this->makeRequestKey('filter')]);
+                Uri::create()
+                    ->remove($action->getTable()->makeRequestKey(\Tt\Table::PARAM_PAGE))
+                    ->remove($this->makeRequestKey(\Tt\Table::PARAM_LIMIT))
+                    ->remove($this->makeRequestKey(\Tt\Table::PARAM_ORDERBY))
+                    ->redirect();
+            })
+            ->addOnShow(function (Action $action) {
+                $val = $action->getTable()->makeRequestKey($action->getName());
+                return <<<HTML
+                        <button type="submit" name="{$action->getName()}" value="{$val}"
+                            class="tk-action-reset-tbl btn btn-sm btn-light"
+                            title="Reset table session"
+                            data-confirm="Are you sure you want to reset the Table`s session?">
+                            <i class="fa fa-fw fa-retweet"></i>
+                        </button>
+                    HTML;
+            });
     }
 
 }

@@ -3,16 +3,18 @@ namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
+use Bs\Table;
 use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
+use Tt\Db;
 
 class Manager extends ControllerDomInterface
 {
-    use ManagerTrait;
 
-    protected string $type = '';
+    protected ?Table $table = null;
+    protected string $type  = '';
 
     public function doByType(Request $request, string $type): void
     {
@@ -35,19 +37,18 @@ class Manager extends ControllerDomInterface
 
         $this->getPage()->setTitle(ucfirst($this->type ?: 'User') . ' Manager');
 
-        // Get the form template
-        $this->setTable(new \Bs\Table\User());
-        $this->getTable()->setType($this->type);
-        $this->getTable()->init();
+        // init the user table
+        $this->table = new \Bs\Table\User();
+        $this->table->setType($this->type);
+        $this->table->execute($request);
 
-        $filter = [];
+        // Set the table rows
+        $filter = $this->table->getDbFilter();
         if ($this->type) {
-            $filter['type'] = $this->type;
+            $filter->set('type', $this->type);
         }
-        $this->getTable()->findList($filter, $this->getTable()->getTool('name_last'));
-
-        $this->getTable()->execute($request);
-
+        $rows = User::findFiltered($filter);
+        $this->table->setRows($rows, Db::getLastStatement()->getTotalRows());
     }
 
     public function show(): ?Template
@@ -65,7 +66,7 @@ class Manager extends ControllerDomInterface
             $template->setVisible('create-staff', false);
         }
 
-        $template->appendTemplate('content', $this->getTable()->show());
+        $template->appendTemplate('content', $this->table->show());
 
         return $template;
     }

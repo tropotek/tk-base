@@ -2,7 +2,9 @@
 
 namespace Bs\Form;
 
-
+/**
+ * @deprecated To be removed
+ */
 trait EditTrait
 {
     protected ?EditInterface $form = null;

@@ -1,114 +1,129 @@
 <?php
 namespace Bs\Table;
 
+use Bs\Table;
 use Bs\Util\Masquerade;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
-use Tk\Db\Mapper\Result;
-use Tk\Db\Tool;
-use Tk\Ui\Link;
+use Tk\Form\Field\Input;
+use Tk\Form\Field\Select;
 use Tk\Uri;
-use Tk\Form\Field;
-use Tk\Table\Cell;
-use Tk\Table\Action;
+use Tt\Db;
+use Tt\Table\Action\Csv;
+use Tt\Table\Action\Delete;
+use Tt\Table\Cell;
+use Tt\Table\Cell\RowSelect;
 
-class User extends ManagerInterface
+class User extends Table
 {
     protected string $type = '';
 
 
-    protected function initCells(): void
+    public function init(Request $request): static
     {
-        $this->appendCell(new Cell\RowSelect('userId'));
+        $rowSelect = RowSelect::create('id', 'userId');
+        $this->appendCell($rowSelect);
 
-        $this->appendCell(new Cell\Text('actions'))
-            ->addOnShow(function (Cell\Text $cell) {
-                $cell->addCss('text-nowrap text-center');
-                $obj = $cell->getRow()->getData();
+        $this->appendCell('actions')
+            ->addCss('text-nowrap text-center')
+            ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
+                $edit = Uri::create('/user/'.$user->type.'Edit', ['userId' => $user->userId]);
+                $msq  = Uri::create()->set(Masquerade::QUERY_MSQ, $user->userId);
+                $del  = Uri::create()->set('del', $user->userId);
 
-                $template = $cell->getTemplate();
-                $btn = new Link('Edit');
-                $btn->setText('');
-                $btn->setIcon('fa fa-edit');
-                $btn->addCss('btn btn-xs btn-primary');
-                $btn->setUrl(Uri::create('/user/'.$obj->type.'Edit')->set('userId', $obj->userId));
-                $template->appendTemplate('td', $btn->show());
-                $template->appendHtml('td', '&nbsp;');
-
-                $btn = new Link('Masquerade');
-                $btn->setText('');
-                $btn->setIcon('fa fa-user-secret');
-                $btn->addCss('btn btn-xs btn-outline-dark');
-                $btn->setUrl(Uri::create()->set(Masquerade::QUERY_MSQ, $obj->userId));
-                $btn->setAttr('data-confirm', 'Are you sure you want to log-in as user \''.$obj->getName().'\'');
-                $template->appendTemplate('td', $btn->show());
-                $template->appendHtml('td', '&nbsp;');
-
-                $btn = new Link('Delete');
-                $btn->setText('');
-                $btn->setIcon('fa fa-trash');
-                $btn->addCss('btn btn-xs btn-danger');
-                $btn->setUrl(Uri::create()->set('del', $obj->userId));
-                $btn->setAttr('data-confirm', 'Are you sure you want to delete \''.$obj->getName().'\'');
-                $template->appendTemplate('td', $btn->show());
-
+                return <<<HTML
+                    <a class="btn btn-primary" href="$edit" title="Edit"><i class="fa fa-fw fa-edit"></i></a> &nbsp;
+                    <a class="btn btn-outline-dark" href="$msq" title="Masquerade" data-confirm="Are you sure you want to log-in as user {$user->getName()}"><i class="fa fa-fw fa-user-secret"></i></a> &nbsp;
+                    <a class="btn btn-danger" href="$del" title="Delete" data-confirm="Are you sure you want to delete this record"><i class="fa fa-fw fa-trash"></i></a>
+                HTML;
             });
 
-        $this->appendCell(new Cell\Text('username'))
-            ->addOnShow(function (Cell\Text $cell, mixed $value) {
-                    /** @var \Bs\Db\User $obj */
-                    $obj = $cell->getRow()->getData();
-                    $cell->setUrl(Uri::create('/user/'.$obj->type.'Edit')->set('userId', $obj->userId));
-                })
-            ->setAttr('style', 'width: 100%;');
+        $this->appendCell('username')
+            ->addHeaderCss('max-width')
+            ->setSortable(true)
+            ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
+                $url = Uri::create('/user/'.$user->type.'Edit', ['userId' => $user->userId]);
+                return sprintf('<a href="%s">%s</a>', $url, $user->username);
+            });
 
-        $this->appendCell(new Cell\Text('name'))->setOrderByName('name_last');
+        $this->appendCell('nameFirst')
+            ->setSortable(true);
+
+        $this->appendCell('nameLast')
+            ->setSortable(true);
 
         if (!$this->getType()) {
-            $this->appendCell(new Cell\Text('type'));
+            $this->appendCell('type')
+                ->setSortable(true);
         }
 
         if ($this->getType() != \Bs\Db\User::TYPE_MEMBER) {
-            $this->appendCell(new Cell\Text('permissions'))
-                ->addOnShow(function (Cell\Text $cell, mixed $value) {
-                    /** @var \Bs\Db\User $obj */
-                    $obj = $cell->getRow()->getData();
-                    if ($obj->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
-                        $list = $obj->getAvailablePermissions();
+            $this->appendCell('permissions')
+                ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
+                    if ($user->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
+                        $list = $user->getAvailablePermissions();
                         return $list[\Bs\Db\User::PERM_ADMIN];
                     }
-                    $list = array_filter($obj->getAvailablePermissions(), function ($k) use ($obj) {
-                        return $obj->hasPermission($k);
+                    $list = array_filter($user->getAvailablePermissions(), function ($k) use ($user) {
+                        return $user->hasPermission($k);
                     }, ARRAY_FILTER_USE_KEY);
                     return implode(', <br/>', $list);
                 });
         }
 
-        $this->appendCell(new Cell\Text('email'))
-            ->addOnShow(function (Cell\Text $cell) {
-                /** @var \Bs\Db\User $obj */
-                $obj = $cell->getRow()->getData();
-                $cell->setUrl('mailto:'.$obj->email);
+        $this->appendCell('email')
+            ->setSortable(true)
+            ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
+                return sprintf('<a href="mailto:%s">%s</a>', $user->email, $user->email);
             });
-        $this->appendCell(new Cell\Text('active'));
-        //$this->appendCell(new Cell\Date('modified'));
-        $this->appendCell(new Cell\Date('created'));
+
+        $this->appendCell('active')
+            ->setSortable(true)
+            ->addOnValue('\Tt\Table\Type\Boolean::onValue');
+
+        $this->appendCell('created')
+            ->setSortable(true)
+            ->addOnValue('\Tt\Table\Type\DateFmt::onValue');
 
 
-        // Table filters
-        $this->getFilterForm()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
+        // Add Filter Fields
+        $this->getForm()->appendField(new Input('search'))
+            ->setAttr('placeholder', 'Search: uid, name, email, username');
+
         if (!$this->getType()) {
-            // TODO: Will need to get this list from a `User` or `Permission` static class
             $list = array_flip(\Bs\Db\User::TYPE_LIST);
-            $this->getFilterForm()->appendField(new Field\Select('type', $list))->prependOption('-- Type --', '');
+            $this->getForm()->appendField(new Select('type', $list))->prependOption('-- Type --', '');;
         }
 
-        // Table Actions
-        $this->appendAction(new Action\Delete('delete', 'userId'));
-        $this->appendAction(new Action\Csv('csv', 'userId'))->addExcluded('actions');
+        // init filter fields for actions to access to the filter values
+        $this->initForm($request);
 
-        //$this->resetTableSession();
+        // Add Table actions
+        // todo: I think we should remove delete user action, create a cmd action to delete and clean users
+        //       allow site users to make a user active/inactive only
+        $this->appendAction(Delete::create($rowSelect))
+            ->addOnDelete(function(Delete $action, array $selected) {
+                foreach ($selected as $user_id) {
+                    Db::delete('user', compact('user_id'));
+                }
+            });
+
+        $this->appendAction(Csv::create($rowSelect))
+            ->addOnCsv(function(Csv $action, array $selected) {
+                $action->setExcluded(['id', 'actions', 'permissions']);
+                $action->getTable()->getCell('username')->getOnValue()->reset();
+                $action->getTable()->getCell('email')->getOnValue()->reset();    // remove html from cell
+                $filter = $action->getTable()->getDbFilter();
+                if (count($selected)) {
+                    $rows = \Bs\Db\User::findFiltered($filter);
+                } else {
+                    $rows = \Bs\Db\User::findFiltered($filter->resetLimits());
+                }
+                return $rows;
+            });
+
+        return $this;
     }
 
     public function execute(Request $request): static
@@ -126,19 +141,20 @@ class User extends ManagerInterface
         return $this;
     }
 
-    public function findList(array $filter = [], ?Tool $tool = null): null|array|Result
-    {
-        if (!$tool) $tool = $this->getTool();
-        $filter = array_merge($this->getFilterForm()->getFieldValues(), $filter);
-        $list = $this->getFactory()->getUserMap()->findFiltered($filter, $tool);
-        $this->setList($list);
-        return $list;
-    }
+//    public function findList(array $filter = [], ?Tool $tool = null): null|array|Result
+//    {
+//        if (!$tool) $tool = $this->getTool();
+//        $filter = array_merge($this->getFilterForm()->getFieldValues(), $filter);
+//        //$list = $this->getFactory()->getUserMap()->findFiltered($filter, $tool);
+//        $list = \Bs\Db\User::findFiltered($filter);
+//        $this->setList($list);
+//        return $list;
+//    }
 
     private function doDelete($userId): void
     {
         /** @var \Bs\Db\User $user */
-        $user = $this->getFactory()->getUserMap()->find($userId);
+        $user = \Bs\Db\User::find($userId);
         $user?->delete();
 
         Alert::addSuccess('User removed successfully.');
@@ -148,7 +164,7 @@ class User extends ManagerInterface
     private function doMsq($userId): void
     {
         /** @var \Bs\Db\User $msqUser */
-        $msqUser = $this->getFactory()->getUserMap()->find($userId);
+        $msqUser = \Bs\Db\User::find($userId);
         if ($msqUser && Masquerade::masqueradeLogin($this->getFactory()->getAuthUser(), $msqUser)) {
             Alert::addSuccess('You are now logged in as user ' . $msqUser->username);
             if ($msqUser->getHomeUrl()) {
@@ -161,13 +177,13 @@ class User extends ManagerInterface
         Uri::create()->remove(Masquerade::QUERY_MSQ)->redirect();
     }
 
-    public function show(): ?Template
-    {
-        $renderer = $this->getTableRenderer();
-        $this->getRow()->addCss('text-nowrap');
-        $this->showFilterForm();
-        return $renderer->show();
-    }
+//    public function show(): ?Template
+//    {
+//        $renderer = $this->getTableRenderer();
+//        $this->getRow()->addCss('text-nowrap');
+//        $this->showFilterForm();
+//        return $renderer->show();
+//    }
 
     public function getType(): string
     {

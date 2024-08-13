@@ -1,25 +1,28 @@
 <?php
 namespace Bs\Form;
 
+use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
-use Tk\Db\Mapper\Model;
-use Tk\Form;
-use Tk\Form\Field\Input;
+use Tk\Form\Action\Link;
+use Tk\Form\Action\SubmitExit;
 use Tk\Form\Field\Checkbox;
 use Tk\Form\Field\Hidden;
+use Tk\Form\Field\Input;
+use Tk\Form\Field\Password;
+use Tk\Form\Field\Select;
 use Tk\Uri;
 
-class Profile extends EditInterface
+class Profile extends Form
 {
 
-    protected function initFields(): void
+    public function init(): static
     {
         $tab = 'Details';
         $this->getForm()->appendField(new Hidden('userId'))->setGroup($tab);
 
         $list = \Bs\Db\User::getTitleList();
-        $this->getForm()->appendField(new Form\Field\Select('nameTitle', $list))
+        $this->getForm()->appendField(new Select('nameTitle', $list))
             ->setGroup($tab)
             ->setLabel('Title')
             ->prependOption('', '');
@@ -55,39 +58,45 @@ class Profile extends EditInterface
 
         if ($this->getConfig()->get('user.profile.password')) {
             $tab = 'Password';
-            $this->getForm()->appendField(new Form\Field\Password('currentPass'))->setGroup($tab)
+            $this->getForm()->appendField(new Password('currentPass'))->setGroup($tab)
                 ->setLabel('Current Password')
                 ->setAttr('autocomplete', 'new-password');
-            $this->getForm()->appendField(new Form\Field\Password('newPass'))->setGroup($tab)
+            $this->getForm()->appendField(new Password('newPass'))->setGroup($tab)
                 ->setLabel('New Password')
                 ->setAttr('autocomplete', 'new-password');
-            $this->getForm()->appendField(new Form\Field\Password('confPass'))->setGroup($tab)
+            $this->getForm()->appendField(new Password('confPass'))->setGroup($tab)
                 ->setLabel('Confirm Password')
                 ->setAttr('autocomplete', 'new-password');
         }
 
         //$this->getForm()->appendField(new Checkbox('active', ['Enable User Login' => 'active']))->setDisabled();
-        //$this->getForm()->appendField(new Form\Field\Textarea('notes'))->setGroup($group);
+        //$this->getForm()->appendField(new Textarea('notes'))->setGroup($group);
 
-        $this->getForm()->appendField(new Form\Action\SubmitExit('save', [$this, 'onSubmit']));
-        $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
+        $this->getForm()->appendField(new SubmitExit('save', [$this, 'onSubmit']));
+        $this->getForm()->appendField(new Link('cancel', $this->getFactory()->getBackUrl()));
 
+        return $this;
     }
 
     public function execute(array $values = []): static
     {
-        $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
+        $this->init();
+
+        // Load form with object values
+        $load = $this->form->unmapValues($this->getUser());
         $load['userId'] = $this->getUser()->userId;
         $load['perm'] = $this->getUser()->getPermissionList();
-        $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
+        $this->form->setFieldValues($load);
 
         parent::execute($values);
+
         return $this;
     }
 
-    public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
+    public function onSubmit(Form $form, SubmitExit $action): void
     {
-        $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
+        // set object values from fields
+        $form->mapValues($this->getUser());
 
         if ($form->getField('currentPass') && $form->getFieldValue('currentPass')) {
             if (!password_verify($form->getFieldValue('currentPass'), $this->getUser()->password)) {
@@ -133,13 +142,15 @@ class Profile extends EditInterface
 
         $this->getForm()->getField('username')->addFieldCss('col-6');
         $this->getForm()->getField('email')->addFieldCss('col-6');
-        $renderer = $this->getFormRenderer();
-        $renderer->addFieldCss('mb-3');
+        $renderer = $this->getRenderer();
+        $renderer?->addFieldCss('mb-3');
         return $renderer->show();
     }
 
-    public function getUser(): \Bs\Db\User|Model
+    public function getUser(): \Bs\Db\User
     {
-        return $this->getModel();
+        /** @var \Bs\Db\User $obj */
+        $obj = $this->getModel();
+        return $obj;
     }
 }

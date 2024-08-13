@@ -2,6 +2,9 @@
 
 namespace Bs\Table;
 
+/**
+ * @deprecated To be removed
+ */
 trait ManagerTrait
 {
     protected ?ManagerInterface $table = null;

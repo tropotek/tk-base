@@ -2,7 +2,8 @@
 namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
-use Bs\Form\EditTrait;
+use Bs\Db\User;
+use Bs\Form;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -11,8 +12,8 @@ use Tk\Uri;
 
 class Register extends ControllerDomInterface
 {
-    use EditTrait;
 
+    protected ?Form $form = null;
 
     public function doDefault(Request $request): void
     {
@@ -23,8 +24,8 @@ class Register extends ControllerDomInterface
             Uri::create('/home')->redirect();
         }
 
-        $this->setForm(new \Bs\Form\Register());
-        $this->getForm()->init()->execute($request->request->all());
+        $this->form = new \Bs\Form\Register();
+        $this->form->execute($request->request->all());
 
     }
 
@@ -37,7 +38,7 @@ class Register extends ControllerDomInterface
             Uri::create('/home')->redirect();
         }
 
-        //$token = $request->get('t');        // Bug in here that replaces + with a space on POSTS
+        //$token = $request->get('t');        // Bug: replaces + with a space on POSTS
         $token = $_REQUEST['t'] ?? '';
         $arr = Encrypt::create($this->getConfig()->get('system.encrypt'))->decrypt($token);
         $arr = unserialize($arr);
@@ -46,7 +47,7 @@ class Register extends ControllerDomInterface
             Uri::create('/home')->redirect();
         }
 
-        $user = $this->getFactory()->getUserMap()->findByHash($arr['h'] ?? '');
+        $user = User::findByHash($arr['h'] ?? '');
         if (!$user) {
             Alert::addError('Invalid user registration');
             Uri::create('/home')->redirect();

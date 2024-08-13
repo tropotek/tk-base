@@ -3,7 +3,6 @@ namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
-use Bs\Form\EditTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -11,16 +10,14 @@ use Tk\Uri;
 
 class Login extends ControllerDomInterface
 {
-    use EditTrait;
+    protected ?\Bs\Form\Login $form = null;
 
     public function doLogin(Request $request): void
     {
         $this->getPage()->setTitle('Login');
 
-        $this->setForm(new \Bs\Form\Login());
-        $this->getForm()->init();
-        $this->getForm()->execute($request->request->all());
-
+        $this->form = new \Bs\Form\Login();
+        $this->form->execute($request->request->all());
     }
 
     public function doLogout(Request $request): void

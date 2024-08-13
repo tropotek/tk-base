@@ -3,40 +3,40 @@ namespace Bs\Form;
 
 use Dom\Template;
 use Tk\Alert;
-use Tk\Encrypt;
-use Tk\Form;
-use Tk\Form\Field;
-use Tk\Form\Action;
+use Bs\Form;
+use Tk\Form\Action\Submit;
+use Tk\Form\Field\Html;
+use Tk\Form\Field\Input;
+use Tk\Form\Field\Password;
 use Tk\Uri;
 
-class Register extends EditInterface
+class Register extends Form
 {
 
-
-    protected function initFields(): void
+    public function init(): static
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
         $this->getSession()->set('recover', time());
 
-        $this->form->appendField(new Field\Input('name'))
+        $this->appendField(new Input('name'))
             ->setRequired()
             ->setAttr('placeholder', 'Name');
 
-        $this->form->appendField(new Field\Input('email'))
+        $this->appendField(new Input('email'))
             ->setRequired()
             ->setAttr('placeholder', 'Email');
 
-        $this->form->appendField(new Field\Input('username'))
+        $this->appendField(new Input('username'))
             ->setAttr('placeholder', 'Username')
             ->setAttr('autocomplete', 'off')
             ->setRequired();
 
-        $this->form->appendField(new Field\Password('password'))
+        $this->appendField(new Password('password'))
             ->setAttr('placeholder', 'Password')
             ->setAttr('autocomplete', 'off')
             ->setRequired();
 
-        $this->form->appendField(new Field\Password('confPassword'))
+        $this->appendField(new Password('confPassword'))
             ->setLabel('Password Confirm')
             ->setAttr('placeholder', 'Password Confirm')
             ->setAttr('autocomplete', 'off')
@@ -45,32 +45,36 @@ class Register extends EditInterface
         $html = <<<HTML
             <a href="/recover">Recover</a> | <a href="/login">Login</a>
         HTML;
-        $this->getForm()->appendField(new Field\Html('links', $html))->setLabel('')->addFieldCss('text-center');
-        $this->getForm()->appendField(new Action\Submit('register', [$this, 'onSubmit']));
+        $this->getForm()->appendField(new Html('links', $html))->setLabel('')->addFieldCss('text-center');
+        $this->getForm()->appendField(new Submit('register', [$this, 'onSubmit']));
 
+        return $this;
     }
 
     public function execute(array $values = []): static
     {
+        $this->init();
+
         $load = [];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
         return $this;
     }
 
-    public function onSubmit(Form $form, Action\ActionInterface $action): void
+    public function onSubmit(Form $form, Submit $action): void
     {
         if (!$this->getRegistry()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
         }
 
-        $user = $this->getFactory()->createUser();
+        $user = \Bs\Db\User::create();
         $user->active = false;
         $user->notes = 'pending activation';
         $user->type = \Bs\Db\User::TYPE_MEMBER;
 
-        $user->getMapper()->getFormMap()->loadObject($user, $form->getFieldValues());
+        // set object values from fields
+        $form->mapValues($user);
 
         $token = $this->getSession()->get('recover', 0);
         $this->getSession()->remove('recover');
@@ -101,31 +105,7 @@ class Register extends EditInterface
         $user->password = \Bs\Db\User::hashPassword($user->password);
         $user->save();
 
-        // send email to user
-        $content = <<<HTML
-            <h2>Account Activation.</h2>
-            <p>
-              Welcome {name}
-            </p>
-            <p>
-              Please follow the link to activate your account and finish the user registration.<br/>
-              <a href="{activate-url}" target="_blank">{activate-url}</a>
-            </p>
-            <p><small>Note: If you did not initiate this account creation you can safely disregard this message.</small></p>
-        HTML;
-
-        $message = $this->getFactory()->createMessage();
-        $message->set('content', $content);
-        $message->setSubject($this->getRegistry()->getSiteName() . ' Account Registration');
-        $message->addTo($user->email);
-        $message->set('name', $user->getName());
-
-        $hashToken = Encrypt::create($this->getConfig()->get('system.encrypt'))
-            ->encrypt(serialize(['h' => $user->getHash(), 't' => time()]));
-        $url = Uri::create('/registerActivate')->set('t', $hashToken);
-        $message->set('activate-url', $url->toString());
-
-        $this->getFactory()->getMailGateway()->send($message);
+        \Bs\Email\User::sendRegister($user);
 
         Alert::addSuccess('Please check your email for instructions to activate your account.');
         Uri::create('/home')->redirect();
@@ -133,8 +113,7 @@ class Register extends EditInterface
 
     public function show(): ?Template
     {
-        $renderer = $this->getFormRenderer();
-        return $renderer->show();
+        return $this->getRenderer()?->show();
     }
 
 }

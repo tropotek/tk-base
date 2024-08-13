@@ -2,23 +2,23 @@
 namespace Bs\Form;
 
 use Bs\Db\User;
-use Dom\Template;
+use Bs\Form;
 use Tk\Alert;
-use Tk\Form;
-use Tk\Form\Field;
-use Tk\Form\Action;
+use Tk\Form\Action\Submit;
+use Tk\Form\Field\Html;
+use Tk\Form\Field\Input;
 use Tk\Uri;
 
-class Recover extends EditInterface
+class Recover extends Form
 {
 
-    protected function initFields(): void
+    public function init(): static
     {
         // logout any existing user
         User::logout();
         $this->getSession()->set('recover', time());
 
-        $this->getForm()->appendField(new Field\Input('username'))
+        $this->getForm()->appendField(new Input('username'))
             ->setAttr('autocomplete', 'off')
             ->setAttr('placeholder', 'Username')
             ->setRequired()
@@ -33,20 +33,24 @@ class Recover extends EditInterface
             HTML;
 
         }
-        $this->getForm()->appendField(new Field\Html('links', $html))->setLabel('')->addFieldCss('text-center');
-        $this->getForm()->appendField(new Action\Submit('recover', [$this, 'onSubmit']));
+        $this->getForm()->appendField(new Html('links', $html))->setLabel('')->addFieldCss('text-center');
+        $this->getForm()->appendField(new Submit('recover', [$this, 'onSubmit']));
 
+        return $this;
     }
 
     public function execute(array $values = []): static
     {
+        $this->init();
+
         $load = [];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
+
         return $this;
     }
 
-    public function onSubmit(Form $form, Action\ActionInterface $action): void
+    public function onSubmit(Form $form, Submit $action): void
     {
         if (!$form->getFieldValue('username')) {
             $form->addError('Please enter a valid username.');
@@ -60,25 +64,19 @@ class Recover extends EditInterface
             return;
         }
 
-        $user = $this->getFactory()->getUserMap()->findByUsername(strtolower($form->getFieldValue('username')));
+        $user = User::findByUsername(strtolower($form->getFieldValue('username')));
         if (!$user) {
             $form->addFieldError('username', 'Please enter a valid username.');
             return;
         }
 
-        if ($user->sendRecoverEmail()) {
+        if (\Bs\Email\User::sendRecovery($user)) {
             Alert::addSuccess('Please check your email for instructions to recover your account.');
         } else {
             Alert::addWarning('Recovery email failed to send. Please <a href="/contact">contact us.</a>');
         }
 
         Uri::create('/home')->redirect();
-    }
-
-    public function show(): ?Template
-    {
-        $renderer = $this->getFormRenderer();
-        return $renderer->show();
     }
 
 }

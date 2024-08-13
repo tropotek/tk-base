@@ -2,7 +2,6 @@
 namespace Bs\Console;
 
 use Bs\Db\User;
-use Bs\Db\UserMap;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -31,7 +30,7 @@ class Password extends Console
 
         $username = $input->getArgument('username');
 
-        $user = $this->getFactory()->getUserMap()->findByUsername($username);
+        $user = User::findByUsername($username);
         if (!$user) {
             $this->writeError('Error: No valid user found.');
             return self::FAILURE;

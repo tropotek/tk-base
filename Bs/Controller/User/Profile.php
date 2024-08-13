@@ -10,7 +10,8 @@ use Tk\Uri;
 
 class Profile extends ControllerDomInterface
 {
-    use EditTrait;
+
+    protected ?\Bs\Form\Profile $form = null;
 
 
     public function doDefault(Request $request): void
@@ -23,8 +24,8 @@ class Profile extends ControllerDomInterface
         }
 
         // Get the form template
-        $this->setForm(new \Bs\Form\Profile($this->getFactory()->getAuthUser()));
-        $this->getForm()->init()->execute($request->request->all());
+        $this->form = new \Bs\Form\Profile($this->getFactory()->getAuthUser());
+        $this->form->execute($request->request->all());
 
     }
 

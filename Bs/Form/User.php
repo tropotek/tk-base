@@ -1,52 +1,55 @@
 <?php
 namespace Bs\Form;
 
+use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
-use Tk\Db\Mapper\Model;
-use Tk\Form;
+use Tk\Form\Action\Link;
+use Tk\Form\Action\SubmitExit;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Checkbox;
 use Tk\Form\Field\Hidden;
+use Tk\Form\Field\Select;
+use Tk\Form\Field\Textarea;
 use Tk\Uri;
 
-class User extends EditInterface
+class User extends Form
 {
     protected string $type = \Bs\Db\User::TYPE_MEMBER;
 
 
-    protected function initFields(): void
+    public function init(): static
     {
         $group = 'Details';
-        $this->getForm()->appendField(new Hidden('userId'))->setGroup($group);
+        $this->appendField(new Hidden('userId'))->setGroup($group);
 
         $list = \Bs\Db\User::getTitleList();
-        $this->getForm()->appendField(new Form\Field\Select('nameTitle', $list))
+        $this->appendField(new Select('nameTitle', $list))
             ->setGroup($group)
             ->setLabel('Title')
             ->prependOption('', '');
 
-        $this->getForm()->appendField(new Input('nameFirst'))
+        $this->appendField(new Input('nameFirst'))
             ->setGroup($group)
             ->setLabel('First Name')
             ->setRequired();
 
-        $this->getForm()->appendField(new Input('nameLast'))
+        $this->appendField(new Input('nameLast'))
             ->setGroup($group)
             ->setLabel('Last Name');
 
-//        $this->getForm()->appendField(new Input('nameDisplay'))
+//        $this->appendField(new Input('nameDisplay'))
 //            ->setGroup($group)
 //            ->setLabel('Preferred Name');
 
-        $l1 = $this->getForm()->appendField(new Input('username'))->setGroup($group)
+        $l1 = $this->appendField(new Input('username'))->setGroup($group)
             ->setRequired();
 
-        $l2 = $this->getForm()->appendField(new Input('email'))->setGroup($group)
+        $l2 = $this->appendField(new Input('email'))->setGroup($group)
             ->setRequired();
 
         // Only input lock existing user
-        if ($this->getUser()->getId()) {
+        if ($this->getUser()->userId) {
             $l1->addCss('tk-input-lock');
             $l2->addCss('tk-input-lock');
         }
@@ -54,43 +57,52 @@ class User extends EditInterface
         if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(\Bs\Db\User::PERM_SYSADMIN)) {
 
             $list = array_flip($this->getUser()->getAvailablePermissions());
-            $field = $this->getForm()->appendField(new Checkbox('perm', $list))
+            $field = $this->appendField(new Checkbox('perm', $list))
                 ->setLabel('Permissions')
                 ->setGroup('Permissions');
             if ($this->getUser()->username == 'admin') {   // disable permission change for admin user
                 $field->setDisabled();
             }
 
-            $this->getForm()->appendField(new Checkbox('active', ['Enable User Login' => 'active']))
+            $this->appendField(new Checkbox('active', ['Enable User Login' => 'active']))
                 ->setGroup($group);
         }
 
-        $this->getForm()->appendField(new Form\Field\Textarea('notes'))
+        $this->appendField(new Textarea('notes'))
             ->setGroup($group);
 
-        $this->getForm()->appendField(new Form\Action\SubmitExit('save', [$this, 'onSubmit']));
-        $this->getForm()->appendField(new Form\Action\Link('cancel', $this->getFactory()->getBackUrl()));
 
+        // Form Actions
+        $this->appendField(new SubmitExit('save', [$this, 'onSubmit']));
+        $this->appendField(new Link('cancel', $this->getFactory()->getBackUrl()));
+
+        return $this;
     }
 
     public function execute(array $values = []): static
     {
-        $load = $this->getUser()->getMapper()->getFormMap()->getArray($this->getUser());
+        $this->init();
+
+        // Load form with object values
+        $load = $this->form->unmapValues($this->getUser());
         $load['userId'] = $this->getUser()->userId;
         $load['perm'] = $this->getUser()->getPermissionList();
-        $this->getForm()->setFieldValues($load); // Use form data mapper if loading objects
+        $this->form->setFieldValues($load);
 
         parent::execute($values);
+
         return $this;
     }
 
-    public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
+    public function onSubmit(Form $form, SubmitExit $action): void
     {
         if ($this->getUser()->username == 'admin') {
             $form->removeField('perm');
         }
 
-        $this->getUser()->getMapper()->getFormMap()->loadObject($this->getUser(), $form->getFieldValues());
+        // set object values from fields
+        $form->mapValues($this->getUser());
+
         if ($form->getField('perm')) {
             $this->getUser()->permissions = array_sum($form->getFieldValue('perm') ?? []);
         }
@@ -101,13 +113,16 @@ class User extends EditInterface
             return;
         }
 
-        $isNew = $this->getUser()->getId() == 0;
+        $isNew = $this->getUser()->userId == 0;
         $this->getUser()->save();
 
         // Send email to update password
         if ($isNew) {
-            $this->getUser()->sendRecoverEmail(true);
-            Alert::addSuccess('An email has been sent to ' . $this->getUser()->email . ' to create their password.');
+            if (\Bs\Email\User::sendRecovery($this->getUser())) {
+                Alert::addSuccess('An email has been sent to ' . $this->getUser()->email . ' to create their password.');
+            } else {
+                Alert::addError('Failed to send email to ' . $this->getUser()->email . ' to create their password.');
+            }
         }
 
         Alert::addSuccess('Form save successfully.');
@@ -119,16 +134,18 @@ class User extends EditInterface
 
     public function show(): ?Template
     {
-        $this->getForm()->getField('nameTitle')->addFieldCss('col-1');
-        $this->getForm()->getField('nameFirst')->addFieldCss('col-5');
-        $this->getForm()->getField('nameLast')->addFieldCss('col-6');
-        //$this->getForm()->getField('nameDisplay')->addFieldCss('col-5');
+        $this->getField('nameTitle')->addFieldCss('col-1');
+        $this->getField('nameFirst')->addFieldCss('col-5');
+        $this->getField('nameLast')->addFieldCss('col-6');
+        //$this->getField('nameDisplay')->addFieldCss('col-5');
 
-        $this->getForm()->getField('username')->addFieldCss('col-6');
-        $this->getForm()->getField('email')->addFieldCss('col-6');
-        $renderer = $this->getFormRenderer();
-        $renderer->addFieldCss('mb-3');
-        return $renderer->show();
+        $this->getField('username')->addFieldCss('col-6');
+        $this->getField('email')->addFieldCss('col-6');
+
+        $renderer = $this->getRenderer();
+        $renderer?->addFieldCss('mb-3');
+
+        return $renderer?->show();
     }
 
     public function getType(): string
@@ -142,8 +159,10 @@ class User extends EditInterface
         return $this;
     }
 
-    public function getUser(): \Bs\Db\User|Model
+    public function getUser(): \Bs\Db\User
     {
-        return $this->getModel();
+        /** @var \Bs\Db\User $obj */
+        $obj = $this->getModel();
+        return $obj;
     }
 }

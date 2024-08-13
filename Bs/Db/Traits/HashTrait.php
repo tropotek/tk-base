@@ -3,6 +3,7 @@ namespace Bs\Db\Traits;
 
 /**
  * Expected to be attached to a \Tk\Db\Mapper\Model object
+ * @deprecated
  */
 trait HashTrait
 {
@@ -42,7 +43,7 @@ trait HashTrait
      */
     public function generateHash(): string
     {
-        $key = sprintf('%s%s', $this->getVolatileId(), get_class($this));
+        $key = sprintf('%s%s', $this->userId, get_class($this));
         return hash('md5', $key);
     }
 

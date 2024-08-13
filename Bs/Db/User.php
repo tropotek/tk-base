@@ -7,16 +7,20 @@ use Bs\Db\Traits\HashTrait;
 use Bs\Db\Traits\TimestampTrait;
 use Tk\Color;
 use Tk\Config;
-use Tk\Db\Mapper\Model;
-use Tk\Db\Mapper\Result;
 use Tk\Encrypt;
 use Tk\Image;
 use Tk\Uri;
+use Tt\Db;
+use Tt\DbFilter;
+use Tt\DbModel;
 
-class User extends Model // implements UserInterface, FileInterface
+class User extends DbModel
+// implements UserInterface, FileInterface
 {
     use TimestampTrait;
     use HashTrait;
+
+    public static string $USER_CLASS = self::class;
 
     /**
      * The remember me cookie name
@@ -75,7 +79,7 @@ class User extends Model // implements UserInterface, FileInterface
     public ?string    $timezone      = null;
     public bool       $active        = true;
     public string     $sessionId     = '';
-    public string     $hash          = '';      // todo: chould get this from the view
+    public string     $hash          = '';      // todo: could get this from the view
     public ?\DateTime $lastLogin     = null;
 
     public \DateTime $modified;
@@ -88,9 +92,15 @@ class User extends Model // implements UserInterface, FileInterface
         $this->timezone = $this->getConfig()->get('php.date.timezone');
     }
 
+    public static function create(): static
+    {
+        return new self::$USER_CLASS();
+    }
+
     public function save(): void
     {
-        $this->getHash();
+        $map = static::getDataMap();
+        $values = $map->getArray($this);
 
         if (!$this->username && $this->email) {
             $this->username = $this->email;
@@ -99,8 +109,38 @@ class User extends Model // implements UserInterface, FileInterface
         if ($this->isType(self::TYPE_MEMBER)) {
             $this->permissions = 0;
         }
-        parent::save();
+
+        if ($this->userId) {
+            $values['user_id'] = $this->userId;
+            Db::update('user', 'user_id', $values);
+        } else {
+            unset($values['user_id']);
+            Db::insert('user', $values);
+            $this->userId = Db::getLastInsertId();
+        }
+
+        $this->reload();
     }
+
+    public function delete(): void
+    {
+
+        Db::delete('user', ['user_id' => $this->userId]);
+    }
+
+//    public function save(): void
+//    {
+//        $this->getHash();
+//
+//        if (!$this->username && $this->email) {
+//            $this->username = $this->email;
+//        }
+//        // Remove permissions for non-staff users
+//        if ($this->isType(self::TYPE_MEMBER)) {
+//            $this->permissions = 0;
+//        }
+//        parent::save();
+//    }
 
     /**
      * @param bool $cookie If true any stored login cookies will also be removed
@@ -123,20 +163,21 @@ class User extends Model // implements UserInterface, FileInterface
         }
     }
 
-    public function getFileList(array $filter = [], ?\Tk\Db\Tool $tool = null): Result
-    {
-        $filter += ['model' => $this];
-        return FileMap::create()->findFiltered($filter, $tool);
-    }
+    // todo
+//    public function getFileList(array $filter = []): array
+//    {
+//        $filter += ['model' => $this];
+//        return FileMap::findFiltered($filter);
+//    }
 
     public function getDataPath(): string
     {
-        return sprintf('/user/%s/data', $this->getVolatileId());
+        return sprintf('/user/%s/data', $this->userId);
     }
 
     public function getImageUrl(): ?Uri
     {
-        $color = Color::createRandom($this->getVolatileId());
+        $color = Color::createRandom($this->userId);
         $img = Image::createAvatar($this->getName() ?: $this->username, $color);
         $b64 = base64_encode($img->getContents());
         return Uri::create('data:image/png;base64,' . $b64);
@@ -256,12 +297,11 @@ class User extends Model // implements UserInterface, FileInterface
     public function validate(): array
     {
         $errors = [];
-        $mapper = $this->getMapper();
 
         if (!$this->username) {
             $errors['username'] = 'Invalid field username value';
         } else {
-            $dup = $mapper->findByUsername($this->username);
+            $dup = self::findByUsername($this->username);
             if ($dup && $dup->userId != $this->userId) {
                 $errors['username'] = 'This username is already in use';
             }
@@ -270,7 +310,7 @@ class User extends Model // implements UserInterface, FileInterface
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Please enter a valid email address';
         } else {
-            $dup = $mapper->findByEmail($this->email);
+            $dup = self::findByEmail($this->email);
             if ($dup && $dup->userId != $this->userId) {
                 $errors['email'] = 'This email is already in use';
             }
@@ -309,6 +349,9 @@ class User extends Model // implements UserInterface, FileInterface
         return $errors;
     }
 
+    /**
+     * @deprecated Add this to the new emails section
+     */
     public function sendRecoverEmail(bool $isNewAccount = false): bool
     {
         // send email to user
@@ -340,17 +383,17 @@ class User extends Model // implements UserInterface, FileInterface
 
     public function rememberMe(int $day = 30): void
     {
-        [$selector, $validator, $token] = $this->getMapper()->generateToken();
+        [$selector, $validator, $token] = self::generateToken();
 
         // remove all existing token associated with the user id
-        $this->getMapper()->deleteToken($this->getId());
+        self::deleteToken($this->userId);
 
         // set expiration date
         $expires_sec = time() + 60 * 60 * 24 * $day;
         $expiry = date('Y-m-d H:i:s', $expires_sec);
         // insert a token to the database
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
-        if ($this->getMapper()->insertToken($this->getId(), $selector, $hash_validator, $expiry)) {
+        if (self::insertToken($this->userId, $selector, $hash_validator, $expiry)) {
             $this->getCookie()->set(self::REMEMBER_CID, $token, $expires_sec);
         }
     }
@@ -360,7 +403,7 @@ class User extends Model // implements UserInterface, FileInterface
      */
     public function forgetMe(): void
     {
-        $this->getMapper()->deleteToken($this->getId());
+        self::deleteToken($this->userId);
         $this->getCookie()->delete(self::REMEMBER_CID);
     }
 
@@ -369,21 +412,204 @@ class User extends Model // implements UserInterface, FileInterface
      * If the user checked the `remember me` checkbox at login this should find the user
      * if a user is found it will be automatically logged into the auth controller
      */
-    public static function retrieveMe(): ?User
+    public static function retrieveMe(): ?static
     {
-        $map = Factory::instance()->getUserMap();
         $user = null;
         $token = Factory::instance()->getRequest()->cookies->get(self::REMEMBER_CID, '');
         if ($token) {
-            [$selector, $validator] = $map->parseToken($token);
-            $tokens = $map->findTokenBySelector($selector);
+            [$selector, $validator] = self::parseToken($token);
+            $tokens = self::findTokenBySelector($selector);
             if ($tokens && password_verify($validator, $tokens['hashed_validator'])) {
-                $user = $map->findBySelector($selector);
+                $user = self::findBySelector($selector);
                 if ($user) {
                     Factory::instance()->getAuthController()->getStorage()->write($user->username);
                 }
             }
         }
         return $user;
+    }
+
+
+    public static function find(int $userId): ?static
+    {
+        return Db::queryOne("
+                SELECT *
+                FROM user
+                WHERE user_id = :userId",
+            compact('userId'),
+            self::$USER_CLASS
+        );
+    }
+
+    public static function findAll(): ?static
+    {
+        return Db::queryOne("
+                SELECT *
+                FROM user",
+            [],
+            self::$USER_CLASS
+        );
+    }
+
+    public static function findByUsername(string $username): ?static
+    {
+        return current(self::findFiltered(['username' => $username]));
+    }
+
+    public static function findByEmail(string $email): ?static
+    {
+        return current(self::findFiltered(['email' => $email]));
+    }
+
+    public static function findByHash(string $hash): ?static
+    {
+        return current(self::findFiltered(['hash' => $hash]));
+    }
+
+    public static function findBySelector(string $selector): ?static
+    {
+        return Db::queryOne("
+                SELECT *
+                FROM user u
+                INNER JOIN user_remember z USING (user_id)
+                WHERE z.selector = :selector AND expiry > NOW()",
+            compact('selector'),
+            self::$USER_CLASS
+        );
+    }
+
+    public static function findFiltered(array|DbFilter $filter): array
+    {
+        $filter = DbFilter::create($filter);
+
+        if (!empty($filter['search'])) {
+            $filter['search'] = '%' . $filter['search'] . '%';
+            $w  = 'a.name_first LIKE :search OR ';
+            $w .= 'a.name_last LIKE :search OR ';
+            $w .= 'a.name_display LIKE :search OR ';
+            $w .= 'a.email LIKE :search OR ';
+            $w .= 'a.uid LIKE :search OR ';
+            $w .= 'a.user_id LIKE :search OR ';
+            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
+        }
+
+        if (!empty($filter['id'])) {
+            $filter['userId'] = $filter['id'];
+        }
+        if (!empty($filter['userId'])) {
+            if (!is_array($filter['userId'])) $filter['userId'] = [$filter['userId']];
+            $filter->appendWhere('a.user_id IN :userId AND ');
+        }
+
+        if (!empty($filter['uid'])) {
+            $filter->appendWhere('a.uid = :uid AND ');
+        }
+
+        if (!empty($filter['hash'])) {
+            $filter->appendWhere('a.hash = :hash AND ');
+        }
+
+        if (!empty($filter['type'])) {
+            if (!is_array($filter['type'])) $filter['type'] = [$filter['type']];
+            $filter->appendWhere('a.type IN :type AND ');
+        }
+
+        if (!empty($filter['username'])) {
+            $filter->appendWhere('a.username = :username AND ');
+        }
+
+        if (!empty($filter['email'])) {
+            $filter->appendWhere('a.email = :email AND ');
+        }
+
+        if (is_bool($filter['active'] ?? null)) {
+            $filter->appendWhere('a.active = :active AND ');
+        }
+
+        if (!empty($filter['exclude'])) {
+            if (!is_array($filter['exclude'])) $filter['exclude'] = [$filter['exclude']];
+            $filter->appendWhere('a.user_id NOT IN :exclude AND ', $filter['exclude']);
+        }
+
+        return Db::query("
+            SELECT *
+            FROM user a
+            {$filter->getSql()}",
+            $filter->all(),
+            self::$USER_CLASS
+        );
+    }
+
+
+
+    /*
+     * Functions to manage the "remember me" tokens
+     * https://www.phptutorial.net/php-tutorial/php-remember-me/
+     */
+
+    /**
+     * Generate a pair of random tokens called selector and validator
+     */
+    public static function generateToken(): array
+    {
+        $selector = bin2hex(random_bytes(16));
+        $validator = bin2hex(random_bytes(32));
+        return [$selector, $validator, $selector . ':' . $validator];
+    }
+
+    /**
+     * Split a token stored in the cookie into selector and validator
+     */
+    public static function parseToken(string $token): ?array
+    {
+        $parts = explode(':', $token);
+        if ($parts && count($parts) == 2) {
+            return [$parts[0], $parts[1]];
+        }
+        return null;
+    }
+
+    /**
+     * Add a new row to the user_remember table
+     */
+    public static function insertToken(int $user_id, string $selector, string $hashed_validator, string $expiry): int|bool
+    {
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        return Db::insert('user_remember', compact('user_id', 'browser_id', 'selector', 'hashed_validator', 'expiry'));
+    }
+
+    /**
+     * Find a row in the user_remember table by a selector.
+     * It only returns the match selector if the token is not expired
+     *   by comparing the expiry with the current time
+     */
+    public static function findTokenBySelector(string $selector): array
+    {
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        $sql = 'SELECT id, selector, hashed_validator, browser_id, user_id, expiry
+            FROM user_remember
+            WHERE selector = :selector
+            AND browser_id = :browser_id
+            AND expiry >= NOW()
+            LIMIT 1';
+        return (array)Db::queryOne($sql, compact('selector', 'browser_id'));
+    }
+
+    public static function findTokenByUserId(string $user_id): array
+    {
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        $sql = 'SELECT id, selector, hashed_validator, user_id, expiry
+            FROM user_remember
+            WHERE user_id = :user_id
+            AND browser_id = :browser_id
+            AND expiry >= NOW()
+            LIMIT 1';
+        return (array)Db::queryOne($sql, compact('user_id', 'browser_id'));
+    }
+
+    public static function deleteToken(int $user_id): bool|int
+    {
+        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        return Db::delete('user_remember', compact('user_id', 'browser_id'));
     }
 }

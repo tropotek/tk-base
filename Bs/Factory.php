@@ -2,7 +2,6 @@
 namespace Bs;
 
 use Bs\Db\User;
-use Bs\Db\UserMap;
 use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
 use Dom\Mvc\Loader;
@@ -57,7 +56,7 @@ class Factory extends \Tk\Factory
     {
         if (!$this->has('authUser')) {
             if ($this->getAuthController()->hasIdentity()) {
-                $user = $this->getUserMap()->findByUsername($this->getAuthController()->getIdentity());
+                $user = User::findByUsername($this->getAuthController()->getIdentity());
                 $this->set('authUser', $user);
             }
         }
@@ -71,7 +70,7 @@ class Factory extends \Tk\Factory
     public function getAuthAdapter(): AdapterInterface
     {
         if (!$this->has('authAdapter')) {
-            $adapter = new AuthUser($this->getUserMap());
+            $adapter = new AuthUser();
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');
@@ -163,14 +162,20 @@ class Factory extends \Tk\Factory
         return $message;
     }
 
+    /**
+     * @deprecated use `\Bs\User::create()`
+     */
     public function createUser(): User
     {
-        return new User();
+        return new User::$USER_CLASS();
     }
 
-    public function getUserMap(): UserMap
+    /**
+     * @deprecated
+     */
+    public function getUserMap(): null
     {
-        return UserMap::create();
+        return null;
     }
 
     /**

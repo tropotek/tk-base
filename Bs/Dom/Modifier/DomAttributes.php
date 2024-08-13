@@ -25,8 +25,19 @@ class DomAttributes extends FilterInterface
     const APP_HAS_PERM  = 'app-has-perm';
     const APP_IS_DEBUG  = 'app-is-debug';
 
+    protected bool $isUser = false;
+    protected ?User $authUser = null;
+    protected array $constants = [];
 
-    public function __construct() { }
+    public function __construct()
+    {
+        $this->isUser = is_object($this->getFactory()->getAuthUser());
+        $this->authUser = $this->getFactory()->getAuthUser();
+        //$reflect = new \ReflectionClass(get_class($this->getFactory()->createUser()));
+        $reflect = new \ReflectionClass(User::$USER_CLASS);
+        $this->constants = $reflect->getConstants();
+
+    }
 
     /**
      * pre init the Filter
@@ -39,10 +50,6 @@ class DomAttributes extends FilterInterface
     public function executeNode(\DOMElement $node)
     {
         $isDebug = $this->getConfig()->isDebug();
-        $isUser = is_object($this->getFactory()->getAuthUser());
-        $user = $this->getFactory()->getAuthUser();
-        $reflect = new \ReflectionClass(get_class($this->getFactory()->createUser()));
-        $userConsts = $reflect->getConstants();
 
         try {
 
@@ -59,7 +66,7 @@ class DomAttributes extends FilterInterface
                 $val = trim($node->getAttribute(self::APP_IS_USER));
                 $node->removeAttribute(self::APP_IS_USER);
                 $showNode = preg_match('/(yes|true|1)/i', $val);
-                if (($isUser && !$showNode) || (!$isUser && $showNode)) {
+                if (($this->isUser && !$showNode) || (!$this->isUser && $showNode)) {
                     $this->getDomModifier()->removeNode($node);
                 }
             }
@@ -67,7 +74,7 @@ class DomAttributes extends FilterInterface
             if ($node->hasAttribute(self::APP_IS_TYPE)) {
                 $type = $node->getAttribute(self::APP_IS_TYPE);
                 $node->removeAttribute(self::APP_IS_TYPE);
-                if (!$user || !$user->isType($userConsts[$type])) {
+                if (!$this->authUser || !$this->authUser->isType($this->constants[$type])) {
                     $this->getDomModifier()->removeNode($node);
                 }
             }
@@ -76,8 +83,8 @@ class DomAttributes extends FilterInterface
                 $perms = explode('|', $node->getAttribute(self::APP_HAS_PERM));
                 $node->removeAttribute(self::APP_HAS_PERM);
                 $perms = array_map('trim', $perms);
-                $perm = array_sum(array_filter($userConsts, function($k) use($perms) { return in_array($k, $perms); }, ARRAY_FILTER_USE_KEY));
-                if (!$user || !$user->hasPermission($perm)) {
+                $perm = array_sum(array_filter($this->constants, function($k) use($perms) { return in_array($k, $perms); }, ARRAY_FILTER_USE_KEY));
+                if (!$this->authUser || !$this->authUser->hasPermission($perm)) {
                     $this->getDomModifier()->removeNode($node);
                 }
             }

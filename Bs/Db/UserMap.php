@@ -10,6 +10,9 @@ use Tk\Db\Tool;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
 
+/**
+ * @deprecated To be removed
+ */
 class UserMap extends Mapper
 {
 

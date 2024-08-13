@@ -4,6 +4,9 @@ namespace Bs\Db;
 use Tk\Db\Mapper\ModelInterface;
 use Tk\Uri;
 
+/**
+ * @deprecated To be removed, Use \Bs\Db\User as a base object to check
+ */
 interface UserInterface extends ModelInterface
 {
 	const PERM_ADMIN            = 0x1; // All permissions

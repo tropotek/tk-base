@@ -3,7 +3,7 @@ namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
-use Bs\Form\EditTrait;
+use Bs\Form;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
@@ -12,11 +12,9 @@ use Tk\Uri;
 
 class Edit extends ControllerDomInterface
 {
-    use EditTrait;
-
-    protected ?User $user = null;
-
+    protected ?User  $user = null;
     protected string $type = User::TYPE_MEMBER;
+    protected ?Form  $form = null;
 
 
     public function doDefault(Request $request, string $type): void
@@ -24,25 +22,21 @@ class Edit extends ControllerDomInterface
         $this->getPage()->setTitle('Edit User');
         $this->setAccess(User::PERM_MANAGE_MEMBER | User::PERM_MANAGE_STAFF);
 
-
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();
         $this->getUser()->type = $type;
 
         if ($request->query->getInt('userId')) {
-            $this->user = $this->getFactory()->getUserMap()->find($request->query->getInt('userId'));
+            $this->user = User::find($request->query->getInt('userId'));
         }
         if (!$this->getUser()) {
             throw new Exception('Invalid User ID: ' . $request->query->getInt('userId'));
         }
 
         // Get the form template
-        $this->setForm(new \Bs\Form\User($this->getUser()));
-        $this->getForm()->init();
-        $this->getForm()->setType($this->type);
-        $this->getForm()->execute($request->request->all());
-//        $this->form = new \Bs\Form\User();
-//        $this->form->doDefault($request,  $request->query->getInt('userId', 0), $type);
+        $this->form = new \Bs\Form\User($this->getUser());
+        $this->form->setType($this->type);
+        $this->form->execute($request->request->all());
 
         if ($request->query->get('cv')) {
             $newType = trim($request->query->get('cv'));
@@ -59,17 +53,12 @@ class Edit extends ControllerDomInterface
 
     }
 
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
     public function show(): ?Template
     {
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-        if ($this->getUser()->getId() > 1 && $this->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
+        if ($this->getUser()->userId > 1 && $this->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
             if ($this->getUser()->isType(User::TYPE_MEMBER)) {
                 $url = Uri::create()->set('cv', User::TYPE_STAFF);
                 $template->setAttr('to-staff', 'href', $url);
@@ -84,11 +73,16 @@ class Edit extends ControllerDomInterface
         $template->appendText('title', $this->getPage()->getTitle());
         $template->appendTemplate('content', $this->form->show());
 
-        if (!$this->getUser()->getId()) {
+        if (!$this->getUser()->userId) {
             $template->setVisible('new-user');
         }
 
         return $template;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
     public function __makeTemplate(): ?Template

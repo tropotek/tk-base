@@ -7,13 +7,12 @@ use Dom\Template;
 use Tk\Db\Mapper\Model;
 use Tk\Db\Mapper\ModelInterface;
 use Tk\Form;
-//use Tk\FormRenderer;
 use Tk\Form\Renderer\Dom\Renderer;
 
 /**
  * Use this interface to create edit Forms using a model object
  *
- * @todo See if we can use \Tk\Form\FormTrait with this pattern
+ * @deprecated use \Bs\Form
  */
 abstract class EditInterface extends Form implements DisplayInterface
 {

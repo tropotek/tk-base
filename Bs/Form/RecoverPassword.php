@@ -2,20 +2,20 @@
 namespace Bs\Form;
 
 use Bs\Db\User;
-use Dom\Template;
+use Bs\Form;
 use Tk\Alert;
 use Tk\Encrypt;
-use Tk\Form;
-use Tk\Form\Field;
-use Tk\Form\Action;
+use Tk\Form\Action\Submit;
+use Tk\Form\Field\Hidden;
+use Tk\Form\Field\Password;
 use Tk\Uri;
 
-class RecoverPassword extends EditInterface
+class RecoverPassword extends Form
 {
 
     protected ?User $user = null;
 
-    protected function initFields(): void
+    public function init(): static
     {
         // logout any existing user
         User::logout();
@@ -35,34 +35,39 @@ class RecoverPassword extends EditInterface
             Uri::create('/home')->redirect();
         }
 
-        $this->user = $this->getFactory()->getUserMap()->findByHash($arr['h'] ?? '');
+        $this->user = User::findByHash($arr['h'] ?? '');
         if (!$this->user) {
             Alert::addError('Invalid user token');
             Uri::create('/home')->redirect();
         }
 
-        $this->getForm()->appendField(new Field\Hidden('t'));
-        $this->getForm()->appendField(new Field\Password('newPassword'))->setLabel('Password')
+        $this->getForm()->appendField(new Hidden('t'));
+        $this->getForm()->appendField(new Password('newPassword'))->setLabel('Password')
             ->setAttr('placeholder', 'Password')
             ->setAttr('autocomplete', 'off')->setRequired();
-        $this->getForm()->appendField(new Field\Password('confPassword'))->setLabel('Confirm')
+        $this->getForm()->appendField(new Password('confPassword'))->setLabel('Confirm')
             ->setAttr('placeholder', 'Password Confirm')
             ->setAttr('autocomplete', 'off')->setRequired();
 
-        $this->getForm()->appendField(new Action\Submit('recover-update', [$this, 'onRecover']));
+        $this->getForm()->appendField(new Submit('recover-update', [$this, 'onRecover']));
+
+        return $this;
     }
 
     public function execute(array $values = []): static
     {
+        $this->init();
+
         $load = [
             't' => $_REQUEST['t'] ?? ''
         ];
         $this->getForm()->setFieldValues($load);
         parent::execute($values);
+
         return $this;
     }
 
-    public function onRecover(Form $form, Action\ActionInterface $action): void
+    public function onRecover(Form $form, Submit $action): void
     {
         if (!$form->getFieldValue('newPassword')  || $form->getFieldValue('newPassword') != $form->getFieldValue('confPassword')) {
             $form->addFieldError('newPassword');
@@ -86,12 +91,6 @@ class RecoverPassword extends EditInterface
 
         Alert::addSuccess('Successfully account recovery. Please login.');
         Uri::create('/login')->redirect();
-    }
-
-    public function show(): ?Template
-    {
-        $renderer = $this->getFormRenderer();
-        return $renderer->show();
     }
 
 }
