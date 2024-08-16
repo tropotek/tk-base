@@ -3,20 +3,20 @@ namespace Bs\Controller\File;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
-use Bs\Table\ManagerTrait;
+use Bs\Table\File;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Form;
 use Tk\Uri;
+use Tt\Db;
 
 class Manager extends ControllerDomInterface
 {
-    use ManagerTrait;
 
     protected string $fkey = '';
-
     protected ?Form $form = null;
+    protected ?File $table = null;
 
 
     public function doDefault(Request $request): void
@@ -24,20 +24,21 @@ class Manager extends ControllerDomInterface
         $this->getPage()->setTitle('File Manager');
         $this->setAccess(User::PERM_ADMIN);
 
-
         // Get the form template
-        $this->setTable(new \Bs\Table\File());
-        $this->getTable()->setFkey($this->fkey);
-        $this->getTable()->init();
+        $this->table = new \Bs\Table\File();
+        $this->table->setOrderBy('path');
+        $this->table->setFkey($this->fkey);
+        $this->table->execute($request);
 
-        $filter = [];
+        // Set the table rows
+        $filter = $this->table->getDbFilter();
         if ($this->fkey) {
-            $filter['fkey'] = $this->fkey;
+            $filter->set('fkey', $this->fkey);
         }
-        $this->getTable()->findList($filter, $this->getTable()->getTool('path'));
+        $rows = \Bs\Db\File::findFiltered($filter);
+        $this->table->setRows($rows, Db::getLastStatement()->getTotalRows());
 
-        $this->getTable()->execute($request);
-
+        // setup the upload file form
         $this->form = Form::create('upload');
         $this->form->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');
         $this->form->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
@@ -48,6 +49,11 @@ class Manager extends ControllerDomInterface
     public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
     {
         // TODO: Validate files uploads
+        /** @var \Bs\Form\Field\File $file */
+        $file = $form->getField('file');
+        if (!count($file->getUploads())) {
+            $form->addFieldError('file', "No file uploaded");
+        }
 
         if ($form->hasErrors()) {
             Alert::addError('Form contains errors.');
@@ -68,7 +74,7 @@ class Manager extends ControllerDomInterface
         $this->form->addCss('mb-5');
         $template->appendTemplate('upload', $renderer->show());
 
-        $template->appendTemplate('content', $this->getTable()->show());
+        $template->appendTemplate('content', $this->table->show());
 
         return $template;
     }

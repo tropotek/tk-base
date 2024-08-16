@@ -6,6 +6,7 @@ use Tk\Db\Mapper\Result;
 
 /**
  * Use this interface in your model objects when using a file upload form field
+ * @deprecated
  */
 interface FileInterface extends ModelInterface
 {

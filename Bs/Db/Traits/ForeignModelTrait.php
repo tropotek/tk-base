@@ -1,65 +1,66 @@
 <?php
 namespace Bs\Db\Traits;
 
-use Tk\Db\Mapper\ModelInterface;
+use Tk\Exception;
+use Tt\DbModel;
 
 trait ForeignModelTrait
 {
-    use ForeignKeyTrait;
 
-    private ?ModelInterface $_model = null;
+    private ?DbModel $_model = null;
 
-
-    public function getFid(): int
-    {
-        return $this->fid;
-    }
-
-    public function setFid(int $fid): static
-    {
-        $this->fid = $fid;
-        return $this;
-    }
 
     /**
      * Alias to setForeignModel();
      */
-    public function setModel(ModelInterface $model): static
+    public function setModel(DbModel $model): static
     {
         return $this->setForeignModel($model);
+    }
+
+    public function setForeignModel(DbModel $model): static
+    {
+        $mid = self::getModelId($model);
+        if (!$mid) throw new Exception("Model ID not set");
+        $this->fkey = get_class($model);
+        $this->fid = $mid;
+        $this->_model = $model;
+        return $this;
     }
 
     /**
      * Alias to getForeignModel();
      */
-    public function getModel(): ?ModelInterface
+    public function getModel(): ?DbModel
     {
         return $this->getForeignModel();
     }
 
-    public function setForeignModel(ModelInterface $model): static
+    public function getForeignModel(): ?DbModel
     {
-        $this->setFkey(get_class($model));
-        $this->setFid($model->getVolatileId());
-        $this->_model = $model;
-        return $this;
-    }
-
-    public function getForeignModel(): ?ModelInterface
-    {
-        if (!$this->_model && class_exists($this->getFkey().'Map')) {
-            $this->_model = $this->getForeignModelMapper()->find($this->getFid());
+        if (method_exists($this->fkey, 'find')) {
+            $this->_model = $this->fkey::find($this->fkey);
         }
         return $this->_model;
     }
 
+    public static function getModelId(DbModel $model): int
+    {
+        $map = $model->getDataMap();
+        $priKey = $map->getPrimaryKey()?->getProperty();
+        return intval($model?->$priKey);
+    }
+
+    /**
+     * @deprecated Note sure this is needed here???
+     */
     public function validateModelId(array $errors = []): array
     {
-        $errors = $this->validateFkey($errors);
+//        $errors = $this->validateFkey($errors);
 //        if ($this->getFid()) {
 //            $errors['fid'] = 'Invalid value: fid';
 //        }
-        return $errors;
+        return [];
     }
 
 }

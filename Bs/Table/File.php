@@ -1,76 +1,91 @@
 <?php
 namespace Bs\Table;
 
-use Bs\Db\FileMap;
+use Bs\Table;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
-use Tk\Db\Mapper\Result;
-use Tk\Db\Tool;
-use Tk\Table\Cell;
-use Tk\Table\Action;
-use Tk\Ui\Link;
 use Tk\Uri;
+use Tt\Db;
+use Tt\Table\Action\Csv;
+use Tt\Table\Action\Delete;
+use Tt\Table\Cell;
+use Tt\Table\Cell\RowSelect;
 
-class File extends ManagerInterface
+class File extends Table
 {
 
     protected string $fkey = '';
 
 
-    protected function initCells(): void
+    public function init(Request $request): static
     {
-        $this->appendCell(new Cell\RowSelect('id'));
-        $this->appendCell(new Cell\Text('actions'))
-            ->addOnShow(function (Cell\Text $cell) {
-                $cell->addCss('text-nowrap text-center');
-                /** @var \Bs\Db\File $obj */
-                $obj = $cell->getRow()->getData();
+        $rowSelect = RowSelect::create('id', 'userId');
+        $this->appendCell($rowSelect);
 
-                $template = $cell->getTemplate();
-                $btn = new Link('View');
-                $btn->setAttr('target', '_blank');
-                $btn->setText('');
-                $btn->setIcon('fa fa-eye');
-                $btn->addCss('btn btn-success');
-                $btn->setUrl($obj->getUrl());
-                $template->appendTemplate('td', $btn->show());
-                $template->appendHtml('td', '&nbsp;');
 
-                $btn = new Link('Delete');
-                $btn->setText('');
-                $btn->setIcon('fa fa-trash');
-                $btn->addCss('btn btn-danger');
-                $btn->setUrl(Uri::create()->set('del', $obj->getId()));
-                $btn->setAttr('data-confirm', 'Are you sure you want to delete \''.$obj->getPath().'\'');
-                $template->appendTemplate('td', $btn->show());
-
+        $this->appendCell('actions')
+            ->addCss('text-nowrap text-center')
+            ->addOnValue(function(\Bs\Db\File $file, Cell $cell) {
+                $view = $file->getUrl();
+                $del  = Uri::create()->set('del', $file->fileId);
+                return <<<HTML
+                    <a class="btn btn-success" href="$view" title="View" target="_blank"><i class="fa fa-fw fa-eye"></i></a> &nbsp;
+                    <a class="btn btn-danger" href="$del" title="Delete" data-confirm="Are you sure you want to delete file {$file->path}"><i class="fa fa-fw fa-trash"></i></a>
+                HTML;
             });
 
-        $this->appendCell(new Cell\Text('path'))->setAttr('style', 'width: 100%;')
-            ->setUrl(Uri::create('/fileEdit'))
-            ->addOnShow(function (Cell\Text $cell) {
-                $obj = $cell->getRow()->getData();
-                $cell->setUrlProperty('');
-                $cell->setUrl($obj->getUrl());
-                $cell->getLink()->setAttr('target','_blank');
+        $this->appendCell('path')
+            ->addHeaderCss('max-width')
+            ->setSortable(true)
+            ->addOnValue(function(\Bs\Db\File $file, Cell $cell) {
+                return sprintf('<a href="%s" target="_blank">%s</a>', $file->getUrl(), $file->path);
             });
 
-        $this->appendCell(new Cell\Text('userId'));
-        $this->appendCell(new Cell\Text('fkey'))->setLabel('Key');
-        $this->appendCell(new Cell\Text('fid'))->setLabel('Key ID');
-        $this->appendCell(new Cell\Text('bytes'));
-        $this->appendCell(new Cell\Boolean('selected'));
-        $this->appendCell(new Cell\Date('created'));
+        $this->appendCell('userId')
+            ->setSortable(true);
+        $this->appendCell('fkey')->setHeader('Key')
+            ->setSortable(true);
+        $this->appendCell('fid')->setHeader('Key ID')
+            ->setSortable(true);
+        $this->appendCell('bytes')
+            ->setSortable(true);
 
-        // Table filters
-        //$this->getFilterForm()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
+        $this->appendCell('selected')
+            ->setSortable(true)
+            ->addOnValue('\Tt\Table\Type\Boolean::onValue');
 
-        // Table Actions
-        //$this->table->appendAction(new Action\Button('Create'))->setUrl(Uri::create('/userEdit')->set('type', $this->type));
-        $this->appendAction(new Action\Delete());
-        $this->appendAction(new Action\Csv())->addExcluded('actions');
+        $this->appendCell('created')
+            ->setSortable(true)
+            ->addOnValue('\Tt\Table\Type\DateFmt::onValue');
 
+        // init filter fields for actions to access to the filter values
+        $this->initForm($request);
+
+
+        // Add Table actions
+        $this->appendAction(Delete::create($rowSelect))
+            ->addOnDelete(function(Delete $action, array $selected) {
+                foreach ($selected as $file_id) {
+                    Db::delete('file', compact('file_id'));
+                }
+            });
+
+        $this->appendAction(Csv::create($rowSelect))
+            ->addOnCsv(function(Csv $action, array $selected) {
+                $action->setExcluded(['id', 'actions', 'permissions']);
+                $action->getTable()->getCell('username')->getOnValue()->reset();
+                $action->getTable()->getCell('email')->getOnValue()->reset();    // remove html from cell
+                $filter = $action->getTable()->getDbFilter();
+                if (count($selected)) {
+                    $rows = \Bs\Db\User::findFiltered($filter);
+                } else {
+                    $rows = \Bs\Db\User::findFiltered($filter->resetLimits());
+                }
+                return $rows;
+            });
+
+        return $this;
     }
 
     public function execute(Request $request): static
@@ -83,18 +98,9 @@ class File extends ManagerInterface
         return $this;
     }
 
-    public function findList(array $filter = [], ?Tool $tool = null): null|array|Result
-    {
-        if (!$tool) $tool = $this->getTool();
-        $filter = array_merge($this->getFilterForm()->getFieldValues(), $filter);
-        $list = FileMap::create()->findFiltered($filter, $tool);
-        $this->setList($list);
-        return $list;
-    }
-
     private function doDelete($id): void
     {
-        $file = FileMap::create()->find($id);
+        $file = \Bs\Db\File::find($id);
         $file?->delete();
         Alert::addSuccess('File removed successfully.');
         Uri::create()->reset()->redirect();
@@ -102,10 +108,8 @@ class File extends ManagerInterface
 
     public function show(): ?Template
     {
-        $renderer = $this->getTableRenderer();
+        $renderer = $this->getRenderer();
         $renderer->setFooterEnabled(false);
-        $this->getRow()->addCss('text-nowrap');
-        $this->showFilterForm();
         return $renderer->show();
     }
 

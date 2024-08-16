@@ -4,11 +4,13 @@ namespace Bs\Db;
 use Tk\DataMap\DataMap;
 use Tk\DataMap\Db;
 use Tk\DataMap\Form;
-use Tk\DataMap\Table;
 use Tk\Db\Mapper\Filter;
 use Tk\Db\Mapper\Mapper;
 use Tk\Db\Mapper\ModelInterface;
 
+/**
+ * @deprecated to be removed
+ */
 class FileMap extends Mapper
 {
 

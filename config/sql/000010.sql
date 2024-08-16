@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS user
 -- User tokens to enable the 'Remember Me' functionality
 CREATE TABLE IF NOT EXISTS user_remember
 (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  file_id INT AUTO_INCREMENT PRIMARY KEY,
   selector VARCHAR(255) NOT NULL,
   hashed_validator VARCHAR(255) NOT NULL,
   browser_id VARCHAR(128) NOT NULL,

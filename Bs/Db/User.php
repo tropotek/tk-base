@@ -3,11 +3,9 @@ namespace Bs\Db;
 
 use Bs\Factory;
 use Bs\Util\Masquerade;
-use Bs\Db\Traits\HashTrait;
 use Bs\Db\Traits\TimestampTrait;
 use Tk\Color;
 use Tk\Config;
-use Tk\Encrypt;
 use Tk\Image;
 use Tk\Uri;
 use Tt\Db;
@@ -15,10 +13,8 @@ use Tt\DbFilter;
 use Tt\DbModel;
 
 class User extends DbModel
-// implements UserInterface, FileInterface
 {
     use TimestampTrait;
-    use HashTrait;
 
     public static string $USER_CLASS = self::class;
 
@@ -39,9 +35,6 @@ class User extends DbModel
     const PERM_MANAGE_MEMBER    = 0x8; // Manage members
 	//                            0x10; // available
 
-	/**
-     * permission groups and descriptions
-     */
 	const PERMISSION_LIST = [
         self::PERM_ADMIN            => "Admin",
         self::PERM_SYSADMIN         => "Manage Settings",
@@ -49,14 +42,7 @@ class User extends DbModel
         self::PERM_MANAGE_MEMBER    => "Manage Users",
     ];
 
-    /**
-     * Site staff user
-     */
     const TYPE_STAFF = 'staff';
-
-    /**
-     * Basic site user
-     */
     const TYPE_MEMBER = 'member';
 
 	const TYPE_LIST = [
@@ -105,6 +91,7 @@ class User extends DbModel
         if (!$this->username && $this->email) {
             $this->username = $this->email;
         }
+
         // Remove permissions for non-staff users
         if ($this->isType(self::TYPE_MEMBER)) {
             $this->permissions = 0;
@@ -117,30 +104,21 @@ class User extends DbModel
             unset($values['user_id']);
             Db::insert('user', $values);
             $this->userId = Db::getLastInsertId();
+
+            // TODO: consider moving hashing generation to the view
+            if (empty($this->hash)) {
+                $this->hash = self::createHash($this);
+                Db::update('user', 'user_id', ['user_id' => $this->userId, 'hash' => $this->hash]);
+            }
         }
 
         $this->reload();
     }
 
-    public function delete(): void
+    public function delete(): bool
     {
-
-        Db::delete('user', ['user_id' => $this->userId]);
+        return (false !== Db::delete('user', ['user_id' => $this->userId]));
     }
-
-//    public function save(): void
-//    {
-//        $this->getHash();
-//
-//        if (!$this->username && $this->email) {
-//            $this->username = $this->email;
-//        }
-//        // Remove permissions for non-staff users
-//        if ($this->isType(self::TYPE_MEMBER)) {
-//            $this->permissions = 0;
-//        }
-//        parent::save();
-//    }
 
     /**
      * @param bool $cookie If true any stored login cookies will also be removed
@@ -163,12 +141,22 @@ class User extends DbModel
         }
     }
 
-    // todo
-//    public function getFileList(array $filter = []): array
-//    {
-//        $filter += ['model' => $this];
-//        return FileMap::findFiltered($filter);
-//    }
+    public static function hashPassword(string $password): string
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    public static function createHash(User $user): string
+    {
+        $key = sprintf('%s%s', $user->userId, 'User');
+        return hash('md5', $key);
+    }
+
+    public function getFileList(array $filter = []): array
+    {
+        $filter += ['model' => $this];
+        return File::findFiltered($filter);
+    }
 
     public function getDataPath(): string
     {
@@ -283,12 +271,6 @@ class User extends DbModel
         return $titles;
     }
 
-    public static function hashPassword(string $password): string
-    {
-        return password_hash($password, PASSWORD_DEFAULT);
-    }
-
-
     /**
      * Validate this object's current state and return an array
      * with error messages. This will be useful for validating
@@ -349,37 +331,6 @@ class User extends DbModel
         return $errors;
     }
 
-    /**
-     * @deprecated Add this to the new emails section
-     */
-    public function sendRecoverEmail(bool $isNewAccount = false): bool
-    {
-        // send email to user
-        $content = <<<HTML
-            <h2>Account Recovery.</h2>
-            <p>
-              Welcome {name}
-            </p>
-            <p>
-              Please follow the link to finish recovering your account password.<br/>
-              <a href="{activate-url}" target="_blank">{activate-url}</a>
-            </p>
-            <p><small>Note: If you did not initiate this email, you can safely disregard this message.</small></p>
-        HTML;
-
-        $message = $this->getFactory()->createMessage();
-        $message->set('content', $content);
-        $message->setSubject($this->getConfig()->get('site.title') . ' Password Recovery');
-        $message->addTo($this->email);
-        $message->set('name', $this->getName());
-
-        $hashToken = Encrypt::create($this->getConfig()->get('system.encrypt'))->encrypt(serialize(['h' => $this->getHash(), 't' => time()]));
-        $url = Uri::create('/recoverUpdate')->set('t', $hashToken);
-        $message->set('activate-url', $url->toString());
-
-        return $this->getFactory()->getMailGateway()->send($message);
-    }
-
 
     public function rememberMe(int $day = 30): void
     {
@@ -433,9 +384,9 @@ class User extends DbModel
     public static function find(int $userId): ?static
     {
         return Db::queryOne("
-                SELECT *
-                FROM user
-                WHERE user_id = :userId",
+            SELECT *
+            FROM user
+            WHERE user_id = :userId",
             compact('userId'),
             self::$USER_CLASS
         );
@@ -444,8 +395,8 @@ class User extends DbModel
     public static function findAll(): ?static
     {
         return Db::queryOne("
-                SELECT *
-                FROM user",
+            SELECT *
+            FROM user",
             [],
             self::$USER_CLASS
         );
@@ -453,26 +404,26 @@ class User extends DbModel
 
     public static function findByUsername(string $username): ?static
     {
-        return current(self::findFiltered(['username' => $username]));
+        return self::findFiltered(['username' => $username])[0] ?? null;
     }
 
     public static function findByEmail(string $email): ?static
     {
-        return current(self::findFiltered(['email' => $email]));
+        return self::findFiltered(['email' => $email])[0] ?? null;
     }
 
     public static function findByHash(string $hash): ?static
     {
-        return current(self::findFiltered(['hash' => $hash]));
+        return self::findFiltered(['hash' => $hash])[0] ?? null;
     }
 
     public static function findBySelector(string $selector): ?static
     {
         return Db::queryOne("
-                SELECT *
-                FROM user u
-                INNER JOIN user_remember z USING (user_id)
-                WHERE z.selector = :selector AND expiry > NOW()",
+            SELECT *
+            FROM user u
+            INNER JOIN user_remember z USING (user_id)
+            WHERE z.selector = :selector AND expiry > NOW()",
             compact('selector'),
             self::$USER_CLASS
         );

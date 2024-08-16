@@ -68,6 +68,7 @@ class Table extends \Tt\Table
 
     public function initForm(Request $request): static
     {
+        $values = [];
         if (!(is_null($this->form) || $this->form->getField('filter'))) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
@@ -80,14 +81,14 @@ class Table extends \Tt\Table
             }))->addCss('btn-outline-secondary');
 
             $this->form->execute($request->request->all());
-        }
-
-        if (!$this->form->isSubmitted() && isset($_SESSION[$this->makeRequestKey('filter')])) {
-            $this->form->setFieldValues($_SESSION[$this->makeRequestKey('filter')]);
+            if (!$this->form->isSubmitted() && isset($_SESSION[$this->makeRequestKey('filter')])) {
+                $this->form->setFieldValues($_SESSION[$this->makeRequestKey('filter')]);
+            }
+            $value = $this->form->getFieldValues();
         }
 
         // init DbFilter
-        $this->dbFilter = DbFilter::createFromTable($this->form->getFieldValues(), $this);
+        $this->dbFilter = DbFilter::createFromTable($values, $this);
 
         return $this;
     }
@@ -171,7 +172,7 @@ HTML;
             ->addOnShow(function (Action $action) {
                 $val = $action->getTable()->makeRequestKey($action->getName());
                 return <<<HTML
-                        <button type="submit" name="{$action->getName()}" value="{$val}"
+                        <button type="submit" name="{$action->getName()}" value="$val"
                             class="tk-action-reset-tbl btn btn-sm btn-light"
                             title="Reset table session"
                             data-confirm="Are you sure you want to reset the Table`s session?">

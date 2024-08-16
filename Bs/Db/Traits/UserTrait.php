@@ -2,7 +2,6 @@
 namespace Bs\Db\Traits;
 
 use Bs\Db\User;
-use Bs\Factory;
 
 trait UserTrait
 {

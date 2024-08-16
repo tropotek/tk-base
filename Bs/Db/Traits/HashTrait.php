@@ -9,19 +9,6 @@ trait HashTrait
 {
 
     /**
-     * TODO: see if this works as expected. This may get knocked out if there is an
-     *      overriding save() method in the object itself. Then add the call to getHash() in there manually
-     *      ------------
-     *      Refactor all this hash initialization for the new DB and mappers
-     *
-     */
-    public function save(): void
-    {
-        $this->getHash();
-        parent::save();
-    }
-
-    /**
      * Get the user hash or generate one if needed
      */
     public function getHash(): string

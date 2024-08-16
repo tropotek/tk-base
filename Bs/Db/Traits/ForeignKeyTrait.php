@@ -4,6 +4,9 @@ namespace Bs\Db\Traits;
 use Tk\Db\Mapper\Mapper;
 use Tk\Db\Mapper\Model;
 
+/**
+ * @deprecated
+ */
 trait ForeignKeyTrait
 {
 
@@ -28,6 +31,9 @@ trait ForeignKeyTrait
         return $this->getForeignModelMapper()?->find($modelId);
     }
 
+    /**
+     * @deprecated not sure this is needed here
+     */
     public function validateFkey(array $errors = []): array
     {
         if (!$this->getFkey()) {
