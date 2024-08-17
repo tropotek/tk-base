@@ -67,7 +67,6 @@ class PageDomInterface extends PageInterface implements RendererInterface
     public function __makeTemplate(): ?Template
     {
         $template = '';
-        vd($this->getTemplatePath(), is_file($this->getTemplatePath()));
         if (is_file($this->getTemplatePath())) {
             $template = $this->loadTemplateFile($this->getTemplatePath());
         }
