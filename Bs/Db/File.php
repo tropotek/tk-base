@@ -189,12 +189,12 @@ class File extends DbModel
         );
     }
 
-    public static function findByHash(string $hash): ?File
+    public static function findByHash(string $hash): ?static
     {
         return self::findFiltered(['hash' => $hash])[0] ?? null;
     }
 
-    public static function findByPath(string $path): ?File
+    public static function findByPath(string $path): ?static
     {
         return self::findFiltered(['path' => $path])[0] ?? null;
     }

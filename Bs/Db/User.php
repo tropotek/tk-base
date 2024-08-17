@@ -392,9 +392,9 @@ class User extends DbModel
         );
     }
 
-    public static function findAll(): ?static
+    public static function findAll(): array
     {
-        return Db::queryOne("
+        return Db::query("
             SELECT *
             FROM user",
             [],
@@ -473,8 +473,9 @@ class User extends DbModel
             $filter->appendWhere('a.email = :email AND ');
         }
 
-        if (is_bool($filter['active'] ?? null)) {
-            $filter->appendWhere('a.active = :active AND ');
+        if (isset($filter['active'])) {
+            $filter['active'] = truefalse($filter['active']);
+            $filter->appendWhere('active = :active AND ');
         }
 
         if (!empty($filter['exclude'])) {

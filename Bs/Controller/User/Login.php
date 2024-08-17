@@ -43,7 +43,7 @@ class Login extends ControllerDomInterface
         $html = <<<HTML
 <div>
     <h1 class="text-center h3 mb-3 fw-normal">Login</h1>
-    <div class="" var="content"></div>
+    <div var="content"></div>
 </div>
 HTML;
         return $this->loadTemplate($html);

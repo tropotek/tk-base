@@ -3,13 +3,13 @@ namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
+use Bs\Table;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Tk\Table;
-use Tk\Table\Cell;
-use Tk\Table\Action;
-use Tk\TableRenderer;
 
+/**
+ * @deprecated
+ */
 class ListEvents extends ControllerDomInterface
 {
     protected Table $table;
@@ -19,22 +19,19 @@ class ListEvents extends ControllerDomInterface
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(User::PERM_ADMIN);
 
-        $this->table = new \Tk\Table('event-list');
+        $this->table = new Table('evt');
+        $this->table->appendCell('name');
+        $this->table->appendCell('value');
+        $this->table->appendCell('eventClass');
+        $this->table->appendCell('doc')
+            ->addHeaderCss('max-width');
 
+        // execute actions and set table orderBy from request
+        $this->table->execute($request);
 
-        $this->getTable()->appendCell(new Cell\Text('name'));
-        $this->getTable()->appendCell(new Cell\Text('value'));
-        $this->getTable()->appendCell(new Cell\Text('eventClass'));
-        $this->getTable()->appendCell(new Cell\Text('doc'))->addCss('key')
-            ->addOnShow(function (Cell\Text $cell) {
-                $obj = $cell->getRow()->getData();
-                $cell->getTemplate()->insertHtml('td', $obj['doc'] ?? '');
-            });
-
-        $this->getTable()->appendAction(new Action\Csv())->addExcluded('actions');
         $path = $this->getSystem()->makePath($this->getConfig()->get('path.vendor.org'));
-        $list = $this->convertEventData($this->getAvailableEvents($path));
-        $this->getTable()->setList($list);
+        $rows = $this->convertEventData($this->getAvailableEvents($path));
+        $this->table->setRows($rows);
 
     }
 
@@ -43,12 +40,10 @@ class ListEvents extends ControllerDomInterface
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-        $renderer = new TableRenderer($this->getTable());
-        $renderer->setFooterEnabled(false);
-        $this->getTable()->getRow()->addCss('text-nowrap');
-        $this->getTable()->addCss('table-hover');
-
-        $template->appendTemplate('content', $renderer->show());
+        //$this->table->addRowCss('text-nowrap');
+        $this->table->getRenderer()->setFooterEnabled(false);
+        $this->table->addCss('table-hover');
+        $template->appendTemplate('content', $this->table->show());
 
         return $template;
     }
@@ -64,7 +59,7 @@ class ListEvents extends ControllerDomInterface
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-empire"></i> </div>
+    <div class="card-header" var="title"><i class="fa fa-calendar"></i> </div>
     <div class="card-body" var="content">
         <p>A list of Events that are available to the EventDispatcher:</p>
     </div>
@@ -72,11 +67,6 @@ class ListEvents extends ControllerDomInterface
 </div>
 HTML;
         return $this->loadTemplate($html);
-    }
-
-    public function getTable(): Table
-    {
-        return $this->table;
     }
 
     protected function convertEventData(array $eventData): array

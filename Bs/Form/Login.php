@@ -95,6 +95,9 @@ class Login extends Form
             $user->forgetMe();
         }
 
+        if ($user instanceof User) {
+            $user->getHomeUrl()->redirect();
+        }
         Uri::create('/')->redirect();
     }
 

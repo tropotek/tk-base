@@ -59,7 +59,7 @@
 
 // Var dump function for debugging
 function vd() {
-  if (!config.debug) return;
+  if (!tkConfig.debug) return;
   for(let k in arguments) console.log(arguments[k]);
 }
 
@@ -204,7 +204,7 @@ let tkbase = function () {
     }
 
     function init() {
-      let defaults = { dateFormat: config.dateFormat.jqDatepicker };
+      let defaults = { dateFormat: tkConfig.dateFormat.jqDatepicker };
       $('input.date').each(function () {
         let settings = $.extend({}, defaults, $(this).data());
         $(this).datepicker(settings);
@@ -308,7 +308,7 @@ let tkbase = function () {
       let path = data.elfinderPath ?? '/media';
       return new tinymceElfinder({
         // connector URL (Use elFinder Demo site's connector for this demo)
-        url: config.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php?path='+ path,
+        url: tkConfig.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php?path='+ path,
         // upload target folder hash for this tinyMCE
         uploadTargetHash: 'l1_lw',
         // elFinder dialog node id
@@ -336,9 +336,9 @@ let tkbase = function () {
       image_advtab: true,
 
       urlconverter_callback : function (url, node, on_save) {
-        let parts = url.split(config.baseUrl);
+        let parts = url.split(tkConfig.baseUrl);
         if (parts.length > 1) {
-          url = config.baseUrl + parts[1];
+          url = tkConfig.baseUrl + parts[1];
         }
         return url;
       }

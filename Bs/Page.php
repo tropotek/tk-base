@@ -30,23 +30,22 @@ class Page extends PageDomInterface
     {
         $template = $this->getTemplate();
 
-        $isDebug = $this->getConfig()->isDebug() ? 'true' : 'false';
-
-        $js = <<<JS
-let config = {
-  baseUrl        : '{$this->getConfig()->getBaseUrl()}',
-  dataUrl        : '{$this->getConfig()->getDataUrl()}',
-  templateUrl    : '{$this->getConfig()->getTemplateUrl()}',
-  vendorUrl      : '{$this->getSystem()->makeUrl($this->getConfig()->get('path.vendor'))}',
-  vendorOrgUrl   : '{$this->getSystem()->makeUrl($this->getConfig()->get('path.vendor.org'))}',
-  debug          : {$isDebug},
-  dateFormat: {
-    jqDatepicker : 'dd/mm/yy',
-    bsDatepicker : 'dd/mm/yyyy',
-    sugarjs      : '%d/%m/%Y',
-  }
-}
-JS;
+        $jsConfig = [
+            'baseUrl' => $this->getConfig()->getBaseUrl(),
+            'dataUrl' => $this->getConfig()->getDataUrl(),
+            'templateUrl' => $this->getConfig()->getTemplateUrl(),
+            'vendorUrl' => $this->getSystem()->makeUrl($this->getConfig()->get('path.vendor')),
+            'vendorOrgUrl' => $this->getSystem()->makeUrl($this->getConfig()->get('path.vendor.org')),
+            'debug' => $this->getConfig()->isDebug(),
+            'isProd' => $this->getConfig()->isProd(),
+            'isDev' => $this->getConfig()->isDev(),
+            'dateFormat' => [
+                'jqDatepicker' => 'dd/mm/yy',
+                'bsDatepicker' => 'dd/mm/yyyy',
+                'sugarjs' => '%d/%m/%Y',
+            ],
+        ];
+        $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
 
         // Trigger form and table init events

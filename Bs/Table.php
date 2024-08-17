@@ -22,6 +22,7 @@ class Table extends \Tt\Table
     protected ?DbFilter    $dbFilter     = null;
     protected ?DomRenderer $renderer     = null;
     protected ?Renderer    $formRenderer = null;
+    protected string       $sid          = 'filter';
 
 
     public function __construct(string $tableId = 'tbl', string $orderBy = '', int $limit = 10, int $page = 1)
@@ -30,6 +31,7 @@ class Table extends \Tt\Table
         $this->setLimit($_GET[$this->makeRequestKey(\Tt\Table::PARAM_LIMIT)] ?? $limit);
         $this->setPage($_GET[$this->makeRequestKey(\Tt\Table::PARAM_PAGE)] ?? $page);
         $this->setOrderBy($_GET[$this->makeRequestKey(\Tt\Table::PARAM_ORDERBY)] ?? $orderBy);
+        $this->sid = $this->makeRequestKey('filter');
 
         $path = $this->getConfig()->makePath(
             $this->getConfig()->get('path.vendor.org').'/tk-framework/Tt/Table/templates/bs5_dom.html'
@@ -68,23 +70,24 @@ class Table extends \Tt\Table
 
     public function initForm(Request $request): static
     {
-        $values = [];
-        if (!(is_null($this->form) || $this->form->getField('filter'))) {
+        $values = $_SESSION[$this->sid] ?? [];
+        if (!is_null($this->form) && is_null($this->dbFilter)) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
-                $_SESSION[$this->makeRequestKey('filter')] = $values;
+                $_SESSION[$this->sid] = $values;
                 Uri::create()->redirect();
             }))->setLabel('Search');
             $this->form->appendField(new Form\Action\Submit('clear', function (Form $form, Form\Action\ActionInterface $action) {
-                unset($_SESSION[$this->makeRequestKey('filter')]);
+                unset($_SESSION[$this->sid]);
                 Uri::create()->redirect();
             }))->addCss('btn-outline-secondary');
 
             $this->form->execute($request->request->all());
-            if (!$this->form->isSubmitted() && isset($_SESSION[$this->makeRequestKey('filter')])) {
-                $this->form->setFieldValues($_SESSION[$this->makeRequestKey('filter')]);
+
+            if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid])) {
+                $this->form->setFieldValues($_SESSION[$this->sid]);
             }
-            $value = $this->form->getFieldValues();
+            $values = $this->form->getFieldValues();
         }
 
         // init DbFilter
@@ -98,7 +101,9 @@ class Table extends \Tt\Table
         $template = $this->getTemplate();
 
         // Render filter form
-        $template->appendTemplate('table', $this->formRenderer->show());
+        if ($this->formRenderer) {
+            $template->appendTemplate('table', $this->formRenderer->show());
+        }
 
         // Render table
         $template->appendTemplate('table', $this->getRenderer()->show());
@@ -162,7 +167,7 @@ HTML;
                 $val = $action->getTable()->makeRequestKey($action->getName());
                 $action->setActive($request->get($action->getName(), '') == $val);
                 if (!$action->isActive()) return;
-                unset($_SESSION[$this->makeRequestKey('filter')]);
+                unset($_SESSION[$this->sid]);
                 Uri::create()
                     ->remove($action->getTable()->makeRequestKey(\Tt\Table::PARAM_PAGE))
                     ->remove($this->makeRequestKey(\Tt\Table::PARAM_LIMIT))
