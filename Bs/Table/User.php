@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Table;
 
+use Bs\Db\Permissions;
 use Bs\Table;
 use Bs\Util\Masquerade;
 use Dom\Template;
@@ -61,9 +62,9 @@ class User extends Table
         if ($this->getType() != \Bs\Db\User::TYPE_MEMBER) {
             $this->appendCell('permissions')
                 ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
-                    if ($user->hasPermission(\Bs\Db\User::PERM_ADMIN)) {
+                    if ($user->hasPermission(Permissions::PERM_ADMIN)) {
                         $list = $user->getAvailablePermissions();
-                        return $list[\Bs\Db\User::PERM_ADMIN];
+                        return $list[Permissions::PERM_ADMIN];
                     }
                     $list = array_filter($user->getAvailablePermissions(), function ($k) use ($user) {
                         return $user->hasPermission($k);

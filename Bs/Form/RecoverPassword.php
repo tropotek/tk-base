@@ -19,7 +19,8 @@ class RecoverPassword extends Form
     {
         // logout any existing user
         User::logout();
-        $this->getSession()->set('recover', time());
+
+        $_SESSION['recover'] = time();
 
         //$token = $request->get('t');        // Bug in here that replaces + with a space on POSTS
         $token = $_REQUEST['t'] ?? '';

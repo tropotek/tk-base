@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Form;
 
+use Bs\Db\Permissions;
 use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
@@ -54,7 +55,7 @@ class User extends Form
             $l2->addCss('tk-input-lock');
         }
 
-        if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(\Bs\Db\User::PERM_SYSADMIN)) {
+        if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(Permissions::PERM_SYSADMIN)) {
 
             $list = array_flip($this->getUser()->getAvailablePermissions());
             $field = $this->appendField(new Checkbox('perm', $list))

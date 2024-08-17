@@ -85,7 +85,7 @@ class File extends DbModel
 
     public function save(): void
     {
-        $this->install();
+        self::install();
 
         $map = static::getDataMap();
         $values = $map->getArray($this);
@@ -170,6 +170,7 @@ class File extends DbModel
 
     public static function find(int $fileId): ?static
     {
+        self::install();
         return Db::queryOne("
             SELECT *
             FROM file
@@ -181,6 +182,7 @@ class File extends DbModel
 
     public static function findAll(): ?static
     {
+        self::install();
         return Db::queryOne("
             SELECT *
             FROM file",
@@ -201,6 +203,8 @@ class File extends DbModel
 
     public static function findFiltered(array|DbFilter $filter): array
     {
+        self::install();
+
         $filter = DbFilter::create($filter);
 
         if (!empty($filter['search'])) {
@@ -264,8 +268,10 @@ class File extends DbModel
         );
     }
 
-    protected function install(): bool
+    public static function install(): bool
     {
+        // TODO: note getting a PdoSessionHandler.php error when this is run???
+        //       Not sure why, maybe having a non symfony DB session handler will be better
         if (!Db::tableExists('file')) {
             $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS file

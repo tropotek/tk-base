@@ -64,7 +64,7 @@ JS;
 
         $template->setText('site-name', $this->getRegistry()->getSiteName());
         $template->setText('site-short-name', $this->getRegistry()->getSiteShortName());
-        $template->setText('site-name-letter', $this->getRegistry()->getSitename()[0]);
+        $template->setText('site-name-letter', $this->getRegistry()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
 
         $user = $this->getFactory()->getAuthUser();

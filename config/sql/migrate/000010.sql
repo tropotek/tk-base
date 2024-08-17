@@ -2,6 +2,7 @@
 -- @version 8.0.0
 -- --------------------------------------------
 
+
 -- install the default tk lib user table
 CREATE TABLE IF NOT EXISTS user
 (
@@ -17,12 +18,11 @@ CREATE TABLE IF NOT EXISTS user
   name_last VARCHAR(128) NOT NULL DEFAULT '',
   name_display VARCHAR(128) NOT NULL DEFAULT '',
   notes TEXT DEFAULT '',
-  timezone VARCHAR(64) NULL,
+  timezone VARCHAR(64) NOT NULL DEFAULT '',
   active BOOL NOT NULL DEFAULT TRUE,
-  hash VARCHAR(64) NOT NULL DEFAULT '',
   session_id VARCHAR(128) NOT NULL DEFAULT '',
   last_login TIMESTAMP NULL,
-  modified TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  modified TIMESTAMP ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_username (username),
   UNIQUE KEY uk_email (email),
@@ -31,10 +31,11 @@ CREATE TABLE IF NOT EXISTS user
   KEY k_email (email)
 );
 
+
 -- User tokens to enable the 'Remember Me' functionality
 CREATE TABLE IF NOT EXISTS user_remember
 (
-  file_id INT AUTO_INCREMENT PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   selector VARCHAR(255) NOT NULL,
   hashed_validator VARCHAR(255) NOT NULL,
   browser_id VARCHAR(128) NOT NULL,
@@ -42,38 +43,4 @@ CREATE TABLE IF NOT EXISTS user_remember
   expiry DATETIME NOT NULL,
   CONSTRAINT fk_user_remember__user_id FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
 );
-
--- TODO Add the following event to your project's `event.sql`
-# DROP EVENT IF EXISTS evt_delete_expired_user_remember;
-# DELIMITER //
-# CREATE EVENT evt_delete_expired_user_remember
-#   ON SCHEDULE EVERY 1 DAY
-#   COMMENT 'Delete expired user remember me login tokens'
-#   DO
-#   BEGIN
-#     DELETE FROM user_remember WHERE expiry < NOW();
-#   END
-# //
-# DELIMITER ;
-
-
--- ------------------------------------------------------------------------------------
-# TODO: if you need to instert data in the App migration scripts
-# SET FOREIGN_KEY_CHECKS = 0;
-# SET SQL_SAFE_UPDATES = 0;
-#
-# TRUNCATE TABLE user;
-# TRUNCATE TABLE user_remember;
-#
-# INSERT INTO user (type, username, email, name_first, timezone, permissions) VALUES
-#   ('staff', 'admin', 'admin@example.com', 'Admin', NULL, 1)
-# ;
-#
-# UPDATE `user` SET `hash` = MD5(CONCAT(username, id)) WHERE 1;
-#
-# SET SQL_SAFE_UPDATES = 1;
-# SET FOREIGN_KEY_CHECKS = 1;
-
-
-
 

@@ -20,7 +20,7 @@ class Login extends Form
     public function init(): static
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
-        $this->getSession()->set('login', time());
+        $_SESSION['login'] = time();
 
         // check if user already logged in...
         $user = User::retrieveMe();
@@ -69,8 +69,12 @@ class Login extends Form
     {
         $values = $form->getFieldValues();
 
-        $token = $this->getSession()->get('login', 0);
-        $this->getSession()->remove('login');
+//        $token = $this->getSession()->get('login', 0);
+//        $this->getSession()->remove('login');
+
+        $token = $_SESSION['login'] ?? 0;
+        unset($_SESSION['login']);
+
         if (($token + 60*2) < time()) { // login before form token times out
             $form->addError( 'Invalid form submission, please try again.');
             return;
@@ -86,7 +90,8 @@ class Login extends Form
         // Login successful
         $user = $this->getFactory()->getAuthUser();
         $user->lastLogin = Date::create('now', $user->timezone ?: null);
-        $user->sessionId = $this->getSession()->getId();
+        //$user->sessionId = $this->getSession()->getId();
+        $user->sessionId = session_id();
         $user->save();
 
         if (!empty($values['remember'] ?? '')) {

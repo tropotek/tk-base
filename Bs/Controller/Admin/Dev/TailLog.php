@@ -2,6 +2,7 @@
 namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Dom\Template;
 use JetBrains\PhpStorm\NoReturn;
@@ -15,7 +16,7 @@ class TailLog extends ControllerDomInterface
     public function doDefault(Request $request): void
     {
         $this->getPage()->setTitle('Tail Log');
-        $this->setAccess(User::PERM_ADMIN);
+        $this->setAccess(Permissions::PERM_ADMIN);
 
         $this->logPath = ini_get('error_log');
 
@@ -38,14 +39,13 @@ class TailLog extends ControllerDomInterface
             exit;
         }
 
-        $session = $this->getSession();
         $handle = fopen($this->logPath, 'r');
-        if ($session->get('tail-offset')) {
-            $pos = $session->get('tail-offset');
+        if (isset($_SESSION['tail-offset'])) {
+            $pos = $_SESSION['tail-offset'];
             $data = stream_get_contents($handle, -1, $pos);
             echo htmlentities($data);
             $pos = ftell($handle);
-            $session->set('tail-offset', $pos);
+            $_SESSION['tail-offset'] = $pos;
         } else {
             $this->doSeek($request, -1000);
         }
@@ -54,7 +54,6 @@ class TailLog extends ControllerDomInterface
 
     public function doSeek(Request $request, $seekAdjust = 0): void
     {
-        $session = $this->getSession();
         $handle = fopen($this->logPath, 'r');
         fseek($handle, 0, \SEEK_END);
         $pos = ftell($handle);
@@ -62,7 +61,7 @@ class TailLog extends ControllerDomInterface
             $pos += $seekAdjust;
         }
         if ($pos < 0) $pos = 0;
-        $session->set('tail-offset', $pos);
+        $_SESSION['tail-offset'] = $pos;
     }
 
     public function show(): ?Template

@@ -30,7 +30,7 @@ class Masquerade
         $factory = Factory::instance();
 
         // Get the masquerade queue from the session
-        $msqArr = $factory->getSession()->get(static::SID, []);
+        $msqArr = $_SESSION[static::SID] ?? [];
 
         // Save the current user and url to the session, to allow logout
         $userData = [
@@ -40,7 +40,8 @@ class Masquerade
         $msqArr[] = $userData;
 
         // Save the updated masquerade queue
-        $factory->getSession()->set(static::SID, $msqArr);
+        $_SESSION[static::SID] = $msqArr;
+
         // Simulates an AuthAdapter authenticate() method
         $factory->getAuthController()->getStorage()->write($msqUser->username);
 
@@ -56,14 +57,14 @@ class Masquerade
         $factory = Factory::instance();
         if (!self::isMasquerading()) return false;
         if (!$factory->getAuthController()->hasIdentity()) return false;
-        $msqArr = $factory->getSession()->get(self::SID);
+        $msqArr = $_SESSION[self::SID];
         if (!is_array($msqArr) || !count($msqArr)) return false;
 
         $userData = array_pop($msqArr);
         if (empty($userData['userId']) || empty($userData['url'])) return false;
 
         // Save the updated masquerade queue
-        $factory->getSession()->set(self::SID, $msqArr);
+        $_SESSION[self::SID] = $msqArr;
         $factory->getAuthController()->getStorage()->write($userData['userId']);
 
         \Tk\Uri::create($userData['url'])->remove(self::QUERY_MSQ)->redirect();
@@ -79,7 +80,7 @@ class Masquerade
         if (!$msqUser->active) return false;
         if ($user->userId == $msqUser->userId) return false;
 
-        $msqArr = $factory->getSession()->get(static::SID);
+        $msqArr = $_SESSION[static::SID] ?? null;
         if (is_array($msqArr)) {    // Check if we are already masquerading as this user in the queue
             foreach ($msqArr as $data) {
                 if ($data['userId'] == $msqUser->userId) return false;
@@ -93,10 +94,9 @@ class Masquerade
      */
     public static function getMasqueradingUser(): ?User
     {
-        $session = Factory::instance()->getSession();
         $user = null;
-        if ($session->has(static::SID)) {
-            $msqArr = current($session->get(static::SID));
+        if (is_array($_SESSION[static::SID])) {
+            $msqArr = $_SESSION[static::SID][0];
             /** @var User $user */
             $user = User::find($msqArr['userId']);
         }
@@ -120,10 +120,7 @@ class Masquerade
      */
     public static function getNestings(): int
     {
-        $session = Factory::instance()->getSession();
-        if (!$session->has(static::SID)) return 0;
-        $msqArr = $session->get(static::SID);
-        return count($msqArr);
+        return count($_SESSION[static::SID] ?? []);
     }
 
     /**
@@ -131,6 +128,6 @@ class Masquerade
      */
     public static function clearAll(): void
     {
-        Factory::instance()->getSession()->remove(static::SID);
+        unset($_SESSION[static::SID]);
     }
 }

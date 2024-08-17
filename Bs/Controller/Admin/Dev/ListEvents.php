@@ -2,6 +2,7 @@
 namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Table;
 use Dom\Template;
@@ -17,7 +18,7 @@ class ListEvents extends ControllerDomInterface
     public function doDefault(Request $request): void
     {
         $this->getPage()->setTitle('Tail Log');
-        $this->setAccess(User::PERM_ADMIN);
+        $this->setAccess(Permissions::PERM_ADMIN);
 
         $this->table = new Table('evt');
         $this->table->appendCell('name');

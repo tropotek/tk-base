@@ -2,6 +2,7 @@
 namespace Bs\Controller\File;
 
 use Bs\ControllerDomInterface;
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Table\File;
 use Dom\Template;
@@ -22,7 +23,8 @@ class Manager extends ControllerDomInterface
     public function doDefault(Request $request): void
     {
         $this->getPage()->setTitle('File Manager');
-        $this->setAccess(User::PERM_ADMIN);
+        $this->setAccess(Permissions::PERM_ADMIN);
+
 
         // Get the form template
         $this->table = new \Bs\Table\File();

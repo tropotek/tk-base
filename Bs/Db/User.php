@@ -23,25 +23,6 @@ class User extends DbModel
      */
     const REMEMBER_CID = '__rmb';
 
-    /**
-     * permission values
-	 * permissions are bit masks that can include on or more bits
-	 * requests for permission are ANDed with the user's permissions
-	 * if the result is non-zero the user has permission.
-     */
-	const PERM_ADMIN            = 0x1; // Admin
-	const PERM_SYSADMIN         = 0x2; // Change system
-	const PERM_MANAGE_STAFF     = 0x4; // Manage staff
-    const PERM_MANAGE_MEMBER    = 0x8; // Manage members
-	//                            0x10; // available
-
-	const PERMISSION_LIST = [
-        self::PERM_ADMIN            => "Admin",
-        self::PERM_SYSADMIN         => "Manage Settings",
-        self::PERM_MANAGE_STAFF     => "Manage Staff",
-        self::PERM_MANAGE_MEMBER    => "Manage Users",
-    ];
-
     const TYPE_STAFF = 'staff';
     const TYPE_MEMBER = 'member';
 
@@ -56,19 +37,19 @@ class User extends DbModel
     public int        $permissions   = 0;
     public string     $username      = '';
     public string     $password      = '';
-
-    public ?string    $timezone      = null;
-    public bool       $active        = true;
-    public string     $sessionId     = '';
-    public string     $hash          = '';      // todo: could get this from the view
-    public ?\DateTime $lastLogin     = null;
-
     public string     $email         = '';
+    public ?string    $name          = '';
     public string     $nameTitle     = '';
     public string     $nameFirst     = '';
     public string     $nameLast      = '';
     public ?string    $nameDisplay   = '';
     public string     $notes         = '';
+    public string     $timezone      = '';
+    public bool       $active        = true;
+    public string     $sessionId     = '';
+    public string     $hash          = '';
+    public string     $dataPath      = '';
+    public ?\DateTime $lastLogin     = null;
 
     public \DateTime $modified;
     public \DateTime $created;
@@ -106,12 +87,6 @@ class User extends DbModel
             unset($values['user_id']);
             Db::insert('user', $values);
             $this->userId = Db::getLastInsertId();
-
-            // TODO: consider moving hashing generation to the view
-            if (empty($this->hash)) {
-                $this->hash = self::createHash($this);
-                Db::update('user', 'user_id', ['user_id' => $this->userId, 'hash' => $this->hash]);
-            }
         }
 
         $this->reload();
@@ -148,12 +123,6 @@ class User extends DbModel
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public static function createHash(User $user): string
-    {
-        $key = sprintf('%s%s', $user->userId, 'User');
-        return hash('md5', $key);
-    }
-
     public function getFileList(array $filter = []): array
     {
         $filter += ['model' => $this];
@@ -162,7 +131,7 @@ class User extends DbModel
 
     public function getDataPath(): string
     {
-        return sprintf('/user/%s/data', $this->userId);
+        return $this->dataPath;
     }
 
     public function getImageUrl(): ?Uri
@@ -180,7 +149,7 @@ class User extends DbModel
 
     public function isAdmin(): bool
     {
-        return ($this->isStaff() && $this->hasPermission(self::PERM_ADMIN));
+        return ($this->isStaff() && $this->hasPermission(Permissions::PERM_ADMIN));
     }
 
     public function isStaff(): bool
@@ -209,7 +178,7 @@ class User extends DbModel
         // non-logged in users have no permissions
         if (!$this->active) return false;
         // admin users have all permissions
-        if ((self::PERM_ADMIN & $this->permissions) != 0) return true;
+        if ((Permissions::PERM_ADMIN & $this->permissions) != 0) return true;
         return ($permission & $this->permissions) != 0;
     }
 
@@ -220,7 +189,7 @@ class User extends DbModel
      */
     public function getPermissionList(): array
     {
-        return array_keys(array_filter(static::PERMISSION_LIST, fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
+        return array_keys(array_filter(Permissions::PERMISSION_LIST, fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
     }
 
     /**
@@ -231,7 +200,7 @@ class User extends DbModel
     public function getAvailablePermissions(): array
     {
         if ($this->isStaff()) {
-            return static::PERMISSION_LIST;
+            return Permissions::PERMISSION_LIST;
         }
         return [];
     }
@@ -387,7 +356,7 @@ class User extends DbModel
     {
         return Db::queryOne("
             SELECT *
-            FROM user
+            FROM v_user
             WHERE user_id = :userId",
             compact('userId'),
             self::$USER_CLASS
@@ -398,7 +367,7 @@ class User extends DbModel
     {
         return Db::query("
             SELECT *
-            FROM user",
+            FROM v_user",
             [],
             self::$USER_CLASS
         );
@@ -423,7 +392,7 @@ class User extends DbModel
     {
         return Db::queryOne("
             SELECT *
-            FROM user u
+            FROM v_user u
             INNER JOIN user_remember z USING (user_id)
             WHERE z.selector = :selector AND expiry > NOW()",
             compact('selector'),
@@ -487,7 +456,7 @@ class User extends DbModel
 
         return Db::query("
             SELECT *
-            FROM user a
+            FROM v_user a
             {$filter->getSql()}",
             $filter->all(),
             self::$USER_CLASS

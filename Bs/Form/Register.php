@@ -16,7 +16,7 @@ class Register extends Form
     public function init(): static
     {
         // Set a token in the session on show, to ensure this browser is the one that requested the login.
-        $this->getSession()->set('recover', time());
+        $_SESSION['recover'] = time();
 
         $this->appendField(new Input('name'))
             ->setRequired()
@@ -76,8 +76,9 @@ class Register extends Form
         // set object values from fields
         $form->mapValues($user);
 
-        $token = $this->getSession()->get('recover', 0);
-        $this->getSession()->remove('recover');
+        $token = $_SESSION['recover'] ?? 0;
+        unset($_SESSION['recover']);
+
         if (($token + 60*2) < time()) { // submit before form token times out
             $form->addError('Invalid form submission, please try again.');
             return;

@@ -2,6 +2,7 @@
 namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Table;
 use Bs\Table\ManagerTrait;
@@ -28,11 +29,11 @@ class Manager extends ControllerDomInterface
         $this->getCrumbs()->reset();
 
         if ($this->type == User::TYPE_MEMBER) {
-            $this->setAccess(User::PERM_MANAGE_MEMBER);
+            $this->setAccess(Permissions::PERM_MANAGE_MEMBER);
         } else if ($this->type == User::TYPE_STAFF) {
-            $this->setAccess(User::PERM_MANAGE_STAFF);
+            $this->setAccess(Permissions::PERM_MANAGE_STAFF);
         } else {
-            $this->setAccess(User::PERM_ADMIN);
+            $this->setAccess(Permissions::PERM_ADMIN);
         }
 
         $this->getPage()->setTitle(ucfirst($this->type ?: 'User') . ' Manager');
@@ -48,6 +49,7 @@ class Manager extends ControllerDomInterface
             $filter->set('type', $this->type);
         }
         $rows = User::findFiltered($filter);
+
         $this->table->setRows($rows, Db::getLastStatement()->getTotalRows());
     }
 

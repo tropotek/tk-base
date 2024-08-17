@@ -1,5 +1,5 @@
 -- ------------------------------------------------------
--- All project procedures and functions
+-- SQL procedures and functions
 --
 -- Files views.sql, procedures.sql, events.sql, triggers.sql
 --  will be executed if they exist after install, update and migration
@@ -10,7 +10,42 @@
 --
 -- ------------------------------------------------------
 
--- Set all words first letter to uppercase
+-- necessary because views can't refer to @@time_zone
+DROP FUNCTION IF EXISTS session_timezone;
+DELIMITER //
+CREATE FUNCTION session_timezone() RETURNS VARCHAR(100) DETERMINISTIC
+BEGIN
+	RETURN @@time_zone;
+END //
+DELIMITER ;
+
+-- compares two date ranges and checks for overlap (inclusive)
+-- start dates must be before end date
+# DROP FUNCTION IF EXISTS dates_overlap;
+# CREATE FUNCTION dates_overlap(
+# 	start1 DATE,
+# 	end1 DATE,
+# 	start2 DATE,
+# 	end2 DATE
+# ) RETURNS BOOLEAN DETERMINISTIC
+# 	RETURN GREATEST(start1, start2) <= LEAST(end1, end2)
+# ;
+
+-- return extension given a filename
+-- returns extension lower-cased, null if no extension found
+# DROP FUNCTION IF EXISTS filename_ext;
+# CREATE FUNCTION filename_ext(filename VARCHAR(400))
+#   RETURNS VARCHAR(4) DETERMINISTIC
+# BEGIN
+#   SET @ext = SUBSTRING_INDEX(filename, '.', -1);
+#   IF @ext = filename THEN
+#     -- no . found
+#     SET @ext = NULL;
+#   END IF;
+#   RETURN LOWER(@ext);
+# END;
+
+-- Set all words first letter to uppercase (mysql only)
 # DROP FUNCTION IF EXISTS ucwords;
 # CREATE FUNCTION ucwords(s VARCHAR(255)) RETURNS VARCHAR(255)
 # BEGIN
@@ -34,52 +69,4 @@
 #   end while;
 #   set x = CONCAT(x, y);
 #   return x;
-# END;
-
--- compares two date ranges and checks for overlap (inclusive)
--- start dates must be before end date
-# DROP FUNCTION IF EXISTS dates_overlap;
-# CREATE FUNCTION dates_overlap(
-# 	start1 DATE,
-# 	end1 DATE,
-# 	start2 DATE,
-# 	end2 DATE
-# ) RETURNS BOOLEAN DETERMINISTIC
-# 	RETURN GREATEST(start1, start2) <= LEAST(end1, end2)
-# ;
-
-
--- Create a temporary date table for count queries that have no data on every date required
-# DROP PROCEDURE IF EXISTS procFillCal;
-# CREATE PROCEDURE procFillCal(pTableName VARCHAR(32), pStartDate DATE, pEndDate DATE, pInterval VARCHAR(8), pIntervalUnit INTEGER)
-# BEGIN
-#   DECLARE pDate DATE;
-# --  DROP TEMPORARY TABLE IF EXISTS pTableName;
-#   CREATE TEMPORARY TABLE pTableName (`date` DATE );
-#   TRUNCATE pTableName;
-#   SET pDate = pStartDate;
-#   WHILE pDate < pEndDate DO
-#     INSERT INTO pTableName VALUES(pDate);
-#     CASE UPPER(pInterval)
-#       WHEN 'DAY' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit DAY);
-#       WHEN 'WEEK' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit WEEK);
-#       WHEN 'MONTH' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit MONTH);
-#       WHEN 'YEAR' THEN SET pDate = ADDDATE(pDate, INTERVAL pIntervalUnit YEAR);
-#     END CASE;
-#   END WHILE;
-#  END;
-
-
--- return extension given a filename
--- returns extension lower-cased, null if no extension found
-# DROP FUNCTION IF EXISTS filename_ext;
-# CREATE FUNCTION filename_ext(filename VARCHAR(400))
-#   RETURNS VARCHAR(4) DETERMINISTIC
-# BEGIN
-#   SET @ext = SUBSTRING_INDEX(filename, '.', -1);
-#   IF @ext = filename THEN
-#     -- no . found
-#     SET @ext = NULL;
-#   END IF;
-#   RETURN LOWER(@ext);
 # END;

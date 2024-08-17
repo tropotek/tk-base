@@ -16,7 +16,8 @@ class Recover extends Form
     {
         // logout any existing user
         User::logout();
-        $this->getSession()->set('recover', time());
+
+        $_SESSION['recover'] = time();
 
         $this->getForm()->appendField(new Input('username'))
             ->setAttr('autocomplete', 'off')
@@ -57,8 +58,9 @@ class Recover extends Form
             return;
         }
 
-        $token = $this->getSession()->get('recover', 0);
-        $this->getSession()->remove('recover');
+        $token = $_SESSION['recover'] ?? 0;
+        unset($_SESSION['recover']);
+
         if (($token + 60*2) < time()) { // submit before form token times out
             $form->addError('Invalid form submission, please try again.');
             return;

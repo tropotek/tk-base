@@ -2,6 +2,7 @@
 namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Form;
 use Dom\Template;
@@ -20,7 +21,7 @@ class Edit extends ControllerDomInterface
     public function doDefault(Request $request, string $type): void
     {
         $this->getPage()->setTitle('Edit User');
-        $this->setAccess(User::PERM_MANAGE_MEMBER | User::PERM_MANAGE_STAFF);
+        $this->setAccess(Permissions::PERM_MANAGE_MEMBER | Permissions::PERM_MANAGE_STAFF);
 
         $this->type = $type;
         $this->user = $this->getFactory()->createUser();
@@ -58,7 +59,7 @@ class Edit extends ControllerDomInterface
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-        if ($this->getUser()->userId > 1 && $this->getAuthUser()->hasPermission(User::PERM_ADMIN)) {
+        if ($this->getUser()->userId > 1 && $this->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
             if ($this->getUser()->isType(User::TYPE_MEMBER)) {
                 $url = Uri::create()->set('cv', User::TYPE_STAFF);
                 $template->setAttr('to-staff', 'href', $url);

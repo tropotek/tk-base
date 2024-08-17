@@ -41,7 +41,7 @@ class Factory extends \Tk\Factory
     public function getAuthController(): Auth
     {
         if (!$this->has('authController')) {
-            $auth = new Auth(new \Tk\Auth\Storage\SessionStorage($this->getSession()));
+            $auth = new Auth(new \Tk\Auth\Storage\SessionStorage());
             $this->set('authController', $auth);
         }
         return $this->get('authController');
@@ -187,7 +187,8 @@ class Factory extends \Tk\Factory
         $id = 'breadcrumbs.' . $type;
         //$this->getSession()->set($id, null);
         if (!$this->has($id)) {
-            $crumbs = $this->getSession()->get($id);
+            //$crumbs = $this->getSession()->get($id);
+            $crumbs = $_SESSION[$id] ?? null;
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
@@ -195,7 +196,8 @@ class Factory extends \Tk\Factory
                     $crumbs->setHomeUrl('/dashboard');
                 }
                 $crumbs->reset();
-                $this->getSession()->set($id, $crumbs);
+                //$this->getSession()->set($id, $crumbs);
+                $_SESSION[$id] = $crumbs;
             }
             $this->set($id, $crumbs);
         }

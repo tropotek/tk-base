@@ -1,5 +1,5 @@
 -- ------------------------------------------------------
--- All project views
+-- SQL views
 --
 -- Files views.sql, procedures.sql, events.sql, triggers.sql
 --  will be executed if they exist after install, update and migration
@@ -10,12 +10,13 @@
 --
 -- ------------------------------------------------------
 
--- Show only active users
+
 CREATE OR REPLACE VIEW v_user AS
-SELECT *
+SELECT
+  u.*,
+  MD5(CONCAT(u.user_id, 'User')) AS hash,
+  CONCAT('/user/', u.user_id, '/data') AS data_path
 FROM
   user u
-WHERE
-  u.active
 ;
 
