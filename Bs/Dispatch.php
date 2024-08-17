@@ -46,10 +46,7 @@ class Dispatch extends \Tk\Mvc\Dispatch
         /** @var PageBytes $pageBytes */
         $pageBytes = $this->getFactory()->getTemplateModifier()->getFilter('pageBytes');
         if ($pageBytes) {
-            $this->getDispatcher()->addSubscriber(new PageBytesHandler(
-                $this->getFactory()->getLogger(),
-                $pageBytes
-            ));
+            $this->getDispatcher()->addSubscriber(new PageBytesHandler($pageBytes));
         }
         $this->getDispatcher()->addSubscriber(new CrumbsHandler());
 
