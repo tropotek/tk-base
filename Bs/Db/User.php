@@ -56,17 +56,19 @@ class User extends DbModel
     public int        $permissions   = 0;
     public string     $username      = '';
     public string     $password      = '';
+
+    public ?string    $timezone      = null;
+    public bool       $active        = true;
+    public string     $sessionId     = '';
+    public string     $hash          = '';      // todo: could get this from the view
+    public ?\DateTime $lastLogin     = null;
+
     public string     $email         = '';
     public string     $nameTitle     = '';
     public string     $nameFirst     = '';
     public string     $nameLast      = '';
     public ?string    $nameDisplay   = '';
     public string     $notes         = '';
-    public ?string    $timezone      = null;
-    public bool       $active        = true;
-    public string     $sessionId     = '';
-    public string     $hash          = '';      // todo: could get this from the view
-    public ?\DateTime $lastLogin     = null;
 
     public \DateTime $modified;
     public \DateTime $created;
