@@ -337,7 +337,9 @@ class User extends DbModel
     public static function retrieveMe(): ?static
     {
         $user = null;
-        $token = Factory::instance()->getRequest()->cookies->get(self::REMEMBER_CID, '');
+        $token = $_COOKIE[self::REMEMBER_CID] ?? '';
+        //$token = Factory::instance()->getRequest()->cookies->get(self::REMEMBER_CID, '');
+
         if ($token) {
             [$selector, $validator] = self::parseToken($token);
             $tokens = self::findTokenBySelector($selector);

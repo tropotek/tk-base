@@ -23,24 +23,25 @@ class Edit extends ControllerDomInterface
         $this->getPage()->setTitle('Edit User');
         $this->setAccess(Permissions::PERM_MANAGE_MEMBER | Permissions::PERM_MANAGE_STAFF);
 
-        $this->type = $type;
-        $this->user = $this->getFactory()->createUser();
-        $this->getUser()->type = $type;
+        $userId  = intval($_GET['userId'] ?? 0);
+        $newType = trim($_GET['cv'] ?? '');
 
-        if ($request->query->getInt('userId')) {
-            $this->user = User::find($request->query->getInt('userId'));
-        }
-        if (!$this->getUser()) {
-            throw new Exception('Invalid User ID: ' . $request->query->getInt('userId'));
+        $this->type = $type;
+        $this->user = User::create();
+        $this->getUser()->type = $type;
+        if ($userId) {
+            $this->user = User::find($userId);
+            if (!$this->getUser()) {
+                throw new Exception('Invalid User ID: ' . $userId);
+            }
         }
 
         // Get the form template
         $this->form = new \Bs\Form\User($this->getUser());
         $this->form->setType($this->type);
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
 
-        if ($request->query->get('cv')) {
-            $newType = trim($request->query->get('cv'));
+        if (!empty($newType)) {
             if ($newType == User::TYPE_STAFF) {
                 $this->getUser()->type = User::TYPE_STAFF;
                 Alert::addSuccess('User now set to type STAFF, please select and save the users new permissions.');

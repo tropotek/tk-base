@@ -55,10 +55,10 @@ abstract class ControllerInterface
      */
     protected function forward(callable|string|array $controller, array $path = null, array $query = null, array $request = null): Response
     {
-        $requestObj = $this->getFactory()->getRequest();
+        $requestObj = Factory::instance()->getRequest();
         $path['_controller'] = $controller;
         $subRequest = $requestObj->duplicate($query, $request, $path);
-        $kernel = $this->getFactory()->getFrontController();
+        $kernel = Factory::instance()->getFrontController();
         return $kernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
     }
 }

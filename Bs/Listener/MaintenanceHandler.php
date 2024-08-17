@@ -2,7 +2,6 @@
 namespace Bs\Listener;
 
 use Bs\Db\Permissions;
-use Bs\Db\User;
 use Bs\Page;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;

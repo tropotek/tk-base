@@ -4,8 +4,6 @@ namespace Bs\Table;
 use Bs\Db\Permissions;
 use Bs\Table;
 use Bs\Util\Masquerade;
-use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Select;
@@ -21,7 +19,7 @@ class User extends Table
     protected string $type = '';
 
 
-    public function init(Request $request): static
+    public function init(): static
     {
         $rowSelect = RowSelect::create('id', 'userId');
         $this->appendCell($rowSelect);
@@ -98,7 +96,7 @@ class User extends Table
         }
 
         // init filter fields for actions to access to the filter values
-        $this->initForm($request);
+        $this->initForm();
 
         // Add Table actions
         // todo: I think we should remove delete user action, create a cmd action to delete and clean users
@@ -127,32 +125,21 @@ class User extends Table
         return $this;
     }
 
-    public function execute(Request $request): static
+    public function execute(): static
     {
-        if ($request->query->has('del')) {
-            $this->doDelete($request->query->get('del'));
+        if (isset($GET['del'])) {
+            $this->doDelete(intval($_GET['del'] ?? 0));
+        }
+        if (isset($GET[Masquerade::QUERY_MSQ])) {
+            $this->doMsq(intval($_GET[Masquerade::QUERY_MSQ] ?? 0));
         }
 
-        if ($request->query->has(Masquerade::QUERY_MSQ)) {
-            $this->doMsq($request->query->get(Masquerade::QUERY_MSQ));
-        }
-
-        parent::execute($request);
+        parent::execute();
 
         return $this;
     }
 
-//    public function findList(array $filter = [], ?Tool $tool = null): null|array|Result
-//    {
-//        if (!$tool) $tool = $this->getTool();
-//        $filter = array_merge($this->getFilterForm()->getFieldValues(), $filter);
-//        //$list = $this->getFactory()->getUserMap()->findFiltered($filter, $tool);
-//        $list = \Bs\Db\User::findFiltered($filter);
-//        $this->setList($list);
-//        return $list;
-//    }
-
-    private function doDelete($userId): void
+    private function doDelete(int $userId): void
     {
         /** @var \Bs\Db\User $user */
         $user = \Bs\Db\User::find($userId);
@@ -162,7 +149,7 @@ class User extends Table
         Uri::create()->reset()->redirect();
     }
 
-    private function doMsq($userId): void
+    private function doMsq(int $userId): void
     {
         /** @var \Bs\Db\User $msqUser */
         $msqUser = \Bs\Db\User::find($userId);
@@ -177,14 +164,6 @@ class User extends Table
         Alert::addWarning('You cannot login as user ' . $msqUser->username . ' invalid permissions');
         Uri::create()->remove(Masquerade::QUERY_MSQ)->redirect();
     }
-
-//    public function show(): ?Template
-//    {
-//        $renderer = $this->getTableRenderer();
-//        $this->getRow()->addCss('text-nowrap');
-//        $this->showFilterForm();
-//        return $renderer->show();
-//    }
 
     public function getType(): string
     {

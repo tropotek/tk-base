@@ -4,7 +4,6 @@ namespace Bs;
 
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Form;
 use Tk\Traits\SystemTrait;
 use Tk\Uri;
@@ -43,12 +42,12 @@ class Table extends \Tt\Table
     /**
      * Override this method to add your cells, filters, actions
      */
-    public function init(Request $request): static
+    public function init(): static
     {
         return $this;
     }
 
-    public function execute(Request $request): static
+    public function execute(): static
     {
         // add reset table session action
         // todo: not working for some reason????
@@ -57,18 +56,18 @@ class Table extends \Tt\Table
         }
 
         // init cells, filters and actions
-        $this->init($request);
+        $this->init();
 
         // init filter from request if not already done
-        $this->initForm($request);
+        $this->initForm();
 
         // execute actions and get orderby from request
-        parent::execute($request);
+        parent::execute();
 
         return $this;
     }
 
-    public function initForm(Request $request): static
+    public function initForm(): static
     {
         $values = $_SESSION[$this->sid] ?? [];
         if (!is_null($this->form) && is_null($this->dbFilter)) {
@@ -82,7 +81,7 @@ class Table extends \Tt\Table
                 Uri::create()->redirect();
             }))->addCss('btn-outline-secondary');
 
-            $this->form->execute($request->request->all());
+            $this->form->execute($_POST);
 
             if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid])) {
                 $this->form->setFieldValues($_SESSION[$this->sid]);
@@ -163,10 +162,12 @@ HTML;
     public function addResetAction(): Action
     {
         return $this->appendAction('reset')
-            ->addOnExecute(function (Action $action, Request $request) {
+            ->addOnExecute(function (Action $action) {
                 $val = $action->getTable()->makeRequestKey($action->getName());
-                $action->setActive($request->get($action->getName(), '') == $val);
+                $active = ($_POST[$action->getName()] ?? '') == $val;
+                $action->setActive($active);
                 if (!$action->isActive()) return;
+
                 unset($_SESSION[$this->sid]);
                 Uri::create()
                     ->remove($action->getTable()->makeRequestKey(\Tt\Table::PARAM_PAGE))

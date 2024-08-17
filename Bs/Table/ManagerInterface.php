@@ -54,7 +54,7 @@ abstract class ManagerInterface extends Table implements DisplayInterface
                 Uri::create()->redirect();
             }))->setGroup('')->addCss('btn-outline-secondary');
 
-            $this->getFilterForm()->execute($this->getRequest()->request->all());
+            $this->getFilterForm()->execute($_POST);
         }
 
         return $this;

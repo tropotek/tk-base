@@ -4,26 +4,25 @@ namespace Bs\Controller\User;
 use Bs\ControllerDomInterface;
 use Bs\Form;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 
 class Recover extends ControllerDomInterface
 {
     protected ?Form $form = null;
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('Recover');
 
         $this->form = new \Bs\Form\Recover();
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
     }
 
-    public function doRecover(Request $request): void
+    public function doRecover(): void
     {
         $this->getPage()->setTitle('Recover');
 
         $this->form = new \Bs\Form\RecoverPassword();
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
     }
 
     public function show(): ?Template

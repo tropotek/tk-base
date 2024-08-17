@@ -5,7 +5,6 @@ use Bs\ControllerDomInterface;
 use Bs\Db\User;
 use Bs\Form;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Encrypt;
 use Tk\Uri;
@@ -15,7 +14,7 @@ class Register extends ControllerDomInterface
 
     protected ?Form $form = null;
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('Register');
 
@@ -25,11 +24,11 @@ class Register extends ControllerDomInterface
         }
 
         $this->form = new \Bs\Form\Register();
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
 
     }
 
-    public function doActivate(Request $request): void
+    public function doActivate(): void
     {
         $this->getPage()->setTitle('Register');
 

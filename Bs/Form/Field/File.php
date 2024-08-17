@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Form\Field;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tt\DbModel;
 
 /**
@@ -39,10 +38,9 @@ class File extends \Tk\Form\Field\File
     public function execute(array $values = []): static
     {
         if ($this->hasFile()) {
-            /** @var UploadedFile $uploaded */
-            foreach ($this->getUploads() as $uploadedFile) {
-                $dest = $this->getConfig()->getDataPath() . $this->getModel()->getDataPath() . '/' . $uploadedFile->getClientOriginalName();
-                $uploadedFile->move(dirname($dest), basename($dest));
+            foreach ($this->getUploads() as $file) {
+                $dest = $this->getConfig()->getDataPath() . $this->getModel()->getDataPath() . '/' . $file['name'];
+                move_uploaded_file($file['tmp_name'], dirname($dest)."/".basename($dest));
 
                 $file = \Bs\Db\File::create($dest, $this->getModel());
                 // Remove any existing File if path matches

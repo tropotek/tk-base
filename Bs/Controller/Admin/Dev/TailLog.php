@@ -3,17 +3,15 @@ namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\Permissions;
-use Bs\Db\User;
 use Dom\Template;
 use JetBrains\PhpStorm\NoReturn;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
 
 class TailLog extends ControllerDomInterface
 {
     protected string $logPath = '';
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(Permissions::PERM_ADMIN);
@@ -21,18 +19,18 @@ class TailLog extends ControllerDomInterface
         $this->logPath = ini_get('error_log');
 
 
-        if ($request->query->get('seek')) {
-            $this->doSeek($request);
+        if (isset($_GET['seek'])) {
+            $this->doSeek();
         }
-        if ($request->query->get('refresh')) {
-            $this->doRefresh($request);
+        if (isset($_GET['refresh'])) {
+            $this->doRefresh();
         } else {
-            $this->doSeek($request);
+            $this->doSeek();
         }
 
     }
 
-    #[NoReturn] public function doRefresh(Request $request): void
+    #[NoReturn] public function doRefresh(): void
     {
         if (!is_readable($this->logPath)) {
             echo sprintf('Cannot read log file: ' . $this->logPath . "\n");
@@ -47,12 +45,12 @@ class TailLog extends ControllerDomInterface
             $pos = ftell($handle);
             $_SESSION['tail-offset'] = $pos;
         } else {
-            $this->doSeek($request, -1000);
+            $this->doSeek(-1000);
         }
         exit();
     }
 
-    public function doSeek(Request $request, $seekAdjust = 0): void
+    public function doSeek($seekAdjust = 0): void
     {
         $handle = fopen($this->logPath, 'r');
         fseek($handle, 0, \SEEK_END);

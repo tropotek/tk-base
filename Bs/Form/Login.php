@@ -69,9 +69,6 @@ class Login extends Form
     {
         $values = $form->getFieldValues();
 
-//        $token = $this->getSession()->get('login', 0);
-//        $this->getSession()->remove('login');
-
         $token = $_SESSION['login'] ?? 0;
         unset($_SESSION['login']);
 
@@ -90,7 +87,6 @@ class Login extends Form
         // Login successful
         $user = $this->getFactory()->getAuthUser();
         $user->lastLogin = Date::create('now', $user->timezone ?: null);
-        //$user->sessionId = $this->getSession()->getId();
         $user->sessionId = session_id();
         $user->save();
 

@@ -2,9 +2,7 @@
 namespace Bs\Controller\User;
 
 use Bs\ControllerDomInterface;
-use Bs\Form\EditTrait;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Uri;
 
@@ -14,7 +12,7 @@ class Profile extends ControllerDomInterface
     protected ?\Bs\Form\Profile $form = null;
 
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('My Profile');
 
@@ -25,7 +23,7 @@ class Profile extends ControllerDomInterface
 
         // Get the form template
         $this->form = new \Bs\Form\Profile($this->getFactory()->getAuthUser());
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
 
     }
 

@@ -3,7 +3,6 @@ namespace Bs\Table;
 
 use Bs\Table;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Uri;
 use Tt\Db;
@@ -18,7 +17,7 @@ class File extends Table
     protected string $fkey = '';
 
 
-    public function init(Request $request): static
+    public function init(): static
     {
         $rowSelect = RowSelect::create('id', 'userId');
         $this->appendCell($rowSelect);
@@ -60,7 +59,7 @@ class File extends Table
             ->addOnValue('\Tt\Table\Type\DateFmt::onValue');
 
         // init filter fields for actions to access to the filter values
-        $this->initForm($request);
+        $this->initForm();
 
 
         // Add Table actions
@@ -88,21 +87,22 @@ class File extends Table
         return $this;
     }
 
-    public function execute(Request $request): static
+    public function execute(): static
     {
-        if ($request->query->has('del')) {
-            $this->doDelete($request->query->get('del'));
+        if (isset($GET['del'])) {
+            $this->doDelete(intval($_GET['del'] ?? 0));
         }
-
-        parent::execute($request);
+        parent::execute();
         return $this;
     }
 
-    private function doDelete($id): void
+    private function doDelete(int $id): void
     {
         $file = \Bs\Db\File::find($id);
-        $file?->delete();
-        Alert::addSuccess('File removed successfully.');
+        if (is_object($file)) {
+            $file->delete();
+            Alert::addSuccess('File removed successfully.');
+        }
         Uri::create()->reset()->redirect();
     }
 

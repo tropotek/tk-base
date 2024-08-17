@@ -3,10 +3,8 @@ namespace Bs\Controller\Admin\Dev;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\Permissions;
-use Bs\Db\User;
 use Bs\Table;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @deprecated
@@ -15,7 +13,7 @@ class ListEvents extends ControllerDomInterface
 {
     protected Table $table;
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(Permissions::PERM_ADMIN);
@@ -28,7 +26,7 @@ class ListEvents extends ControllerDomInterface
             ->addHeaderCss('max-width');
 
         // execute actions and set table orderBy from request
-        $this->table->execute($request);
+        $this->table->execute();
 
         $path = $this->getSystem()->makePath($this->getConfig()->get('path.vendor.org'));
         $rows = $this->convertEventData($this->getAvailableEvents($path));

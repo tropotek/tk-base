@@ -4,7 +4,6 @@ namespace Bs\Controller\User;
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Uri;
 
@@ -12,15 +11,15 @@ class Login extends ControllerDomInterface
 {
     protected ?\Bs\Form\Login $form = null;
 
-    public function doLogin(Request $request): void
+    public function doLogin(): void
     {
         $this->getPage()->setTitle('Login');
 
         $this->form = new \Bs\Form\Login();
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
     }
 
-    public function doLogout(Request $request): void
+    public function doLogout(): void
     {
         User::logout(true);
         Alert::addSuccess('Logged out successfully');

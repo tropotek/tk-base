@@ -3,10 +3,8 @@ namespace Bs\Controller\File;
 
 use Bs\ControllerDomInterface;
 use Bs\Db\Permissions;
-use Bs\Db\User;
 use Bs\Table\File;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Form;
 use Tk\Uri;
@@ -20,7 +18,7 @@ class Manager extends ControllerDomInterface
     protected ?File $table = null;
 
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('File Manager');
         $this->setAccess(Permissions::PERM_ADMIN);
@@ -30,7 +28,7 @@ class Manager extends ControllerDomInterface
         $this->table = new \Bs\Table\File();
         $this->table->setOrderBy('path');
         $this->table->setFkey($this->fkey);
-        $this->table->execute($request);
+        $this->table->execute();
 
         // Set the table rows
         $filter = $this->table->getDbFilter();
@@ -44,7 +42,7 @@ class Manager extends ControllerDomInterface
         $this->form = Form::create('upload');
         $this->form->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');
         $this->form->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
-        $this->form->execute($request->request->all());
+        $this->form->execute($_POST);
 
     }
 

@@ -5,7 +5,6 @@ use Bs\ControllerDomInterface;
 use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Table;
-use Bs\Table\ManagerTrait;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
@@ -23,7 +22,7 @@ class Manager extends ControllerDomInterface
         $this->doDefault($request);
     }
 
-    public function doDefault(Request $request): void
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('User Manager');
         $this->getCrumbs()->reset();
@@ -41,7 +40,7 @@ class Manager extends ControllerDomInterface
         // init the user table
         $this->table = new \Bs\Table\User();
         $this->table->setType($this->type);
-        $this->table->execute($request);
+        $this->table->execute();
 
         // Set the table rows
         $filter = $this->table->getDbFilter();

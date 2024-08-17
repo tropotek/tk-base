@@ -183,11 +183,10 @@ class Factory extends \Tk\Factory
      */
     public function getCrumbs(): ?Crumbs
     {
-        $type = $this->getRequest()->get('template', 'public');
+        $type = $_GET['template'] ?? 'public';
         $id = 'breadcrumbs.' . $type;
-        //$this->getSession()->set($id, null);
+
         if (!$this->has($id)) {
-            //$crumbs = $this->getSession()->get($id);
             $crumbs = $_SESSION[$id] ?? null;
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
@@ -196,7 +195,6 @@ class Factory extends \Tk\Factory
                     $crumbs->setHomeUrl('/dashboard');
                 }
                 $crumbs->reset();
-                //$this->getSession()->set($id, $crumbs);
                 $_SESSION[$id] = $crumbs;
             }
             $this->set($id, $crumbs);

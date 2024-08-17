@@ -139,7 +139,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
      */
     public function reset(): static
     {
-        if ($this->getRequest()->query->has(self::CRUMB_IGNORE))  return $this;
+        if (!isset($_GET[self::CRUMB_IGNORE]))  return $this;
         $this->crumbStack = [];
         $this->crumbStack[$this->getHomeUrl()] = $this->getHomeTitle();
         return $this;

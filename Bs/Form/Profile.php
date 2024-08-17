@@ -36,10 +36,6 @@ class Profile extends Form
             ->setGroup($tab)
             ->setLabel('Last Name');
 
-//        $this->getForm()->appendField(new Input('nameDisplay'))
-//            ->setGroup($group)
-//            ->setLabel('Preferred Name');
-
         $this->getForm()->appendField(new Input('username'))->setGroup($tab)
             ->setDisabled()
             ->setReadonly();
@@ -68,9 +64,6 @@ class Profile extends Form
                 ->setLabel('Confirm Password')
                 ->setAttr('autocomplete', 'new-password');
         }
-
-        //$this->getForm()->appendField(new Checkbox('active', ['Enable User Login' => 'active']))->setDisabled();
-        //$this->getForm()->appendField(new Textarea('notes'))->setGroup($group);
 
         $this->getForm()->appendField(new SubmitExit('save', [$this, 'onSubmit']));
         $this->getForm()->appendField(new Link('cancel', $this->getFactory()->getBackUrl()));
@@ -138,7 +131,6 @@ class Profile extends Form
         $this->getForm()->getField('nameTitle')->addFieldCss('col-1');
         $this->getForm()->getField('nameFirst')->addFieldCss('col-5');
         $this->getForm()->getField('nameLast')->addFieldCss('col-6');
-        //$this->getForm()->getField('nameDisplay')->addFieldCss('col-5');
 
         $this->getForm()->getField('username')->addFieldCss('col-6');
         $this->getForm()->getField('email')->addFieldCss('col-6');

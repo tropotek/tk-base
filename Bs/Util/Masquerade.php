@@ -76,7 +76,6 @@ class Masquerade
      */
     public static function canMasqueradeAs(User $user, User $msqUser): bool
     {
-        $factory = Factory::instance();
         if (!$msqUser->active) return false;
         if ($user->userId == $msqUser->userId) return false;
 

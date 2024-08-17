@@ -4,7 +4,6 @@ namespace Bs\Controller;
 use Bs\ControllerDomInterface;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class Maintenance extends ControllerDomInterface
@@ -12,7 +11,7 @@ class Maintenance extends ControllerDomInterface
     protected string $message = '<p>The system is undergoing maintenance.<br/>Please try again soon.</p>';
 
 
-    public function doDefault(Request $request)
+    public function doDefault()
     {
         $this->getPage()->setTitle('Maintenance');
         $this->getCrumbs()->reset();
@@ -33,7 +32,7 @@ class Maintenance extends ControllerDomInterface
      *
      * Note: If you have issues check your controller is not calling API outside the *\Api\* namespace.
      */
-    public function doApi(Request $request)
+    public function doApi()
     {
         $this->getFactory()->getPage()->setEnabled(false);
         $data = [
