@@ -1,7 +1,7 @@
 <?php
 namespace Bs;
 
-use Dom\Mvc\Modifier;
+use Dom\Modifier;
 use Dom\Renderer\DisplayInterface;
 use Dom\Renderer\RendererInterface;
 use Dom\Renderer\Traits\RendererTrait;
@@ -67,6 +67,7 @@ class PageDomInterface extends PageInterface implements RendererInterface
     public function __makeTemplate(): ?Template
     {
         $template = '';
+        vd($this->getTemplatePath(), is_file($this->getTemplatePath()));
         if (is_file($this->getTemplatePath())) {
             $template = $this->loadTemplateFile($this->getTemplatePath());
         }

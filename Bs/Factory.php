@@ -4,8 +4,8 @@ namespace Bs;
 use Bs\Db\User;
 use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
-use Dom\Mvc\Loader;
-use Dom\Mvc\Modifier;
+use Dom\Loader;
+use Dom\Modifier;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tk\Auth\Adapter\AdapterInterface;
@@ -89,7 +89,7 @@ class Factory extends \Tk\Factory
             if (str_ends_with($templatePath, '.php')) {
                 $page = new PagePhp($templatePath);
                 $this->set('pageTemplate', $page);
-            } elseif (str_ends_with($templatePath, '.html') || str_ends_with($templatePath, '.xtpl')) {
+            } else {
                 $page = $this->createPage($templatePath);
                 $this->set('pageTemplate', $page);
             }
@@ -129,7 +129,7 @@ class Factory extends \Tk\Factory
     public function getTemplateLoader(): ?Loader
     {
         if (!$this->has('templateLoader')) {
-            $loader = new Loader($this->getEventDispatcher());
+            $loader = new Loader();
             $path = $this->getConfig()->getTemplatePath() . '/templates';
             $loader->addAdapter(new Loader\DefaultAdapter());
             $loader->addAdapter(new Loader\ClassPathAdapter($path));

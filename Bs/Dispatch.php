@@ -4,9 +4,9 @@ namespace Bs;
 use Bs\Listener\MaintenanceHandler;
 use Bs\Listener\PageHandler;
 use Bs\Listener\RememberMeHandler;
-use Dom\Mvc\EventListener\PageBytesHandler;
-use Dom\Mvc\EventListener\ViewHandler;
-use Dom\Mvc\Modifier\PageBytes;
+use Bs\Listener\PageBytesHandler;
+use Bs\Listener\DomViewHandler;
+use Dom\Modifier\PageBytes;
 use Tk\Mvc\EventListener\ExceptionListener;
 use Bs\Listener\CrumbsHandler;
 
@@ -40,7 +40,7 @@ class Dispatch extends \Tk\Mvc\Dispatch
         $this->getDispatcher()->addSubscriber(new PageHandler());
 
         // renders DomTemplates from controller returns if page template disabled or not exists
-        $this->getDispatcher()->addSubscriber(new ViewHandler($this->getFactory()->getTemplateModifier()));
+        $this->getDispatcher()->addSubscriber(new DomViewHandler($this->getFactory()->getTemplateModifier()));
 
         // Show total page bytes
         /** @var PageBytes $pageBytes */

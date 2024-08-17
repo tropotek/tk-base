@@ -2,7 +2,7 @@
 namespace Bs;
 
 use Bs\Ui\Crumbs;
-use Dom\Mvc\Modifier\JsLast;
+use Dom\Modifier\JsLast;
 use Dom\Template;
 use Tk\Uri;
 

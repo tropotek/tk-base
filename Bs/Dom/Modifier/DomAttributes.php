@@ -2,7 +2,7 @@
 namespace Bs\Dom\Modifier;
 
 use Bs\Db\User;
-use Dom\Mvc\Modifier\FilterInterface;
+use Dom\Modifier\FilterInterface;
 use Tk\Traits\SystemTrait;
 
 /**
