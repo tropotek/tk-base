@@ -1,13 +1,13 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Dom\Template;
 use JetBrains\PhpStorm\NoReturn;
 use Tk\Uri;
 
-class TailLog extends ControllerDomInterface
+class TailLog extends ControllerAdmin
 {
     protected string $logPath = '';
 

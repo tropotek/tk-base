@@ -76,26 +76,29 @@ class Factory extends \Tk\Factory
         return $this->get('authAdapter');
     }
 
-    public function createPage(string $templatePath = ''): PageInterface
+    public function initPage(string $templatePath = ''): PageInterface
     {
-        $page = new Page($templatePath);
-        $page->setDomModifier($this->getTemplateModifier());
+        $page = $this->get('pageRenderer');
+        if (is_null($page)) {
+            if (str_ends_with($templatePath, '.php')) {
+                $page = new PagePhp($templatePath);
+            } else {
+                $page = $this->createDomPage($templatePath);
+                $page->setDomModifier($this->getTemplateModifier());
+            }
+            $this->set('pageRenderer', $page);
+        }
         return $page;
     }
 
-    public function getPage(string $templatePath = ''): ?PageInterface
+    public function createDomPage(string $templatePath = ''): PageDomInterface
     {
-        if (!$this->get('pageTemplate') && !empty($templatePath)) {
-            if (str_ends_with($templatePath, '.php')) {
-                $page = new PagePhp($templatePath);
-                $this->set('pageTemplate', $page);
-            } else {
-                vd($templatePath);
-                $page = $this->createPage($templatePath);
-                $this->set('pageTemplate', $page);
-            }
-        }
-        return $this->get('pageTemplate');
+        return new Page($templatePath);
+    }
+
+    public function getPage(): null|PageInterface|PageDomInterface
+    {
+        return $this->get('pageRenderer');
     }
 
     public function getTemplateModifier(): Modifier

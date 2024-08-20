@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Controller\User;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Form;
@@ -11,7 +11,7 @@ use Tk\Alert;
 use Tk\Exception;
 use Tk\Uri;
 
-class Edit extends ControllerDomInterface
+class Edit extends ControllerAdmin
 {
     protected ?User  $user = null;
     protected string $type = User::TYPE_MEMBER;

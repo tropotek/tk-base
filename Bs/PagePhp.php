@@ -11,8 +11,11 @@ class PagePhp extends PageInterface
     {
         $page = $this;
         ob_start();
-        include $this->getTemplatePath();
-        return ob_get_clean();
+        if (is_file($this->getTemplatePath())) {
+            include $this->getTemplatePath();
+            return ob_get_clean();
+        }
+        return '';
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Controller\File;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Bs\Table\File;
 use Dom\Template;
@@ -10,7 +10,7 @@ use Tk\Form;
 use Tk\Uri;
 use Tt\Db;
 
-class Manager extends ControllerDomInterface
+class Manager extends ControllerAdmin
 {
 
     protected string $fkey = '';

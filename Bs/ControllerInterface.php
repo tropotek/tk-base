@@ -14,6 +14,8 @@ abstract class ControllerInterface
 {
     use SystemTrait;
 
+    protected string $pageTemplate = '';
+
 
     protected function setAccess(int $access): static
     {
@@ -23,6 +25,17 @@ abstract class ControllerInterface
             Alert::addWarning('You do not have permission to access the page: <b>' . Uri::create()->getRelativePath() . '</b>');
             $this->getBackUrl()->redirect();
         }
+        return $this;
+    }
+
+    public function getPageTemplate(): string
+    {
+        return $this->pageTemplate;
+    }
+
+    public function setPageTemplate(string $pageTemplate): ControllerInterface
+    {
+        $this->pageTemplate = $pageTemplate;
         return $this;
     }
 

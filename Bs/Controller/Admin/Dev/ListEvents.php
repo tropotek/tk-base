@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Bs\Table;
 use Dom\Template;
@@ -9,7 +9,7 @@ use Dom\Template;
 /**
  * @deprecated
  */
-class ListEvents extends ControllerDomInterface
+class ListEvents extends ControllerAdmin
 {
     protected Table $table;
 

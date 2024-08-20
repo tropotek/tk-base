@@ -8,8 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Maintenance extends ControllerDomInterface
 {
-    protected string $message = '<p>The system is undergoing maintenance.<br/>Please try again soon.</p>';
+    protected string $message = '<p>Upgrades in progress.<br/>Please try again soon.</p>';
 
+
+    public function __construct()
+    {
+        $this->setPageTemplate($this->getConfig()->get('path.template.maintenance'));
+    }
 
     public function doDefault()
     {

@@ -1,12 +1,12 @@
 <?php
 namespace Bs\Controller\User;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Uri;
 
-class Profile extends ControllerDomInterface
+class Profile extends ControllerAdmin
 {
 
     protected ?\Bs\Form\Profile $form = null;

@@ -24,7 +24,7 @@ class CrumbsHandler implements EventSubscriberInterface
         $page = $this->getFactory()->getPage();
         if (!$page) return;
 
-        if ($page->isEnabled() && $page->isCrumbEnabled()) {
+        if ($page->isEnabled() && $page->isCrumbsEnabled()) {
             $crumbs = $page->getCrumbs();
             if (!$crumbs || $event->getRequest()->query->get(Crumbs::CRUMB_IGNORE)) return;
             if ($event->getRequest()->query->get(Crumbs::CRUMB_RESET)) {

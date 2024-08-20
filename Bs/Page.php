@@ -8,23 +8,7 @@ use Tk\Uri;
 
 class Page extends PageDomInterface
 {
-    /**
-     * You can select the page's template by adding `->defaults(['template' => '{public|admin|user|login|maintenance|error}'])`.
-     *
-     * Other options may be available if you have created new template paths in the `20-config.php` file.
-     * Create a new path with `$config->set('path.template.custom', '/html/newTemplate/index.html');`
-     * then add `->defaults(['template' => 'custom'])` to the route. (case-sensitive)
-     */
-    const TEMPLATE_PUBLIC      = 'public';
-    const TEMPLATE_ADMIN       = 'admin';
-    const TEMPLATE_USER        = 'user';
-    const TEMPLATE_MAINTENANCE = 'maintenance';
-    const TEMPLATE_LOGIN       = 'login';
-    const TEMPLATE_ERROR       = 'error';
-
-    protected string $type = self::TEMPLATE_PUBLIC;
-
-    protected bool $crumbEnabled = true;
+    protected bool $crumbsEnabled = true;
 
     public function show(): ?Template
     {
@@ -86,17 +70,6 @@ JS;
         return parent::show();
     }
 
-    public function setType(string $type): PageInterface
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
     public function getCrumbs(): ?Crumbs
     {
         return $this->getFactory()->getCrumbs();
@@ -107,14 +80,14 @@ JS;
         return $this->getFactory()->getBackUrl();
     }
 
-    public function isCrumbEnabled(): bool
+    public function isCrumbsEnabled(): bool
     {
-        return $this->crumbEnabled;
+        return $this->crumbsEnabled;
     }
 
-    public function setCrumbEnabled(bool $crumbEnabled): static
+    public function setCrumbsEnabled(bool $crumbsEnabled): static
     {
-        $this->crumbEnabled = $crumbEnabled;
+        $this->crumbsEnabled = $crumbsEnabled;
         return $this;
     }
 

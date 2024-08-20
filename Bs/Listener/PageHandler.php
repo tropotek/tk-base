@@ -24,10 +24,10 @@ class PageHandler implements EventSubscriberInterface
     public function onRequest(RequestEvent $event): void
     {
         // create page from template path
-        $pageType = $event->getRequest()->attributes->get('template');
-        if (!empty($pageType)) {
-            $this->page = $this->getFactory()->getPage($this->getSystem()->makePath($this->getConfig()->get('path.template.' . $pageType)));
-        }
+//        $pageType = $event->getRequest()->attributes->get('template');
+//        if (!empty($pageType)) {
+//            $this->page = $this->getFactory()->getPage($this->getSystem()->makePath($this->getConfig()->get('path.template.' . $pageType)));
+//        }
     }
 
     /**
@@ -38,6 +38,12 @@ class PageHandler implements EventSubscriberInterface
         if (!is_array($event->getController())) return;
         if (!($event->getController()[0] instanceof ControllerInterface)) return;
         $this->controller = $event->getController()[0];
+
+        $pageTemplate = $this->getConfig()->makePath($this->controller->getPageTemplate());
+        if (!is_file($pageTemplate)) {
+            $pageTemplate = $this->getConfig()->makePath('/html/public.html');
+        }
+        $this->page = $this->getFactory()->initPage($pageTemplate);
     }
 
     /**

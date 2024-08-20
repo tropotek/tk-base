@@ -1,15 +1,20 @@
 <?php
 namespace Bs\Controller\User;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Bs\Db\User;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Uri;
 
-class Login extends ControllerDomInterface
+class Login extends ControllerAdmin
 {
     protected ?\Bs\Form\Login $form = null;
+
+    public function __construct()
+    {
+        $this->setPageTemplate($this->getConfig()->get('path.template.login'));
+    }
 
     public function doLogin(): void
     {

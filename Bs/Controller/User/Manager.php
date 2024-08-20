@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Controller\User;
 
-use Bs\ControllerDomInterface;
+use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Table;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Tk\Uri;
 use Tt\Db;
 
-class Manager extends ControllerDomInterface
+class Manager extends ControllerAdmin
 {
 
     protected ?Table $table = null;
