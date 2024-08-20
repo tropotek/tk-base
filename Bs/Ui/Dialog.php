@@ -3,7 +3,6 @@ namespace Bs\Ui;
 
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\CallbackCollection;
 use Tk\Collection;
 use Tk\Traits\SystemTrait;
@@ -192,9 +191,9 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
         $this->getOnInit()->execute($this);
     }
 
-    public function execute(Request $request)
+    public function execute()
     {
-        $this->getOnExecute()->execute($this, $request);
+        $this->getOnExecute()->execute($this);
     }
 
     public function show(): ?Template

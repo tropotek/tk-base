@@ -90,6 +90,7 @@ class Factory extends \Tk\Factory
                 $page = new PagePhp($templatePath);
                 $this->set('pageTemplate', $page);
             } else {
+                vd($templatePath);
                 $page = $this->createPage($templatePath);
                 $this->set('pageTemplate', $page);
             }

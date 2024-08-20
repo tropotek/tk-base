@@ -425,6 +425,11 @@ class User extends DbModel
             $filter->appendWhere('a.user_id IN :userId AND ');
         }
 
+        if (!empty($filter['exclude'])) {
+            if (!is_array($filter['exclude'])) $filter['exclude'] = [$filter['exclude']];
+            $filter->appendWhere('a.user_id NOT IN :exclude AND ', $filter['exclude']);
+        }
+
         if (!empty($filter['uid'])) {
             $filter->appendWhere('a.uid = :uid AND ');
         }
@@ -449,11 +454,6 @@ class User extends DbModel
         if (isset($filter['active'])) {
             $filter['active'] = truefalse($filter['active']);
             $filter->appendWhere('active = :active AND ');
-        }
-
-        if (!empty($filter['exclude'])) {
-            if (!is_array($filter['exclude'])) $filter['exclude'] = [$filter['exclude']];
-            $filter->appendWhere('a.user_id NOT IN :exclude AND ', $filter['exclude']);
         }
 
         return Db::query("

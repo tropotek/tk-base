@@ -223,6 +223,11 @@ class File extends DbModel
             $filter->appendWhere('a.file_id IN :fileId AND ', $filter['fileId']);
         }
 
+        if (!empty($filter['exclude'])) {
+            if (!is_array($filter['exclude'])) $filter['exclude'] = [$filter['exclude']];
+            $filter->appendWhere('a.file_id NOT IN %s AND ', $filter['exclude']);
+        }
+
         if (isset($filter['label'])) {
             if (!is_array($filter['label'])) $filter['label'] = [$filter['label']];
             $filter->appendWhere('a.label IN :label AND ', $filter['label']);
@@ -252,11 +257,6 @@ class File extends DbModel
         }
         if (isset($filter['fkey'])) {
             $filter->appendWhere('a.fkey = :fkey AND ');
-        }
-
-        if (!empty($filter['exclude'])) {
-            if (!is_array($filter['exclude'])) $filter['exclude'] = [$filter['exclude']];
-            $filter->appendWhere('a.file_id NOT IN %s AND ', $filter['exclude']);
         }
 
         return Db::query("
