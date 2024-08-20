@@ -39,7 +39,7 @@ abstract class ControllerInterface
         return $this;
     }
 
-    public function getPage(): PageInterface
+    public function getPage(): PageInterface|PageDomInterface
     {
         return $this->getFactory()->getPage();
     }
