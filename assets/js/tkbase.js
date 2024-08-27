@@ -205,7 +205,7 @@ let tkbase = function () {
 
     function init() {
       let defaults = { dateFormat: tkConfig.dateFormat.jqDatepicker };
-      $('input.date').each(function () {
+      $('input.date', this).each(function () {
         let settings = $.extend({}, defaults, $(this).data());
         $(this).datepicker(settings);
       });
@@ -220,7 +220,7 @@ let tkbase = function () {
    */
   let initPasswordToggle = function () {
     function init() {
-      $('[type=password]').each(function () {
+      $('[type=password]', this).each(function () {
         let input = $(this);
         let tpl = $(`<div class="input-group" var="is-error input-group">
           <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button" tabindex="-1"><i class="fa fa-fw fa-eye"></i></button>
@@ -253,7 +253,7 @@ let tkbase = function () {
    */
   let initDataToggle = function () {
     function init() {
-      $('[data-toggle="hide"]').each(function () {
+      $('[data-toggle="hide"]', this).each(function () {
         let target = $($(this).data('target'));
         target.each(function () {
           $(this).hide();
@@ -287,7 +287,7 @@ let tkbase = function () {
       return;
     }
     function init() {
-      $('input.tk-input-lock').tkInputLock();
+      $('input.tk-input-lock', this).tkInputLock();
     }
 
     formEvents.push(init);
@@ -345,14 +345,12 @@ let tkbase = function () {
     };
 
     function init () {
-      let form = 'form.tk-form';
-
       // Tiny MCE with only the default editing no upload
       //   functionality with elfinder
-      $('textarea.mce-min', form).tinymce({});
+      $('textarea.mce-min', this).tinymce({});
 
       // Full tinymce with elfinder file manager
-      $('textarea.mce', form).each(function () {
+      $('textarea.mce', this).each(function () {
         let el = $(this);
         el.tinymce($.extend(mceDefaults, {
           file_picker_callback : getMceElf(el.data()).browser,

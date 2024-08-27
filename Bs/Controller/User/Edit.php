@@ -6,7 +6,6 @@ use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Form;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
 use Tk\Alert;
 use Tk\Exception;
 use Tk\Uri;
@@ -18,7 +17,7 @@ class Edit extends ControllerAdmin
     protected ?Form  $form = null;
 
 
-    public function doDefault(Request $request, string $type): void
+    public function doDefault(mixed $request, string $type): void
     {
         $this->getPage()->setTitle('Edit User');
         $this->setAccess(Permissions::PERM_MANAGE_MEMBER | Permissions::PERM_MANAGE_STAFF);
