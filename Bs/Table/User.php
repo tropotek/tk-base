@@ -8,16 +8,12 @@ use Tk\Alert;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Select;
 use Tk\Uri;
-use Tt\Db;
 use Tt\Table\Action\Csv;
-use Tt\Table\Action\Delete;
 use Tt\Table\Cell;
 use Tt\Table\Cell\RowSelect;
 
 class User extends Table
 {
-    protected string $type = '';
-
 
     public function init(): static
     {
@@ -27,18 +23,14 @@ class User extends Table
         $this->appendCell('actions')
             ->addCss('text-nowrap text-center')
             ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
-                $edit = Uri::create('/user/'.$user->type.'Edit', ['userId' => $user->userId]);
                 $msq  = Uri::create()->set(Masquerade::QUERY_MSQ, $user->userId);
-                $del  = Uri::create()->set('del', $user->userId);
-
                 return <<<HTML
-                    <a class="btn btn-primary" href="$edit" title="Edit"><i class="fa fa-fw fa-edit"></i></a> &nbsp;
-                    <a class="btn btn-outline-dark" href="$msq" title="Masquerade" data-confirm="Are you sure you want to log-in as user {$user->getName()}"><i class="fa fa-fw fa-user-secret"></i></a> &nbsp;
-                    <a class="btn btn-danger" href="$del" title="Delete" data-confirm="Are you sure you want to delete this record"><i class="fa fa-fw fa-trash"></i></a>
+                    <a class="btn btn-outline-dark" href="$msq" title="Masquerade" data-confirm="Are you sure you want to log-in as user {$user->getName()}"><i class="fa fa-fw fa-user-secret"></i></a>
                 HTML;
             });
 
         $this->appendCell('username')
+            ->addCss('text-nowrap')
             ->addHeaderCss('max-width')
             ->setSortable(true)
             ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
@@ -47,19 +39,27 @@ class User extends Table
             });
 
         $this->appendCell('nameFirst')
+            ->addCss('text-nowrap')
             ->setSortable(true);
 
         $this->appendCell('nameLast')
+            ->addCss('text-nowrap')
             ->setSortable(true);
 
-        if (!$this->getType()) {
+        $this->appendCell('email')
+            ->setSortable(true)
+            ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
+                return sprintf('<a href="mailto:%s">%s</a>', $user->email, $user->email);
+            });
+
+        if ($this->getAuthUser()->hasPermission(Permissions::ACCESS_EDIT_USERS)) {
             $this->appendCell('type')
                 ->setSortable(true);
         }
 
-        if ($this->getType() != \Bs\Db\User::TYPE_MEMBER) {
+        if ($this->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
             $this->appendCell('permissions')
-                ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
+                ->addOnValue(function (\Bs\Db\User $user, Cell $cell) {
                     if ($user->hasPermission(Permissions::PERM_ADMIN)) {
                         $list = $user->getAvailablePermissions();
                         return $list[Permissions::PERM_ADMIN];
@@ -71,17 +71,17 @@ class User extends Table
                 });
         }
 
-        $this->appendCell('email')
-            ->setSortable(true)
-            ->addOnValue(function(\Bs\Db\User $user, Cell $cell) {
-                return sprintf('<a href="mailto:%s">%s</a>', $user->email, $user->email);
-            });
-
         $this->appendCell('active')
             ->setSortable(true)
             ->addOnValue('\Tt\Table\Type\Boolean::onValue');
 
+        $this->appendCell('lastLogin')
+            ->addCss('text-nowrap')
+            ->setSortable(true)
+            ->addOnValue('\Tt\Table\Type\DateTime::onValue');
+
         $this->appendCell('created')
+            ->addCss('text-nowrap')
             ->setSortable(true)
             ->addOnValue('\Tt\Table\Type\DateFmt::onValue');
 
@@ -90,7 +90,7 @@ class User extends Table
         $this->getForm()->appendField(new Input('search'))
             ->setAttr('placeholder', 'Search: uid, name, email, username');
 
-        if (!$this->getType()) {
+        if ($this->getAuthUser()->hasPermission(Permissions::ACCESS_EDIT_USERS)) {
             $list = array_flip(\Bs\Db\User::TYPE_LIST);
             $this->getForm()->appendField(new Select('type', $list))->prependOption('-- Type --', '');;
         }
@@ -99,22 +99,30 @@ class User extends Table
         $this->initForm();
 
         // Add Table actions
-        // todo: I think we should remove delete user action, create a cmd action to delete and clean users
-        //       allow site users to make a user active/inactive only
-        $this->appendAction(Delete::create($rowSelect))
-            ->addOnDelete(function(Delete $action, array $selected) {
-                foreach ($selected as $user_id) {
-                    Db::delete('user', compact('user_id'));
+        $this->appendAction(\Tt\Table\Action\Select::create($rowSelect, 'disable', 'fa fa-fw fa-times'))
+            ->setConfirmStr('Disable the selected users?')
+            ->addOnSelect(function(\Tt\Table\Action\Select $action, array $selected) {
+                foreach ($selected as $userId) {
+                    $u = \Bs\Db\User::find($userId);
+                    $u->active = false;
+                    $u->save();
                 }
             });
 
         $this->appendAction(Csv::create($rowSelect))
             ->addOnCsv(function(Csv $action, array $selected) {
                 $action->setExcluded(['id', 'actions', 'permissions']);
-                $action->getTable()->getCell('username')->getOnValue()->reset();
-                $action->getTable()->getCell('email')->getOnValue()->reset();    // remove html from cell
-                $filter = $action->getTable()->getDbFilter();
-                if (count($selected)) {
+                $this->getCell('username')->getOnValue()->reset();
+                $this->getCell('email')->getOnValue()->reset();    // remove html from cell
+                $filter = $this->getDbFilter();
+                if ($selected) {
+                    $filter['type'] = match(true) {
+                        $this->getAuthUser()->hasPermission(Permissions::ACCESS_EDIT_USERS) => $filter['type'] ?? '',
+                        $this->getAuthUser()->hasPermission(Permissions::PERM_MANAGE_STAFF) => \Bs\Db\User::TYPE_STAFF,
+                        $this->getAuthUser()->hasPermission(Permissions::PERM_MANAGE_MEMBERS) => \Bs\Db\User::TYPE_MEMBER,
+                        default => $filter['type'] ?? ''
+                    };
+                    $filter['userId'] = $selected;
                     $rows = \Bs\Db\User::findFiltered($filter);
                 } else {
                     $rows = \Bs\Db\User::findFiltered($filter->resetLimits());
@@ -127,9 +135,6 @@ class User extends Table
 
     public function execute(): static
     {
-        if (isset($GET['del'])) {
-            $this->doDelete(intval($_GET['del'] ?? 0));
-        }
         if (isset($GET[Masquerade::QUERY_MSQ])) {
             $this->doMsq(intval($_GET[Masquerade::QUERY_MSQ] ?? 0));
         }
@@ -137,16 +142,6 @@ class User extends Table
         parent::execute();
 
         return $this;
-    }
-
-    private function doDelete(int $userId): void
-    {
-        /** @var \Bs\Db\User $user */
-        $user = \Bs\Db\User::find($userId);
-        $user?->delete();
-
-        Alert::addSuccess('User removed successfully.');
-        Uri::create()->reset()->redirect();
     }
 
     private function doMsq(int $userId): void
@@ -163,17 +158,6 @@ class User extends Table
 
         Alert::addWarning('You cannot login as user ' . $msqUser->username . ' invalid permissions');
         Uri::create()->remove(Masquerade::QUERY_MSQ)->redirect();
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): User
-    {
-        $this->type = $type;
-        return $this;
     }
 
 }

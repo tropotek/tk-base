@@ -73,10 +73,11 @@ class File extends Table
         $this->appendAction(Csv::create($rowSelect))
             ->addOnCsv(function(Csv $action, array $selected) {
                 $action->setExcluded(['id', 'actions', 'permissions']);
-                $action->getTable()->getCell('username')->getOnValue()->reset();
-                $action->getTable()->getCell('email')->getOnValue()->reset();    // remove html from cell
-                $filter = $action->getTable()->getDbFilter();
+                $this->getCell('username')->getOnValue()->reset();
+                $this->getCell('email')->getOnValue()->reset();    // remove html from cell
+                $filter = $this->getDbFilter();
                 if (count($selected)) {
+                    $filter['fileId'] = $selected;
                     $rows = \Bs\Db\User::findFiltered($filter);
                 } else {
                     $rows = \Bs\Db\User::findFiltered($filter->resetLimits());

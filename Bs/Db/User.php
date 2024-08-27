@@ -465,8 +465,6 @@ class User extends DbModel
         );
     }
 
-
-
     /*
      * Functions to manage the "remember me" tokens
      * https://www.phptutorial.net/php-tutorial/php-remember-me/

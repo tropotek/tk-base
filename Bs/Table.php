@@ -2,6 +2,7 @@
 
 namespace Bs;
 
+use Bs\Db\User;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
 use Tk\Form;
@@ -157,6 +158,11 @@ HTML;
     public function getRenderer(): ?DomRenderer
     {
         return $this->renderer;
+    }
+
+    public function getAuthUser(): ?User
+    {
+        return $this->getFactory()->getAuthUser();
     }
 
     public function addResetAction(): Action

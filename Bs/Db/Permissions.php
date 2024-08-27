@@ -12,16 +12,21 @@ class Permissions
      * if the result is non-zero the user has permission.
      */
     const PERM_ADMIN            = 0x1; // Admin
-    const PERM_SYSADMIN         = 0x2; // Change system
+    const PERM_SYSADMIN         = 0x2; // Change system settings
     const PERM_MANAGE_STAFF     = 0x4; // Manage staff
-    const PERM_MANAGE_MEMBER    = 0x8; // Manage members
+    const PERM_MANAGE_MEMBERS   = 0x8; // Manage members
     //                            0x10; // available
+
+	// combinations of permissions to access parts of the system
+	const ACCESS_EDIT_USERS     = self::PERM_MANAGE_STAFF | self::PERM_MANAGE_STAFF;
+
+
 
     const PERMISSION_LIST = [
         self::PERM_ADMIN            => "Admin",
         self::PERM_SYSADMIN         => "Manage Settings",
         self::PERM_MANAGE_STAFF     => "Manage Staff",
-        self::PERM_MANAGE_MEMBER    => "Manage Users",
+        self::PERM_MANAGE_MEMBERS   => "Manage Members",
     ];
 
 }

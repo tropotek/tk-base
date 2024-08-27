@@ -20,7 +20,6 @@ class Edit extends ControllerAdmin
     public function doDefault(mixed $request, string $type): void
     {
         $this->getPage()->setTitle('Edit User');
-        $this->setAccess(Permissions::PERM_MANAGE_MEMBER | Permissions::PERM_MANAGE_STAFF);
 
         $userId  = intval($_GET['userId'] ?? 0);
         $newType = trim($_GET['cv'] ?? '');
@@ -34,6 +33,8 @@ class Edit extends ControllerAdmin
                 throw new Exception('Invalid User ID: ' . $userId);
             }
         }
+
+        $this->setAccess(Permissions::PERM_MANAGE_MEMBERS | Permissions::PERM_MANAGE_STAFF);
 
         // Get the form template
         $this->form = new \Bs\Form\User($this->getUser());
