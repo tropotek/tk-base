@@ -21,8 +21,6 @@ return function (CollectionConfigurator $routes) {
 
     $routes->add('user-profile', '/profile')
         ->controller([\Bs\Controller\User\Profile::class, 'doDefault']);
-    $routes->add('user-manager', '/user/manager')
-        ->controller([\Bs\Controller\User\Manager::class, 'doDefault']);
     $routes->add('user-type-manager', '/user/{type}Manager')
         ->controller([\Bs\Controller\User\Manager::class, 'doByType'])
         ->defaults(['type' => \Bs\Db\User::TYPE_MEMBER]);

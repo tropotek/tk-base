@@ -65,7 +65,7 @@ class Register extends Form
     {
         if (!$this->getRegistry()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
-            Uri::create('/home')->redirect();
+            Uri::create('/')->redirect();
         }
 
         $user = \Bs\Db\User::create();
@@ -109,7 +109,7 @@ class Register extends Form
         \Bs\Email\User::sendRegister($user);
 
         Alert::addSuccess('Please check your email for instructions to activate your account.');
-        Uri::create('/home')->redirect();
+        Uri::create('/')->redirect();
     }
 
     public function show(): ?Template

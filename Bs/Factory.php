@@ -195,7 +195,7 @@ class Factory extends \Tk\Factory
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
-                if ($type == Page::TEMPLATE_ADMIN) {
+                if ($this->getAuthUser()) {
                     $crumbs->setHomeUrl('/dashboard');
                 }
                 $crumbs->reset();

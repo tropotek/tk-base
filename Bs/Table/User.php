@@ -14,6 +14,8 @@ use Tt\Table\Cell\RowSelect;
 
 class User extends Table
 {
+    protected string $type = '';
+
 
     public function init(): static
     {
@@ -52,11 +54,6 @@ class User extends Table
                 return sprintf('<a href="mailto:%s">%s</a>', $user->email, $user->email);
             });
 
-        if ($this->getAuthUser()->hasPermission(Permissions::ACCESS_EDIT_USERS)) {
-            $this->appendCell('type')
-                ->setSortable(true);
-        }
-
         if ($this->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
             $this->appendCell('permissions')
                 ->addOnValue(function (\Bs\Db\User $user, Cell $cell) {
@@ -90,10 +87,8 @@ class User extends Table
         $this->getForm()->appendField(new Input('search'))
             ->setAttr('placeholder', 'Search: uid, name, email, username');
 
-        if ($this->getAuthUser()->hasPermission(Permissions::ACCESS_EDIT_USERS)) {
-            $list = array_flip(\Bs\Db\User::TYPE_LIST);
-            $this->getForm()->appendField(new Select('type', $list))->prependOption('-- Type --', '');;
-        }
+        $list = ['-- All Users --' => '', 'Active' => 'y', 'Disabled' => 'n'];
+        $this->getForm()->appendField(new Select('active', $list))->setValue('y');
 
         // init filter fields for actions to access to the filter values
         $this->initForm();
@@ -116,12 +111,7 @@ class User extends Table
                 $this->getCell('email')->getOnValue()->reset();    // remove html from cell
                 $filter = $this->getDbFilter();
                 if ($selected) {
-                    $filter['type'] = match(true) {
-                        $this->getAuthUser()->hasPermission(Permissions::ACCESS_EDIT_USERS) => $filter['type'] ?? '',
-                        $this->getAuthUser()->hasPermission(Permissions::PERM_MANAGE_STAFF) => \Bs\Db\User::TYPE_STAFF,
-                        $this->getAuthUser()->hasPermission(Permissions::PERM_MANAGE_MEMBERS) => \Bs\Db\User::TYPE_MEMBER,
-                        default => $filter['type'] ?? ''
-                    };
+                    $filter['type'] = $this->type;
                     $filter['userId'] = $selected;
                     $rows = \Bs\Db\User::findFiltered($filter);
                 } else {

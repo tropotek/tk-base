@@ -28,7 +28,7 @@ class RecoverPassword extends Form
         $arr = unserialize($arr);
         if (!is_array($arr)) {
             Alert::addError('Unknown account recovery error, please try again.');
-            Uri::create('/home')->redirect();
+            Uri::create('/')->redirect();
         }
 
         if ((($arr['t'] ?? 0) + 60*60*24*1) < time()) { // submit before form token times out (1 day)

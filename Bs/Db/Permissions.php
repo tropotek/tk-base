@@ -17,11 +17,6 @@ class Permissions
     const PERM_MANAGE_MEMBERS   = 0x8; // Manage members
     //                            0x10; // available
 
-	// combinations of permissions to access parts of the system
-	const ACCESS_EDIT_USERS     = self::PERM_MANAGE_STAFF | self::PERM_MANAGE_STAFF;
-
-
-
     const PERMISSION_LIST = [
         self::PERM_ADMIN            => "Admin",
         self::PERM_SYSADMIN         => "Manage Settings",

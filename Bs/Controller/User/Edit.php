@@ -4,7 +4,6 @@ namespace Bs\Controller\User;
 use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Bs\Db\User;
-use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Exception;
@@ -12,14 +11,14 @@ use Tk\Uri;
 
 class Edit extends ControllerAdmin
 {
-    protected ?User  $user = null;
-    protected string $type = User::TYPE_MEMBER;
-    protected ?Form  $form = null;
+    protected ?User          $user = null;
+    protected ?\Bs\Form\User $form = null;
+    protected string         $type = User::TYPE_MEMBER;
 
 
     public function doDefault(mixed $request, string $type): void
     {
-        $this->getPage()->setTitle('Edit User');
+        $this->getPage()->setTitle('Edit ' . ucfirst($type));
 
         $userId  = intval($_GET['userId'] ?? 0);
         $newType = trim($_GET['cv'] ?? '');
@@ -34,14 +33,19 @@ class Edit extends ControllerAdmin
             }
         }
 
-        $this->setAccess(Permissions::PERM_MANAGE_MEMBERS | Permissions::PERM_MANAGE_STAFF);
+        if ($this->type == User::TYPE_STAFF) {
+            $this->setAccess(Permissions::PERM_MANAGE_STAFF);
+        }
+        if ($this->type == User::TYPE_MEMBER) {
+            $this->setAccess(Permissions::PERM_MANAGE_MEMBERS);
+        }
 
         // Get the form template
         $this->form = new \Bs\Form\User($this->getUser());
         $this->form->setType($this->type);
         $this->form->execute($_POST);
 
-        if (!empty($newType)) {
+        if ($this->getAuthUser()->hasPermission(Permissions::PERM_ADMIN) && !empty($newType)) {
             if ($newType == User::TYPE_STAFF) {
                 $this->getUser()->type = User::TYPE_STAFF;
                 Alert::addSuccess('User now set to type STAFF, please select and save the users new permissions.');
@@ -60,7 +64,7 @@ class Edit extends ControllerAdmin
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-        if ($this->getUser()->userId > 1 && $this->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
+        if ($this->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
             if ($this->getUser()->isType(User::TYPE_MEMBER)) {
                 $url = Uri::create()->set('cv', User::TYPE_STAFF);
                 $template->setAttr('to-staff', 'href', $url);
@@ -91,11 +95,10 @@ class Edit extends ControllerAdmin
     {
         $html = <<<HTML
 <div>
-  <div class="card mb-3">
+  <div class="page-actions card mb-3">
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-
       <a href="/" title="Convert user to staff" data-confirm="Convert this user to staff" class="btn btn-outline-secondary" choice="to-staff"><i class="fa fa-retweet"></i> Convert To Staff</a>
       <a href="/" title="Convert user to member" data-confirm="Convert this user to member" class="btn btn-outline-secondary" choice="to-member"><i class="fa fa-retweet"></i> Convert To Member</a>
     </div>

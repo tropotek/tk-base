@@ -179,7 +179,7 @@ class User extends DbModel
         if (!$this->active) return false;
         // admin users have all permissions
         if ((Permissions::PERM_ADMIN & $this->permissions) != 0) return true;
-        return ($permission & $this->permissions) != 0;
+        return ($this->permissions & $permission) != 0;
     }
 
     /**
@@ -451,7 +451,7 @@ class User extends DbModel
             $filter->appendWhere('a.email = :email AND ');
         }
 
-        if (isset($filter['active'])) {
+        if (!empty($filter['active'])) {
             $filter['active'] = truefalse($filter['active']);
             $filter->appendWhere('active = :active AND ');
         }

@@ -70,7 +70,6 @@ class Table extends \Tt\Table
 
     public function initForm(): static
     {
-        $values = $_SESSION[$this->sid] ?? [];
         if (!is_null($this->form) && is_null($this->dbFilter)) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
@@ -87,11 +86,11 @@ class Table extends \Tt\Table
             if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid])) {
                 $this->form->setFieldValues($_SESSION[$this->sid]);
             }
-            $values = $this->form->getFieldValues();
-        }
 
-        // init DbFilter
-        $this->dbFilter = DbFilter::createFromTable($values, $this);
+            // init DbFilter
+            $values = $this->form->getFieldValues();
+            $this->dbFilter = DbFilter::createFromTable($values, $this);
+        }
 
         return $this;
     }

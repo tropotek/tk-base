@@ -78,7 +78,7 @@ class Recover extends Form
             Alert::addWarning('Recovery email failed to send. Please <a href="/contact">contact us.</a>');
         }
 
-        Uri::create('/home')->redirect();
+        Uri::create('/')->redirect();
     }
 
 }
