@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Dom\Modifier;
 
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Dom\Modifier\FilterInterface;
 use Tk\Traits\SystemTrait;
@@ -25,17 +26,22 @@ class DomAttributes extends FilterInterface
     const APP_HAS_PERM  = 'app-has-perm';
     const APP_IS_DEBUG  = 'app-is-debug';
 
-    protected bool $isUser = false;
-    protected ?User $authUser = null;
-    protected array $constants = [];
+    protected bool  $isUser        = false;
+    protected ?User $authUser      = null;
+    protected array $permissionCon = [];
+    protected array $userCon       = [];
+
 
     public function __construct()
     {
         $this->isUser = is_object($this->getFactory()->getAuthUser());
         $this->authUser = $this->getFactory()->getAuthUser();
-        //$reflect = new \ReflectionClass(get_class($this->getFactory()->createUser()));
+
         $reflect = new \ReflectionClass(User::$USER_CLASS);
-        $this->constants = $reflect->getConstants();
+        $this->userCon = $reflect->getConstants();
+
+        $reflect = new \ReflectionClass(Permissions::class);
+        $this->permissionCon = $reflect->getConstants();
 
     }
 
@@ -47,7 +53,7 @@ class DomAttributes extends FilterInterface
     /**
      * Call this method to traverse a document
      */
-    public function executeNode(\DOMElement $node)
+    public function executeNode(\DOMElement $node): void
     {
         $isDebug = $this->getConfig()->isDebug();
 
@@ -74,7 +80,7 @@ class DomAttributes extends FilterInterface
             if ($node->hasAttribute(self::APP_IS_TYPE)) {
                 $type = $node->getAttribute(self::APP_IS_TYPE);
                 $node->removeAttribute(self::APP_IS_TYPE);
-                if (!$this->authUser || !$this->authUser->isType($this->constants[$type])) {
+                if (!$this->authUser || !$this->authUser->isType($this->userCon[$type])) {
                     $this->getDomModifier()->removeNode($node);
                 }
             }
@@ -83,7 +89,12 @@ class DomAttributes extends FilterInterface
                 $perms = explode('|', $node->getAttribute(self::APP_HAS_PERM));
                 $node->removeAttribute(self::APP_HAS_PERM);
                 $perms = array_map('trim', $perms);
-                $perm = array_sum(array_filter($this->constants, function($k) use($perms) { return in_array($k, $perms); }, ARRAY_FILTER_USE_KEY));
+                $perm = array_sum(array_filter($this->permissionCon,
+                    function($k) use($perms) {
+                        return in_array($k, $perms);
+                    }, ARRAY_FILTER_USE_KEY)
+                );
+
                 if (!$this->authUser || !$this->authUser->hasPermission($perm)) {
                     $this->getDomModifier()->removeNode($node);
                 }
