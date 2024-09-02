@@ -144,7 +144,8 @@ class User extends DbModel
 
     public function getHomeUrl(): Uri
     {
-        return Uri::create('/dashboard');
+        $homes = $this->getConfig()->get('user.homepage');
+        return Uri::create($homes[$this->type] ?? '/');
     }
 
     public function isAdmin(): bool

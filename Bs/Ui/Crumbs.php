@@ -139,7 +139,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
      */
     public function reset(): static
     {
-        if (!isset($_GET[self::CRUMB_IGNORE]))  return $this;
+        if (isset($_GET[self::CRUMB_IGNORE])) return $this;
         $this->crumbStack = [];
         $this->crumbStack[$this->getHomeUrl()] = $this->getHomeTitle();
         return $this;
@@ -205,7 +205,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         $last = count($this->crumbStack) - 1;
         foreach ($this->getCrumbStack() as $url => $title) {
             $repeat = $template->getRepeat('item');
-            if ($i < $last) {
+            if ($i < $last || ($url == $this->getHomeUrl())) {
                 $repeat->setAttr('url', 'href', $url);
                 $repeat->setHtml('url', $title);
             } else {    // Last item

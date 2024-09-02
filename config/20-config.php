@@ -24,6 +24,13 @@ return function (Config $config) {
     $config->set('path.template.maintenance', '/html/login.html');
     $config->set('path.template.error',       '/html/login.html');
 
+    $config->set('user.homepage', [
+        \Bs\Db\User::TYPE_STAFF => '/dashboard',
+        \Bs\Db\User::TYPE_MEMBER => '/',
+    ]);
+
+
+
     /**
      * When set, the users can update their password from their profile page
      */
