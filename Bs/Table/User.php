@@ -85,7 +85,7 @@ class User extends Table
 
         // Add Filter Fields
         $this->getForm()->appendField(new Input('search'))
-            ->setAttr('placeholder', 'Search: uid, name, email, username');
+            ->setAttr('placeholder', 'Search: name, email, username');
 
         $list = ['-- All Users --' => '', 'Active' => 'y', 'Disabled' => 'n'];
         $this->getForm()->appendField(new Select('active', $list))->setValue('y');
