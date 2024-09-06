@@ -24,7 +24,6 @@ class Manager extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle(ucwords($this->type) . ' Manager');
-        $this->getCrumbs()->reset();
 
         if ($this->type == User::TYPE_STAFF) {
             $this->setAccess(Permissions::PERM_MANAGE_STAFF);

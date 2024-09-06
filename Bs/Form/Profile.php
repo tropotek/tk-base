@@ -45,7 +45,7 @@ class Profile extends Form
             ->setRequired();
 
         if ($this->getUser()->isType(\Bs\Db\User::TYPE_STAFF)) {
-            $list = array_flip($this->getUser()->getAvailablePermissions());
+            $list = array_flip($this->getFactory()->getAvailablePermissions($this->getUser()));
             $this->getForm()->appendField(new Checkbox('perm', $list))
                 ->setGroup('Permissions')
                 ->setDisabled()

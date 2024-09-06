@@ -15,7 +15,6 @@ class Edit extends ControllerAdmin
     protected ?\Bs\Form\User $form = null;
     protected string         $type = User::TYPE_MEMBER;
 
-
     public function doDefault(mixed $request, string $type): void
     {
         $this->getPage()->setTitle('Edit ' . ucfirst($type));
@@ -40,7 +39,8 @@ class Edit extends ControllerAdmin
             $this->setAccess(Permissions::PERM_MANAGE_MEMBERS);
         }
 
-        $this->form = new \Bs\Form\User($this->getUser());
+        // Get the form template
+        $this->form = $this->createForm();
         $this->form->setType($this->type);
         $this->form->execute($_POST);
 
@@ -83,6 +83,11 @@ class Edit extends ControllerAdmin
         }
 
         return $template;
+    }
+
+    protected function createForm(): \Bs\Form\User
+    {
+        return new \Bs\Form\User($this->getUser());
     }
 
     public function getUser(): User

@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
@@ -74,6 +75,22 @@ class Factory extends \Tk\Factory
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');
+    }
+
+    public function getPermissions(): array
+    {
+        return Permissions::PERMISSION_LIST;
+    }
+
+    public function getAvailablePermissions(?User $user): array
+    {
+        $list = [];
+        if ($user) {
+            if ($user->isStaff()) {
+                $list = Permissions::PERMISSION_LIST;
+            }
+        }
+        return $list;
     }
 
     public function initPage(string $templatePath = ''): PageInterface

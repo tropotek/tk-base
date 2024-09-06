@@ -44,7 +44,7 @@ trait ForeignModelTrait
         return $this->_model;
     }
 
-    public static function getModelId(DbModel $model): int
+    protected static function getModelId(DbModel $model): int
     {
         $map = $model->getDataMap();
         $priKey = $map->getPrimaryKey()?->getProperty();

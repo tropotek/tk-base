@@ -58,10 +58,10 @@ class User extends Table
             $this->appendCell('permissions')
                 ->addOnValue(function (\Bs\Db\User $user, Cell $cell) {
                     if ($user->hasPermission(Permissions::PERM_ADMIN)) {
-                        $list = $user->getAvailablePermissions();
+                        $list = $this->getFactory()->getAvailablePermissions($user);
                         return $list[Permissions::PERM_ADMIN];
                     }
-                    $list = array_filter($user->getAvailablePermissions(), function ($k) use ($user) {
+                    $list = array_filter($this->getFactory()->getAvailablePermissions($user), function ($k) use ($user) {
                         return $user->hasPermission($k);
                     }, ARRAY_FILTER_USE_KEY);
                     return implode(', <br/>', $list);
@@ -85,7 +85,7 @@ class User extends Table
 
         // Add Filter Fields
         $this->getForm()->appendField(new Input('search'))
-            ->setAttr('placeholder', 'Search: name, email, username');
+            ->setAttr('placeholder', 'Search: uid, name, email, username');
 
         $list = ['-- All Users --' => '', 'Active' => 'y', 'Disabled' => 'n'];
         $this->getForm()->appendField(new Select('active', $list))->setValue('y');

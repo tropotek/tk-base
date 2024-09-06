@@ -190,20 +190,7 @@ class User extends DbModel
      */
     public function getPermissionList(): array
     {
-        return array_keys(array_filter(Permissions::PERMISSION_LIST, fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
-    }
-
-    /**
-     * return a list of all available permissions for this user
-     * This is here, so we can get access to permissions from subclasses
-     * NOT: this may be refactored in the future
-     */
-    public function getAvailablePermissions(): array
-    {
-        if ($this->isStaff()) {
-            return Permissions::PERMISSION_LIST;
-        }
-        return [];
+        return array_keys(array_filter($this->getFactory()->getPermissions(), fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
     }
 
     public function canMasqueradeAs(User $msqUser): bool
