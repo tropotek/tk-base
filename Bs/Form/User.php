@@ -57,11 +57,12 @@ class User extends Form
 
         if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(Permissions::PERM_SYSADMIN)) {
 
-            $list = array_flip($this->getUser()->getAvailablePermissions());
+            $list = array_flip($this->getFactory()->getAvailablePermissions($this->getUser()));
             $field = $this->appendField(new Checkbox('perm', $list))
                 ->setLabel('Permissions')
-                ->setGroup('Permissions');
-            if ($this->getUser()->username == 'admin') {   // disable permission change for admin user
+                ->setGroup('Permissions')
+                ->setNotes('Only admin users can modify permissions');
+            if (!$this->getFactory()->getAuthUser()->isAdmin()) {   // disable permission change for admin user
                 $field->setDisabled();
             }
 
@@ -97,7 +98,8 @@ class User extends Form
 
     public function onSubmit(Form $form, SubmitExit $action): void
     {
-        if ($this->getUser()->username == 'admin') {
+        // non admin cannot change permissions
+        if (!$this->getFactory()->getAuthUser()->isAdmin()) {
             $form->removeField('perm');
         }
 

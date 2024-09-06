@@ -7,7 +7,7 @@ use Bs\Table;
 use Dom\Template;
 
 /**
- * @deprecated
+ *
  */
 class ListEvents extends ControllerAdmin
 {
