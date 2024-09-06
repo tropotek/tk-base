@@ -40,7 +40,6 @@ class Edit extends ControllerAdmin
             $this->setAccess(Permissions::PERM_MANAGE_MEMBERS);
         }
 
-        // Get the form template
         $this->form = new \Bs\Form\User($this->getUser());
         $this->form->setType($this->type);
         $this->form->execute($_POST);
