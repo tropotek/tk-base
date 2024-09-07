@@ -34,6 +34,8 @@ class Manager extends ControllerAdmin
 
         // init the user table
         $this->table = new \Bs\Table\User();
+        $this->table->setOrderBy('username');
+        $this->table->setLimit(25);
         $this->table->execute();
 
         // Set the table rows

@@ -27,6 +27,7 @@ class Manager extends ControllerAdmin
         // Get the form template
         $this->table = new \Bs\Table\File();
         $this->table->setOrderBy('path');
+        $this->table->setLimit(25);
         $this->table->setFkey($this->fkey);
         $this->table->execute();
 
