@@ -396,12 +396,12 @@ class User extends DbModel
 
         if (!empty($filter['search'])) {
             $filter['search'] = '%' . $filter['search'] . '%';
-            $w  = 'a.name_first LIKE :search OR ';
-            $w .= 'a.name_last LIKE :search OR ';
-            $w .= 'a.name_display LIKE :search OR ';
-            $w .= 'a.email LIKE :search OR ';
-            $w .= 'a.uid LIKE :search OR ';
-            $w .= 'a.user_id LIKE :search OR ';
+            $w  = 'LOWER(a.name_first) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.name_last) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.name_display) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.email) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.uid) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.user_id) LIKE LOWER(:search) OR ';
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 

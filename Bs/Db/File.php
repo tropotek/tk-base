@@ -209,9 +209,9 @@ class File extends DbModel
 
         if (!empty($filter['search'])) {
             $filter['search'] = '%' . $filter['search'] . '%';
-            $w  = 'a.file_id LIKE :search OR ';
-            $w .= 'a.path LIKE :search OR ';
-            $w .= 'a.mime LIKE :search OR ';
+            $w  = 'LOWER(a.file_id) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.path) LIKE LOWER(:search) OR ';
+            $w .= 'LOWER(a.mime) LIKE LOWER(:search) OR ';
             if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
