@@ -32,15 +32,6 @@ class Page extends PageDomInterface
         $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
 
-        // Trigger form and table init events
-        $js = <<<JS
-jQuery(function($) {
-    $('body').trigger(EVENT_INIT_FORM);
-    $('body').trigger(EVENT_INIT_TABLE);
-});
-JS;
-        $template->appendJs($js, [JsLast::$ATTR_PRIORITY => 9999]);
-
         $template->setTitleText($this->getTitle());
         if ($this->getConfig()->isDebug()) {
             $template->setTitleText('DEBUG: ' . $template->getTitleText());

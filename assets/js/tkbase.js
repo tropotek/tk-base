@@ -106,48 +106,50 @@ function clearForm(form) {
 
 
 /**
- * When using AJAX queries to replace forms and tables
- * you can trigger the init function on the element like:
- * ```
- *   $('body').trigger(EVENT_INIT);
- * ```
- * This will then run the tk-init event and all registered scripts should execute
+ * tkRegisterInit() and tkInit()
  *
- * @type {string}
+ * These functions are used to allow us to re-init elements
+ * after an AJAX call and HTML has been replaced.
+ * Register an init function:
+ * ```
+ *  tkRegisterInit(function() {
+ *    // this = documnet or supplied element from tkInit(...)
+ *    let forms = $('forms', this);
+ *    forms.each(function() {
+ *      // init form elements, etc..
+ *    });
+ *  });
+ * ```
+ * After you have replaced an element you can then call tkInit(element) to
+ * call the init functions that have been registered.
+ *
+ * Note: callint tkInit() with no arguments uses the `document` by default.
  */
-const EVENT_INIT_FORM       = 'tk-init-form';
-const EVENT_INIT_TABLE      = 'tk-init-table';
-let formEvents = [];
-let tableEvents = [];
+let tkInits = [];
+/**
+ * register and execute an init function
+ * @param func
+ * @param execute (optional) default true
+ * @returns {*}
+ */
+function tkRegisterInit(func, execute = true) {
+  tkInits.push(func);
+  if (execute) return func.apply(document);
+}
+/**
+ * execute registered init functions on an object/documnet
+ * @param obj (optional) doument is used if not supplied
+ */
+function tkInit(obj) {
+  if (!obj) obj = document;
+  for (var i in tkInits) {
+    tkInits[i].apply(obj);
+  }
+}
+
 
 let tkbase = function () {
   "use strict";
-
-  // Run all form and table init functions,
-  // should be called at end of page after all scripts are executed
-  // @see \Bs\Page::show()
-  $('body').on(EVENT_INIT_FORM, function (e, sel) {
-    $('form').each(function () {
-      if (sel !== undefined && !$(this).is(sel)) return;
-      if (typeof $(this).data(EVENT_INIT_FORM) !== 'undefined') return;
-      $(this).data(EVENT_INIT_FORM, true);
-      for (var i in formEvents) {
-        formEvents[i].apply(this);
-      }
-    });
-  });
-
-  $('body').on(EVENT_INIT_TABLE, function (e, sel) {
-    $('table').each(function () {
-      if (sel !== undefined && !$(this).is(sel)) return;
-      if (typeof $(this).data(EVENT_INIT_TABLE) !== 'undefined') return;
-      $(this).data(EVENT_INIT_TABLE, true);
-      for (var i in tableEvents) {
-        tableEvents[i].apply(this);
-      }
-    });
-  });
-
 
   /**
    * Enable the sugar utils, date formatting, object exetion functions, etc
@@ -170,11 +172,9 @@ let tkbase = function () {
       console.warn('jquery.tktabs.js is not installed.');
       return;
     }
-
-    function init() {
-      $(this).tktabs();
-    }
-    formEvents.push(init);
+    tkRegisterInit(function () {
+      $('.tk-form', this).tktabs();
+    });
   };
 
 
@@ -203,15 +203,13 @@ let tkbase = function () {
       return;
     }
 
-    function init() {
+    tkRegisterInit(function () {
       let defaults = { dateFormat: tkConfig.dateFormat.jqDatepicker };
       $('input.date', this).each(function () {
         let settings = $.extend({}, defaults, $(this).data());
         $(this).datepicker(settings);
       });
-    }
-
-    formEvents.push(init);
+    });
   };
 
 
@@ -219,7 +217,8 @@ let tkbase = function () {
    * Add a view/hide toggle button to a password field for touch screen access
    */
   let initPasswordToggle = function () {
-    function init() {
+
+    tkRegisterInit(function () {
       $('[type=password]', this).each(function () {
         let input = $(this);
         let tpl = $(`<div class="input-group" var="is-error input-group">
@@ -241,9 +240,8 @@ let tkbase = function () {
           }
         });
       });
-    }
+    });
 
-    formEvents.push(init);
   };
 
 
@@ -252,7 +250,8 @@ let tkbase = function () {
    *   <input type="checkbox" data-toggle="hide" data-target=".children" />
    */
   let initDataToggle = function () {
-    function init() {
+
+    tkRegisterInit(function () {
       $('[data-toggle="hide"]', this).each(function () {
         let target = $($(this).data('target'));
         target.each(function () {
@@ -271,9 +270,8 @@ let tkbase = function () {
           target.toggle();
         })
       });
-    }
+    });
 
-    formEvents.push(init);
   };
 
 
@@ -286,11 +284,10 @@ let tkbase = function () {
       console.warn('Plugin not loaded: tkInputLock');
       return;
     }
-    function init() {
+    tkRegisterInit(function () {
       $('input.tk-input-lock', this).tkInputLock();
-    }
+    });
 
-    formEvents.push(init);
   };
 
   /**
@@ -344,7 +341,7 @@ let tkbase = function () {
       }
     };
 
-    function init () {
+    tkRegisterInit(function () {
       // Tiny MCE with only the default editing no upload
       //   functionality with elfinder
       $('textarea.mce-min', this).tinymce({});
@@ -356,9 +353,8 @@ let tkbase = function () {
           file_picker_callback : getMceElf(el.data()).browser,
         }));
       });
-    };
+    });
 
-    formEvents.push(init);
   };  // end initTinymce()
 
 

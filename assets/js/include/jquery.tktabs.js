@@ -25,6 +25,10 @@
  */
 
 ;(function($) {
+  /**
+   * @param element form element expected
+   * @param options
+   */
   let tktabs = function(element, options) {
     let plugin = this;
     plugin.settings = {};
