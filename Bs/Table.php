@@ -8,7 +8,7 @@ use Dom\Template;
 use Tk\Form;
 use Tk\Traits\SystemTrait;
 use Tk\Uri;
-use Tt\DbFilter;
+use Tk\Db\Filter;
 use Tt\Table\Action;
 use Tt\Table\DomRenderer;
 use Tk\Form\Renderer\Dom\Renderer;
@@ -19,7 +19,7 @@ class Table extends \Tt\Table
     use RendererTrait;
 
     protected ?Form        $form         = null;
-    protected ?DbFilter    $dbFilter     = null;
+    protected ?Filter      $dbFilter     = null;
     protected ?DomRenderer $renderer     = null;
     protected ?Renderer    $formRenderer = null;
     protected string       $sid          = 'filter';
@@ -70,7 +70,8 @@ class Table extends \Tt\Table
 
     public function initForm(): static
     {
-        if (!is_null($this->form) && is_null($this->dbFilter)) {
+        $values = [];
+        if (!is_null($this->form) && !$this->form->getField('filter')) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
                 $_SESSION[$this->sid] = $values;
@@ -86,10 +87,11 @@ class Table extends \Tt\Table
             if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid])) {
                 $this->form->setFieldValues($_SESSION[$this->sid]);
             }
-
-            // init DbFilter
             $values = $this->form->getFieldValues();
-            $this->dbFilter = DbFilter::createFromTable($values, $this);
+        }
+
+        if (is_null($this->dbFilter)) {
+            $this->dbFilter = Filter::createFromTable($values, $this);
         }
 
         return $this;
@@ -149,7 +151,7 @@ HTML;
         return $this;
     }
 
-    public function getDbFilter(): ?DbFilter
+    public function getDbFilter(): ?Filter
     {
         return $this->dbFilter;
     }

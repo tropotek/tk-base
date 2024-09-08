@@ -5,7 +5,7 @@ use Bs\Table;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Uri;
-use Tt\Db;
+use Tk\Db;
 use Tt\Table\Action\Csv;
 use Tt\Table\Action\Delete;
 use Tt\Table\Cell;

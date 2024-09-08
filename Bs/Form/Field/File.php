@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Form\Field;
 
-use Tt\DbModel;
+use Tk\Db\Model;
 
 /**
  * Use this field in conjunction with the \Bs\Db\File object
@@ -11,12 +11,12 @@ class File extends \Tk\Form\Field\File
     /**
      * The file owner object that will be used as the fkey and fid for the file records
      */
-    protected DbModel $model;
+    protected Model $model;
 
     protected bool $enableSelect = false;
 
 
-    public function __construct(string $name, DbModel $model = null)
+    public function __construct(string $name, Model $model = null)
     {
         parent::__construct($name);
         $this->model = $model;
@@ -26,7 +26,7 @@ class File extends \Tk\Form\Field\File
         //$this->addCss('tk-multiinput');
     }
 
-    public static function createFile($name, DbModel $model): static
+    public static function createFile($name, Model $model): static
     {
         return new static($name, $model);
     }
@@ -52,7 +52,7 @@ class File extends \Tk\Form\Field\File
         return $this;
     }
 
-    public function getModel(): ?DbModel
+    public function getModel(): ?Model
     {
         return $this->model;
     }

@@ -8,7 +8,7 @@ use Dom\Template;
 use Tk\Alert;
 use Tk\Form;
 use Tk\Uri;
-use Tt\Db;
+use Tk\Db;
 
 class Manager extends ControllerAdmin
 {
@@ -34,7 +34,7 @@ class Manager extends ControllerAdmin
         // Set the table rows
         $filter = $this->table->getDbFilter();
         if ($this->fkey) {
-            $filter->set('fkey', $this->fkey);
+            $filter['fkey'] = $this->fkey;
         }
         $rows = \Bs\Db\File::findFiltered($filter);
         $this->table->setRows($rows, Db::getLastStatement()->getTotalRows());
@@ -49,7 +49,6 @@ class Manager extends ControllerAdmin
 
     public function onSubmit(Form $form, Form\Action\ActionInterface $action): void
     {
-        // TODO: Validate files uploads
         /** @var \Bs\Form\Field\File $file */
         $file = $form->getField('file');
         if (!count($file->getUploads())) {

@@ -2,23 +2,23 @@
 namespace Bs\Db\Traits;
 
 use Tk\Exception;
-use Tt\DbModel;
+use Tk\Db\Model;
 
 trait ForeignModelTrait
 {
 
-    private ?DbModel $_model = null;
+    private ?Model $_model = null;
 
 
     /**
      * Alias to setForeignModel();
      */
-    public function setModel(DbModel $model): static
+    public function setModel(Model $model): static
     {
         return $this->setForeignModel($model);
     }
 
-    public function setForeignModel(DbModel $model): static
+    public function setForeignModel(Model $model): static
     {
         $mid = self::getModelId($model);
         if (!$mid) throw new Exception("Model ID not set");
@@ -31,12 +31,12 @@ trait ForeignModelTrait
     /**
      * Alias to getForeignModel();
      */
-    public function getModel(): ?DbModel
+    public function getModel(): ?Model
     {
         return $this->getForeignModel();
     }
 
-    public function getForeignModel(): ?DbModel
+    public function getForeignModel(): ?Model
     {
         if (method_exists($this->fkey, 'find')) {
             $this->_model = $this->fkey::find($this->fkey);
@@ -44,7 +44,7 @@ trait ForeignModelTrait
         return $this->_model;
     }
 
-    protected static function getModelId(DbModel $model): int
+    protected static function getModelId(Model $model): int
     {
         $map = $model->getDataMap();
         $priKey = $map->getPrimaryKey()?->getProperty();

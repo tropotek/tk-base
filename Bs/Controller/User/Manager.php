@@ -7,7 +7,7 @@ use Bs\Db\User;
 use Bs\Table;
 use Dom\Template;
 use Tk\Uri;
-use Tt\Db;
+use Tk\Db;
 
 class Manager extends ControllerAdmin
 {

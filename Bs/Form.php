@@ -7,7 +7,7 @@ use Dom\Template;
 use Tk\Form\Renderer\Dom\Renderer;
 use Tk\Traits\SystemTrait;
 use Tk\Uri;
-use Tt\DbModel;
+use Tk\Db\Model;
 
 /**
  * New form and renderer to replace \Bs\Form\EditInterface
@@ -18,10 +18,10 @@ class Form extends \Tk\Form implements DisplayInterface
     use SystemTrait;
 
     protected ?Renderer $renderer = null;
-    protected ?DbModel  $model    = null;
+    protected ?Model  $model    = null;
 
 
-    public function __construct(?DbModel $model = null)
+    public function __construct(?Model $model = null)
     {
         $formId = \Tk\ObjectUtil::basename(static::class);
         $formId = strtolower(preg_replace('/[A-Z]/', '_$0', $formId));
@@ -47,12 +47,12 @@ class Form extends \Tk\Form implements DisplayInterface
         return $this->renderer;
     }
 
-    public function getModel(): ?DbModel
+    public function getModel(): ?Model
     {
         return $this->model;
     }
 
-    public function setModel(?DbModel $model): static
+    public function setModel(?Model $model): static
     {
         $this->model = $model;
         return $this;

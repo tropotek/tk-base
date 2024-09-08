@@ -6,11 +6,11 @@ use Bs\Db\Traits\ForeignModelTrait;
 use Tk\Exception;
 use Tk\Log;
 use Tk\Uri;
-use Tt\Db;
-use Tt\DbFilter;
-use Tt\DbModel;
+use Tk\Db;
+use Tk\Db\Filter;
+use Tk\Db\Model;
 
-class File extends DbModel
+class File extends Model
 {
     use ForeignModelTrait;
     use CreatedTrait;
@@ -46,7 +46,7 @@ class File extends DbModel
      *
      * @param string $file Full/Relative data path to a valid file
      */
-    public static function create(string $file, ?DbModel $model = null, int $userId = 0): static
+    public static function create(string $file, ?Model $model = null, int $userId = 0): static
     {
         if (empty($file)) {
             throw new Exception('Invalid file path.');
@@ -201,11 +201,11 @@ class File extends DbModel
         return self::findFiltered(['path' => $path])[0] ?? null;
     }
 
-    public static function findFiltered(array|DbFilter $filter): array
+    public static function findFiltered(array|Filter $filter): array
     {
         self::install();
 
-        $filter = DbFilter::create($filter);
+        $filter = Filter::create($filter);
 
         if (!empty($filter['search'])) {
             $filter['search'] = '%' . $filter['search'] . '%';
@@ -248,7 +248,7 @@ class File extends DbModel
             $filter->appendWhere('a.hash = :hash AND ');
         }
 
-        if (!empty($filter['model']) && $filter['model'] instanceof DbModel) {
+        if (!empty($filter['model']) && $filter['model'] instanceof Model) {
             $filter['fid'] = self::getModelId($filter['model']);
             $filter['fkey'] = get_class($filter['model']);
         }
