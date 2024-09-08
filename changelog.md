@@ -1,5 +1,29 @@
 #CHANGELOG#
 
+Ver 8.0.36 [2024-09-08]:
+-------------------------------
+  - Update libs with new table object
+  - migrade new objects to libs
+  - fix dbfilter for managers
+  - fixed select dialogs
+  - finish upgrading libs
+  - Fix users and nav
+  - update user management
+  - update create page renderer
+  - WIP
+  - Update dom template ready to MVC code
+  - remove monolog calls
+  - minimise symfony request usage
+  - Implement php native session
+  - Update libs and site to use new DbModel, Form and Table objects
+  - Update user manager, add new Bs table object
+  - removed getters and setter methods from user object
+  - Added Bs\Table with filter form
+  - added actions and orderby to new Tt table
+  - Make DB static
+  - add new table objects
+
+
 Ver 8.0.34 [2024-04-16]:
 -------------------------------
   - Fix form init js
