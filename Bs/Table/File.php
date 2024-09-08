@@ -6,10 +6,10 @@ use Dom\Template;
 use Tk\Alert;
 use Tk\Uri;
 use Tk\Db;
-use Tt\Table\Action\Csv;
-use Tt\Table\Action\Delete;
-use Tt\Table\Cell;
-use Tt\Table\Cell\RowSelect;
+use Tk\Table\Action\Csv;
+use Tk\Table\Action\Delete;
+use Tk\Table\Cell;
+use Tk\Table\Cell\RowSelect;
 
 class File extends Table
 {
@@ -52,11 +52,11 @@ class File extends Table
 
         $this->appendCell('selected')
             ->setSortable(true)
-            ->addOnValue('\Tt\Table\Type\Boolean::onValue');
+            ->addOnValue('\Tk\Table\Type\Boolean::onValue');
 
         $this->appendCell('created')
             ->setSortable(true)
-            ->addOnValue('\Tt\Table\Type\DateFmt::onValue');
+            ->addOnValue('\Tk\Table\Type\DateFmt::onValue');
 
         // init filter fields for actions to access to the filter values
         $this->initForm();

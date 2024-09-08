@@ -8,9 +8,9 @@ use Tk\Alert;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Select;
 use Tk\Uri;
-use Tt\Table\Action\Csv;
-use Tt\Table\Cell;
-use Tt\Table\Cell\RowSelect;
+use Tk\Table\Action\Csv;
+use Tk\Table\Cell;
+use Tk\Table\Cell\RowSelect;
 
 class User extends Table
 {
@@ -70,17 +70,17 @@ class User extends Table
 
         $this->appendCell('active')
             ->setSortable(true)
-            ->addOnValue('\Tt\Table\Type\Boolean::onValue');
+            ->addOnValue('\Tk\Table\Type\Boolean::onValue');
 
         $this->appendCell('lastLogin')
             ->addCss('text-nowrap')
             ->setSortable(true)
-            ->addOnValue('\Tt\Table\Type\DateTime::onValue');
+            ->addOnValue('\Tk\Table\Type\DateTime::onValue');
 
         $this->appendCell('created')
             ->addCss('text-nowrap')
             ->setSortable(true)
-            ->addOnValue('\Tt\Table\Type\DateFmt::onValue');
+            ->addOnValue('\Tk\Table\Type\DateFmt::onValue');
 
 
         // Add Filter Fields
@@ -94,9 +94,9 @@ class User extends Table
         $this->initForm();
 
         // Add Table actions
-        $this->appendAction(\Tt\Table\Action\Select::create($rowSelect, 'disable', 'fa fa-fw fa-times'))
+        $this->appendAction(\Tk\Table\Action\Select::create($rowSelect, 'disable', 'fa fa-fw fa-times'))
             ->setConfirmStr('Disable the selected users?')
-            ->addOnSelect(function(\Tt\Table\Action\Select $action, array $selected) {
+            ->addOnSelect(function(\Tk\Table\Action\Select $action, array $selected) {
                 foreach ($selected as $userId) {
                     $u = \Bs\Db\User::find($userId);
                     $u->active = false;

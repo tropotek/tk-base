@@ -9,11 +9,11 @@ use Tk\Form;
 use Tk\Traits\SystemTrait;
 use Tk\Uri;
 use Tk\Db\Filter;
-use Tt\Table\Action;
-use Tt\Table\DomRenderer;
+use Tk\Table\Action;
+use Tk\Table\DomRenderer;
 use Tk\Form\Renderer\Dom\Renderer;
 
-class Table extends \Tt\Table
+class Table extends \Tk\Table
 {
     use SystemTrait;
     use RendererTrait;
@@ -28,15 +28,12 @@ class Table extends \Tt\Table
     public function __construct(string $tableId = 'tbl', string $orderBy = '', int $limit = 10, int $page = 1)
     {
         parent::__construct($tableId);
-        $this->setLimit($_GET[$this->makeRequestKey(\Tt\Table::PARAM_LIMIT)] ?? $limit);
-        $this->setPage($_GET[$this->makeRequestKey(\Tt\Table::PARAM_PAGE)] ?? $page);
-        $this->setOrderBy($_GET[$this->makeRequestKey(\Tt\Table::PARAM_ORDERBY)] ?? $orderBy);
+        $this->setLimit($_GET[$this->makeRequestKey(\Tk\Table::PARAM_LIMIT)] ?? $limit);
+        $this->setPage($_GET[$this->makeRequestKey(\Tk\Table::PARAM_PAGE)] ?? $page);
+        $this->setOrderBy($_GET[$this->makeRequestKey(\Tk\Table::PARAM_ORDERBY)] ?? $orderBy);
         $this->sid = $this->makeRequestKey('filter');
 
-        $path = $this->getConfig()->makePath(
-            $this->getConfig()->get('path.vendor.org').'/tk-framework/Tt/Table/templates/bs5_dom.html'
-        );
-        $this->renderer = new DomRenderer($this, $path);
+        $this->renderer = new DomRenderer($this);
 
     }
 
@@ -128,8 +125,8 @@ HTML;
         if (!$this->form) {
             $this->form = new Form($this->getId().'f');
             $this->form->addCss('tk-table-filter');
-            // Dom Form Renderer
-            $tplFile = $this->makePath($this->getConfig()->get('path.template.form.dom.inline'));
+            // Inline Dom Form Renderer
+            $tplFile = $this->makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
             $this->formRenderer = new Renderer($this->form, $tplFile);
         }
         return $this->form;
@@ -177,9 +174,9 @@ HTML;
 
                 unset($_SESSION[$this->sid]);
                 Uri::create()
-                    ->remove($action->getTable()->makeRequestKey(\Tt\Table::PARAM_PAGE))
-                    ->remove($this->makeRequestKey(\Tt\Table::PARAM_LIMIT))
-                    ->remove($this->makeRequestKey(\Tt\Table::PARAM_ORDERBY))
+                    ->remove($action->getTable()->makeRequestKey(\Tk\Table::PARAM_PAGE))
+                    ->remove($this->makeRequestKey(\Tk\Table::PARAM_LIMIT))
+                    ->remove($this->makeRequestKey(\Tk\Table::PARAM_ORDERBY))
                     ->redirect();
             })
             ->addOnShow(function (Action $action) {
