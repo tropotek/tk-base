@@ -86,10 +86,10 @@ class User extends Form
         $this->init();
 
         // Load form with object values
-        $load = $this->form->unmapValues($this->getUser());
+        $load = $this->unmapValues($this->getUser());
         $load['userId'] = $this->getUser()->userId;
         $load['perm'] = $this->getUser()->getPermissionList();
-        $this->form->setFieldValues($load);
+        $this->setFieldValues($load);
 
         parent::execute($values);
 
