@@ -7,6 +7,7 @@ use Bs\Db\User;
 use Bs\Table;
 use Bs\Ui\Crumbs;
 use Dom\Template;
+use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
 use Tk\Db;
 
@@ -34,7 +35,9 @@ class Sessions extends ControllerAdmin
             ->addCss('text-nowrap');
         $this->table->appendCell('breadcrumbs')
             ->addCss('text-nowrap');
-        $this->table->appendCell('duration')
+        $this->table->appendCell('activity')
+            ->addCss('text-nowrap');
+        $this->table->appendCell('lifetime')
             ->addCss('text-nowrap');
         $this->table->appendCell('expires')
             ->addHeaderCss('text-center')
@@ -65,19 +68,18 @@ class Sessions extends ControllerAdmin
     {
         $sessions = Db::query("SELECT * FROM _session");
         $rows = [];
-        $my_sess = $_SESSION;
 
         foreach ($sessions as $ses) {
             // decode session data
+            session_unset();
             session_decode($ses->data);
-            $data = $_SESSION;
 
-            $username = $data['_auth.session'] ?? '';
+            $username = $_SESSION[SessionStorage::$SID_USER] ?? '';
             $user = User::findByUsername($username);
             if (!$user) continue;
 
             $breadcrumbs = '';
-            foreach ($data as $itm) {
+            foreach ($_SESSION as $itm) {
                 if ($itm instanceof Crumbs) {
                     $itm->setShowActiveUrl(true);
                     $breadcrumbs = $itm->show()->setAttr('crumbs', 'style', 'width: max-content;margin-bottom: 0;')->toString();
@@ -86,23 +88,26 @@ class Sessions extends ControllerAdmin
                 }
             }
 
+            $now = Date::create();
             $created = Date::create($ses->created);
-            $time = Date::create($ses->modified);
-            $dif = $time->diff($created);
+            $modified = Date::create($ses->modified);
+            $difCreated = $modified->diff($created);
+            $difLast = $now->diff($modified);
 
             $rows[] = (object)[
                 'userId' => $user->userId,
                 'username' => $user->username,
                 'name' => $user->getName(),
-                'ip' => '0.0.0.0',
+                'ip' => $_SESSION[SessionStorage::$SID_IP] ?? '',
                 'type' => $user->type,
                 'breadcrumbs' => $breadcrumbs,
-                'duration' => $dif->format('%H:%i:%s'),
+                'lifetime' => $difCreated->format('%H:%i:%S'),
+                'activity' => $difLast->format('%H:%i:%S'),
                 'expires' => Date::create($ses->expiry),
             ];
         }
-
-        $_SESSION = $my_sess;  // restore our session
+        // reset back to original user session
+        session_reset();
         return $rows;
     }
 
@@ -125,5 +130,4 @@ class Sessions extends ControllerAdmin
 HTML;
         return $this->loadTemplate($html);
     }
-
 }
