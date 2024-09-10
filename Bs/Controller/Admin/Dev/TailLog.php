@@ -106,7 +106,7 @@ CSS;
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-road"></i> </div>
+    <div class="card-header" var="title"><i class="fa fa-road"></i> Tail Log</div>
     <div class="card-body" var="content">
       <div class="tk-tail" id="tail" data-src="" var="tail"></div>
     </div>

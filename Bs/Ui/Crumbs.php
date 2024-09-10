@@ -26,15 +26,12 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
     const CRUMB_IGNORE = 'crumb_ignore';
 
 
-    protected bool $visible = true;
-
-    protected array $crumbStack = [];
-
-    protected string $homeTitle = '';
-
-    protected string $homeUrl = '';
-
-    protected int $trim = 8;
+    protected bool   $visible       = true;
+    protected bool   $showActiveUrl = false;
+    protected array  $crumbStack    = [];
+    protected string $homeTitle     = '';
+    protected string $homeUrl       = '';
+    protected int    $trim          = 8;
 
 
     protected function __construct()
@@ -123,6 +120,17 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         return $this;
     }
 
+    public function isShowActiveUrl(): bool
+    {
+        return $this->showActiveUrl;
+    }
+
+    public function setShowActiveUrl(bool $showActiveUrl): Crumbs
+    {
+        $this->showActiveUrl = $showActiveUrl;
+        return $this;
+    }
+
     public function getBackUrl(): string
     {
         if (!count($this->getCrumbStack())) return '';
@@ -205,7 +213,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         $last = count($this->crumbStack) - 1;
         foreach ($this->getCrumbStack() as $url => $title) {
             $repeat = $template->getRepeat('item');
-            if ($i < $last || ($url == $this->getHomeUrl())) {
+            if ($i < $last || $this->isShowActiveUrl()) {
                 $repeat->setAttr('url', 'href', $url);
                 $repeat->setHtml('url', $title);
             } else {    // Last item

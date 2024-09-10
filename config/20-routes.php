@@ -28,6 +28,9 @@ return function (CollectionConfigurator $routes) {
         ->controller([\Bs\Controller\User\Edit::class, 'doDefault'])
         ->defaults(['type' => \Bs\Db\User::TYPE_MEMBER]);
 
+    $routes->add('sessions', '/sessions')
+        ->controller([\Bs\Controller\Admin\Dev\Sessions::class, 'doDefault']);
+
     $routes->add('tail-log', '/tailLog')
         ->controller([\Bs\Controller\Admin\Dev\TailLog::class, 'doDefault']);
     $routes->add('list-events', '/listEvents')

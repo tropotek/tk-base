@@ -15,7 +15,7 @@ class ListEvents extends ControllerAdmin
 
     public function doDefault(): void
     {
-        $this->getPage()->setTitle('Tail Log');
+        $this->getPage()->setTitle('System Events');
         $this->setAccess(Permissions::PERM_ADMIN);
 
         $this->table = new Table('evt');
@@ -58,7 +58,7 @@ class ListEvents extends ControllerAdmin
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-calendar"></i> </div>
+    <div class="card-header" var="title"><i class="fa fa-calendar"></i> System Events</div>
     <div class="card-body" var="content">
         <p>A list of Events that are available to the EventDispatcher:</p>
     </div>
