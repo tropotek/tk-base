@@ -41,13 +41,20 @@ use Tk\Mvc\Bootstrap;
 use Tk\Mvc\Dispatch;
 use Tk\Mvc\FrontController;
 use Tk\System;
-use Tk\Traits\SingletonTrait;
 use Tk\Uri;
 
 class Factory extends Collection
 {
-    use SingletonTrait;
+    protected static mixed $_instance = null;
 
+
+    public static function instance(): static
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new static();
+        }
+        return self::$_instance;
+    }
 
     public function getConfig(): Config
     {
@@ -75,14 +82,6 @@ class Factory extends Collection
             $this->set('frontController', $frontController);
         }
         return $this->get('frontController');
-    }
-
-    /**
-     * @deprecated
-     */
-    final public function getDb(string $name = 'mysql'): void
-    {
-        throw new \Exception("Deprecated:: Use \Tk\Db static object ");
     }
 
     /**

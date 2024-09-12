@@ -37,7 +37,7 @@ return function (Config $config) {
     /**
      * When set, the users can update their password from their profile page
      */
-    $config['user.profile.password'] = true;
+    $config->set('user.profile.password', true);
 
     /**
      * Use to store a copy of the last log for detailed Exception logs

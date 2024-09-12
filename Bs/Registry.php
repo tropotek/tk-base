@@ -2,7 +2,6 @@
 namespace Bs;
 
 use Tk\Db;
-use Tk\Traits\SingletonTrait;
 
 /**
  * This will hold any persistent system configuration values.
@@ -13,15 +12,22 @@ use Tk\Traits\SingletonTrait;
  */
 class Registry extends Db\Collection
 {
-    use SingletonTrait;
-
-    public static string $DB_TABLE = 'registry';
+    public static string   $DB_TABLE  = 'registry';
+    protected static mixed $_instance = null;
 
 
     public function __construct(\PDO $pdo = null)
     {
         parent::__construct(self::$DB_TABLE, $pdo);
         $this->load();
+    }
+
+    public static function instance(): static
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new static();
+        }
+        return self::$_instance;
     }
 
     public function getSiteName(): string
