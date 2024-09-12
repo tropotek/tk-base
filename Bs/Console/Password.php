@@ -23,11 +23,6 @@ class Password extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-//        if (!$this->getConfig()->isDebug()) {
-//            $this->writeError('Error: Only run this command in a debug environment.');
-//            return self::FAILURE;
-//        }
-
         $username = $input->getArgument('username');
 
         $user = User::findByUsername($username);
