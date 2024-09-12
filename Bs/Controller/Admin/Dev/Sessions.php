@@ -10,7 +10,7 @@ use Dom\Template;
 use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
 use Tk\Db;
-
+use Tk\Db\Session;
 
 class Sessions extends ControllerAdmin
 {
@@ -31,6 +31,8 @@ class Sessions extends ControllerAdmin
             ->addCss('text-nowrap');
         $this->table->appendCell('ip')
             ->addCss('text-nowrap');
+        // $this->table->appendCell('agent')
+        //     ->addCss('text-nowrap');
         $this->table->appendCell('type')
             ->addCss('text-nowrap');
         $this->table->appendCell('breadcrumbs')
@@ -111,7 +113,8 @@ CSS;
                 'userId' => $user->userId,
                 'username' => $user->username,
                 'name' => $user->getName(),
-                'ip' => $_SESSION[SessionStorage::$SID_IP] ?? '',
+                'ip' => $_SESSION[Session::SID_IP] ?? '',
+                'agent' => $_SESSION[Session::SID_AGENT] ?? '',
                 'type' => $user->type,
                 'breadcrumbs' => $breadcrumbs,
                 'lifetime' => $difCreated->format('%H:%i:%S'),
