@@ -49,7 +49,7 @@ class Table extends \Tk\Table
     {
         // add reset table session action
         // todo: not working for some reason????
-        if ($this->getConfig()->isDebug()) {
+        if ($this->getConfig()->isDev()) {
             $this->addResetAction();
         }
 

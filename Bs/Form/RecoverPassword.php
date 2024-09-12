@@ -75,11 +75,9 @@ class RecoverPassword extends Form
             $form->addFieldError('confPassword');
             $form->addFieldError('confPassword', 'Passwords do not match');
         } else {
-            if (!$this->getConfig()->isDebug()) {
-                $errors = User::validatePassword($form->getFieldValue('newPassword'));
-                if (count($errors)) {
-                    $form->addFieldError('confPassword', implode('<br/>', $errors));
-                }
+            $errors = User::validatePassword($form->getFieldValue('newPassword'));
+            if (count($errors)) {
+                $form->addFieldError('confPassword', implode('<br/>', $errors));
             }
         }
 

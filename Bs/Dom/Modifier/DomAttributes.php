@@ -16,6 +16,7 @@ use Tk\Traits\SystemTrait;
  *
  * @experimental
  * @todo Look further into this, I think we can deprecated it and prefer this at the App level
+ * @deprecated This should be implemented on a per site level, not in a lib
  */
 class DomAttributes extends FilterInterface
 {

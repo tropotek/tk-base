@@ -89,11 +89,9 @@ class Register extends Form
             $form->addFieldError('confPassword');
             $form->addFieldError('confPassword', 'Passwords do not match');
         } else {
-            if (!$this->getConfig()->isDebug()) {
-                $errors = \Bs\Db\User::validatePassword($form->getFieldValue('password'));
-                if (count($errors)) {
-                    $form->addFieldError('confPassword', implode('<br/>', $errors));
-                }
+            $errors = \Bs\Db\User::validatePassword($form->getFieldValue('password'));
+            if (count($errors)) {
+                $form->addFieldError('confPassword', implode('<br/>', $errors));
             }
         }
 

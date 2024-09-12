@@ -265,7 +265,7 @@ class User extends Model
 
     public static function validatePassword(string $pwd, array &$errors = []): array
     {
-        if (Config::instance()->isDebug()) return $errors;
+        if (Config::instance()->isDev()) return $errors;
 
         if (strlen($pwd) < 8) {
             $errors[] = "Password too short";

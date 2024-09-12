@@ -61,6 +61,19 @@ class Sessions extends ControllerAdmin
         $this->table->addCss('table-hover');
         $template->appendTemplate('content', $this->table->show());
 
+        // todo: figure out how to show all the crumbs?
+        $css = <<<CSS
+.tk-table td.mBreadcrumbs {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.tk-table ol.breadcrumb {
+    width: max-content;
+    margin-bottom: 0;
+}
+CSS;
+        $template->appendCss($css);
+
         return $template;
     }
 
@@ -82,7 +95,7 @@ class Sessions extends ControllerAdmin
             foreach ($_SESSION as $itm) {
                 if ($itm instanceof Crumbs) {
                     $itm->setShowActiveUrl(true);
-                    $breadcrumbs = $itm->show()->setAttr('crumbs', 'style', 'width: max-content;margin-bottom: 0;')->toString();
+                    $breadcrumbs = $itm->show()->toString();
                     $itm->setShowActiveUrl(false);
                     break;
                 }
