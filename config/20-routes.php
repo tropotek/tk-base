@@ -3,6 +3,11 @@ use Symfony\Component\Routing\Loader\Configurator\CollectionConfigurator;
 
 return function (CollectionConfigurator $routes) {
 
+    if (\Tk\Config::instance()->get('db.mirror.secret', false)) {
+        $routes->add('system-mirror', '/util/mirror')
+            ->controller([\Bs\Controller\Util\Mirror::class, 'doDefault']);
+    }
+
     $routes->add('file-manager', '/fileManager')
         ->controller([\Bs\Controller\File\Manager::class, 'doDefault']);
 

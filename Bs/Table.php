@@ -5,8 +5,9 @@ namespace Bs;
 use Bs\Db\User;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
+use Tk\Config;
 use Tk\Form;
-use Tk\Traits\SystemTrait;
+use Tk\System;
 use Tk\Uri;
 use Tk\Db\Filter;
 use Tk\Table\Action;
@@ -15,7 +16,6 @@ use Tk\Form\Renderer\Dom\Renderer;
 
 class Table extends \Tk\Table
 {
-    use SystemTrait;
     use RendererTrait;
 
     protected ?Form        $form         = null;
@@ -49,7 +49,7 @@ class Table extends \Tk\Table
     {
         // add reset table session action
         // todo: not working for some reason????
-        if ($this->getConfig()->isDev()) {
+        if (Config::instance()->isDev()) {
             $this->addResetAction();
         }
 
@@ -114,7 +114,7 @@ class Table extends \Tk\Table
         $html = <<<HTML
 <div class="bs-table-wrap" var="table"></div>
 HTML;
-        return $this->loadTemplate($html);
+        return Factory::instance()->getTemplateLoader()->load($html);
     }
 
     /**
@@ -126,7 +126,7 @@ HTML;
             $this->form = new Form($this->getId().'f');
             $this->form->addCss('tk-table-filter');
             // Inline Dom Form Renderer
-            $tplFile = $this->makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
+            $tplFile = System::makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
             $this->formRenderer = new Renderer($this->form, $tplFile);
         }
         return $this->form;
@@ -160,7 +160,7 @@ HTML;
 
     public function getAuthUser(): ?User
     {
-        return $this->getFactory()->getAuthUser();
+        return Factory::instance()->getAuthUser();
     }
 
     public function addResetAction(): Action

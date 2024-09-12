@@ -4,6 +4,7 @@ namespace Bs\Form;
 use Bs\Db\User;
 use Bs\Form;
 use Tk\Alert;
+use Tk\Config;
 use Tk\Encrypt;
 use Tk\Form\Action\Submit;
 use Tk\Form\Field\Hidden;
@@ -24,7 +25,7 @@ class RecoverPassword extends Form
 
         //$token = $request->get('t');        // Bug in here that replaces + with a space on POSTS
         $token = $_REQUEST['t'] ?? '';
-        $arr = Encrypt::create($this->getConfig()->get('system.encrypt'))->decrypt($token);
+        $arr = Encrypt::create(Config::instance()->get('system.encrypt'))->decrypt($token);
         $arr = unserialize($arr);
         if (!is_array($arr)) {
             Alert::addError('Unknown account recovery error, please try again.');

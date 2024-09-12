@@ -7,12 +7,10 @@ use Dom\Renderer\RendererInterface;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
 use Tk\Log;
-use Tk\Traits\SystemTrait;
 
 class PageDomInterface extends PageInterface implements RendererInterface
 {
     use RendererTrait;
-    use SystemTrait;
 
     protected ?Modifier $domModifier = null;
 
@@ -36,6 +34,16 @@ class PageDomInterface extends PageInterface implements RendererInterface
     public function getDomModifier(): ?Modifier
     {
         return $this->domModifier;
+    }
+
+    public function loadTemplate(string $xhtml = ''): ?\Dom\Template
+    {
+        return Factory::instance()->getTemplateLoader()->load($xhtml);
+    }
+
+    public function loadTemplateFile(string $path = ''): ?\Dom\Template
+    {
+        return Factory::instance()->getTemplateLoader()->loadFile($path);
     }
 
     /**

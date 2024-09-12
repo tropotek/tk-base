@@ -3,6 +3,8 @@ namespace Bs\Db;
 
 use Bs\Db\Traits\CreatedTrait;
 use Bs\Db\Traits\ForeignModelTrait;
+use Bs\Factory;
+use Tk\Config;
 use Tk\Exception;
 use Tk\Log;
 use Tk\Uri;
@@ -37,7 +39,7 @@ class File extends Model
     public function __construct()
     {
         $this->_CreatedTrait();
-        $this->dataPath = $this->getConfig()->getDataPath();
+        $this->dataPath = Config::instance()->getDataPath();
     }
 
     /**
@@ -58,7 +60,7 @@ class File extends Model
         if (str_starts_with($file, $obj->getDataPath())) {
             $obj->path = str_replace($obj->getDataPath(), '', $file);
         }
-        if (str_starts_with($file, $obj->getConfig()->get('path.data'))) {
+        if (str_starts_with($file, Config::instance()->get('path.data'))) {
             $obj->path = str_replace($obj->getDataPath(), '', $file);
         }
 
@@ -69,8 +71,8 @@ class File extends Model
         if (!$userId) {
             if ($model && property_exists($model, 'userId')) {
                 $userId = $model->userId;
-            } else if ($obj->getFactory()->getAuthUser()) {
-                $userId = $obj->getFactory()->getAuthUser()->userId;
+            } else if (Factory::instance()->getAuthUser()) {
+                $userId = Factory::instance()->getAuthUser()->userId;
             }
         }
         $obj->userId = $userId;
@@ -130,7 +132,7 @@ class File extends Model
 
     public function getUrl(): Uri
     {
-        return Uri::create($this->getConfig()->getDataUrl() . $this->path);
+        return Uri::create(Config::instance()->getDataUrl() . $this->path);
     }
 
     public function isImage(): bool

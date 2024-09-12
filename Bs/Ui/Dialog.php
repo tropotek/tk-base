@@ -1,11 +1,11 @@
 <?php
 namespace Bs\Ui;
 
+use Bs\Factory;
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;
 use Tk\CallbackCollection;
 use Tk\Collection;
-use Tk\Traits\SystemTrait;
 use Tk\Ui\Button;
 use Tk\Ui\Traits\AttributesTrait;
 
@@ -40,7 +40,6 @@ use Tk\Ui\Traits\AttributesTrait;
 class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 {
     use AttributesTrait;
-    use SystemTrait;
 
     protected string $id = '';
 
@@ -225,7 +224,7 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 
     public function __makeTemplate(): ?Template
     {
-        $xhtml = <<<HTML
+        $html = <<<HTML
 <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="_exampleModalLabel" var="dialog">
   <div class="modal-dialog" role="document" var="modal-dialog">
     <div class="modal-content">
@@ -239,7 +238,7 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
   </div>
 </div>
 HTML;
-        return $this->getFactory()->loadTemplate($xhtml);
+        return Factory::instance()->getTemplateLoader()->load($html);
     }
 
 }

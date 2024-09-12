@@ -2,6 +2,7 @@
 namespace Bs\Form;
 
 use Bs\Db\Permissions;
+use Bs\Factory;
 use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
@@ -55,14 +56,16 @@ class User extends Form
             $l2->addCss('tk-input-lock');
         }
 
-        if ($this->getUser()->isStaff() && $this->getFactory()->getAuthUser()->hasPermission(Permissions::PERM_SYSADMIN)) {
+        $factory = Factory::instance();
+        $USER = $factory->getAuthUser();
+        if ($this->getUser()->isStaff() && $USER->hasPermission(Permissions::PERM_SYSADMIN)) {
 
-            $list = array_flip($this->getFactory()->getAvailablePermissions($this->getUser()));
+            $list = array_flip($factory->getAvailablePermissions($this->getUser()));
             $field = $this->appendField(new Checkbox('perm', $list))
                 ->setLabel('Permissions')
                 ->setGroup('Permissions')
                 ->setNotes('Only admin users can modify permissions');
-            if (!$this->getFactory()->getAuthUser()->isAdmin()) {   // disable permission change for admin user
+            if (!$USER->isAdmin()) {   // disable permission change for admin user
                 $field->setDisabled();
             }
 
@@ -76,7 +79,7 @@ class User extends Form
 
         // Form Actions
         $this->appendField(new SubmitExit('save', [$this, 'onSubmit']));
-        $this->appendField(new Link('cancel', $this->getFactory()->getBackUrl()));
+        $this->appendField(new Link('cancel', $factory->getBackUrl()));
 
         return $this;
     }
@@ -99,7 +102,7 @@ class User extends Form
     public function onSubmit(Form $form, SubmitExit $action): void
     {
         // non admin cannot change permissions
-        if (!$this->getFactory()->getAuthUser()->isAdmin()) {
+        if (!Factory::instance()->getAuthUser()->isAdmin()) {
             $form->removeField('perm');
         }
 
@@ -131,7 +134,7 @@ class User extends Form
         Alert::addSuccess('Form save successfully.');
         $action->setRedirect(Uri::create('/user/'.$this->getType().'Edit')->set('userId', $this->getUser()->userId));
         if ($form->getTriggeredAction()->isExit()) {
-            $action->setRedirect($this->getFactory()->getBackUrl());
+            $action->setRedirect(Factory::instance()->getBackUrl());
         }
     }
 

@@ -58,7 +58,7 @@ class User extends Model
     public function __construct()
     {
         $this->_TimestampTrait();
-        $this->timezone = $this->getConfig()->get('php.date.timezone');
+        $this->timezone = Config::instance()->get('php.date.timezone');
     }
 
     public static function create(): static
@@ -144,7 +144,7 @@ class User extends Model
 
     public function getHomeUrl(): Uri
     {
-        $homes = $this->getConfig()->get('user.homepage');
+        $homes = Config::instance()->get('user.homepage');
         return Uri::create($homes[$this->type] ?? '/');
     }
 
@@ -190,7 +190,7 @@ class User extends Model
      */
     public function getPermissionList(): array
     {
-        return array_keys(array_filter($this->getFactory()->getPermissions(), fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
+        return array_keys(array_filter(Factory::instance()->getPermissions(), fn($k) => ($k & $this->permissions), ARRAY_FILTER_USE_KEY));
     }
 
     public function canMasqueradeAs(User $msqUser): bool
@@ -304,7 +304,7 @@ class User extends Model
         // insert a token to the database
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
         if (self::insertToken($this->userId, $selector, $hash_validator, $expiry)) {
-            $this->getCookie()->set(self::REMEMBER_CID, $token, $expires_sec);
+            Factory::instance()->getCookie()->set(self::REMEMBER_CID, $token, $expires_sec);
         }
     }
 
@@ -314,7 +314,7 @@ class User extends Model
     public function forgetMe(): void
     {
         self::deleteToken($this->userId);
-        $this->getCookie()->delete(self::REMEMBER_CID);
+        Factory::instance()->getCookie()->delete(self::REMEMBER_CID);
     }
 
     /**

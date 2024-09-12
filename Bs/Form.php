@@ -5,7 +5,6 @@ namespace Bs;
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;
 use Tk\Form\Renderer\Dom\Renderer;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 use Tk\Db\Model;
 
@@ -15,7 +14,6 @@ use Tk\Db\Model;
  */
 class Form extends \Tk\Form implements DisplayInterface
 {
-    use SystemTrait;
 
     protected ?Renderer $renderer = null;
     protected ?Model  $model    = null;

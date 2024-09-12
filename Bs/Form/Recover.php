@@ -3,6 +3,7 @@ namespace Bs\Form;
 
 use Bs\Db\User;
 use Bs\Form;
+use Bs\Registry;
 use Tk\Alert;
 use Tk\Form\Action\Submit;
 use Tk\Form\Field\Html;
@@ -28,7 +29,7 @@ class Recover extends Form
         $html = <<<HTML
             <a href="/login">Login</a>
         HTML;
-        if ($this->getRegistry()->get('site.account.registration', false)) {
+        if (Registry::instance()->get('site.account.registration', false)) {
             $html = <<<HTML
                 <a href="/register">Register</a> | <a href="/login">Login</a>
             HTML;

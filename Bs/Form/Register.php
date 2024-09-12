@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Form;
 
+use Bs\Registry;
 use Dom\Template;
 use Tk\Alert;
 use Bs\Form;
@@ -63,7 +64,7 @@ class Register extends Form
 
     public function onSubmit(Form $form, Submit $action): void
     {
-        if (!$this->getRegistry()->get('site.account.registration', false)) {
+        if (!Registry::instance()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/')->redirect();
         }

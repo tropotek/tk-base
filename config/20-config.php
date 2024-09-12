@@ -29,11 +29,30 @@ return function (Config $config) {
         \Bs\Db\User::TYPE_MEMBER => '/',
     ]);
 
-
+    /**
+     * Script to execute in dev mode after update/migrate
+     */
+    $config->set('debug.script', $config->get('path.config') . '/dev.php');
 
     /**
      * When set, the users can update their password from their profile page
      */
-    $config['user.profile.password']    = true;
+    $config['user.profile.password'] = true;
 
+    /**
+     * Use to store a copy of the last log for detailed Exception logs
+     */
+    $config->set('log.system.request', $config->get('path.cache') . '/requestLog.txt');
+
+    // These files are execute on update/migrate if they exist
+    $config->set('db.migrate.static', [
+        '/vendor/ttek/tk-base/config/sql/views.sql',
+        '/vendor/ttek/tk-base/config/sql/procedures.sql',
+        '/vendor/ttek/tk-base/config/sql/events.sql',
+        '/vendor/ttek/tk-base/config/sql/triggers.sql',
+        '/src/config/sql/views.sql',
+        '/src/config/sql/procedures.sql',
+        '/src/config/sql/events.sql',
+        '/src/config/sql/triggers.sql'
+    ]);
 };

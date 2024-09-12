@@ -3,8 +3,9 @@ namespace Bs\Dom\Modifier;
 
 use Bs\Db\Permissions;
 use Bs\Db\User;
+use Bs\Factory;
 use Dom\Modifier\FilterInterface;
-use Tk\Traits\SystemTrait;
+use Tk\Config;
 
 /**
  * This object checks for any app attribute tags in a template and modifies a node as
@@ -20,7 +21,6 @@ use Tk\Traits\SystemTrait;
  */
 class DomAttributes extends FilterInterface
 {
-    use SystemTrait;
 
     const APP_IS_USER   = 'app-is-user';
     const APP_IS_TYPE   = 'app-is-type';
@@ -35,8 +35,8 @@ class DomAttributes extends FilterInterface
 
     public function __construct()
     {
-        $this->isUser = is_object($this->getFactory()->getAuthUser());
-        $this->authUser = $this->getFactory()->getAuthUser();
+        $this->isUser = is_object(Factory::instance()->getAuthUser());
+        $this->authUser = Factory::instance()->getAuthUser();
 
         $reflect = new \ReflectionClass(User::$USER_CLASS);
         $this->userCon = $reflect->getConstants();
@@ -56,7 +56,7 @@ class DomAttributes extends FilterInterface
      */
     public function executeNode(\DOMElement $node): void
     {
-        $isDebug = $this->getConfig()->isDebug();
+        $isDebug = Config::instance()->isDebug();
 
         try {
 

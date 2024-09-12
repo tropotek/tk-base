@@ -1,20 +1,20 @@
 <?php
 namespace Bs\Controller;
 
-use Tk\Traits\SystemTrait;
+use Tk\Config;
+use Tk\System;
 
 class Error
 {
-    use SystemTrait;
 
     public function doDefault(\Throwable $e)
     {
-        return $this->getExceptionHtml($e, $this->getConfig()->isDebug());
+        return $this->getExceptionHtml($e, Config::instance()->isDebug());
     }
 
     public function getExceptionHtml(\Throwable $e, bool $withTrace = false)
     {
-        $config = $this->getConfig();
+        $config = Config::instance();
         $class = get_class($e);
         $msg = $e->getMessage();
         $str = '';
@@ -23,7 +23,7 @@ class Error
 
         if ($withTrace) {
             $toString = trim($e->__toString());
-            $logfile = $this->getSystem()->makePath($config->get('log.system.request'));
+            $logfile = System::makePath($config->get('log.system.request'));
             if (is_readable($logfile)) {
                 // Add to composer require: "sensiolabs/ansi-to-html": "~1.0",
                 if (class_exists('SensioLabs\AnsiConverter\AnsiToHtmlConverter')) {

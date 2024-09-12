@@ -7,6 +7,7 @@ use Bs\Listener\RememberMeHandler;
 use Bs\Listener\PageBytesHandler;
 use Bs\Listener\DomViewHandler;
 use Dom\Modifier\PageBytes;
+use Tk\Config;
 use Tk\Mvc\EventListener\ExceptionListener;
 use Bs\Listener\CrumbsHandler;
 
@@ -34,18 +35,18 @@ class Dispatch extends \Tk\Mvc\Dispatch
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
-            $this->getConfig()->isDebug()
+            Config::instance()->isDebug()
         ));
 
         // render the page template with controller HTML content if enabled/exists
         $this->getDispatcher()->addSubscriber(new PageHandler());
 
         // renders DomTemplates from controller returns if page template disabled or not exists
-        $this->getDispatcher()->addSubscriber(new DomViewHandler($this->getFactory()->getTemplateModifier()));
+        $this->getDispatcher()->addSubscriber(new DomViewHandler(Factory::instance()->getTemplateModifier()));
 
         // Show total page bytes
         /** @var PageBytes $pageBytes */
-        $pageBytes = $this->getFactory()->getTemplateModifier()->getFilter('pageBytes');
+        $pageBytes = Factory::instance()->getTemplateModifier()->getFilter('pageBytes');
         if ($pageBytes) {
             $this->getDispatcher()->addSubscriber(new PageBytesHandler($pageBytes));
         }

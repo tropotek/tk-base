@@ -1,9 +1,11 @@
 <?php
 namespace Bs\Form;
 
+use Bs\Factory;
 use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
+use Tk\Config;
 use Tk\Form\Action\Link;
 use Tk\Form\Action\SubmitExit;
 use Tk\Form\Field\Checkbox;
@@ -45,14 +47,14 @@ class Profile extends Form
             ->setRequired();
 
         if ($this->getUser()->isType(\Bs\Db\User::TYPE_STAFF)) {
-            $list = array_flip($this->getFactory()->getAvailablePermissions($this->getUser()));
+            $list = array_flip(Factory::instance()->getAvailablePermissions($this->getUser()));
             $this->getForm()->appendField(new Checkbox('perm', $list))
                 ->setGroup('Permissions')
                 ->setDisabled()
                 ->setReadonly();
         }
 
-        if ($this->getConfig()->get('user.profile.password')) {
+        if (Config::instance()->get('user.profile.password')) {
             $tab = 'Password';
             $this->getForm()->appendField(new Password('currentPass'))->setGroup($tab)
                 ->setLabel('Current Password')
@@ -66,7 +68,7 @@ class Profile extends Form
         }
 
         $this->getForm()->appendField(new SubmitExit('save', [$this, 'onSubmit']));
-        $this->getForm()->appendField(new Link('cancel', $this->getFactory()->getBackUrl()));
+        $this->getForm()->appendField(new Link('cancel', Factory::instance()->getBackUrl()));
 
         return $this;
     }

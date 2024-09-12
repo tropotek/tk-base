@@ -4,7 +4,7 @@ namespace Bs\Email;
 use Bs\Factory;
 use Tk\Config;
 use Tk\Encrypt;
-use Tk\Registry;
+use Bs\Registry;
 use Tk\Uri;
 
 class User

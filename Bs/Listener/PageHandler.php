@@ -2,6 +2,7 @@
 namespace Bs\Listener;
 
 use Bs\ControllerInterface;
+use Bs\Factory;
 use Bs\PageInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,11 +10,10 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Tk\Traits\SystemTrait;
+use Tk\System;
 
 class PageHandler implements EventSubscriberInterface
 {
-    use SystemTrait;
 
     protected ?ControllerInterface $controller = null;
     protected ?PageInterface $page = null;
@@ -26,7 +26,7 @@ class PageHandler implements EventSubscriberInterface
         // create page from template path
 //        $pageType = $event->getRequest()->attributes->get('template');
 //        if (!empty($pageType)) {
-//            $this->page = $this->getFactory()->getPage($this->getSystem()->makePath($this->getConfig()->get('path.template.' . $pageType)));
+//            $this->page = $this->getFactory()->getPage(System::makePath($this->getConfig()->get('path.template.' . $pageType)));
 //        }
     }
 
@@ -39,11 +39,11 @@ class PageHandler implements EventSubscriberInterface
         if (!($event->getController()[0] instanceof ControllerInterface)) return;
         $this->controller = $event->getController()[0];
 
-        $pageTemplate = $this->getConfig()->makePath($this->controller->getPageTemplate());
+        $pageTemplate = System::makePath($this->controller->getPageTemplate());
         if (!is_file($pageTemplate)) {
-            $pageTemplate = $this->getConfig()->makePath('/html/public.html');
+            $pageTemplate = System::makePath('/html/public.html');
         }
-        $this->page = $this->getFactory()->initPage($pageTemplate);
+        $this->page = Factory::instance()->initPage($pageTemplate);
     }
 
     /**

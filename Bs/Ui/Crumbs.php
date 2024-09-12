@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Ui;
 
+use Bs\Factory;
 use Dom\Template;
-use Tk\Traits\SystemTrait;
 use Tk\Ui\Traits\AttributesTrait;
 use Tk\Uri;
 
@@ -12,7 +12,6 @@ use Tk\Uri;
  */
 class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
-    use SystemTrait;
     use AttributesTrait;
 
     /**
@@ -244,7 +243,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
 </div>
 HTML;
 
-        return $this->loadTemplate($html);
+        return Factory::instance()->getTemplateLoader()->load($html);
     }
 
 

@@ -2,6 +2,7 @@
 namespace Bs\Table;
 
 use Bs\Db\Permissions;
+use Bs\Factory;
 use Bs\Table;
 use Bs\Util\Masquerade;
 use Tk\Alert;
@@ -58,10 +59,10 @@ class User extends Table
             $this->appendCell('permissions')
                 ->addOnValue(function (\Bs\Db\User $user, Cell $cell) {
                     if ($user->hasPermission(Permissions::PERM_ADMIN)) {
-                        $list = $this->getFactory()->getAvailablePermissions($user);
+                        $list = Factory::instance()->getAvailablePermissions($user);
                         return $list[Permissions::PERM_ADMIN];
                     }
-                    $list = array_filter($this->getFactory()->getAvailablePermissions($user), function ($k) use ($user) {
+                    $list = array_filter(Factory::instance()->getAvailablePermissions($user), function ($k) use ($user) {
                         return $user->hasPermission($k);
                     }, ARRAY_FILTER_USE_KEY);
                     return implode(', <br/>', $list);
@@ -138,7 +139,7 @@ class User extends Table
     {
         /** @var \Bs\Db\User $msqUser */
         $msqUser = \Bs\Db\User::find($userId);
-        if ($msqUser && Masquerade::masqueradeLogin($this->getFactory()->getAuthUser(), $msqUser)) {
+        if ($msqUser && Masquerade::masqueradeLogin(Factory::instance()->getAuthUser(), $msqUser)) {
             Alert::addSuccess('You are now logged in as user ' . $msqUser->username);
             if ($msqUser->getHomeUrl()) {
                 $msqUser->getHomeUrl()->redirect();

@@ -1,11 +1,10 @@
 <?php
 namespace Bs;
 
-use Tk\Traits\SystemTrait;
+use Tk\Config;
 
 abstract class PageInterface
 {
-    use SystemTrait;
 
     private string $title        = '';
     private string $templatePath = '';
@@ -67,6 +66,16 @@ abstract class PageInterface
     {
         $this->enabled = $enabled;
         return $this;
+    }
+
+    public function getFactory(): Factory
+    {
+        return Factory::instance();
+    }
+
+    public function getConfig(): Config
+    {
+        return Config::instance();
     }
 
 }

@@ -6,13 +6,12 @@ use Bs\Ui\Crumbs;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Tk\Alert;
+use Tk\Config;
 use Tk\Log;
-use Tk\Traits\SystemTrait;
 use Tk\Uri;
 
 abstract class ControllerInterface
 {
-    use SystemTrait;
 
     protected string $pageTemplate = '';
 
@@ -41,22 +40,32 @@ abstract class ControllerInterface
 
     public function getPage(): PageInterface|PageDomInterface
     {
-        return $this->getFactory()->getPage();
+        return Factory::instance()->getPage();
     }
 
     public function getBackUrl(): Uri
     {
-        return $this->getFactory()->getBackUrl();
+        return Factory::instance()->getBackUrl();
     }
 
     public function getAuthUser(): ?User
     {
-        return $this->getFactory()->getAuthUser();
+        return Factory::instance()->getAuthUser();
     }
 
     public function getCrumbs(): ?Crumbs
     {
-        return $this->getFactory()->getCrumbs();
+        return Factory::instance()->getCrumbs();
+    }
+
+    public function getFactory(): Factory
+    {
+        return Factory::instance();
+    }
+
+    public function getConfig(): Config
+    {
+        return Config::instance();
     }
 
     /**

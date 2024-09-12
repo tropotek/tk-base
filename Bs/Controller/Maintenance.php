@@ -2,6 +2,7 @@
 namespace Bs\Controller;
 
 use Bs\ControllerDomInterface;
+use Bs\Registry;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,14 +19,16 @@ class Maintenance extends ControllerDomInterface
 
     public function doDefault()
     {
+        $registry = Registry::instance();
+
         $this->getPage()->setTitle('Maintenance');
         $this->getCrumbs()->reset();
-        if ($this->getRegistry()->get('system.maintenance.message')) {
-            $this->message = $this->getRegistry()->get('system.maintenance.message');
+
+        if ($registry->get('system.maintenance.message')) {
+            $this->message = $registry->get('system.maintenance.message');
         }
 
-
-        if (!$this->getRegistry()->get('system.maintenance.enabled')) {
+        if (!$registry->get('system.maintenance.enabled')) {
             return new Response('Invalid URL location', Response::HTTP_NOT_FOUND);
         }
 

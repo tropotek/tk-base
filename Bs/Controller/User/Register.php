@@ -4,6 +4,7 @@ namespace Bs\Controller\User;
 use Bs\ControllerDomInterface;
 use Bs\Db\User;
 use Bs\Form;
+use Bs\Registry;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Encrypt;
@@ -23,7 +24,7 @@ class Register extends ControllerDomInterface
     {
         $this->getPage()->setTitle('Register');
 
-        if (!$this->getRegistry()->get('site.account.registration', false)) {
+        if (!Registry::instance()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
         }
@@ -37,7 +38,7 @@ class Register extends ControllerDomInterface
     {
         $this->getPage()->setTitle('Register');
 
-        if (!$this->getRegistry()->get('site.account.registration', false)) {
+        if (!Registry::instance()->get('site.account.registration', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
         }

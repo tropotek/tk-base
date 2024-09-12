@@ -3,11 +3,9 @@ namespace Bs\Util;
 
 use Bs\Db\User;
 use Bs\Factory;
-use Tk\Traits\SystemTrait;
 
 class Masquerade
 {
-    use SystemTrait;
 
     /**
      * Session ID

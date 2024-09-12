@@ -5,38 +5,249 @@ use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
+use Composer\Autoload\ClassLoader;
 use Dom\Loader;
 use Dom\Modifier;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\Routing\Generator\CompiledUrlGenerator;
+use Symfony\Component\Routing\Loader\Configurator\CollectionConfigurator;
+use Symfony\Component\Routing\Matcher\CompiledUrlMatcher;
+use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
+use Tk\Cache\Adapter\Filesystem;
+use Tk\Cache\Cache;
+use Tk\Collection;
+use Tk\Config;
+use Tk\ConfigLoader;
+use Tk\Cookie;
+use Tk\Log;
+use Tk\Logger\ErrorLog;
+use Tk\Logger\RequestLog;
+use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
+use Tk\Mail\Gateway;
+use Tk\Mvc\Bootstrap;
+use Tk\Mvc\Dispatch;
+use Tk\Mvc\FrontController;
+use Tk\System;
+use Tk\Traits\SingletonTrait;
 use Tk\Uri;
 
-class Factory extends \Tk\Factory
+class Factory extends Collection
 {
+    use SingletonTrait;
 
-    protected function __construct() {
-        parent::__construct();
+
+    public function getConfig(): Config
+    {
+        return Config::instance();
+    }
+
+    public function getRegistry(): Registry
+    {
+        return Registry::instance();
+    }
+
+    public function getBootstrap(): Bootstrap
+    {
+        if (!$this->has('bootstrap')) {
+            $bootstrap = new Bootstrap();
+            $this->set('bootstrap', $bootstrap);
+        }
+        return $this->get('bootstrap');
+    }
+
+    public function getFrontController(): FrontController
+    {
+        if (!$this->has('frontController')) {
+            $frontController = new FrontController();
+            $this->set('frontController', $frontController);
+        }
+        return $this->get('frontController');
+    }
+
+    /**
+     * @deprecated
+     */
+    final public function getDb(string $name = 'mysql'): void
+    {
+        throw new \Exception("Deprecated:: Use \Tk\Db static object ");
+    }
+
+    /**
+     * setup DB based session object
+     */
+    public function initSession(): ?\Tk\Db\Session
+    {
+        if (!$this->has('session')) {
+            session_name('sn_' . md5($this->getConfig()->getBaseUrl()));
+            // init DB session if enabled
+            if ($this->getConfig()->get('session.db_enable', false)) {
+                \Tk\Db\Session::instance();
+            }
+            session_start();
+
+            $_SESSION[\Tk\Db\Session::SID_IP]    = System::getClientIp();
+            $_SESSION[\Tk\Db\Session::SID_AGENT] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+            $this->set('session', null);
+        }
+        return $this->get('session');
+    }
+
+    public function getCookie(): Cookie
+    {
+        if (!$this->has('cookie')) {
+            $cookie = new Cookie();
+            $this->set('cookie', $cookie);
+        }
+        return $this->get('cookie');
+    }
+
+    public function getRequest(): Request
+    {
+        if (!$this->has('request')) {
+            $request = Request::createFromGlobals();
+            $request->setSession(new Session());
+            $this->set('request', $request);
+        }
+        return $this->get('request');
+    }
+
+    public function getRequestStack(): RequestStack
+    {
+        if (!$this->has('requestStack')) {
+            $requestStack = new RequestStack();
+            $this->set('requestStack', $requestStack);
+        }
+        return $this->get('requestStack');
+    }
+
+    public function getCompiledRoutes(): array
+    {
+        // Setup Routes and cache results.
+        // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
+        $systemCache = new Cache(new Filesystem(System::makePath($this->getConfig()->get('path.cache'))));
+        if ((!$compiledRoutes = $systemCache->fetch('compiledRoutes')) || System::isRefreshCacheRequest()) {
+            ConfigLoader::create()->loadRoutes(new CollectionConfigurator($this->getRouteCollection(), 'routes'));
+            $compiledRoutes = (new CompiledUrlMatcherDumper($this->getRouteCollection()))->getCompiledRoutes();
+            // Storing the data in the cache for 60 minutes (comment this out if using callables in routes)
+            $systemCache->store('compiledRoutes', $compiledRoutes, 60*60);
+        }
+        return $compiledRoutes;
+    }
+
+    public function getRouteCollection(): RouteCollection
+    {
+        if (!$this->has('routeCollection')) {
+            $routeCollection = new RouteCollection();
+            $this->set('routeCollection', $routeCollection);
+        }
+        return $this->get('routeCollection');
+    }
+
+    public function getRouteMatcher(): CompiledUrlMatcher
+    {
+        if (!$this->has('routeMatcher')) {
+            $context = new RequestContext();
+            $matcher = new CompiledUrlMatcher($this->getCompiledRoutes(), $context);
+            $this->set('routeMatcher', $matcher);
+            $this->set('routeContext', $context);
+        }
+        return $this->get('routeMatcher');
+    }
+
+    /**
+     *  For generating URLs from routes
+     *  $generator = new Routing\Generator\UrlGenerator($routes, $context);
+     *  echo $generator->generate(
+     *      'hello',
+     *      ['name' => 'Fabien'],
+     *      UrlGeneratorInterface::ABSOLUTE_URL
+     *  );
+     *   outputs something like http://example.com/somewhere/hello/Fabien
+     */
+    public function getRouteGenerator(): CompiledUrlGenerator
+    {
+        if (!$this->has('routeGenerator')) {
+            $generator = new CompiledUrlGenerator($this->getCompiledRoutes(), $this->get('routeContext'));
+            $this->set('routeGenerator', $generator);
+        }
+        return $this->get('routeGenerator');
+    }
+
+    public function getControllerResolver(): ControllerResolver
+    {
+        // todo: move to FrontController
+        if (!$this->has('controllerResolver')) {
+            $controllerResolver = new ControllerResolver();
+            $this->set('controllerResolver', $controllerResolver);
+        }
+        return $this->get('controllerResolver');
+    }
+
+    public function getArgumentResolver(): ArgumentResolver
+    {
+        // todo: move to FrontController
+        if (!$this->has('argumentResolver')) {
+            $argumentResolver = new ArgumentResolver();
+            $this->set('argumentResolver', $argumentResolver);
+        }
+        return $this->get('argumentResolver');
+    }
+
+    public function initLogger(): void
+    {
+        // Init \Tk\Log
+        Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
+        $requestLog = System::makePath($this->getConfig()->get('log.system.request'));
+        Log::addHandler(new RequestLog($requestLog));
+        if (is_writable(ini_get('error_log'))) {
+            Log::addHandler(new StreamLog(ini_get('error_log'), $this->getConfig()->get('log.logLevel', LogLevel::DEBUG)));
+        } else {
+            Log::addHandler(new ErrorLog($this->getConfig()->get('log.logLevel', LogLevel::DEBUG)));
+        }
+    }
+
+    /**
+     * Get the composer Class Loader object returned from the autoloader in the _prepend.php file
+     */
+    public function getComposerLoader(): ?ClassLoader
+    {
+        return $this->get('composerLoader');
+    }
+
+    /**
+     * @see https://symfony.com/doc/current/reference/events.html
+     */
+    public function getEventDispatcher(): ?EventDispatcher
+    {
+        // todo: move to FrontController, keep method save in factory
+        if (!$this->has('eventDispatcher')) {
+            $dispatcher = new EventDispatcher();
+            $this->set('eventDispatcher', $dispatcher);
+        }
+        return $this->get('eventDispatcher');
     }
 
     public function initEventDispatcher(): ?EventDispatcher
     {
+        // todo: move to bootstrap
         if ($this->getEventDispatcher()) {
             new Dispatch($this->getEventDispatcher());
         }
         return $this->getEventDispatcher();
-    }
-
-    public function getConsole(): Application
-    {
-        if (!$this->has('console')) {
-            $app = parent::getConsole();
-            $this->set('console', $app);
-        }
-        return $this->get('console');
     }
 
     public function getAuthController(): Auth
@@ -126,11 +337,11 @@ class Factory extends \Tk\Factory
             if (class_exists('ScssPhp\ScssPhp\Compiler')) {
                 $vars = [
                     'baseUrl' => $this->getConfig()->getBaseUrl(),
-                    'dataUrl' => $this->getSystem()->makeUrl($this->getConfig()->getDataPath())
+                    'dataUrl' => System::makeUrl($this->getConfig()->getDataPath())
                 ];
                 $scss = new Modifier\Scss($this->getConfig()->getBasePath(), $this->getConfig()->getBaseUrl(), $this->getConfig()->getCachePath(), $vars);
                 $scss->setCompress(true);
-                $scss->setCacheEnabled(!$this->getSystem()->isRefreshCacheRequest());
+                $scss->setCacheEnabled(!System::isRefreshCacheRequest());
                 $scss->setCacheTimeout(\Tk\Date::DAY*14);
                 $dm->addFilter('scss', $scss);
             }
@@ -165,7 +376,7 @@ class Factory extends \Tk\Factory
     public function createMessage(string $template = ''): CurlyMessage
     {
         if (empty($template)) {
-            $tplPath = $this->getSystem()->makePath($this->getConfig()->get('system.mail.template'));
+            $tplPath = System::makePath($this->getConfig()->get('system.mail.template'));
             if (is_file($tplPath)) {
                 $template = file_get_contents($tplPath);
                 if (!$template) {
@@ -184,19 +395,23 @@ class Factory extends \Tk\Factory
     }
 
     /**
-     * @deprecated use `\Bs\User::create()`
+     * get the mail gateway to send emails
      */
-    public function createUser(): User
+    public function getMailGateway(): ?Gateway
     {
-        return new User::$USER_CLASS();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getUserMap(): null
-    {
-        return null;
+        // move init to bootstrap keep method
+        if (!$this->has('mailGateway')) {
+            $params = $this->getConfig()->all();
+            if (!System::isCli()) {
+                $params['clientIp'] = System::getClientIp();
+                $params['hostname'] = $this->getConfig()->getHostname();
+                $params['referer']  = $_SERVER['HTTP_REFERER'] ?? '';
+            }
+            $gateway = new \Tk\Mail\Gateway($params);
+            $gateway->setDispatcher($this->getEventDispatcher());
+            $this->set('mailGateway', $gateway);
+        }
+        return $this->get('mailGateway');
     }
 
     /**
@@ -226,5 +441,38 @@ class Factory extends \Tk\Factory
     public function getBackUrl(): Uri
     {
         return Uri::create($this->getCrumbs()->getBackUrl());
+    }
+
+    public function getConsole(): Application
+    {
+        if (!$this->has('console')) {
+            $app = new Application($this->getRegistry()->getSiteName(), System::getVersion());
+            $app->setDispatcher($this->getEventDispatcher());
+
+            // Setup Global Console Commands
+            $app->add(new \App\Console\Cron());
+            $app->add(new \Bs\Console\Password());
+            $app->add(new \Tk\Console\Command\CleanData());
+            $app->add(new \Tk\Console\Command\Upgrade());
+            $app->add(new \Tk\Console\Command\Maintenance());
+            $app->add(new \Tk\Console\Command\DbBackup());
+            $app->add(new \Tk\Console\Command\Migrate());
+            if ($this->getConfig()->isDev()) {
+                $app->add(new \App\Console\TestData());
+                $app->add(new \App\Console\Test());
+                $app->add(new \Tk\Console\Command\Debug());
+                $app->add(new \Tk\Console\Command\Mirror());
+                $app->add(new \Tk\Console\Command\MakeModel());
+                $app->add(new \Tk\Console\Command\MakeMapper());
+                $app->add(new \Tk\Console\Command\MakeTable());
+                $app->add(new \Tk\Console\Command\MakeForm());
+                $app->add(new \Tk\Console\Command\MakeManager());
+                $app->add(new \Tk\Console\Command\MakeEdit());
+                $app->add(new \Tk\Console\Command\MakeAll());
+            }
+
+            $this->set('console', $app);
+        }
+        return $this->get('console');
     }
 }

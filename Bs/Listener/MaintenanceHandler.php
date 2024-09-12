@@ -2,15 +2,13 @@
 namespace Bs\Listener;
 
 use Bs\Db\Permissions;
-use Bs\Page;
+use Bs\Factory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Tk\Registry;
-use Tk\Traits\SystemTrait;
+use Bs\Registry;
 
 class MaintenanceHandler implements EventSubscriberInterface
 {
-    use SystemTrait;
 
     public function onController(\Symfony\Component\HttpKernel\Event\ControllerEvent $event)
     {
@@ -20,13 +18,13 @@ class MaintenanceHandler implements EventSubscriberInterface
         $class = get_class($controller[0]);
 
         // Allow admin users access
-        if ($this->getFactory()->getAuthUser() && $this->getFactory()->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
+        if (Factory::instance()->getAuthUser() && Factory::instance()->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
             return;
         }
 
         // Exit if not in maintenance mode
         if (
-            !$this->getRegistry()->get('system.maintenance.enabled') ||
+            !Registry::instance()->get('system.maintenance.enabled') ||
             $controller[0] instanceof \Bs\Controller\Maintenance
         ) {
             return;
@@ -38,12 +36,13 @@ class MaintenanceHandler implements EventSubscriberInterface
             $method = 'doApi';
         }
 
-        if ($this->getConfig()->get('path.template.'.Page::TEMPLATE_MAINTENANCE)) {
-            $event->getRequest()->attributes->set('template', Page::TEMPLATE_MAINTENANCE);
-            $params = $event->getRequest()->attributes->get('_route_params');
-            $params['template'] = Page::TEMPLATE_MAINTENANCE;
-            $event->getRequest()->attributes->set('_route_params', $params);
-        }
+        // TODO See if we need this implemented
+//        if ($this->getConfig()->get('path.template.'.Page::TEMPLATE_MAINTENANCE)) {
+//            $event->getRequest()->attributes->set('template', Page::TEMPLATE_MAINTENANCE);
+//            $params = $event->getRequest()->attributes->get('_route_params');
+//            $params['template'] = Page::TEMPLATE_MAINTENANCE;
+//            $event->getRequest()->attributes->set('_route_params', $params);
+//        }
 
         $c = new \Bs\Controller\Maintenance();
         $event->setController([$c, $method]);

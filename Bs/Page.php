@@ -4,6 +4,7 @@ namespace Bs;
 use Bs\Ui\Crumbs;
 use Dom\Modifier\JsLast;
 use Dom\Template;
+use Tk\System;
 use Tk\Uri;
 
 class Page extends PageDomInterface
@@ -18,8 +19,8 @@ class Page extends PageDomInterface
             'baseUrl' => $this->getConfig()->getBaseUrl(),
             'dataUrl' => $this->getConfig()->getDataUrl(),
             'templateUrl' => $this->getConfig()->getTemplateUrl(),
-            'vendorUrl' => $this->getSystem()->makeUrl($this->getConfig()->get('path.vendor')),
-            'vendorOrgUrl' => $this->getSystem()->makeUrl($this->getConfig()->get('path.vendor.org')),
+            'vendorUrl' => System::makeUrl($this->getConfig()->get('path.vendor')),
+            'vendorOrgUrl' => System::makeUrl($this->getConfig()->get('path.vendor.org')),
             'debug' => $this->getConfig()->isDebug(),
             'isProd' => $this->getConfig()->isProd(),
             'isDev' => $this->getConfig()->isDev(),
@@ -37,9 +38,9 @@ class Page extends PageDomInterface
             $template->setTitleText('DEBUG: ' . $template->getTitleText());
         }
 
-        $template->setText('site-name', $this->getRegistry()->getSiteName());
-        $template->setText('site-short-name', $this->getRegistry()->getSiteShortName());
-        $template->setText('site-name-letter', $this->getRegistry()->getSitename()[0] ?? '');
+        $template->setText('site-name', Registry::instance()->getSiteName());
+        $template->setText('site-short-name', Registry::instance()->getSiteShortName());
+        $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
 
         $user = $this->getFactory()->getAuthUser();

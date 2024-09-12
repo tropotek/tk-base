@@ -5,6 +5,7 @@ use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
 use Bs\Table;
 use Dom\Template;
+use Tk\System;
 
 /**
  *
@@ -28,7 +29,7 @@ class ListEvents extends ControllerAdmin
         // execute actions and set table orderBy from request
         $this->table->execute();
 
-        $path = $this->getSystem()->makePath($this->getConfig()->get('path.vendor.org'));
+        $path = System::makePath($this->getConfig()->get('path.vendor.org'));
         $rows = $this->convertEventData($this->getAvailableEvents($path));
         $this->table->setRows($rows);
 

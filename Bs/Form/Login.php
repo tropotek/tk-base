@@ -3,6 +3,7 @@ namespace Bs\Form;
 
 use Bs\Db\User;
 use Bs\Form;
+use Bs\Registry;
 use Tk\Alert;
 use Tk\Auth\Result;
 use Tk\Date;
@@ -43,7 +44,7 @@ class Login extends Form
         $html = <<<HTML
             <a href="/recover">Recover</a>
         HTML;
-        if ($this->getRegistry()->get('site.account.registration', false)) {
+        if (Registry::instance()->get('site.account.registration', false)) {
             $html = <<<HTML
                 <a href="/recover">Recover</a> | <a href="/register">Register</a>
             HTML;
@@ -77,7 +78,8 @@ class Login extends Form
             return;
         }
 
-        $result = $this->getFactory()->getAuthController()->authenticate($this->getFactory()->getAuthAdapter());
+        $factory = \Bs\Factory::instance();
+        $result = $factory->getAuthController()->authenticate($factory->getAuthAdapter());
         if ($result->getCode() != Result::SUCCESS) {
             Log::error($result->getMessage());
             $form->addError('Invalid login details.');
@@ -85,7 +87,7 @@ class Login extends Form
         }
 
         // Login successful
-        $user = $this->getFactory()->getAuthUser();
+        $user = $factory->getAuthUser();
         $user->lastLogin = Date::create('now', $user->timezone ?: null);
         $user->sessionId = session_id();
         $user->save();
