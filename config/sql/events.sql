@@ -4,10 +4,7 @@
 -- Files views.sql, procedures.sql, events.sql, triggers.sql
 --  will be executed if they exist after install, update and migration
 --
--- They can be executed from the cli commands:
---  o `./bin/cmd migrate`
---  o `composer update`
---
+-- Note: update your mysql server to `event_scheduler=ON` to enable mysql events
 -- ------------------------------------------------------
 
 -- Delete expired user 'remember me' login tokens

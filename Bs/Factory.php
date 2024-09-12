@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Bs\Auth\AuthUserAdapter;
 use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Dom\Modifier\DomAttributes;
@@ -23,7 +24,6 @@ use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Tk\Auth\Adapter\AdapterInterface;
-use Tk\Auth\Adapter\AuthUser;
 use Tk\Auth\Auth;
 use Tk\Cache\Adapter\Filesystem;
 use Tk\Cache\Cache;
@@ -282,7 +282,7 @@ class Factory extends Collection
     public function getAuthAdapter(): AdapterInterface
     {
         if (!$this->has('authAdapter')) {
-            $adapter = new AuthUser();
+            $adapter = new AuthUserAdapter();
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');
@@ -408,7 +408,7 @@ class Factory extends Collection
                 $params['referer']  = $_SERVER['HTTP_REFERER'] ?? '';
             }
             $gateway = new \Tk\Mail\Gateway($params);
-            $gateway->setDispatcher($this->getEventDispatcher());
+            //$gateway->setDispatcher($this->getEventDispatcher());
             $this->set('mailGateway', $gateway);
         }
         return $this->get('mailGateway');

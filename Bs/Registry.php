@@ -13,9 +13,9 @@ use Tk\Traits\SingletonTrait;
  */
 class Registry extends Db\Collection
 {
-    public static string $DB_TABLE = 'registry';
-
     use SingletonTrait;
+
+    public static string $DB_TABLE = 'registry';
 
 
     public function __construct(\PDO $pdo = null)
