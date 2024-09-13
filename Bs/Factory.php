@@ -452,25 +452,22 @@ class Factory extends Collection
             $app->setDispatcher($this->getEventDispatcher());
 
             // Setup Global Console Commands
-            $app->add(new \App\Console\Cron());
             $app->add(new \Bs\Console\Password());
-            $app->add(new \Bs\Console\Command\CleanData());
-            $app->add(new \Bs\Console\Command\Upgrade());
-            $app->add(new \Bs\Console\Command\Maintenance());
-            $app->add(new \Bs\Console\Command\DbBackup());
-            $app->add(new \Bs\Console\Command\Migrate());
+            $app->add(new \Tk\Console\Command\CleanData());
+            $app->add(new \Tk\Console\Command\Upgrade());
+            $app->add(new \Tk\Console\Command\Maintenance());
+            $app->add(new \Tk\Console\Command\DbBackup());
+            $app->add(new \Tk\Console\Command\Migrate());
             if ($this->getConfig()->isDev()) {
-                $app->add(new \App\Console\TestData());
-                $app->add(new \App\Console\Test());
-                $app->add(new \Bs\Console\Command\Debug());
-                $app->add(new \Bs\Console\Command\Mirror());
-                $app->add(new \Bs\Console\Command\MakeModel());
-                $app->add(new \Bs\Console\Command\MakeMapper());
-                $app->add(new \Bs\Console\Command\MakeTable());
-                $app->add(new \Bs\Console\Command\MakeForm());
-                $app->add(new \Bs\Console\Command\MakeManager());
-                $app->add(new \Bs\Console\Command\MakeEdit());
-                $app->add(new \Bs\Console\Command\MakeAll());
+                $app->add(new \Tk\Console\Command\Debug());
+                $app->add(new \Tk\Console\Command\Mirror());
+                $app->add(new \Tk\Console\Command\MakeModel());
+                $app->add(new \Tk\Console\Command\MakeMapper());
+                $app->add(new \Tk\Console\Command\MakeTable());
+                $app->add(new \Tk\Console\Command\MakeForm());
+                $app->add(new \Tk\Console\Command\MakeManager());
+                $app->add(new \Tk\Console\Command\MakeEdit());
+                $app->add(new \Tk\Console\Command\MakeAll());
             }
 
             $this->set('console', $app);
