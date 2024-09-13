@@ -64,7 +64,7 @@ class Register extends Form
 
     public function onSubmit(Form $form, Submit $action): void
     {
-        if (!Registry::instance()->get('site.account.registration', false)) {
+        if (!$this->getConfig()->get('user.registration.enable', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/')->redirect();
         }
@@ -72,7 +72,7 @@ class Register extends Form
         $user = \Bs\Db\User::create();
         $user->active = false;
         $user->notes = 'pending activation';
-        $user->type = \Bs\Db\User::TYPE_MEMBER;
+        $user->type = $this->getConfig()->get('user.default.type', \Bs\Db\User::TYPE_MEMBER);
 
         // set object values from fields
         $form->mapValues($user);

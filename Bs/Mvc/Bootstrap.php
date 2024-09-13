@@ -2,6 +2,7 @@
 namespace Bs\Mvc;
 
 use Bs\Factory;
+use Bs\Mvc\EventListener\StartupHandler;
 use Dom\Template;
 use Tk\Config;
 use Tk\DataMap\Db\TextEncrypt;
@@ -46,6 +47,7 @@ class Bootstrap
             DB::setTimezone($config->get('php.date.timezone'));
         }
 
+        StartupHandler::$PARAMS = $config->get('site.log.params', StartupHandler::LOG_ALL);
         Factory::instance()->initLogger();
 
         // Init tk error handler

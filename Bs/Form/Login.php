@@ -44,7 +44,7 @@ class Login extends Form
         $html = <<<HTML
             <a href="/recover">Recover</a>
         HTML;
-        if (Registry::instance()->get('site.account.registration', false)) {
+        if ($this->getConfig()->get('user.registration.enable', false)) {
             $html = <<<HTML
                 <a href="/recover">Recover</a> | <a href="/register">Register</a>
             HTML;

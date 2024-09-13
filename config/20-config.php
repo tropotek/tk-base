@@ -24,20 +24,36 @@ return function (Config $config) {
     $config->set('path.template.maintenance', '/html/login.html');
     $config->set('path.template.error',       '/html/login.html');
 
-    $config->set('user.homepage', [
-        \Bs\Db\User::TYPE_STAFF => '/dashboard',
-        \Bs\Db\User::TYPE_MEMBER => '/',
-    ]);
-
     /**
      * Script to execute in dev mode after update/migrate
      */
     $config->set('debug.script', $config->get('path.config') . '/dev.php');
 
     /**
-     * When set, the users can update their password from their profile page
+     * Set the homepage url for user types
      */
-    $config->set('user.profile.password', true);
+    $config->set('user.homepage', [
+        \Bs\Db\User::TYPE_STAFF => '/dashboard',
+        \Bs\Db\User::TYPE_MEMBER => '/',
+    ]);
+
+    /**
+     * Can users update their password from their profile page
+     * (default: false)
+     */
+    $config->set('user.profile.password', false);
+
+    /**
+     * Can users register an account
+     * (default: false)
+     */
+    $config->set('user.registration.enable', false);
+
+    /**
+     * Default type of new user registered account
+     * (default: 'member')
+     */
+    $config->set('user.default.type', \Bs\Db\User::TYPE_MEMBER);
 
     /**
      * Use to store a copy of the last log for detailed Exception logs

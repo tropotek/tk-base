@@ -24,8 +24,8 @@ class Register extends ControllerDomInterface
     {
         $this->getPage()->setTitle('Register');
 
-        if (!Registry::instance()->get('site.account.registration', false)) {
-            Alert::addError('New user registrations are closed for this account');
+        if (!$this->getConfig()->get('user.registration.enable', false)) {
+            Alert::addError('User registrations are closed for this account');
             Uri::create('/home')->redirect();
         }
 
@@ -38,7 +38,7 @@ class Register extends ControllerDomInterface
     {
         $this->getPage()->setTitle('Register');
 
-        if (!Registry::instance()->get('site.account.registration', false)) {
+        if (!$this->getConfig()->get('user.registration.enable', false)) {
             Alert::addError('New user registrations are closed for this account');
             Uri::create('/home')->redirect();
         }

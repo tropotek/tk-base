@@ -14,29 +14,17 @@ class ShutdownHandler implements EventSubscriberInterface
     function __construct(float $scriptStartTime = 0)
     {
         $this->scriptStartTime = $scriptStartTime;
-        register_shutdown_function(array($this, 'onShutdown'));
-    }
-
-    public function onShutdown()
-    {
-        // Echo the final line
-        if (!StartupHandler::$SCRIPT_CALLED) return;
-        $this->info(StartupHandler::$SCRIPT_END . \PHP_EOL);
     }
 
     public function onTerminate(TerminateEvent $event)
     {
         if (!StartupHandler::$SCRIPT_CALLED) return;
-        $this->info(StartupHandler::$SCRIPT_LINE);
-        $this->info(sprintf('Time: %s sec    Peek Mem: %s',
-            round($this->scriptDuration(), 4),
-            \Tk\FileUtil::bytes2String(memory_get_peak_usage(), 4)
-        ));
-    }
-
-    private function info(string $str)
-    {
-        Log::info($str);
+        if (StartupHandler::hasParam(StartupHandler::METRICS)) {
+            $this->debug(sprintf('Time: %s sec    Peek Mem: %s',
+                round($this->scriptDuration(), 4),
+                \Tk\FileUtil::bytes2String(memory_get_peak_usage(), 4)
+            ));
+        }
     }
 
     private function debug(string $str)
