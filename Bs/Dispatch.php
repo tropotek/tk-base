@@ -8,11 +8,11 @@ use Bs\Listener\PageBytesHandler;
 use Bs\Listener\DomViewHandler;
 use Dom\Modifier\PageBytes;
 use Tk\Config;
-use Tk\Mvc\EventListener\ExceptionListener;
+use Bs\Mvc\EventListener\ExceptionListener;
 use Bs\Listener\CrumbsHandler;
 
 
-class Dispatch extends \Tk\Mvc\Dispatch
+class Dispatch extends \Bs\Mvc\Dispatch
 {
 
     /**

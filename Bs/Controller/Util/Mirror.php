@@ -3,7 +3,6 @@ namespace Bs\Controller\Util;
 
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Config;
-use Tk\Db\Util\SqlBackup;
 use Tk\Uri;
 use Tk\Db;
 
@@ -41,7 +40,7 @@ class Mirror
     public function doDbBackup(Request $request)
     {
 
-        $dbBackup = new SqlBackup(Db::getPdo());
+        $dbBackup = new Db\DbBackup(Db::getPdo());
         $exclude = [Config::instance()->get('session.db_table')];
 
         $path = Config::instance()->getTempPath() . '/db_mirror.sql';
