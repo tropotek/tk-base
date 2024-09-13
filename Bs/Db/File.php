@@ -4,6 +4,7 @@ namespace Bs\Db;
 use Bs\Db\Traits\CreatedTrait;
 use Bs\Db\Traits\ForeignModelTrait;
 use Bs\Factory;
+use Bs\Traits\SystemTrait;
 use Tk\Config;
 use Tk\Exception;
 use Tk\Log;
@@ -14,6 +15,7 @@ use Tk\Db\Model;
 
 class File extends Model
 {
+    use SystemTrait;
     use ForeignModelTrait;
     use CreatedTrait;
 
@@ -30,21 +32,15 @@ class File extends Model
     public string     $hash     = '';
     public ?\DateTime $created  = null;
 
-    /**
-     * @deprecated
-     */
-    private string    $dataPath = '';
-
 
     public function __construct()
     {
         $this->_CreatedTrait();
-        $this->dataPath = Config::instance()->getDataPath();
     }
 
     /**
      * Create a File object form an existing file path
-     * Only the relative path from the system data path is stored (not the full path)
+     * Only the relative path from the system data path is stored
      *
      * @param string $file Full/Relative data path to a valid file
      */
@@ -57,11 +53,8 @@ class File extends Model
         $obj = new static();
 
         $obj->path = $file;
-        if (str_starts_with($file, $obj->getDataPath())) {
-            $obj->path = str_replace($obj->getDataPath(), '', $file);
-        }
-        if (str_starts_with($file, Config::instance()->get('path.data'))) {
-            $obj->path = str_replace($obj->getDataPath(), '', $file);
+        if (str_starts_with($file, $obj->getConfig()->getDataPath())) {
+            $obj->path = str_replace($obj->getConfig()->getDataPath(), '', $file);
         }
 
         $obj->label = \Tk\FileUtil::removeExtension(basename($file));
@@ -71,8 +64,8 @@ class File extends Model
         if (!$userId) {
             if ($model && property_exists($model, 'userId')) {
                 $userId = $model->userId;
-            } else if (Factory::instance()->getAuthUser()) {
-                $userId = Factory::instance()->getAuthUser()->userId;
+            } else if ($obj->getAuthUser()) {
+                $userId = $obj->getAuthUser()->userId;
             }
         }
         $obj->userId = $userId;
@@ -99,12 +92,6 @@ class File extends Model
             unset($values['file_id']);
             Db::insert('file', $values);
             $this->fileId = Db::getLastInsertId();
-
-            // TODO: consider moving hashing generation to the view
-            if (empty($this->hash)) {
-                $this->hash = self::createHash($this);
-                Db::update('file', 'file_id', ['file_id' => $this->fileId, 'hash' => $this->hash]);
-            }
         }
 
         $this->reload();
@@ -119,33 +106,19 @@ class File extends Model
         return (false !== Db::delete('file', ['file_id' => $this->fileId]));
     }
 
-    public static function createHash(File $file): string
-    {
-        $key = sprintf('%s%s', $file->fileId, 'File');
-        return hash('md5', $key);
-    }
-
     public function getFullPath(): string
     {
-        return $this->getDataPath() . $this->path;
+        return $this->getConfig()->getDataPath() . $this->path;
     }
 
     public function getUrl(): Uri
     {
-        return Uri::create(Config::instance()->getDataUrl() . $this->path);
+        return Uri::create($this->getConfig()->getDataUrl() . $this->path);
     }
 
     public function isImage(): bool
     {
         return preg_match('/^image\//', $this->mime);
-    }
-
-    /**
-     * @deprecated get this from the config `$config->getDataPath()`
-     */
-    public function getDataPath(): string
-    {
-        return $this->dataPath;
     }
 
     public function validate(): array
@@ -175,7 +148,7 @@ class File extends Model
         self::install();
         return Db::queryOne("
             SELECT *
-            FROM file
+            FROM v_file
             WHERE file_id = :fileId",
             compact('fileId'),
             self::class
@@ -187,7 +160,7 @@ class File extends Model
         self::install();
         return Db::queryOne("
             SELECT *
-            FROM file",
+            FROM v_file",
             [],
             self::class
         );
@@ -263,7 +236,7 @@ class File extends Model
 
         return Db::query("
             SELECT *
-            FROM file a
+            FROM v_file a
             {$filter->getSql()}",
             $filter->all(),
             self::class
@@ -272,9 +245,8 @@ class File extends Model
 
     public static function install(): bool
     {
-        // TODO: note getting a PdoSessionHandler.php error when this is run???
-        //       Not sure why, maybe having a non symfony DB session handler will be better
         if (!Db::tableExists('file')) {
+            // create file
             $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS file
 (
@@ -288,7 +260,6 @@ CREATE TABLE IF NOT EXISTS file
     mime VARCHAR(255) DEFAULT '' NOT NULL,
     notes TEXT NULL,
     selected BOOL NOT NULL DEFAULT FALSE,
-    hash VARCHAR(128) DEFAULT '' NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY user_id (user_id),
     KEY fkey (fkey),
@@ -297,6 +268,18 @@ CREATE TABLE IF NOT EXISTS file
 );
 SQL;
             Db::execute($sql);
+
+            // create view
+            $sql = <<<SQL
+CREATE OR REPLACE VIEW v_file AS
+SELECT
+  f.*,
+  MD5(CONCAT(f.file_id, 'File')) AS hash
+FROM
+  file f;
+SQL;
+            Db::execute($sql);
+
             return true;
         }
         return false;

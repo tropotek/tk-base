@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Form\Field;
 
+use Bs\Traits\SystemTrait;
 use Tk\Db\Model;
 
 /**
@@ -8,6 +9,8 @@ use Tk\Db\Model;
  */
 class File extends \Tk\Form\Field\File
 {
+    use SystemTrait;
+
     /**
      * The file owner object that will be used as the fkey and fid for the file records
      */
