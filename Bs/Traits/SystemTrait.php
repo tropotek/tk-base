@@ -3,6 +3,7 @@ namespace Bs\Traits;
 
 use Bs\Db\User;
 use Bs\Ui\Crumbs;
+use Dom\Template;
 use Tk\Config;
 use Tk\Cookie;
 use Bs\Factory;
@@ -58,14 +59,22 @@ trait SystemTrait
         return System::makeUrl($path);
     }
 
-    public function loadTemplate(string $xhtml = ''): ?\Dom\Template
+    /**
+     * @deprecated use Template::load($xhtml)
+     */
+    public function loadTemplate(string $html = ''): ?Template
     {
-        return $this->getFactory()->getTemplateLoader()->load($xhtml);
+        return Template::load($html);
+        //return $this->getFactory()->getTemplateLoader()->load($html);
     }
 
-    public function loadTemplateFile(string $path = ''): ?\Dom\Template
+    /**
+     * @deprecated use Template::loadFile($xhtml)
+     */
+    public function loadTemplateFile(string $path = ''): ?Template
     {
-        return $this->getFactory()->getTemplateLoader()->loadFile($path);
+        return Template::loadFile($path);
+        //return $this->getFactory()->getTemplateLoader()->loadFile($path);
     }
 
 }

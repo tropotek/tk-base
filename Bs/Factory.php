@@ -38,7 +38,6 @@ use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Gateway;
 use Tk\Mvc\Bootstrap;
-use Tk\Mvc\Dispatch;
 use Tk\Mvc\FrontController;
 use Tk\System;
 use Tk\Uri;
