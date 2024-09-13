@@ -208,8 +208,10 @@ class Factory extends Collection
     {
         // Init \Tk\Log
         Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
-        $requestLog = System::makePath($this->getConfig()->get('log.system.request'));
-        Log::addHandler(new RequestLog($requestLog));
+        if ($this->getConfig()->isDev()) {
+            $requestLog = System::makePath($this->getConfig()->get('log.system.request'));
+            Log::addHandler(new RequestLog($requestLog));
+        }
         if (is_writable(ini_get('error_log'))) {
             Log::addHandler(new StreamLog(ini_get('error_log'), $this->getConfig()->get('log.logLevel', LogLevel::DEBUG)));
         } else {
