@@ -15,7 +15,7 @@ class CleanData extends Console
     {
         $this->setName('clean-data')
             ->setAliases(['cd'])
-            ->setDescription('Clean the data folder of empty folders');
+            ->setDescription('Clean out empty folders in the /data dir');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -23,8 +23,7 @@ class CleanData extends Console
         try {
             $this->deleteEmptyFolders($this->getConfig()->getDataPath());
             $this->deleteOldFiles($this->getConfig()->getTempPath(), \Tk\Date::create()->sub(new \DateInterval('P7D')));
-
-            if (!($this->getConfig()->isDev() || $this->getConfig()->isDebug())) $this->deleteOldSessions();
+            $this->deleteOldFiles($this->getConfig()->getCachePath(), \Tk\Date::create()->sub(new \DateInterval('P7D')));
         } catch (\Exception $e) {
             $this->writeError($e->getMessage());
             return Command::FAILURE;
@@ -67,25 +66,6 @@ class CleanData extends Console
                     $this->write('     Deleting: [' . $date->format(\Tk\Date::FORMAT_ISO_DATETIME) . '] ' . $file->__toString());
                     unlink($file);
                 }
-            }
-        }
-    }
-
-    /**
-     * Clear any sessions in the DB that are outdated
-     * This is just to ensure we do not waste space on defunct session data
-     * @throws \Tk\Db\Exception
-     */
-    protected function deleteOldSessions(): void
-    {
-        $this->write('   - Cleaning obsolete sessions.');
-        if ($this->getConfig()->get('session.db_enable', false)) {
-            $db = Db::getPdo();
-            $expire = session_cache_expire() * 4;
-            $tbl = $this->getConfig()->get('session.db_table');
-            $i = $db->exec("DELETE FROM {$tbl} WHERE modified < DATE_SUB(NOW(), INTERVAL {$expire} MINUTE)");
-            if ($i) {
-                $this->write('     Deleted: ' . $i);
             }
         }
     }

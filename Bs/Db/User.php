@@ -144,7 +144,7 @@ class User extends Model
 
     public function getHomeUrl(): Uri
     {
-        $homes = Config::instance()->get('user.homepage');
+        $homes = Config::instance()->get('user.homepage', '/');
         return Uri::create($homes[$this->type] ?? '/');
     }
 

@@ -126,7 +126,7 @@ class User extends Table
 
     public function execute(): static
     {
-        if (isset($GET[Masquerade::QUERY_MSQ])) {
+        if (isset($_GET[Masquerade::QUERY_MSQ])) {
             $this->doMsq(intval($_GET[Masquerade::QUERY_MSQ] ?? 0));
         }
 
@@ -137,7 +137,6 @@ class User extends Table
 
     private function doMsq(int $userId): void
     {
-        /** @var \Bs\Db\User $msqUser */
         $msqUser = \Bs\Db\User::find($userId);
         if ($msqUser && Masquerade::masqueradeLogin(Factory::instance()->getAuthUser(), $msqUser)) {
             Alert::addSuccess('You are now logged in as user ' . $msqUser->username);

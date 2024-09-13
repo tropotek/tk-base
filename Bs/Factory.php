@@ -482,13 +482,14 @@ class Factory extends Collection
             if ($this->getConfig()->isDev()) {
                 $app->add(new \Bs\Console\Command\Debug());
                 $app->add(new \Bs\Console\Command\Mirror());
-                $app->add(new \Bs\Console\Command\MakeModel());
-                $app->add(new \Bs\Console\Command\MakeMapper());
-                $app->add(new \Bs\Console\Command\MakeTable());
-                $app->add(new \Bs\Console\Command\MakeForm());
-                $app->add(new \Bs\Console\Command\MakeManager());
-                $app->add(new \Bs\Console\Command\MakeEdit());
-                $app->add(new \Bs\Console\Command\MakeAll());
+                // todo refactor these for the lib updates
+//                $app->add(new \Bs\Console\Command\MakeModel());
+//                $app->add(new \Bs\Console\Command\MakeMapper());
+//                $app->add(new \Bs\Console\Command\MakeTable());
+//                $app->add(new \Bs\Console\Command\MakeForm());
+//                $app->add(new \Bs\Console\Command\MakeManager());
+//                $app->add(new \Bs\Console\Command\MakeEdit());
+//                $app->add(new \Bs\Console\Command\MakeAll());
             }
 
             $this->set('console', $app);

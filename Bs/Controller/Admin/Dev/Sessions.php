@@ -6,6 +6,7 @@ use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Table;
 use Bs\Ui\Crumbs;
+use Bs\Util\Masquerade;
 use Dom\Template;
 use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
@@ -108,11 +109,18 @@ CSS;
             $modified = Date::create($ses->modified);
             $difCreated = $modified->diff($created);
             $difLast = $now->diff($modified);
+            $username = $user->username;
+            $name = $user->getName();
+            if (Masquerade::isMasquerading()) {
+                $msq = Masquerade::getMasqueradingUser();
+                $name = $msq->getName();
+                $username = sprintf('%s<br><small class="text-info" title="Masquerading User">[%s - %s]</small>', $msq->username, $user->username, $user->getName());
+            }
 
             $rows[] = (object)[
                 'userId' => $user->userId,
-                'username' => $user->username,
-                'name' => $user->getName(),
+                'username' => $username,
+                'name' => $name,
                 'ip' => $_SESSION[Session::SID_IP] ?? '',
                 'agent' => $_SESSION[Session::SID_AGENT] ?? '',
                 'type' => $user->type,

@@ -87,15 +87,14 @@ class Masquerade
     }
 
     /**
-     * Get the user who is masquerading, ignoring any nested masqueraded users
+     * Get the user who is masquerading
      */
     public static function getMasqueradingUser(): ?User
     {
         $user = null;
-        if (is_array($_SESSION[static::SID])) {
+        if (is_array($_SESSION[static::SID] ?? false)) {
             $msqArr = $_SESSION[static::SID][0];
-            /** @var User $user */
-            $user = User::find($msqArr['userId']);
+            $user = User::findByUsername($msqArr['userId']);
         }
         return $user;
     }

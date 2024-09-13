@@ -87,7 +87,7 @@ class StartupHandler implements EventSubscriberInterface
                     $request->getScheme() . '://' . $request->getHost(),
                     $request->getBaseUrl(),
                     $request->getPathInfo(),
-                    '?' . $_SERVER['QUERY_STRING'] ?? ''
+                    (empty($_SERVER['QUERY_STRING'] ?? '')) ? '' : '?' . ($_SERVER['QUERY_STRING'])
                 ));
             }
 

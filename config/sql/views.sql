@@ -15,7 +15,7 @@ CREATE OR REPLACE VIEW v_user AS
 SELECT
   u.*,
   MD5(CONCAT(u.user_id, 'User')) AS hash,
-  CONCAT('/user/', u.user_id, '/data') AS data_path
+  CONCAT('/app/user/', u.user_id, '/data') AS data_path
 FROM
   user u
 ;
