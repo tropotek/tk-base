@@ -114,7 +114,7 @@ class Table extends \Tk\Table
         $html = <<<HTML
 <div class="bs-table-wrap" var="table"></div>
 HTML;
-        return Factory::instance()->getTemplateLoader()->load($html);
+        return Template::load($html);
     }
 
     /**

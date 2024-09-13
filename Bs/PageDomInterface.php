@@ -36,14 +36,14 @@ class PageDomInterface extends PageInterface implements RendererInterface
         return $this->domModifier;
     }
 
-    public function loadTemplate(string $xhtml = ''): ?\Dom\Template
+    public function loadTemplate(string $html = ''): ?\Dom\Template
     {
-        return Factory::instance()->getTemplateLoader()->load($xhtml);
+        return Template::load($html);
     }
 
     public function loadTemplateFile(string $path = ''): ?\Dom\Template
     {
-        return Factory::instance()->getTemplateLoader()->loadFile($path);
+        return Template::loadFile($path);
     }
 
     /**

@@ -374,6 +374,9 @@ class Factory extends Collection
         return $this->get('templateModifier');
     }
 
+    /**
+     * @deprecated
+     */
     public function getTemplateLoader(): ?Loader
     {
         if (!$this->has('templateLoader')) {

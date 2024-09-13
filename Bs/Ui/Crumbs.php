@@ -243,7 +243,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
 </div>
 HTML;
 
-        return Factory::instance()->getTemplateLoader()->load($html);
+        return Template::load($html);
     }
 
 
