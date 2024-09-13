@@ -33,7 +33,7 @@ use Tk\ConfigLoader;
 use Tk\Cookie;
 use Tk\Log;
 use Tk\Logger\ErrorLog;
-use Tk\Logger\RequestLog;
+use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Gateway;
@@ -98,6 +98,7 @@ class Factory extends Collection
 
             $_SESSION[\Tk\Db\Session::SID_IP]    = System::getClientIp();
             $_SESSION[\Tk\Db\Session::SID_AGENT] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+            SessionLog::clearLog();
 
             $this->set('session', null);
         }
@@ -207,15 +208,13 @@ class Factory extends Collection
     public function initLogger(): void
     {
         // Init \Tk\Log
+        $logLevel = $this->getConfig()->get('log.logLevel', LogLevel::DEBUG);
         Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
-        if ($this->getConfig()->isDev()) {
-            $requestLog = System::makePath($this->getConfig()->get('log.system.request'));
-            Log::addHandler(new RequestLog($requestLog));
-        }
-        if (is_writable(ini_get('error_log'))) {
-            Log::addHandler(new StreamLog(ini_get('error_log'), $this->getConfig()->get('log.logLevel', LogLevel::DEBUG)));
+        $logfile = $this->getConfig()->get('php.error_log', ini_get('error_log'));
+        if (is_writable($logfile)) {
+            Log::addHandler(new StreamLog($logfile, $logLevel));
         } else {
-            Log::addHandler(new ErrorLog($this->getConfig()->get('log.logLevel', LogLevel::DEBUG)));
+            Log::addHandler(new ErrorLog($logLevel));
         }
     }
 

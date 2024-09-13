@@ -19,18 +19,6 @@ class PageHandler implements EventSubscriberInterface
     protected ?PageInterface $page = null;
 
     /**
-     * @Event("Symfony\Component\HttpKernel\Event\RequestEvent")
-     */
-    public function onRequest(RequestEvent $event): void
-    {
-        // create page from template path
-//        $pageType = $event->getRequest()->attributes->get('template');
-//        if (!empty($pageType)) {
-//            $this->page = $this->getFactory()->getPage(System::makePath($this->getConfig()->get('path.template.' . $pageType)));
-//        }
-    }
-
-    /**
      * @Event("Symfony\Component\HttpKernel\Event\ControllerEvent")
      */
     public function onController(ControllerEvent $event): void
@@ -51,6 +39,7 @@ class PageHandler implements EventSubscriberInterface
      */
     public function onView(ViewEvent $event): void
     {
+        if (!is_null($event->getControllerResult())) return;
         if (is_null($this->page) || !$this->page->isEnabled()) return;
         $result = $event->getControllerResult() ?? $this->controller;
         $this->page->addContent($result, 'content');
@@ -60,11 +49,8 @@ class PageHandler implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => 'onRequest',
             KernelEvents::CONTROLLER => 'onController',
-            KernelEvents::VIEW => [
-                ['onView', -99]
-            ]
+            KernelEvents::VIEW => ['onView', -99]
         ];
     }
 }

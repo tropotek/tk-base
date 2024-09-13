@@ -12,7 +12,6 @@ class ViewHandler implements EventSubscriberInterface
     public function onView(ViewEvent $event): void
     {
         $response = $event->getControllerResult();
-
         if (is_string($response)) {
             $event->setResponse(new Response($response));
         }

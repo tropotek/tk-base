@@ -58,7 +58,7 @@ return function (Config $config) {
     /**
      * Use to store a copy of the last log for detailed Exception logs
      */
-    $config->set('log.system.request', $config->get('path.cache') . '/requestLog.txt');
+    //$config->set('log.system.request', $config->get('path.cache') . '/requestLog.txt');
 
     // These files are execute on update/migrate if they exist
     $config->set('db.migrate.static', [
