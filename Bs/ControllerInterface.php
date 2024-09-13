@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Tk\Alert;
 use Tk\Config;
+use Tk\Exception;
 use Tk\Log;
 use Tk\Uri;
 
@@ -40,7 +41,11 @@ abstract class ControllerInterface
 
     public function getPage(): PageInterface|PageDomInterface
     {
-        return Factory::instance()->getPage();
+        $page = Factory::instance()->getPage();
+        if (is_null($page)) {
+            throw new Exception("Controller Page not found");
+        }
+        return $page;
     }
 
     public function getBackUrl(): Uri
@@ -66,6 +71,11 @@ abstract class ControllerInterface
     public function getConfig(): Config
     {
         return Config::instance();
+    }
+
+    public function getRegistry(): Registry
+    {
+        return Registry::instance();
     }
 
     /**

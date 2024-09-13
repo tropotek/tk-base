@@ -78,4 +78,9 @@ abstract class PageInterface
         return Config::instance();
     }
 
+    public function getRegistry(): Registry
+    {
+        return Registry::instance();
+    }
+
 }
