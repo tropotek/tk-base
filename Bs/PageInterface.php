@@ -1,15 +1,16 @@
 <?php
 namespace Bs;
 
-use Tk\Config;
+use Bs\Traits\SystemTrait;
 
 abstract class PageInterface
 {
+    use SystemTrait;
 
     private string $title        = '';
-    private string $templatePath = '';
     private array  $contentList  = [];
     private bool   $enabled      = true;
+    private string $templatePath;
 
 
     public function __construct(string $templatePath = '')
@@ -67,20 +68,4 @@ abstract class PageInterface
         $this->enabled = $enabled;
         return $this;
     }
-
-    public function getFactory(): Factory
-    {
-        return Factory::instance();
-    }
-
-    public function getConfig(): Config
-    {
-        return Config::instance();
-    }
-
-    public function getRegistry(): Registry
-    {
-        return Registry::instance();
-    }
-
 }

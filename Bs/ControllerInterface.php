@@ -1,18 +1,17 @@
 <?php
 namespace Bs;
 
-use Bs\Db\User;
-use Bs\Ui\Crumbs;
+use Bs\Traits\SystemTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Tk\Alert;
-use Tk\Config;
 use Tk\Exception;
 use Tk\Log;
 use Tk\Uri;
 
 abstract class ControllerInterface
 {
+    use SystemTrait;
 
     protected string $pageTemplate = '';
 
@@ -46,36 +45,6 @@ abstract class ControllerInterface
             throw new Exception("Controller Page not found");
         }
         return $page;
-    }
-
-    public function getBackUrl(): Uri
-    {
-        return Factory::instance()->getBackUrl();
-    }
-
-    public function getAuthUser(): ?User
-    {
-        return Factory::instance()->getAuthUser();
-    }
-
-    public function getCrumbs(): ?Crumbs
-    {
-        return Factory::instance()->getCrumbs();
-    }
-
-    public function getFactory(): Factory
-    {
-        return Factory::instance();
-    }
-
-    public function getConfig(): Config
-    {
-        return Config::instance();
-    }
-
-    public function getRegistry(): Registry
-    {
-        return Registry::instance();
     }
 
     /**
