@@ -23,6 +23,15 @@
     "ttek/tk-domtemplate": "~8.0.0",
     "ttek/tk-form": "~8.0.0",
     "ttek/tk-table": "~8.0.0",
+
+    "symfony/http-foundation": "^6.2",
+    "symfony/routing": "^6.2",
+    "symfony/http-kernel": "^6.2",
+    "symfony/event-dispatcher": "^6.2",
+    "symfony/console": "^6.2",
+    "symfony/lock": "^6.2",
+    "sensiolabs/ansi-to-html": "~1.0",
+
     "studio-42/elfinder": "~2.1.0",
     "tinymce/tinymce": "~7.0"
   },

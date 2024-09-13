@@ -138,12 +138,30 @@ class Factory extends Collection
         // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
         $systemCache = new Cache(new Filesystem(System::makePath($this->getConfig()->get('path.cache'))));
         if ((!$compiledRoutes = $systemCache->fetch('compiledRoutes')) || System::isRefreshCacheRequest()) {
-            ConfigLoader::create()->loadRoutes(new CollectionConfigurator($this->getRouteCollection(), 'routes'));
+            $this->loadRoutes(new CollectionConfigurator($this->getRouteCollection(), 'routes'));
             $compiledRoutes = (new CompiledUrlMatcherDumper($this->getRouteCollection()))->getCompiledRoutes();
             // Storing the data in the cache for 60 minutes (comment this out if using callables in routes)
             $systemCache->store('compiledRoutes', $compiledRoutes, 60*60);
         }
         return $compiledRoutes;
+    }
+
+    /**
+     * Load all route files in order of priority
+     *
+     * The site rout file can omit the priority value and just be named rout.php as it will always
+     * be executed last.
+     *
+     */
+    protected function loadRoutes(?CollectionConfigurator $routes = null): void
+    {
+        $loader = ConfigLoader::create();
+        $list = $loader->findFiles('routes.php');
+        foreach ($list as $path) {
+            $loader->load($path, $routes);
+        }
+        // load site routes
+        $loader->load(Config::instance()->getBasePath() . '/src/config/routes.php', $routes);
     }
 
     public function getRouteCollection(): RouteCollection
@@ -453,21 +471,21 @@ class Factory extends Collection
 
             // Setup Global Console Commands
             $app->add(new \Bs\Console\Password());
-            $app->add(new \Tk\Console\Command\CleanData());
-            $app->add(new \Tk\Console\Command\Upgrade());
-            $app->add(new \Tk\Console\Command\Maintenance());
-            $app->add(new \Tk\Console\Command\DbBackup());
-            $app->add(new \Tk\Console\Command\Migrate());
+            $app->add(new \Bs\Console\Command\CleanData());
+            $app->add(new \Bs\Console\Command\Upgrade());
+            $app->add(new \Bs\Console\Command\Maintenance());
+            $app->add(new \Bs\Console\Command\DbBackup());
+            $app->add(new \Bs\Console\Command\Migrate());
             if ($this->getConfig()->isDev()) {
-                $app->add(new \Tk\Console\Command\Debug());
-                $app->add(new \Tk\Console\Command\Mirror());
-                $app->add(new \Tk\Console\Command\MakeModel());
-                $app->add(new \Tk\Console\Command\MakeMapper());
-                $app->add(new \Tk\Console\Command\MakeTable());
-                $app->add(new \Tk\Console\Command\MakeForm());
-                $app->add(new \Tk\Console\Command\MakeManager());
-                $app->add(new \Tk\Console\Command\MakeEdit());
-                $app->add(new \Tk\Console\Command\MakeAll());
+                $app->add(new \Bs\Console\Command\Debug());
+                $app->add(new \Bs\Console\Command\Mirror());
+                $app->add(new \Bs\Console\Command\MakeModel());
+                $app->add(new \Bs\Console\Command\MakeMapper());
+                $app->add(new \Bs\Console\Command\MakeTable());
+                $app->add(new \Bs\Console\Command\MakeForm());
+                $app->add(new \Bs\Console\Command\MakeManager());
+                $app->add(new \Bs\Console\Command\MakeEdit());
+                $app->add(new \Bs\Console\Command\MakeAll());
             }
 
             $this->set('console', $app);
