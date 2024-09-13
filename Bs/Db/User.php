@@ -42,7 +42,7 @@ class User extends Model
     public string     $nameTitle     = '';
     public string     $nameFirst     = '';
     public string     $nameLast      = '';
-    public ?string    $nameDisplay   = '';
+    public string     $nameDisplay   = '';
     public string     $notes         = '';
     public string     $timezone      = '';
     public bool       $active        = true;
