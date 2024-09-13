@@ -137,31 +137,12 @@ class Factory extends Collection
         // Setup Routes and cache results.
         // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
         $systemCache = new Cache(new Filesystem(System::makePath($this->getConfig()->get('path.cache'))));
-        if ((!$compiledRoutes = $systemCache->fetch('compiledRoutes')) || System::isRefreshCacheRequest()) {
-            $this->loadRoutes(new CollectionConfigurator($this->getRouteCollection(), 'routes'));
+        if (!($compiledRoutes = $systemCache->fetch('compiledRoutes')) || System::isRefreshCacheRequest()) {
+            ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
             $compiledRoutes = (new CompiledUrlMatcherDumper($this->getRouteCollection()))->getCompiledRoutes();
-            // Storing the data in the cache for 60 minutes (comment this out if using callables in routes)
-            $systemCache->store('compiledRoutes', $compiledRoutes, 60*60);
+            $systemCache->store('compiledRoutes', $compiledRoutes, 60*60*24*5);
         }
         return $compiledRoutes;
-    }
-
-    /**
-     * Load all route files in order of priority
-     *
-     * The site rout file can omit the priority value and just be named rout.php as it will always
-     * be executed last.
-     *
-     */
-    protected function loadRoutes(?CollectionConfigurator $routes = null): void
-    {
-        $loader = ConfigLoader::create();
-        $list = $loader->findFiles('routes.php');
-        foreach ($list as $path) {
-            $loader->load($path, $routes);
-        }
-        // load site routes
-        $loader->load(Config::instance()->getBasePath() . '/src/config/routes.php', $routes);
     }
 
     public function getRouteCollection(): RouteCollection
