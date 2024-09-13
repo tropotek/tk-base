@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Ui;
 
-use Bs\Factory;
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;
 use Tk\CallbackCollection;
@@ -42,17 +41,11 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
     use AttributesTrait;
 
     protected string $id = '';
-
     protected string $title = '';
-
     protected Collection $buttonList;
-
     protected string|Template $content = '';
-
     protected CallbackCollection $onInit;
-
     protected CallbackCollection $onExecute;
-
     protected CallbackCollection $onShow;
 
 
@@ -238,7 +231,7 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
   </div>
 </div>
 HTML;
-        return Factory::instance()->getTemplateLoader()->load($html);
+        return Template::load($html);
     }
 
 }
