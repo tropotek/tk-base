@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Mvc\EventListener;
+namespace Bs\Listener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;

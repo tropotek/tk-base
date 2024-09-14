@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Mvc\EventListener;
+namespace Bs\Listener;
 
 use Bs\Factory;
 use Exception;
@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Throwable;
-use Tk\Config;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Log;
 

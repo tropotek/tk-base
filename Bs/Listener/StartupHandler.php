@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Mvc\EventListener;
+namespace Bs\Listener;
 
 use Bs\Registry;
 use Symfony\Component\Console\ConsoleEvents;

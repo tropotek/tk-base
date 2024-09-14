@@ -2,7 +2,7 @@
 namespace Bs\Mvc;
 
 use Bs\Factory;
-use Bs\Mvc\EventListener\StartupHandler;
+use Bs\Listener\StartupHandler;
 use Dom\Template;
 use Tk\Config;
 use Tk\DataMap\Db\TextEncrypt;

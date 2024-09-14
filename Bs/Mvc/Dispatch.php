@@ -2,10 +2,15 @@
 namespace Bs\Mvc;
 
 use Bs\Factory;
+use Bs\Listener\ContentLength;
+use Bs\Listener\LogExceptionListener;
+use Bs\Listener\ViewHandler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\EventListener\ResponseListener;
+use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Tk\Config;
-use Bs\Mvc\EventListener\ShutdownHandler;
-use Bs\Mvc\EventListener\StartupHandler;
+use Bs\Listener\ShutdownHandler;
+use Bs\Listener\StartupHandler;
 use Tk\System;
 
 /**
@@ -27,7 +32,7 @@ class Dispatch
         $this->init();
     }
 
-    private function init()
+    private function init(): void
     {
         $this->commonInit();
         if (System::isCli()) {
@@ -40,7 +45,7 @@ class Dispatch
     /**
      * Any Common listeners that are used in both HTTPS or CLI requests
      */
-    protected function commonInit()
+    protected function commonInit(): void
     {
         if (Config::instance()->isDev()) {
             $this->getDispatcher()->addSubscriber(new StartupHandler());
@@ -51,20 +56,20 @@ class Dispatch
     /**
      * Called this when executing http requests
      */
-    protected function httpInit()
+    protected function httpInit(): void
     {
-        $this->getDispatcher()->addSubscriber(new \Symfony\Component\HttpKernel\EventListener\RouterListener(
+        $this->getDispatcher()->addSubscriber(new RouterListener(
             Factory::instance()->getRouteMatcher(),
             Factory::instance()->getRequestStack()
         ));
 
-        $this->getDispatcher()->addSubscriber(new \Bs\Mvc\EventListener\LogExceptionListener(
+        $this->getDispatcher()->addSubscriber(new LogExceptionListener(
             Config::instance()->isDebug()
         ));
 
-        $this->getDispatcher()->addSubscriber(new \Bs\Mvc\EventListener\ViewHandler());
-        $this->getDispatcher()->addSubscriber(new \Symfony\Component\HttpKernel\EventListener\ResponseListener('UTF-8'));
-        $this->getDispatcher()->addSubscriber(new \Bs\Mvc\EventListener\ContentLength());
+        $this->getDispatcher()->addSubscriber(new ViewHandler());
+        $this->getDispatcher()->addSubscriber(new ResponseListener('UTF-8'));
+        $this->getDispatcher()->addSubscriber(new ContentLength());
 
     }
 
@@ -73,12 +78,8 @@ class Dispatch
      */
     protected function cliInit()
     {
-
     }
 
-    /**
-     * @return  EventDispatcherInterface
-     */
     public function getDispatcher(): ?EventDispatcherInterface
     {
         return $this->dispatcher;

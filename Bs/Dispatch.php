@@ -6,10 +6,10 @@ use Bs\Listener\PageHandler;
 use Bs\Listener\RememberMeHandler;
 use Bs\Listener\PageBytesHandler;
 use Bs\Listener\DomViewHandler;
-use Bs\Mvc\EventListener\ExceptionEmailListener;
+use Bs\Listener\ExceptionEmailListener;
 use Dom\Modifier\PageBytes;
 use Tk\Config;
-use Bs\Mvc\EventListener\ExceptionListener;
+use Bs\Listener\ExceptionListener;
 use Bs\Listener\CrumbsHandler;
 
 
