@@ -13,8 +13,7 @@ use Tk\Db;
  * executed in the required order. Files found will be sorted alphabetically.
  *
  * <code>
- *   $migrate = new Migrate(Factory::instance()->getDb());
- *   $migrate->migrateList([]);
+ *   SqlMigrate::instance()->migrateList([]);
  * </code>
  *
  * Migration files can be of type .sql or .php.
@@ -28,16 +27,22 @@ use Tk\Db;
  */
 class SqlMigrate
 {
+    public    static string $TABLE = '_migrate';
 
-    protected \PDO             $db;
-    protected string           $table      = '';
-    protected string           $backupFile = '';
+    protected static mixed $_instance = null;
+
+    protected string $backupFile = '';
 
 
-    public function __construct(\PDO $db, string $table = '_migrate')
+    /**
+     * Gets an instance of this object, if none exists one is created
+     */
+    public static function instance(): static
     {
-        $this->db = $db;
-        $this->table = Db::escapeTable($table);
+        if (is_null(self::$_instance)) {
+            self::$_instance = new static();
+        }
+        return self::$_instance;
     }
 
     public function __destruct()
@@ -50,9 +55,8 @@ class SqlMigrate
      */
     public static function migrateSite(?callable $write = null) :bool
     {
-        $migrate = new SqlMigrate(Db::getPdo());
         $migrateList = Config::instance()->get('db.migrate.paths', []);
-        $processed = $migrate->migrateList($migrateList);
+        $processed = self::instance()->migrateList($migrateList);
         foreach ($processed as $file) {
             if (is_callable($write)) {
                 call_user_func_array($write, ['Migrated ' . $file]);
@@ -67,15 +71,14 @@ class SqlMigrate
     public static function migrateStatic(?callable $write = null) :bool
     {
         $config = Config::instance();
-        $dbBackup = new Db\DbBackup(Db::getPdo());
         foreach ($config->get('db.migrate.static') as $file) {
             $path = "{$config->getBasePath()}{$file}";
             if (is_file($path)) {
                 call_user_func_array($write, ['Applying ' . $file]);
-                $dbBackup->restore($path);
+                $options = Db::parseDsn($config->get('db.mysql'));
+                Db\DbBackup::restore($path, $options);
             }
         }
-
         return true;
     }
 
@@ -95,14 +98,6 @@ class SqlMigrate
             include($devFile);
         }
         return true;
-    }
-
-
-    protected function tableExists(string $table): bool
-    {
-        $stm = $this->getDb()->prepare("SHOW TABLES LIKE :table");
-        $stm->execute(compact('table'));
-        return $stm->fetchColumn() !== false;
     }
 
     /**
@@ -143,14 +138,14 @@ class SqlMigrate
             if ($this->hasPath($this->toRelative($file))) return false;
 
             if (!$this->backupFile) {   // only run once per session.
-                $dump = new Db\DbBackup($this->getDb());
-                $this->backupFile = $dump->save(Config::instance()->getTempPath());
+                $options = Db::parseDsn(Config::instance()->get('db.mysql'));
+                $this->backupFile = Db\DbBackup::save(Config::instance()->getTempPath(), $options);
             }
 
             if (preg_match('/\.php$/i', basename($file))) {  // Include .php files
                 $callback = include $file;
                 if (is_callable($callback)) {
-                    $callback($this->getDb());
+                    $callback();
                 }
                 $this->insertPath($file);
                 return true;
@@ -159,7 +154,7 @@ class SqlMigrate
                 $sql = file_get_contents($file);
                 if (!strlen(trim($sql))) return false;
 
-                $stm = $this->getDb()->prepare($sql);
+                $stm = Db::getPdo()->prepare($sql);
                 $stm->execute();
 
                 // Bugger of a way to get the error:
@@ -210,8 +205,8 @@ class SqlMigrate
     protected function restoreBackup(bool $deleteFile = true): void
     {
         if ($this->backupFile) {
-            $dump = new Db\DbBackup($this->getDb());
-            $dump->restore($this->backupFile);
+            $options = Db::parseDsn(Config::instance()->get('db.mysql'));
+            Db\DbBackup::restore($this->backupFile, $options);
             if ($deleteFile) {
                 $this->deleteBackup();
             }
@@ -231,7 +226,7 @@ class SqlMigrate
      */
     protected function install(): void
     {
-        if ($this->tableExists($this->getTable())) return;
+        if (Db::tableExists($this->getTable())) return;
         $tbl = $this->getTable();
         $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `$tbl` (
@@ -241,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `$tbl` (
   PRIMARY KEY (path)
 );
 SQL;
-        $this->getDb()->exec($sql);
+        Db::execute($sql);
     }
 
     /**
@@ -249,16 +244,16 @@ SQL;
      */
     protected function isInstall(): bool
     {
-        if (!$this->tableExists($this->getTable())) return true;
+        if (!Db::tableExists($this->getTable())) return true;
         $sql = "SELECT * FROM `{$this->getTable()}` LIMIT 1";
-        $res = $this->getDb()->query($sql);
+        $res = Db::getPdo()->query($sql);
         if (!$res->rowCount()) return true;
         return false;
     }
 
     protected function hasPath(string $path): bool
     {
-        $stm = $this->getDb()->prepare("SELECT * FROM `{$this->getTable()}` WHERE path = :path LIMIT 1");
+        $stm = Db::getPdo()->prepare("SELECT * FROM `{$this->getTable()}` WHERE path = :path LIMIT 1");
         $stm->execute(compact('path'));
         return $stm->rowCount() > 0;
     }
@@ -268,7 +263,7 @@ SQL;
         Log::info("Migrating file: {$this->toRelative($path)}");
         $path = $this->toRelative($path);
         $rev = $this->toRev($path);
-        $stm = $this->getDb()->prepare("INSERT INTO `{$this->getTable()}` (path, rev, created) VALUES (:path, :rev, NOW())");
+        $stm = Db::getPdo()->prepare("INSERT INTO `{$this->getTable()}` (path, rev, created) VALUES (:path, :rev, NOW())");
         $stm->execute(compact('path', 'rev'));
         return $stm->rowCount();
     }
@@ -276,7 +271,7 @@ SQL;
     protected function deletePath(string $path): int
     {
         $path = $this->toRelative($path);
-        $stm = $this->getDb()->prepare("DELETE FROM `{$this->getTable()}` WHERE path = :path LIMIT 1");
+        $stm = Db::getPdo()->prepare("DELETE FROM `{$this->getTable()}` WHERE path = :path LIMIT 1");
         $stm->execute(compact('path'));
         return $stm->rowCount();
     }
@@ -297,12 +292,6 @@ SQL;
 
     protected function getTable(): string
     {
-        return $this->table;
+        return self::$TABLE;
     }
-
-    public function getDb(): \PDO
-    {
-        return $this->db;
-    }
-
 }

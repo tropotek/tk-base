@@ -6,6 +6,7 @@ use Bs\Listener\PageHandler;
 use Bs\Listener\RememberMeHandler;
 use Bs\Listener\PageBytesHandler;
 use Bs\Listener\DomViewHandler;
+use Bs\Mvc\EventListener\ExceptionEmailListener;
 use Dom\Modifier\PageBytes;
 use Tk\Config;
 use Bs\Mvc\EventListener\ExceptionListener;
@@ -37,6 +38,13 @@ class Dispatch extends \Bs\Mvc\Dispatch
             'Bs\Controller\Error::doDefault',
             Config::instance()->isDebug()
         ));
+
+        if (Config::instance()->isProd()) {
+            $this->getDispatcher()->addSubscriber(new ExceptionEmailListener(
+                Config::instance()->get('system.email.exception', []),
+                Registry::instance()->get('site.name')
+            ));
+        }
 
         // render the page template with controller HTML content if enabled/exists
         $this->getDispatcher()->addSubscriber(new PageHandler());

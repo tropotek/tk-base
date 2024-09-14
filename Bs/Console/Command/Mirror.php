@@ -51,8 +51,8 @@ class Mirror extends Console
                 }
             }
 
-            $dbBackup = new Db\DbBackup(Db::getPdo());
-            $exclude = [$config->get('session.db_table')];
+            $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
+            $options['exclude'] = [$config->get('session.db_table')];
 
             if (!$input->getOption('no-sql')) {
                 if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
@@ -69,13 +69,13 @@ class Mirror extends Console
 
                 // Prevent accidental writing to live DB
                 $this->writeComment('Backup this DB to file: ' . $backupSqlFile);
-                $dbBackup->save($backupSqlFile, ['exclude' => $exclude]);
+                Db\DbBackup::save($backupSqlFile, $options);
 
                 $this->write('Drop this DB tables');
-                Db::dropAllTables(true, $exclude);
+                Db::dropAllTables(true, $options['exclude'] ?? []);
 
                 $this->write('Import mirror file to this DB');
-                $dbBackup->restore($mirrorSqlFile);
+                Db\DbBackup::restore($mirrorSqlFile, $options);
 
                 // Execute static files
                 //SqlMigrate::migrateStatic([$this, 'writeGreen']);

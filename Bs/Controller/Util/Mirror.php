@@ -12,7 +12,7 @@ use Tk\Db;
 class Mirror
 {
 
-    public function doDefault(Request $request)
+    public function doDefault(Request $request): string
     {
 //        if (!Config::instance()->isDebug()) {
 //            throw new \Tk\Exception('Only available for live sites.', 500);
@@ -37,14 +37,13 @@ class Mirror
         return 'Invalid access request.';
     }
 
-    public function doDbBackup(Request $request)
+    public function doDbBackup(Request $request): void
     {
-
-        $dbBackup = new Db\DbBackup(Db::getPdo());
-        $exclude = [Config::instance()->get('session.db_table')];
+        $options = Db::parseDsn(Config::instance()->get('db.mysql'));
+        $options['exclude'] = [Config::instance()->get('session.db_table')];
 
         $path = Config::instance()->getTempPath() . '/db_mirror.sql';
-        $dbBackup->save($path, ['exclude' => $exclude]);
+        Db\DbBackup::save($path, $options);
 
         if (is_file($path . '.gz'))
             @unlink($path . '.gz');

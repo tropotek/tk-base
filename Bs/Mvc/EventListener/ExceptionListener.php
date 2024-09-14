@@ -29,7 +29,7 @@ class ExceptionListener implements EventSubscriberInterface
         $this->exceptionsMapping = $exceptionsMapping;
     }
 
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event): void
     {
         if (null === $this->controller) return;
 
@@ -51,7 +51,7 @@ class ExceptionListener implements EventSubscriberInterface
 
             throw $e;
         }
-vd();
+
         $event->setResponse($response);
 
         if ($this->debug) {
@@ -66,7 +66,7 @@ vd();
         }
     }
 
-    public function onControllerArguments(ControllerArgumentsEvent $event)
+    public function onControllerArguments(ControllerArgumentsEvent $event): void
     {
         $e = $event->getRequest()->attributes->get('exception');
         if (!$e instanceof \Throwable || false === $k = array_search($e, $event->getArguments(), true)) {

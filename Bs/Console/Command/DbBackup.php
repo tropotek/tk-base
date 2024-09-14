@@ -15,6 +15,7 @@ class DbBackup extends Console
     protected function configure(): void
     {
         $this->setName('dbbackup')
+            ->setAliases(['dbb'])
             ->setDescription('Call this to dump a copy of the Database sql to stdout or a file if an argument is given')
             ->addArgument('output', InputArgument::OPTIONAL, 'A file path to dump the SQL to.', null)
             ->addArgument('date_format', InputArgument::OPTIONAL, 'Auto filename generated based on date when a directory is supplied as the output. See http://php.net/manual/en/function.date.php', 'D')
@@ -24,9 +25,8 @@ class DbBackup extends Console
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $options = [];
             $outfile = $input->getArgument('output');
-            $bak = new Db\DbBackup(Db::getPdo());
+            $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
 
             if ($outfile) {
                 if (is_dir($outfile)) {
@@ -36,9 +36,9 @@ class DbBackup extends Console
                     $this->writeComment('  - Creating directory: ' . dirname($outfile));
                     FileUtil::mkdir(dirname($outfile));
                 }
-                $bak->save($outfile, $options);
+                Db\DbBackup::save($outfile, $options);
             } else {
-                $this->write($bak->dump($options));
+                $this->write(Db\DbBackup::dump($options));
             }
         } catch (\Exception $e) {
             $this->writeError($e->getMessage());

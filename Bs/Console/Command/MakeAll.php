@@ -11,7 +11,7 @@ class MakeAll extends MakeInterface
     protected function configure(): void
     {
         $this->setName('make-all')
-            ->setAliases(array('ma'))
+            ->setAliases(['ma'])
             ->setDescription('Create all DB objects table, form and Controllers.');
         parent::configure();
     }
