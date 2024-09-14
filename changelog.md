@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.42 [2024-09-14]:
+-------------------------------
+  - Move event listeners
+  - add email exception listener
+
+
 Ver 8.0.40 [2024-09-14]:
 -------------------------------
   - Move Factory update System and registry
