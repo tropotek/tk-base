@@ -6,6 +6,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tk\Log;
+use Tk\Uri;
 
 class RememberMeHandler implements EventSubscriberInterface
 {
@@ -17,6 +18,7 @@ class RememberMeHandler implements EventSubscriberInterface
             $user = \Bs\Db\User::retrieveMe();
             if ($user) {
                 Log::alert('user `' . $user->username . '` auto logged in via cookie');
+                Uri::create()->redirect();
             }
         }
 

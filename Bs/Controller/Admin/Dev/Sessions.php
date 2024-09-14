@@ -26,17 +26,18 @@ class Sessions extends ControllerAdmin
 
         $this->table->appendCell('userId')
             ->addCss('text-center');
-        $this->table->appendCell('username')
-            ->addHeaderCss('max-width');
+        $this->table->appendCell('username');
         $this->table->appendCell('name')
             ->addCss('text-nowrap');
+        $this->table->appendCell('breadcrumbs')
+            ->addCss('max-width text-nowrap');
         $this->table->appendCell('ip')
             ->addCss('text-nowrap');
+        // $this->table->appendCell('sessionId')
+        //     ->addCss('text-nowrap');
         // $this->table->appendCell('agent')
         //     ->addCss('text-nowrap');
         $this->table->appendCell('type')
-            ->addCss('text-nowrap');
-        $this->table->appendCell('breadcrumbs')
             ->addCss('text-nowrap');
         $this->table->appendCell('activity')
             ->addCss('text-nowrap');
@@ -46,6 +47,10 @@ class Sessions extends ControllerAdmin
             ->addHeaderCss('text-center')
             ->addCss('text-nowrap')
             ->addOnValue('\Tk\Table\Type\DateTime::onValue');
+
+
+        // TODO: add a filter for public/user sessions
+
 
         // execute actions and set table orderBy from request
         $this->table->execute();
@@ -64,7 +69,6 @@ class Sessions extends ControllerAdmin
         $this->table->addCss('table-hover');
         $template->appendTemplate('content', $this->table->show());
 
-        // todo: figure out how to show all the crumbs?
         $css = <<<CSS
 .tk-table td.mBreadcrumbs {
     overflow: hidden;
@@ -82,7 +86,7 @@ CSS;
 
     protected function getSessions(): array
     {
-        $sessions = Db::query("SELECT * FROM _session");
+        $sessions = Db::query("SELECT * FROM _session ORDER BY modified DESC");
         $rows = [];
 
         foreach ($sessions as $ses) {
@@ -92,7 +96,7 @@ CSS;
 
             $username = $_SESSION[SessionStorage::$SID_USER] ?? '';
             $user = User::findByUsername($username);
-            if (!$user) continue;
+            //if (!$user) continue;
 
             $breadcrumbs = '';
             foreach ($_SESSION as $itm) {
@@ -107,31 +111,50 @@ CSS;
             $now = Date::create();
             $created = Date::create($ses->created);
             $modified = Date::create($ses->modified);
-            $difCreated = $modified->diff($created);
+            $difCreated = $now->diff($created);
             $difLast = $now->diff($modified);
-            $username = $user->username;
-            $name = $user->getName();
-            if (Masquerade::isMasquerading()) {
-                $msq = Masquerade::getMasqueradingUser();
-                $name = $msq->getName();
-                $username = sprintf('%s<br><small class="text-info" title="Masquerading User">[%s - %s]</small>', $msq->username, $user->username, $user->getName());
+
+
+            //$username = $user->username;
+            $userId = 0;
+            $type = '';
+            $name = '';
+            $username = sprintf('<span class="text-muted">%s</span>', $_SESSION['_session.id'] ?? '');;
+            if ($user) {
+                $userId = $user->userId;
+                $type = $user->type;
+                $username = $user->username;
+                $name = $user->getName();
+                if (Masquerade::isMasquerading()) {
+                    $msq = Masquerade::getMasqueradingUser();
+                    $name = $msq->getName();
+                    $username = sprintf('%s<br><small class="text-info" title="Masquerading User">[%s - %s]</small>', $msq->username, $user->username, $user->getName());
+                }
+
+                if ($user->sessionId == ($_SESSION['_session.id'] ?? '')) {
+                    $username = sprintf('<strong>%s</strong>', $username);
+                }
             }
 
             $rows[] = (object)[
-                'userId' => $user->userId,
-                'username' => $username,
-                'name' => $name,
-                'ip' => $_SESSION[Session::SID_IP] ?? '',
-                'agent' => $_SESSION[Session::SID_AGENT] ?? '',
-                'type' => $user->type,
+                'userId'      => $userId,
+                'username'    => $username,
+                'name'        => $name,
+                'ip'          => $_SESSION[Session::SID_IP] ?? '',
+                'agent'       => $_SESSION[Session::SID_AGENT] ?? '',
+                'sessionId'   => $_SESSION['_session.id'] ?? '',
+                'type'        => $type,
                 'breadcrumbs' => $breadcrumbs,
-                'lifetime' => $difCreated->format('%H:%i:%S'),
-                'activity' => $difLast->format('%H:%i:%S'),
-                'expires' => Date::create($ses->expiry),
+                'lifetime'    => $difCreated->format('%H:%i:%S'),
+                'activity'    => $difLast->format('%H:%i:%S'),
+                'expires'     => Date::create($ses->expiry),
+                'isPublic'    => is_object($user),
             ];
         }
         // reset back to original user session
         session_reset();
+        // todo: sort user sessions first
+
         return $rows;
     }
 

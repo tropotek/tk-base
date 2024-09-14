@@ -98,6 +98,7 @@ class Factory extends Collection
 
             $_SESSION[\Tk\Db\Session::SID_IP]    = System::getClientIp();
             $_SESSION[\Tk\Db\Session::SID_AGENT] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+            $_SESSION['_session.id']             = session_id();
             SessionLog::clearLog();
 
             $this->set('session', null);

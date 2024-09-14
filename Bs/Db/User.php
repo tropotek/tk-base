@@ -365,21 +365,50 @@ class User extends Model
 
     public static function findByUsername(string $username): ?static
     {
-        return self::findFiltered(['username' => $username])[0] ?? null;
+        $username = trim($username);
+        if(empty($username)) return null;
+
+        return Db::queryOne("
+            SELECT *
+            FROM v_user
+            WHERE username = :username",
+            compact('username'),
+            self::$USER_CLASS
+        );
     }
 
     public static function findByEmail(string $email): ?static
     {
-        return self::findFiltered(['email' => $email])[0] ?? null;
+        $email = trim($email);
+        if(empty($email)) return null;
+
+        return Db::queryOne("
+            SELECT *
+            FROM v_user
+            WHERE email = :email",
+            compact('email'),
+            self::$USER_CLASS
+        );
     }
 
     public static function findByHash(string $hash): ?static
     {
-        return self::findFiltered(['hash' => $hash])[0] ?? null;
+        $hash = trim($hash);
+        if(empty($hash)) return null;
+
+        return Db::queryOne("
+            SELECT *
+            FROM v_user
+            WHERE hash = :hash",
+            compact('hash'),
+            self::$USER_CLASS
+        );
     }
 
     public static function findBySelector(string $selector): ?static
     {
+        $selector = trim($selector);
+        if(empty($selector)) return null;
         return Db::queryOne("
             SELECT *
             FROM v_user u
