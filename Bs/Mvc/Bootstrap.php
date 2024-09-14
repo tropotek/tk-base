@@ -39,12 +39,14 @@ class Bootstrap
             array_map(fn($path) => $vendorPath . '/' . $path . '/config/sql' , $libPaths);
         $config->set('db.migrate.paths', $migratePaths);
 
-        Db::connect(
-            $config->get('db.mysql', ''),
-            $config->get('db.mysql.options', []),
-        );
-        if ($config->get('php.date.timezone')) {
-            DB::setTimezone($config->get('php.date.timezone'));
+        if ($config->has('db.mysql')) {
+            Db::connect(
+                $config->get('db.mysql', ''),
+                $config->get('db.mysql.options', []),
+            );
+            if ($config->get('php.date.timezone')) {
+                DB::setTimezone($config->get('php.date.timezone', 'Australia/Melbourne'));
+            }
         }
 
         StartupHandler::$PARAMS = $config->get('site.log.params', StartupHandler::LOG_ALL);

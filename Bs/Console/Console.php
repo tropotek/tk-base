@@ -14,8 +14,6 @@ abstract class Console extends Command
 
     protected ?InputInterface $input = null;
 
-    protected string $cwd = '';
-
 
     /**
      * Initializes the command just after the input has been validated.
@@ -27,7 +25,6 @@ abstract class Console extends Command
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->cwd = getcwd();
         $this->input = $input;
         $this->output = $output;
         $this->writeInfo($this->getName());
@@ -47,11 +44,6 @@ abstract class Console extends Command
     public function getInput(): ?InputInterface
     {
         return $this->input;
-    }
-
-    public function getCwd(): string
-    {
-        return $this->cwd;
     }
 
     protected function askConfirmation($msg, $default = false)
