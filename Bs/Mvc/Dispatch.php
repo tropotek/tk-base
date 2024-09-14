@@ -76,7 +76,7 @@ class Dispatch
     /**
      * Called this when executing Console/CLI requests
      */
-    protected function cliInit()
+    protected function cliInit(): void
     {
     }
 
