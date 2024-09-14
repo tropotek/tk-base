@@ -141,7 +141,6 @@ class SqlMigrate
                 $options = Db::parseDsn(Config::instance()->get('db.mysql'));
                 $this->backupFile = Db\DbBackup::save(Config::instance()->getTempPath(), $options);
             }
-
             if (preg_match('/\.php$/i', basename($file))) {  // Include .php files
                 $callback = include $file;
                 if (is_callable($callback)) {
