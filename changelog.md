@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.40 [2024-09-14]:
+-------------------------------
+  - Move Factory update System and registry
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+
+
 Ver 8.0.38 [2024-09-10]:
 -------------------------------
   - Use hash in place of secret ID
