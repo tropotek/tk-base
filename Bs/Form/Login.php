@@ -81,7 +81,7 @@ class Login extends Form
         $factory = \Bs\Factory::instance();
         $result = $factory->getAuthController()->authenticate($factory->getAuthAdapter());
         if ($result->getCode() != Result::SUCCESS) {
-            Log::error($result->getMessage());
+            Log::debug($result->getMessage());
             $form->addError('Invalid login details.');
             return;
         }

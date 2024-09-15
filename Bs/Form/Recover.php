@@ -55,13 +55,13 @@ class Recover extends Form
     public function onSubmit(Form $form, Submit $action): void
     {
         if (!$form->getFieldValue('username')) {
+            $form->setFieldValue('username', '');
             $form->addError('Please enter a valid username.');
             return;
         }
 
         $token = $_SESSION['recover'] ?? 0;
         unset($_SESSION['recover']);
-
         if (($token + 60*2) < time()) { // submit before form token times out
             $form->addError('Invalid form submission, please try again.');
             return;
@@ -69,6 +69,7 @@ class Recover extends Form
 
         $user = User::findByUsername(strtolower($form->getFieldValue('username')));
         if (!$user) {
+            $form->setFieldValue('username', '');
             $form->addFieldError('username', 'Please enter a valid username.');
             return;
         }

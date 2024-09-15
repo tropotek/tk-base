@@ -172,7 +172,7 @@ class SqlMigrate
             }
 
         } catch (\Exception $e){
-            Log::error($e->__toString());
+            Log::debug($e->__toString());
         }
         return false;
     }

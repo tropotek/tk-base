@@ -20,7 +20,6 @@ abstract class ControllerInterface
     {
         $user = $this->getAuthUser();
         if (!$user || !$user->hasPermission($access)) {
-            Log::error('Invalid access to controller: ' . static::class);
             Alert::addWarning('You do not have permission to access the page: <b>' . Uri::create()->getRelativePath() . '</b>');
             $this->getBackUrl()->redirect();
         }

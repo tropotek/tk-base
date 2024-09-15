@@ -67,7 +67,7 @@ class ExceptionEmailListener implements EventSubscriberInterface
                     Factory::instance()->getMailGateway()->send($message);
                 }
             }
-        } catch (Exception $ee) { Log::warning($ee->__toString()); }
+        } catch (Exception $ee) { Log::notice($ee->__toString()); }
     }
 
     public function getExceptionHtml(Throwable $e, bool $withTrace = true): string
