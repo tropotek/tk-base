@@ -30,13 +30,12 @@ class Bootstrap
         FileUtil::mkdir(System::makePath($config->get('path.cache')), true);
 
         // Setup default migration paths
-        // todo: cache this as it will not change often/ever
         $vendorPath = $config->getBasePath() . $config->get('path.vendor.org');
         $libPaths = scandir($vendorPath);
         array_shift($libPaths);
         array_shift($libPaths);
-        $migratePaths = [$config->getBasePath() . '/src/config/sql'] +
-            array_map(fn($path) => $vendorPath . '/' . $path . '/config/sql' , $libPaths);
+        $migratePaths = array_map(fn($path) => $vendorPath . '/' . $path . '/config/sql' , $libPaths);
+        array_unshift($migratePaths, $config->getBasePath() . '/src/config/sql');
         $config->set('db.migrate.paths', $migratePaths);
 
         if ($config->has('db.mysql')) {
