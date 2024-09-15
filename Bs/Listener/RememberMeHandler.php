@@ -11,22 +11,16 @@ use Tk\Uri;
 class RememberMeHandler implements EventSubscriberInterface
 {
 
-    public function onRequest(RequestEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
-        // TODO: Check user still logged in, if not use any remember me cookies to auto login and redirect to back to this URI
+        // Check user still logged in, if not use any remember me cookies to auto login and redirect to back to this URI
         if (!Factory::instance()->getAuthUser()) {
             $user = \Bs\Db\User::retrieveMe();
             if ($user) {
-                Log::alert('user `' . $user->username . '` auto logged in via cookie');
+                Log::info('user auto logged in via cookie');
                 Uri::create()->redirect();
             }
         }
-
-
-        // TODO: Check if maintenance mode is enabled then redirect to appropriate URI
-
-        //\Tk\Log::emergency('TODO: HTTP implement RequestHandler....');
-
     }
 
     public static function getSubscribedEvents()

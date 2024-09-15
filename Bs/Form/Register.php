@@ -75,7 +75,7 @@ class Register extends Form
         $user->type = $this->getConfig()->get('user.default.type', \Bs\Db\User::TYPE_MEMBER);
 
         // set object values from fields
-        $form->mapValues($user);
+        $form->mapModel($user);
 
         $token = $_SESSION['recover'] ?? 0;
         unset($_SESSION['recover']);

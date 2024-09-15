@@ -100,9 +100,10 @@ class User extends Model
     /**
      * @param bool $cookie If true any stored login cookies will also be removed
      */
-    public static function logout(bool $cookie = true): void
+    public static function logout(User $user = null, bool $cookie = true): void
     {
-        $user = Factory::instance()->getAuthUser();
+        if (!$user) $user = Factory::instance()->getAuthUser();
+
         if ($user) {
             if (Masquerade::isMasquerading()) {
                 Masquerade::masqueradeLogout();
@@ -114,7 +115,7 @@ class User extends Model
             }
             $user->sessionId = '';
             $user->save();
-            Uri::create()->redirect();
+            Uri::create('/')->redirect();
         }
     }
 
@@ -413,7 +414,9 @@ class User extends Model
             SELECT *
             FROM v_user u
             INNER JOIN user_remember z USING (user_id)
-            WHERE z.selector = :selector AND expiry > NOW()",
+            WHERE z.selector = :selector
+            AND u.active
+            AND expiry > NOW()",
             compact('selector'),
             self::$USER_CLASS
         );

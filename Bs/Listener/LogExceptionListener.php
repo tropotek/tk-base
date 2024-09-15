@@ -36,13 +36,17 @@ class LogExceptionListener implements EventSubscriberInterface
             Log::error(self::getCallerLine($e) . $e->getMessage());
         } else {
             if ($this->debug) {
-                if ($e instanceof \Tk\WarningException) {
+                if ($e instanceof \HttpException) {
+                    Log::info(self::getCallerLine($e) . $e->__toString());
+                } elseif ($e instanceof \Tk\WarningException) {
                     Log::warning(self::getCallerLine($e) . $e->__toString());
                 } else {
                     Log::error(self::getCallerLine($e) . $e->__toString());
                 }
             } else {
-                if ($e instanceof \Tk\WarningException) {
+                if ($e instanceof \HttpException) {
+                    Log::info(self::getCallerLine($e) . $e->getMessage());
+                } elseif ($e instanceof \Tk\WarningException) {
                     Log::warning(self::getCallerLine($e) . $e->getMessage());
                 } else {
                     Log::error(self::getCallerLine($e) . $e->getMessage());

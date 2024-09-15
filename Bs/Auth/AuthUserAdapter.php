@@ -26,7 +26,7 @@ class AuthUserAdapter extends AdapterInterface
 
         try {
             $user = User::findByUsername($username);
-            if ($user && password_verify($password, $user->password)) {
+            if ($user && $user->active && password_verify($password, $user->password)) {
                 return new Result(Result::SUCCESS, $username);
             }
         } catch (\Exception $e) {

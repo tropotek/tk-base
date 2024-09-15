@@ -20,8 +20,6 @@ class Login extends Form
 
     public function init(): static
     {
-        // Set a token in the session on show, to ensure this browser is the one that requested the login.
-        $_SESSION['login'] = time();
 
         // check if user already logged in...
         $user = User::retrieveMe();
@@ -69,14 +67,6 @@ class Login extends Form
     public function onSubmit(Form $form, Submit $action): void
     {
         $values = $form->getFieldValues();
-
-        $token = $_SESSION['login'] ?? 0;
-        unset($_SESSION['login']);
-
-        if (($token + 60*2) < time()) { // login before form token times out
-            $form->addError( 'Invalid form submission, please try again.');
-            return;
-        }
 
         $factory = \Bs\Factory::instance();
         $result = $factory->getAuthController()->authenticate($factory->getAuthAdapter());

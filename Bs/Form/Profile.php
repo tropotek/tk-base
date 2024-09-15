@@ -21,7 +21,7 @@ class Profile extends Form
     public function init(): static
     {
         $tab = 'Details';
-        $this->getForm()->appendField(new Hidden('userId'))->setGroup($tab);
+        $this->getForm()->appendField(new Hidden('userId'))->setReadonly();
 
         $list = \Bs\Db\User::getTitleList();
         $this->getForm()->appendField(new Select('nameTitle', $list))
@@ -78,8 +78,7 @@ class Profile extends Form
         $this->init();
 
         // Load form with object values
-        $load = $this->form->unmapValues($this->getUser());
-        $load['userId'] = $this->getUser()->userId;
+        $load = $this->form->unmapModel($this->getUser());
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->form->setFieldValues($load);
 
@@ -91,7 +90,7 @@ class Profile extends Form
     public function onSubmit(Form $form, SubmitExit $action): void
     {
         // set object values from fields
-        $form->mapValues($this->getUser());
+        $form->mapModel($this->getUser());
 
         if ($form->getField('currentPass') && $form->getFieldValue('currentPass')) {
             if (!password_verify($form->getFieldValue('currentPass'), $this->getUser()->password)) {

@@ -26,7 +26,7 @@ class Login extends ControllerAdmin
 
     public function doLogout(): void
     {
-        User::logout(true);
+        User::logout();
         Alert::addSuccess('Logged out successfully');
         Uri::create('/')->redirect();
     }

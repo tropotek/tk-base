@@ -271,7 +271,11 @@ class Factory extends Collection
                 $this->set('authUser', $user);
             }
         }
-        return $this->get('authUser');
+        $user = $this->get('authUser');
+        if ($user instanceof User && !$user->active) {
+            User::logout($user);
+        }
+        return $user;
     }
 
     /**
@@ -442,11 +446,15 @@ class Factory extends Collection
 
     public function getBackUrl(): Uri
     {
-        // TODO: update this
-        // 1 get back from referrer if available
-        // 2 get back from crumb stack if it exists
-        // 3 use the site base path ig nothing is found
-        return Uri::create($this->getCrumbs()->getBackUrl());
+        $thisUrl = Uri::create();
+        $crumbUrl = Uri::create($this->getCrumbs()->getBackUrl());
+        if ($crumbUrl->toString() != $thisUrl->toString()) {
+            return $crumbUrl;
+        }
+        if ($this->getAuthUser()) {
+            return $this->getAuthUser()->getHomeUrl();
+        }
+        return Uri::create('/');
     }
 
     public function getConsole(): Application

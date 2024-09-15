@@ -38,7 +38,7 @@ class RecoverPassword extends Form
         }
 
         $this->user = User::findByHash($arr['h'] ?? '');
-        if (!$this->user) {
+        if (!$this->user || !$this->user->active) {
             Alert::addError('Invalid user token');
             Uri::create('/home')->redirect();
         }

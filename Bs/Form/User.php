@@ -23,7 +23,7 @@ class User extends Form
     public function init(): static
     {
         $group = 'Details';
-        $this->appendField(new Hidden('userId'))->setGroup($group);
+        $this->appendField(new Hidden('userId'))->setReadonly();
 
         $list = \Bs\Db\User::getTitleList();
         $this->appendField(new Select('nameTitle', $list))
@@ -69,7 +69,7 @@ class User extends Form
                 $field->setDisabled();
             }
 
-            $this->appendField(new Checkbox('active', ['Enable User Login' => 'active']))
+            $this->appendField(new Checkbox('active', ['Enable User Login' => '1']))
                 ->setGroup($group);
         }
 
@@ -89,8 +89,7 @@ class User extends Form
         $this->init();
 
         // Load form with object values
-        $load = $this->unmapValues($this->getUser());
-        $load['userId'] = $this->getUser()->userId;
+        $load = $this->unmapModel($this->getUser());
         $load['perm'] = $this->getUser()->getPermissionList();
         $this->setFieldValues($load);
 
@@ -107,7 +106,7 @@ class User extends Form
         }
 
         // set object values from fields
-        $form->mapValues($this->getUser());
+        $form->mapModel($this->getUser());
 
         if ($form->getField('perm')) {
             $this->getUser()->permissions = array_sum($form->getFieldValue('perm') ?? []);
