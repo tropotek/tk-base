@@ -69,7 +69,6 @@ class User extends Model
     public function save(): void
     {
         $map = static::getDataMap();
-        $values = $map->getArray($this);
 
         if (!$this->username && $this->email) {
             $this->username = $this->email;
@@ -80,6 +79,7 @@ class User extends Model
             $this->permissions = 0;
         }
 
+        $values = $map->getArray($this);
         if ($this->userId) {
             $values['user_id'] = $this->userId;
             Db::update('user', 'user_id', $values);

@@ -81,10 +81,9 @@ class File extends Model
     public function save(): void
     {
         self::install();
-
         $map = static::getDataMap();
-        $values = $map->getArray($this);
 
+        $values = $map->getArray($this);
         if ($this->fileId) {
             $values['file_id'] = $this->fileId;
             Db::update('file', 'file_id', $values);
