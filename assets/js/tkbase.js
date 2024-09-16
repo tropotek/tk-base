@@ -331,6 +331,7 @@ let tkbase = function () {
       extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
       statusbar: false,
       image_advtab: true,
+      content_security_policy: "default-src 'self'",
 
       urlconverter_callback : function (url, node, on_save) {
         let parts = url.split(tkConfig.baseUrl);
