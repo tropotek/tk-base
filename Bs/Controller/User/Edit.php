@@ -24,10 +24,10 @@ class Edit extends ControllerAdmin
 
         $this->type = $type;
         $this->user = User::create();
-        $this->getUser()->type = $type;
+        $this->user->type = $type;
         if ($userId) {
             $this->user = User::find($userId);
-            if (!$this->getUser()) {
+            if (!$this->user) {
                 throw new Exception('Invalid User ID: ' . $userId);
             }
         }
@@ -90,7 +90,7 @@ class Edit extends ControllerAdmin
         return new \Bs\Form\User($this->getUser());
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
