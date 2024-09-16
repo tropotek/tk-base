@@ -51,7 +51,6 @@ class Sessions extends ControllerAdmin
 
         // TODO: add a filter for public/user sessions
 
-
         // execute actions and set table orderBy from request
         $this->table->execute();
 
@@ -96,7 +95,6 @@ CSS;
 
             $username = $_SESSION[SessionStorage::$SID_USER] ?? '';
             $user = User::findByUsername($username);
-            //if (!$user) continue;
 
             $breadcrumbs = '';
             foreach ($_SESSION as $itm) {
@@ -114,12 +112,11 @@ CSS;
             $difCreated = $now->diff($created);
             $difLast = $now->diff($modified);
 
-
-            //$username = $user->username;
             $userId = 0;
             $type = '';
             $name = '';
-            $username = sprintf('<span class="text-muted">%s</span>', $_SESSION['_session.id'] ?? '');;
+            $username = sprintf('<span class="text-muted">%s</span>', $_SESSION['_session.id'] ?? '');
+
             if ($user) {
                 $userId = $user->userId;
                 $type = $user->type;
