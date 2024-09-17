@@ -460,7 +460,12 @@ class Factory extends Collection
     public function getConsole(): Application
     {
         if (!$this->has('console')) {
-            $app = new Application($this->getRegistry()->getSiteName(), System::getVersion());
+            $name = '';
+            if (System::getComposerJson()) {
+                $sys = System::getComposerJson();
+                $name = $sys['name'] ?? '';
+            }
+            $app = new Application($name, System::getVersion());
             $app->setDispatcher($this->getEventDispatcher());
 
             // Setup Global Console Commands
