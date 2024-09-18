@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Tk\Config;
 use Tk\System;
 
 class PageHandler implements EventSubscriberInterface
@@ -29,7 +30,7 @@ class PageHandler implements EventSubscriberInterface
 
         $pageTemplate = System::makePath($this->controller->getPageTemplate());
         if (!is_file($pageTemplate)) {
-            $pageTemplate = System::makePath('/html/public.html');
+            $pageTemplate = System::makePath(Config::instance()->get('path.template.public', ''));
         }
         $this->page = Factory::instance()->initPage($pageTemplate);
     }

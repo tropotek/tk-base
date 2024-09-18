@@ -9,13 +9,15 @@ abstract class PageInterface
 
     private string $title        = '';
     private array  $contentList  = [];
+    private array  $options      = [];
     private bool   $enabled      = true;
     private string $templatePath;
 
 
-    public function __construct(string $templatePath = '')
+    public function __construct(string $templatePath = '', array $options = [])
     {
         $this->templatePath = $templatePath;
+        $this->options = $options;
     }
 
     /**
@@ -68,4 +70,15 @@ abstract class PageInterface
         $this->enabled = $enabled;
         return $this;
     }
+
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    public function getOption(string $name, mixed $default = null): mixed
+    {
+        return $this->options[$name] ?? $default;
+    }
+
 }
