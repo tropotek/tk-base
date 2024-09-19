@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.52 [2024-09-19]:
+-------------------------------
+  - remove tinymce context menu
+  - secret replace id with hash
+
+
 Ver 8.0.50 [2024-09-18]:
 -------------------------------
   - Added publish and template select
