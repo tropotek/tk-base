@@ -328,6 +328,8 @@ let tkbase = function () {
         '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
       ],
       content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
+      //contextmenu: 'link image template inserttable | cell row column deletetable',
+      contextmenu: false,
       extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
       statusbar: false,
       image_advtab: true,
