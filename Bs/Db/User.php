@@ -354,6 +354,9 @@ class User extends Model
         );
     }
 
+    /**
+     * @return array<int,User>
+     */
     public static function findAll(): array
     {
         return Db::query("
@@ -422,6 +425,9 @@ class User extends Model
         );
     }
 
+    /**
+     * @return array<int,User>
+     */
     public static function findFiltered(array|Filter $filter): array
     {
         $filter = Filter::create($filter);

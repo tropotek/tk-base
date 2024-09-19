@@ -178,12 +178,12 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
     }
 
 
-    public function init()
+    public function init(): void
     {
         $this->getOnInit()->execute($this);
     }
 
-    public function execute()
+    public function execute(): void
     {
         $this->getOnExecute()->execute($this);
     }
@@ -201,7 +201,7 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
         $template->setText('title', $this->getTitle());
         $template->setAttr('title', 'id', $this->getId().'-Label');
 
-        if ($this->getContent() instanceof \Dom\Template) {
+        if ($this->getContent() instanceof Template) {
             $template->appendTemplate('content', $this->getContent());
         } else if ($this->getContent()) {
             $template->appendHtml('content', $this->getContent());
