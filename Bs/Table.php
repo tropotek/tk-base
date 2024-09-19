@@ -28,13 +28,17 @@ class Table extends \Tk\Table
     public function __construct(string $tableId = 'tbl', string $orderBy = '', int $limit = 10, int $page = 1)
     {
         parent::__construct($tableId);
-        $this->setLimit($_GET[$this->makeRequestKey(\Tk\Table::PARAM_LIMIT)] ?? $limit);
-        $this->setPage($_GET[$this->makeRequestKey(\Tk\Table::PARAM_PAGE)] ?? $page);
-        $this->setOrderBy($_GET[$this->makeRequestKey(\Tk\Table::PARAM_ORDERBY)] ?? $orderBy);
+        $this->setOrderBy($orderBy);
+        $this->setLimit($limit);
+        $this->setPage($page);
         $this->sid = $this->makeRequestKey('filter');
 
         $this->renderer = new DomRenderer($this);
 
+        // add reset table session action
+        if (Config::instance()->isDev()) {
+            $this->addResetAction();
+        }
     }
 
     /**
@@ -47,11 +51,9 @@ class Table extends \Tk\Table
 
     public function execute(): static
     {
-        // add reset table session action
-        // todo: not working for some reason????
-        if (Config::instance()->isDev()) {
-            $this->addResetAction();
-        }
+        $this->setLimit($_GET[$this->makeRequestKey(\Tk\Table::PARAM_LIMIT)] ?? $this->getLimit());
+        $this->setPage($_GET[$this->makeRequestKey(\Tk\Table::PARAM_PAGE)] ?? $this->getPage());
+        $this->setOrderBy($_GET[$this->makeRequestKey(\Tk\Table::PARAM_ORDERBY)] ?? $this->getOrderBy());
 
         // init cells, filters and actions
         $this->init();
@@ -165,13 +167,11 @@ HTML;
 
     public function addResetAction(): Action
     {
-        return $this->appendAction('reset')
+        return $this->appendAction('__reset')
             ->addOnExecute(function (Action $action) {
                 $val = $action->getTable()->makeRequestKey($action->getName());
                 $active = ($_POST[$action->getName()] ?? '') == $val;
-                $action->setActive($active);
-                if (!$action->isActive()) return;
-
+                if (!$active) return;
                 unset($_SESSION[$this->sid]);
                 Uri::create()
                     ->remove($action->getTable()->makeRequestKey(\Tk\Table::PARAM_PAGE))
