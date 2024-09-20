@@ -38,7 +38,6 @@ use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Gateway;
-use Bs\Mvc\FrontController;
 use Tk\System;
 use Tk\Uri;
 
