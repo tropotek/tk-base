@@ -65,6 +65,9 @@ class Bootstrap
             ]]);
         }
 
+        // Setup EventDispatcher and subscribe events, loads routes
+        Factory::instance()->initEventDispatcher();
+
         if (System::isCli()) {
             $this->cliInit();
         } else {
@@ -84,7 +87,8 @@ class Bootstrap
 
         Uri::$SITE_HOSTNAME = $config->getHostname();
         Uri::$BASE_URL = $config->getBaseUrl();
-        if ($config->isDebug()) {
+
+        if ($config->isDev()) {
             Template::$ENABLE_TRACER = true;
         }
 
@@ -94,15 +98,11 @@ class Bootstrap
         // init the Request
         Factory::instance()->getRequest();
 
-        // Setup EventDispatcher and subscribe events, loads routes
-        Factory::instance()->initEventDispatcher();
-
     }
 
     protected function cliInit(): void
     {
-        // Setup EventDispatcher and subscribe events, loads routes
-        Factory::instance()->initEventDispatcher();
+
     }
 
 }

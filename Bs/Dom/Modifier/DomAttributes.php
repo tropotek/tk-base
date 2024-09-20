@@ -15,9 +15,7 @@ use Tk\Config;
  * - app-is-type="User::TYPE_STAFF": remove a node if the current user is not of user type
  * - app-has-perm="User::PERM_SYSADMIN":  remove a node if the current user does not have the permissions
  *
- * @experimental
- * @todo Look further into this, I think we can deprecated it and prefer this at the App level
- * @deprecated This should be implemented on a per site level, not in a lib
+ * @deprecated no longer in use
  */
 class DomAttributes extends FilterInterface
 {

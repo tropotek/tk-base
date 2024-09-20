@@ -354,7 +354,6 @@ class Factory extends Collection
                 $dm->addFilter('scss', $scss);
             }
 
-            $dm->addFilter('appAttributes', new DomAttributes());
             $dm->addFilter('urlPath', new Modifier\UrlPath($this->getConfig()->getBaseUrl()));
             $dm->addFilter('jsLast', new Modifier\JsLast());
             if ($this->getConfig()->isDebug()) {
@@ -407,6 +406,8 @@ class Factory extends Collection
 
     /**
      * get the mail gateway to send emails
+     *
+     * @todo Look into making the gateway send method static with an init function to be called in the Bootstrap
      */
     public function getMailGateway(): ?Gateway
     {
