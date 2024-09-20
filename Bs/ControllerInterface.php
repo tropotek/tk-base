@@ -32,7 +32,7 @@ abstract class ControllerInterface
         return $this->pageTemplate;
     }
 
-    public function setPageTemplate(string $pageTemplate): ControllerInterface
+    protected function setPageTemplate(string $pageTemplate): ControllerInterface
     {
         $this->pageTemplate = $pageTemplate;
         return $this;
