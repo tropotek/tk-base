@@ -46,4 +46,9 @@ return function (CollectionConfigurator $routes) {
         $routes->add('system-mirror', '/util/mirror')
             ->controller([\Bs\Controller\Util\Mirror::class, 'doDefault']);
     }
+
+    // Example php route
+    // $routes->add('widget-test', '/widgetTest')
+    //     ->defaults(['path' => '/page/widgetManager.php'])
+    //     ->controller([\Bs\PhpController::class, 'doDefault']);
 };

@@ -10,6 +10,8 @@ class Permissions
      * permissions are bit masks that can include on or more bits
      * requests for permission are ANDed with the user's permissions
      * if the result is non-zero the user has permission.
+     *
+     * @todo move all permission functions to app level
      */
     const PERM_ADMIN            = 0x1; // Admin
     const PERM_SYSADMIN         = 0x2; // Change system settings

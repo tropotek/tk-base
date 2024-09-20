@@ -59,7 +59,7 @@ class File extends Model
 
         $obj->label = \Tk\FileUtil::removeExtension(basename($file));
         if ($model) {
-            $obj->setForeignModel($model);
+            $obj->setDbModel($model);
         }
         if (!$userId) {
             if ($model && property_exists($model, 'userId')) {
@@ -223,7 +223,7 @@ class File extends Model
         }
 
         if (!empty($filter['model']) && $filter['model'] instanceof Model) {
-            $filter['fid'] = self::getModelId($filter['model']);
+            $filter['fid'] = self::getDbModelId($filter['model']);
             $filter['fkey'] = get_class($filter['model']);
         }
         if (isset($filter['fid'])) {

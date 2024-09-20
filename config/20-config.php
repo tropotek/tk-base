@@ -50,6 +50,19 @@ return function (Config $config) {
     $config->set('user.registration.enable', false);
 
     /**
+     * Validate user passwords on input
+     * - Must include at least one number
+     * - Must include at least one letter
+     * - Must include at least one capital
+     * - Must include at least one symbol
+     * - must >= 8 characters
+     *
+     * Note: validation disabled in dev environments
+     * (default: true)
+     */
+    $config->set('user.password.strict', true);
+
+    /**
      * Default type of new user registered account
      * (default: 'member')
      */

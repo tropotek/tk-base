@@ -1,6 +1,6 @@
 <?php
 
-namespace Bs\Mvc;
+namespace Bs;
 
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Exception;

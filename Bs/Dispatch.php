@@ -11,17 +11,54 @@ use Dom\Modifier\PageBytes;
 use Tk\Config;
 use Bs\Listener\ExceptionListener;
 use Bs\Listener\CrumbsHandler;
+use Bs\Factory;
+use Bs\Listener\ContentLength;
+use Bs\Listener\LogExceptionListener;
+use Bs\Listener\ViewHandler;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\EventListener\ResponseListener;
+use Symfony\Component\HttpKernel\EventListener\RouterListener;
+use Bs\Listener\ShutdownHandler;
+use Bs\Listener\StartupHandler;
+use Tk\System;
 
 
-class Dispatch extends \Bs\Mvc\Dispatch
+/**
+ * This object sets up the EventDispatcher and
+ * attaches all the listeners required for your application.
+ *
+ * Subclass this object in your App (to setup a Tk framework) and then override the Factory method
+ * Factory::initDispatcher()
+ */
+class Dispatch
 {
+    protected ?EventDispatcherInterface $dispatcher = null;
+
+    public function __construct(EventDispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+        $this->init();
+    }
+
+    private function init(): void
+    {
+        $this->commonInit();
+        if (System::isCli()) {
+            $this->cliInit();
+        } else {
+            $this->httpInit();
+        }
+    }
 
     /**
      * Any Common listeners that are used in both HTTPS or CLI requests
      */
     protected function commonInit(): void
     {
-        parent::commonInit();
+        if (Config::instance()->isDev()) {
+            $this->getDispatcher()->addSubscriber(new StartupHandler());
+            $this->getDispatcher()->addSubscriber(new ShutdownHandler(Config::instance()->get('script.start.time')));
+        }
     }
 
     /**
@@ -29,10 +66,18 @@ class Dispatch extends \Bs\Mvc\Dispatch
      */
     protected function httpInit(): void
     {
-        parent::httpInit();
+        $this->getDispatcher()->addSubscriber(new RouterListener(
+            Factory::instance()->getRouteMatcher(),
+            Factory::instance()->getRequestStack()
+        ));
 
-        $this->getDispatcher()->addSubscriber(new MaintenanceHandler());
-        $this->getDispatcher()->addSubscriber(new RememberMeHandler());
+        $this->getDispatcher()->addSubscriber(new LogExceptionListener(
+            Config::instance()->isDebug()
+        ));
+
+        $this->getDispatcher()->addSubscriber(new ViewHandler());
+        $this->getDispatcher()->addSubscriber(new ResponseListener('UTF-8'));
+        $this->getDispatcher()->addSubscriber(new ContentLength());
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
@@ -58,7 +103,6 @@ class Dispatch extends \Bs\Mvc\Dispatch
         if ($pageBytes) {
             $this->getDispatcher()->addSubscriber(new PageBytesHandler($pageBytes));
         }
-        $this->getDispatcher()->addSubscriber(new CrumbsHandler());
 
     }
 
@@ -67,7 +111,12 @@ class Dispatch extends \Bs\Mvc\Dispatch
      */
     protected function cliInit(): void
     {
-        parent::cliInit();
+
+    }
+
+    public function getDispatcher(): ?EventDispatcherInterface
+    {
+        return $this->dispatcher;
     }
 
 }

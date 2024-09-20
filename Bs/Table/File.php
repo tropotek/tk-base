@@ -19,7 +19,7 @@ class File extends Table
 
     public function init(): static
     {
-        $rowSelect = RowSelect::create('id', 'userId');
+        $rowSelect = RowSelect::create('id', 'fileId');
         $this->appendCell($rowSelect);
 
 
@@ -90,7 +90,7 @@ class File extends Table
 
     public function execute(): static
     {
-        if (isset($GET['del'])) {
+        if (isset($_GET['del'])) {
             $this->doDelete(intval($_GET['del'] ?? 0));
         }
         parent::execute();

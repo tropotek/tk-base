@@ -1,7 +1,6 @@
 <?php
-namespace Bs\Mvc;
+namespace Bs;
 
-use Bs\Factory;
 use Bs\Listener\StartupHandler;
 use Dom\Template;
 use Tk\Config;

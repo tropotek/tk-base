@@ -1,7 +1,6 @@
 <?php
-namespace Bs\Util;
+namespace Au;
 
-use Bs\Db\User;
 use Bs\Factory;
 
 class Masquerade
@@ -17,14 +16,21 @@ class Masquerade
      */
     const QUERY_MSQ = 'msq';
 
+    /**
+     * Add a callable function to check if a user can masquerade as another user
+     * function (User $user, User $msqUser): bool { ... }
+     * @var ?callable
+     */
+    public static mixed $CAN_MASQUERADE = null;
+
 
     /**
      * Masquerade as another user
      * return true on success, remember to redirect to the required page on success
      */
-    public static function masqueradeLogin(User $user, User $msqUser): bool
+    public static function masqueradeLogin(Auth $auth, Auth $msqAuth): bool
     {
-        if (!self::canMasqueradeAs($user, $msqUser)) return false;
+        if (!self::canMasqueradeAs($auth, $msqAuth)) return false;
         $factory = Factory::instance();
 
         // Get the masquerade queue from the session
@@ -32,7 +38,7 @@ class Masquerade
 
         // Save the current user and url to the session, to allow logout
         $userData = [
-            'userId' => $user->username,
+            'identity' => $auth->username,
             'url' => \Tk\Uri::create()->toString(),
         ];
         $msqArr[] = $userData;
@@ -41,7 +47,7 @@ class Masquerade
         $_SESSION[static::SID] = $msqArr;
 
         // Simulates an AuthAdapter authenticate() method
-        $factory->getAuthController()->getStorage()->write($msqUser->username);
+        $factory->getAuthController()->getStorage()->write($msqAuth->username);
 
         return true;
     }
@@ -59,11 +65,11 @@ class Masquerade
         if (!is_array($msqArr) || !count($msqArr)) return false;
 
         $userData = array_pop($msqArr);
-        if (empty($userData['userId']) || empty($userData['url'])) return false;
+        if (empty($userData['identity']) || empty($userData['url'])) return false;
 
         // Save the updated masquerade queue
         $_SESSION[self::SID] = $msqArr;
-        $factory->getAuthController()->getStorage()->write($userData['userId']);
+        $factory->getAuthController()->getStorage()->write($userData['identity']);
 
         \Tk\Uri::create($userData['url'])->remove(self::QUERY_MSQ)->redirect();
         return true;
@@ -71,32 +77,36 @@ class Masquerade
 
     /**
      * Check if this user can masquerade as the supplied msqUser
+     * Returns true if user is admin and not already masquerading as selected user
      */
-    public static function canMasqueradeAs(User $user, User $msqUser): bool
+    public static function canMasqueradeAs(Auth $auth, Auth $msqAuth): bool
     {
-        if (!$msqUser->active) return false;
-        if ($user->userId == $msqUser->userId) return false;
-
+        if (!$msqAuth->active) return false;
+        if ($auth->authId == $msqAuth->authId) return false;
+        // Check if we are already masquerading as this user in the queue
         $msqArr = $_SESSION[static::SID] ?? null;
-        if (is_array($msqArr)) {    // Check if we are already masquerading as this user in the queue
+        if (is_array($msqArr)) {
             foreach ($msqArr as $data) {
-                if ($data['userId'] == $msqUser->username) return false;
+                if ($data['identity'] == $msqAuth->username) return false;
             }
         }
-        return $user->canMasqueradeAs($msqUser);
+        if ($auth->isAdmin()) return true;
+        if (is_callable(self::$CAN_MASQUERADE)) {
+            return boolval(call_user_func_array(self::$CAN_MASQUERADE, [$auth, $msqAuth]));
+        }
+        return false;
     }
 
     /**
      * Get the user who is masquerading
      */
-    public static function getMasqueradingUser(): ?User
+    public static function getMasqueradingUser(): ?Auth
     {
-        $user = null;
         if (is_array($_SESSION[static::SID] ?? false)) {
             $msqArr = $_SESSION[static::SID][0];
-            $user = User::findByUsername($msqArr['userId']);
+            return Auth::findByUsername($msqArr['identity']);
         }
-        return $user;
+        return null;
     }
 
     /**

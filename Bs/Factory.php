@@ -1,7 +1,6 @@
 <?php
 namespace Bs;
 
-use Bs\Auth\AuthUserAdapter;
 use Bs\Db\Permissions;
 use Bs\Db\User;
 use Bs\Dom\Modifier\DomAttributes;
@@ -17,6 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\Routing\Generator\CompiledUrlGenerator;
 use Symfony\Component\Routing\Loader\Configurator\CollectionConfigurator;
 use Symfony\Component\Routing\Matcher\CompiledUrlMatcher;
@@ -24,6 +24,7 @@ use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Tk\Auth\Adapter\AdapterInterface;
+use Tk\Auth\Adapter\DbTable;
 use Tk\Auth\Auth;
 use Tk\Cache\Adapter\Filesystem;
 use Tk\Cache\Cache;
@@ -37,7 +38,6 @@ use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Gateway;
-use Bs\Mvc\Bootstrap;
 use Bs\Mvc\FrontController;
 use Tk\System;
 use Tk\Uri;
@@ -74,10 +74,15 @@ class Factory extends Collection
         return $this->get('bootstrap');
     }
 
-    public function getFrontController(): FrontController
+    public function getFrontController(): HttpKernel
     {
         if (!$this->has('frontController')) {
-            $frontController = new FrontController();
+            $frontController = new HttpKernel(
+                $this->getEventDispatcher(),
+                $this->getControllerResolver(),
+                $this->getRequestStack(),
+                $this->getArgumentResolver()
+            );
             $this->set('frontController', $frontController);
         }
         return $this->get('frontController');
@@ -249,15 +254,6 @@ class Factory extends Collection
         return $this->getEventDispatcher();
     }
 
-    public function getAuthController(): Auth
-    {
-        if (!$this->has('authController')) {
-            $auth = new Auth(new \Tk\Auth\Storage\SessionStorage());
-            $this->set('authController', $auth);
-        }
-        return $this->get('authController');
-    }
-
     /**
      * Return a User object or record that is located from the Auth's getIdentity() method
      * Override this method in your own site's Factory object
@@ -278,6 +274,15 @@ class Factory extends Collection
         return $user;
     }
 
+    public function getAuthController(): Auth
+    {
+        if (!$this->has('authController')) {
+            $auth = new Auth(new \Tk\Auth\Storage\SessionStorage());
+            $this->set('authController', $auth);
+        }
+        return $this->get('authController');
+    }
+
     /**
      * This is the default Authentication adapter
      * Override this method in your own site's Factory object
@@ -285,7 +290,7 @@ class Factory extends Collection
     public function getAuthAdapter(): AdapterInterface
     {
         if (!$this->has('authAdapter')) {
-            $adapter = new AuthUserAdapter();
+            $adapter = new DbTable();
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');

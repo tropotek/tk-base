@@ -1,7 +1,7 @@
 {
   "name": "ttek/tk-base",
   "type": "library",
-  "description": "Base site library for the Tk lib",
+  "description": "Base site library for the Au lib",
   "keywords": [
     "tropotek"
   ],
@@ -16,7 +16,7 @@
   "autoload": {
     "psr-4": {
       "Bs\\": "Bs/",
-      "Auth\\": "Auth/"
+      "Au\\": "Au/"
     }
   },
   "require": {

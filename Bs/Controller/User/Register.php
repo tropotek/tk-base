@@ -26,7 +26,7 @@ class Register extends ControllerDomInterface
 
         if (!$this->getConfig()->get('user.registration.enable', false)) {
             Alert::addError('User registrations are closed for this account');
-            Uri::create('/home')->redirect();
+            Uri::create('/')->redirect();
         }
 
         $this->form = new \Bs\Form\Register();
@@ -40,7 +40,7 @@ class Register extends ControllerDomInterface
 
         if (!$this->getConfig()->get('user.registration.enable', false)) {
             Alert::addError('New user registrations are closed for this account');
-            Uri::create('/home')->redirect();
+            Uri::create('/')->redirect();
         }
 
         //$token = $request->get('t');        // Bug: replaces + with a space on POSTS
@@ -49,13 +49,13 @@ class Register extends ControllerDomInterface
         $arr = unserialize($arr);
         if (!is_array($arr)) {
             Alert::addError('Unknown account registration error, please try again.');
-            Uri::create('/home')->redirect();
+            Uri::create('/')->redirect();
         }
 
         $user = User::findByHash($arr['h'] ?? '');
         if (!$user) {
             Alert::addError('Invalid user registration');
-            Uri::create('/home')->redirect();
+            Uri::create('/')->redirect();
         }
 
         $user->active = true;
