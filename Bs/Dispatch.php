@@ -25,7 +25,7 @@ use Tk\System;
 
 /**
  * This object sets up the EventDispatcher and
- * attaches all the listeners required for your application.
+ * attaches all the listeners required for your application to run.
  *
  * Subclass this object in your App (to setup a Tk framework) and then override the Factory method
  * Factory::initDispatcher()
