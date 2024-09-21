@@ -52,7 +52,9 @@ class Page extends PageDomInterface
             $template->setAttr('user-home-url', 'href', $user->getHomeUrl());
 
             $template->setVisible('loggedIn');
+            $template->setVisible('auth');
         } else {
+            $template->setVisible('no-auth');
             $template->setVisible('loggedOut');
         }
 
