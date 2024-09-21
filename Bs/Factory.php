@@ -3,7 +3,6 @@ namespace Bs;
 
 use Bs\Db\Permissions;
 use Bs\Db\User;
-use Bs\Dom\Modifier\DomAttributes;
 use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Loader;
