@@ -23,7 +23,6 @@ class RecoverPassword extends Form
 
         $_SESSION['recover'] = time();
 
-        //$token = $request->get('t');        // Bug in here that replaces + with a space on POSTS
         $token = $_REQUEST['t'] ?? '';
         $arr = Encrypt::create(Config::instance()->get('system.encrypt'))->decrypt($token);
         $arr = unserialize($arr);

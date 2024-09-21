@@ -34,7 +34,7 @@ SELECT
   MD5(CONCAT(a.auth_id, 'Auth')) AS hash,
   CONCAT('/app/', u.type, '/' , u.user_id, '/data') AS data_path
 FROM user u
-JOIN auth a USING (auth_id)
+LEFT JOIN auth a ON (a.fkey = 'App\\Db\\User' AND a.fid = (u.user_id))
 ;
 
 

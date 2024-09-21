@@ -4,8 +4,8 @@ namespace Bs;
 class PagePhp extends PageInterface
 {
     /**
-     * Return the rendered page with all content
-     * This will be called by the page handler to get the final page HTML
+     * Return the executed PHP file's HTML
+     * Called by the PageHandler if the template file ends in '.php'
      */
     public function getHtml(): string
     {
@@ -13,7 +13,7 @@ class PagePhp extends PageInterface
         ob_start();
         if (is_file($this->getTemplatePath())) {
             include $this->getTemplatePath();
-            return ob_get_clean();
+            return trim(ob_get_clean());
         }
         return '';
     }

@@ -11,6 +11,9 @@ trait AuthTrait
     {
         if (!$this->_auth) {
             $this->_auth = Auth::findByModel($this);
+            if (!$this->_auth) {
+                $this->_auth = Auth::create($this);
+            }
         }
         return $this->_auth;
     }

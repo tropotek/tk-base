@@ -64,6 +64,15 @@ class Auth extends Model
         $this->reload();
     }
 
+    public static function create(Model $model): self
+    {
+        $obj = new self();
+        $obj->fkey     = $model::class;
+        $obj->fid      = self::getDbModelId($model);
+        $obj->timezone = Config::instance()->get('php.date.timezone');
+        return $obj;
+    }
+
     /**
      * Get the currently logged in user
      */
@@ -278,10 +287,15 @@ class Auth extends Model
         );
     }
 
-    public static function findByModel(UserInterface $model): ?static
+    public static function findByModel(Model $model): ?static
     {
         $fkey = get_class($model);
         $fid = self::getDbModelId($model);
+        return self::findByModelId($fkey, $fid);
+    }
+
+    public static function findByModelId(string $fkey, int $fid): ?static
+    {
         return Db::queryOne("
             SELECT *
             FROM v_auth
