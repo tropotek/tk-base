@@ -23,7 +23,7 @@ trait ForeignModelTrait
     public function getDbModel(): ?Model
     {
         if (method_exists($this->fkey, 'find')) {
-            $this->_model = $this->fkey::find($this->fkey);
+            $this->_model = $this->fkey::find($this->fid);
         }
         return $this->_model;
     }

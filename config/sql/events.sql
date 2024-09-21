@@ -8,14 +8,14 @@
 -- ------------------------------------------------------
 
 -- Delete expired user 'remember me' login tokens
-DROP EVENT IF EXISTS evt_delete_expired_user_remember;
+DROP EVENT IF EXISTS evt_delete_expired_auth_remember;
 DELIMITER //
-CREATE EVENT evt_delete_expired_user_remember
+CREATE EVENT evt_delete_expired_auth_remember
   ON SCHEDULE EVERY 1 DAY
-  COMMENT 'Delete expired user remember me login tokens'
+  COMMENT 'Delete expired auth remember me login tokens'
   DO
   BEGIN
-    DELETE FROM user_remember WHERE expiry < NOW();
+    DELETE FROM auth_remember WHERE expiry < NOW();
   END
 //
 DELIMITER ;

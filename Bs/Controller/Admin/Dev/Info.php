@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
+use Au\Auth;
 use Bs\ControllerAdmin;
-use Bs\Db\Permissions;
 use Dom\Template;
 
 class Info extends ControllerAdmin
@@ -11,7 +11,7 @@ class Info extends ControllerAdmin
     public function doDefault()
     {
         $this->getPage()->setTitle('PHP Info');
-        $this->setAccess(Permissions::PERM_SYSADMIN);
+        $this->setAccess(Auth::PERM_ADMIN);
     }
 
     public function show(): ?Template

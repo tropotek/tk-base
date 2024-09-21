@@ -30,26 +30,6 @@ return function (Config $config) {
     $config->set('debug.script', $config->get('path.config') . '/dev.php');
 
     /**
-     * Set the homepage url for user types
-     */
-    $config->set('user.homepage', [
-        \Bs\Db\User::TYPE_STAFF => '/dashboard',
-        \Bs\Db\User::TYPE_MEMBER => '/',
-    ]);
-
-    /**
-     * Can users update their password from their profile page
-     * (default: false)
-     */
-    $config->set('user.profile.password', false);
-
-    /**
-     * Can users register an account
-     * (default: false)
-     */
-    $config->set('user.registration.enable', false);
-
-    /**
      * Validate user passwords on input
      * - Must include at least one number
      * - Must include at least one letter
@@ -60,15 +40,11 @@ return function (Config $config) {
      * Note: validation disabled in dev environments
      * (default: true)
      */
-    $config->set('user.password.strict', true);
+    $config['auth.password.strict'] = true;
 
     /**
-     * Default type of new user registered account
-     * (default: 'member')
+     * These files are execute on update/migrate if they exist
      */
-    $config->set('user.default.type', \Bs\Db\User::TYPE_MEMBER);
-
-    // These files are execute on update/migrate if they exist
     $config->set('db.migrate.static', [
         '/vendor/ttek/tk-base/config/sql/views.sql',
         '/vendor/ttek/tk-base/config/sql/procedures.sql',

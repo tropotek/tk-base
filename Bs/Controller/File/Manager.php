@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Controller\File;
 
+use Au\Auth;
 use Bs\ControllerAdmin;
-use Bs\Db\Permissions;
 use Bs\Table\File;
 use Dom\Template;
 use Tk\Alert;
@@ -21,7 +21,7 @@ class Manager extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('File Manager');
-        $this->setAccess(Permissions::PERM_ADMIN);
+        $this->setAccess(Auth::PERM_ADMIN);
 
 
         // Get the form template

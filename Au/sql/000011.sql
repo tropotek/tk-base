@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS auth
   KEY (fid)
 );
 
+# SET FOREIGN_KEY_CHECKS = 0;
+# SET SQL_SAFE_UPDATES = 0;
+# TRUNCATE auth;
 INSERT INTO auth (auth_id, uid, fkey, fid, permissions, username, password, email, timezone, active, session_id, last_login, modified, created)
 (
 	SELECT user_id, uid, 'App\\Db\\User', user_id, permissions, username, password, email, timezone, active, session_id, last_login, modified, created

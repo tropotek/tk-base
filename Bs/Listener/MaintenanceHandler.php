@@ -1,16 +1,17 @@
 <?php
 namespace Bs\Listener;
 
-use Bs\Db\Permissions;
-use Bs\Factory;
+use Au\Auth;
+use Bs\Controller\Maintenance;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Bs\Registry;
 
 class MaintenanceHandler implements EventSubscriberInterface
 {
 
-    public function onController(\Symfony\Component\HttpKernel\Event\ControllerEvent $event)
+    public function onController(ControllerEvent $event)
     {
         $controller = $event->getController();
 
@@ -18,14 +19,14 @@ class MaintenanceHandler implements EventSubscriberInterface
         $class = get_class($controller[0]);
 
         // Allow admin users access
-        if (Factory::instance()->getAuthUser() && Factory::instance()->getAuthUser()->hasPermission(Permissions::PERM_ADMIN)) {
+        if (Auth::getAuthUser() && Auth::getAuthUser()->hasPermission(Auth::PERM_ADMIN)) {
             return;
         }
 
         // Exit if not in maintenance mode
         if (
             !Registry::instance()->get('system.maintenance.enabled') ||
-            $controller[0] instanceof \Bs\Controller\Maintenance
+            $controller[0] instanceof Maintenance
         ) {
             return;
         }
@@ -44,7 +45,7 @@ class MaintenanceHandler implements EventSubscriberInterface
 //            $event->getRequest()->attributes->set('_route_params', $params);
 //        }
 
-        $c = new \Bs\Controller\Maintenance();
+        $c = new Maintenance();
         $event->setController([$c, $method]);
     }
 

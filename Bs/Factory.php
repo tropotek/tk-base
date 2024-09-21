@@ -257,19 +257,29 @@ class Factory extends Collection
      * Override this method in your own site's Factory object
      * @return null|User Null if no user logged in
      */
-    public function getAuthUser(): null|User
+//    public function getAuthUser(): null|User
+//    {
+//        if (!$this->has('authUser')) {
+//            if ($this->getAuthController()->hasIdentity()) {
+//                $user = User::findByUsername($this->getAuthController()->getIdentity());
+//                $this->set('authUser', $user);
+//            }
+//        }
+//        $user = $this->get('authUser');
+//        if ($user instanceof User && !$user->active) {
+//            User::logout($user);
+//            Uri::create('/')->redirect();
+//        }
+//        return $user;
+//    }
+
+    /**
+     * Return a User object or record that is located from the Auth's getIdentity() method
+     * Override this method in your own site's Factory object
+     */
+    public function getAuthUser(): ?\Au\Auth
     {
-        if (!$this->has('authUser')) {
-            if ($this->getAuthController()->hasIdentity()) {
-                $user = User::findByUsername($this->getAuthController()->getIdentity());
-                $this->set('authUser', $user);
-            }
-        }
-        $user = $this->get('authUser');
-        if ($user instanceof User && !$user->active) {
-            User::logout($user);
-        }
-        return $user;
+        return \Au\Auth::getAuthUser();
     }
 
     public function getAuthController(): Auth
@@ -288,7 +298,7 @@ class Factory extends Collection
     public function getAuthAdapter(): AdapterInterface
     {
         if (!$this->has('authAdapter')) {
-            $adapter = new DbTable();
+            $adapter = new DbTable('auth');
             $this->set('authAdapter', $adapter);
         }
         return $this->get('authAdapter');
@@ -299,6 +309,9 @@ class Factory extends Collection
         return Permissions::PERMISSION_LIST;
     }
 
+    /**
+     * @deprecated
+     */
     public function getAvailablePermissions(?User $user): array
     {
         $list = [];

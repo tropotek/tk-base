@@ -1,12 +1,12 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
+use Au\Auth;
 use Bs\ControllerAdmin;
 use Bs\Db\Permissions;
-use Bs\Db\User;
 use Bs\Table;
 use Bs\Ui\Crumbs;
-use Bs\Util\Masquerade;
+use Au\Masquerade;
 use Dom\Template;
 use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
@@ -20,11 +20,12 @@ class Sessions extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Current Sessions');
-        $this->setAccess(Permissions::PERM_ADMIN);
+        $this->setAccess(Auth::PERM_ADMIN);
 
         $this->table = new Table('sessions');
+        $this->table->removeAction('__reset');
 
-        $this->table->appendCell('userId')
+        $this->table->appendCell('authId')
             ->addCss('text-center');
         $this->table->appendCell('username');
         $this->table->appendCell('name')
@@ -94,7 +95,7 @@ CSS;
             session_decode($ses->data);
 
             $username = $_SESSION[SessionStorage::$SID_USER] ?? '';
-            $user = User::findByUsername($username);
+            $auth = Auth::findByUsername($username);
 
             $breadcrumbs = '';
             foreach ($_SESSION as $itm) {
@@ -112,40 +113,43 @@ CSS;
             $difCreated = $now->diff($created);
             $difLast = $now->diff($modified);
 
-            $userId = 0;
-            $type = '';
-            $name = '';
+            $authId = 0;
+            $type = 'public';
+            $name = 'N/A';
             $username = sprintf('<span class="text-muted">%s</span>', $_SESSION['_session.id'] ?? '');
 
-            if ($user) {
-                $userId = $user->userId;
-                $type = $user->type;
-                $username = $user->username;
-                $name = $user->getName();
+            if ($auth) {
+                $authId = $auth->authId;
+                if (isset($auth->getDbModel()->type)) {
+                    $type = $auth->getDbModel()->type;
+                }
+                $username = $auth->username;
+                if (isset($auth->getDbModel()->nameShort)) {
+                    $name = $auth->getDbModel()->nameShort;
+                }
                 if (Masquerade::isMasquerading()) {
                     $msq = Masquerade::getMasqueradingUser();
-                    $name = $msq->getName();
-                    $username = sprintf('%s<br><small class="text-info" title="Masquerading User">[%s - %s]</small>', $msq->username, $user->username, $user->getName());
+                    $username = sprintf('%s<br><small class="text-info" title="Masquerading User">[%s]</small>', $msq->username, $auth->username);
                 }
 
-                if ($user->sessionId == ($_SESSION['_session.id'] ?? '')) {
+                if ($auth->sessionId == ($_SESSION['_session.id'] ?? '')) {
                     $username = sprintf('<strong>%s</strong>', $username);
                 }
             }
 
             $rows[] = (object)[
-                'userId'      => $userId,
+                'authId'      => $authId,
                 'username'    => $username,
-                'name'        => $name,
                 'ip'          => $_SESSION[Session::SID_IP] ?? '',
                 'agent'       => $_SESSION[Session::SID_AGENT] ?? '',
                 'sessionId'   => $_SESSION['_session.id'] ?? '',
                 'type'        => $type,
+                'name'        => $name,
                 'breadcrumbs' => $breadcrumbs,
                 'lifetime'    => $difCreated->format('%H:%i:%S'),
                 'activity'    => $difLast->format('%H:%i:%S'),
                 'expires'     => Date::create($ses->expiry),
-                'isPublic'    => is_object($user),
+                'isPublic'    => is_object($auth),
             ];
         }
         // reset back to original user session

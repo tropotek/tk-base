@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Console;
 
-use Bs\Db\User;
+use Au\Auth;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,7 +24,7 @@ class Password extends Console
     {
         $username = $input->getArgument('username');
 
-        $user = User::findByUsername($username);
+        $user = Auth::findByUsername($username);
         if (!$user) {
             $this->writeError('Error: No valid user found.');
             return self::FAILURE;
@@ -37,7 +37,7 @@ class Password extends Console
             }
             $q = new Question('Enter the new password: ', '');
             $pass = $this->getHelper('question')->ask($input, $output, $q);
-        } while($errors = User::validatePassword($pass));
+        } while($errors = Auth::validatePassword($pass));
 
         do {
             if (count($errors)) {
@@ -48,7 +48,7 @@ class Password extends Console
         } while($pass != $passConf);
 
         $this->writeGreen('Password for user \''.$username.'\' updated');
-        $user->password = User::hashPassword($pass);
+        $user->password = Auth::hashPassword($pass);
         $user->save();
 
         return self::SUCCESS;

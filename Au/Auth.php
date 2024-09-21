@@ -3,7 +3,6 @@ namespace Au;
 
 use Bs\Db\Traits\ForeignModelTrait;
 use Bs\Factory;
-use Bs\Util\Masquerade;
 use Bs\Db\Traits\TimestampTrait;
 use Tk\Config;
 use Tk\Uri;
@@ -76,10 +75,9 @@ class Auth extends Model
     /**
      * Get the currently logged in user
      */
-    public static function getAuthUser(): ?static
+    public static function getAuthUser(): ?self
     {
         static $authUser = null;
-
         if (is_null($authUser)) {
             $auth = Factory::instance()->getAuthController();
             if ($auth->hasIdentity()) {
@@ -87,6 +85,8 @@ class Auth extends Model
             }
             if ($authUser instanceof self && !$authUser->active) {
                 self::logout($authUser);
+                $authUser = null;
+                Uri::create('/')->redirect();
             }
         }
         return $authUser;
@@ -97,7 +97,7 @@ class Auth extends Model
      */
     public static function logout(Auth $authUser = null, bool $cookie = true): void
     {
-        if (!$authUser) $authUser = Factory::instance()->getAuthUser();
+        if (!$authUser) $authUser = Auth::getAuthUser();
 
         if ($authUser) {
             if (Masquerade::isMasquerading()) {
@@ -106,10 +106,11 @@ class Auth extends Model
             }
             Factory::instance()->getAuthController()->clearIdentity();
             if ($cookie) {
-                $authUser->forgetMe();
+                Remember::forgetMe($authUser->authId);
             }
             $authUser->sessionId = '';
             $authUser->save();
+            Factory::instance()->getCrumbs()?->reset();
             Uri::create('/')->redirect();
         }
     }
@@ -121,8 +122,7 @@ class Auth extends Model
 
     public function getHomeUrl(): Uri
     {
-        $homes = Config::instance()->get('auth.homepage', '/');
-        return Uri::create($homes[$this->fkey] ?? '/');
+        return $this->getDbModel()->getHomeUrl();
     }
 
     public function hasPermission(int $permission): bool
@@ -179,7 +179,7 @@ class Auth extends Model
 
     public static function validatePassword(string $pwd, array &$errors = []): array
     {
-        if (Config::instance()->isDev() || !Config::instance()->get('auth.password.strict', true)) return $errors;
+        if (!Config::instance()->get('auth.password.strict', true)) return $errors;
 
         if (strlen($pwd) < 8) {
             $errors[] = "Password too short";
@@ -205,7 +205,7 @@ class Auth extends Model
     }
 
 
-    public static function find(int $authId): ?static
+    public static function find(int $authId): ?self
     {
         return Db::queryOne("
             SELECT *
@@ -229,7 +229,7 @@ class Auth extends Model
         );
     }
 
-    public static function findByUsername(string $username): ?static
+    public static function findByUsername(string $username): ?self
     {
         $username = trim($username);
         if(empty($username)) return null;
@@ -242,7 +242,7 @@ class Auth extends Model
         );
     }
 
-    public static function findByEmail(string $email): ?static
+    public static function findByEmail(string $email): ?self
     {
         $email = trim($email);
         if(empty($email)) return null;
@@ -255,7 +255,7 @@ class Auth extends Model
         );
     }
 
-    public static function findByHash(string $hash): ?static
+    public static function findByHash(string $hash): ?self
     {
         $hash = trim($hash);
         if(empty($hash)) return null;
@@ -271,14 +271,14 @@ class Auth extends Model
     /**
      * Find user using remember me token
      */
-    public static function findBySelector(string $selector): ?static
+    public static function findBySelector(string $selector): ?self
     {
         $selector = trim($selector);
         if(empty($selector)) return null;
         return Db::queryOne("
             SELECT *
             FROM v_auth u
-            INNER JOIN auth_remember z USING (user_id)
+            INNER JOIN auth_remember z USING (auth_id)
             WHERE z.selector = :selector
             AND u.active
             AND expiry > NOW()",
@@ -287,19 +287,19 @@ class Auth extends Model
         );
     }
 
-    public static function findByModel(Model $model): ?static
+    public static function findByModel(Model $model): ?self
     {
         $fkey = get_class($model);
         $fid = self::getDbModelId($model);
         return self::findByModelId($fkey, $fid);
     }
 
-    public static function findByModelId(string $fkey, int $fid): ?static
+    public static function findByModelId(string $fkey, int $fid): ?self
     {
         return Db::queryOne("
             SELECT *
             FROM v_auth
-            WHERE fkey = :key
+            WHERE fkey = :fkey
             AND fid = :fid",
             compact('fkey', 'fid'),
             self::class

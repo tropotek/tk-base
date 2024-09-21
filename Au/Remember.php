@@ -90,7 +90,7 @@ class Remember
     public static function insertToken(int $auth_id, string $selector, string $hashed_validator, string $expiry): int|bool
     {
         $browser_id = Factory::instance()->getCookie()->getBrowserId();
-        return Db::insert('user_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'expiry'));
+        return Db::insert('auth_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'expiry'));
     }
 
     /**

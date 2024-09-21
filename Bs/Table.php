@@ -2,6 +2,7 @@
 
 namespace Bs;
 
+use Au\Auth;
 use Bs\Db\User;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
@@ -160,9 +161,9 @@ HTML;
         return $this->renderer;
     }
 
-    public function getAuthUser(): ?User
+    public function getAuthUser(): ?Auth
     {
-        return Factory::instance()->getAuthUser();
+        return Auth::getAuthUser();
     }
 
     public function addResetAction(): Action

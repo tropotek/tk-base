@@ -10,14 +10,10 @@
 --
 -- ------------------------------------------------------
 
-
-CREATE OR REPLACE VIEW v_user AS
+CREATE OR REPLACE VIEW v_auth AS
 SELECT
-  u.*,
-  MD5(CONCAT(u.user_id, 'User')) AS hash,
-  CONCAT('/app/user/', u.user_id, '/data') AS data_path
-FROM
-  user u
+  a.*,
+  MD5(CONCAT(a.auth_id, 'Auth')) AS hash
+FROM auth a
 ;
-
 

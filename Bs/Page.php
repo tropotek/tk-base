@@ -1,6 +1,8 @@
 <?php
 namespace Bs;
 
+use App\Db\User;
+use Au\Auth;
 use Bs\Ui\Crumbs;
 use Dom\Modifier\JsLast;
 use Dom\Template;
@@ -43,20 +45,22 @@ class Page extends PageDomInterface
         $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
 
-        $user = $this->getFactory()->getAuthUser();
-        if ($user) {
-            $template->setText('username', $user->username);
-            $template->setText('user-name', $user->getName());
-            $template->setText('user-type', ucfirst($user->type));
-            $template->setAttr('user-image', 'src', $user->getImageUrl());
-            $template->setAttr('user-home-url', 'href', $user->getHomeUrl());
-
-            $template->setVisible('loggedIn');
-            $template->setVisible('auth');
-        } else {
-            $template->setVisible('no-auth');
-            $template->setVisible('loggedOut');
-        }
+//        $auth = Auth::getAuthUser();
+//        /** @var User $user */
+//        $user = $auth->getDbModel();
+//        if ($user) {
+//            $template->setText('username', $user->username);
+//            $template->setText('user-name', $user->nameShort);
+//            $template->setText('user-type', ucfirst($user->type));
+//            $template->setAttr('user-image', 'src', $user->getImageUrl());
+//            $template->setAttr('user-home-url', 'href', $user->getHomeUrl());
+//
+//            $template->setVisible('loggedIn');
+//            $template->setVisible('auth');
+//        } else {
+//            $template->setVisible('no-auth');
+//            $template->setVisible('loggedOut');
+//        }
 
         // Default crumbs css (probably not the best place for this...
         $this->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');

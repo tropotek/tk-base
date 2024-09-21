@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
+use Au\Auth;
 use Bs\ControllerAdmin;
-use Bs\Db\Permissions;
 use Dom\Template;
 use JetBrains\PhpStorm\NoReturn;
 use Tk\Uri;
@@ -14,7 +14,7 @@ class TailLog extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Tail Log');
-        $this->setAccess(Permissions::PERM_ADMIN);
+        $this->setAccess(Auth::PERM_ADMIN);
 
         $this->logPath = ini_get('error_log');
 

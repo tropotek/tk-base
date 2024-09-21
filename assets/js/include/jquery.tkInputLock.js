@@ -71,11 +71,15 @@
 
     let updateInput = function(group, editable) {
       if (editable) {
-        $('button .fa', group).removeClass(plugin.settings.lockIcon).addClass(plugin.settings.unlockIcon);
-        $('input', group).css({'pointerEvents': 'inherit', 'background': 'inherit' });
+        $('input', group).removeAttr('disabled');
+        $('button .fa', group)
+          .removeClass(plugin.settings.lockIcon)
+          .addClass(plugin.settings.unlockIcon);
       } else {
-        $('button .fa', group).removeClass(plugin.settings.unlockIcon).addClass(plugin.settings.lockIcon);
-        $('input', group).css({'pointerEvents': 'none', 'background': '#EEE' });
+        $('input', group).attr('disabled', 'disabled');
+        $('button .fa', group)
+          .removeClass(plugin.settings.unlockIcon)
+          .addClass(plugin.settings.lockIcon);
       }
     };
 

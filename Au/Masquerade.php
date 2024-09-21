@@ -27,6 +27,8 @@ class Masquerade
     /**
      * Masquerade as another user
      * return true on success, remember to redirect to the required page on success
+     *
+     * @todo: store the current session in the masquerade array, then reset the session when logging out
      */
     public static function masqueradeLogin(Auth $auth, Auth $msqAuth): bool
     {
@@ -55,6 +57,8 @@ class Masquerade
     /**
      * Log out of the current masquerading user
      * Redirects to the url the user was last on
+     *
+     * @todo: store the current session in the masquerade array, then reset the session when logging out
      */
     public static function masqueradeLogout(): bool
     {

@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Traits;
 
+use Au\Auth;
 use Bs\Db\User;
 use Bs\Ui\Crumbs;
 use Dom\Template;
@@ -44,9 +45,9 @@ trait SystemTrait
         return Factory::instance()->getBackUrl();
     }
 
-    public function getAuthUser(): ?User
+    public function getAuthUser(): ?Auth
     {
-        return Factory::instance()->getAuthUser();
+        return Auth::getAuthUser();
     }
 
     public function makePath(string $path): string
