@@ -221,12 +221,17 @@ let tkbase = function () {
     tkRegisterInit(function () {
       $('[type=password]', this).each(function () {
         let input = $(this);
+        let feedback = $(this).parent().find('.invalid-feedback');
         let tpl = $(`<div class="input-group" var="is-error input-group">
           <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button" tabindex="-1"><i class="fa fa-fw fa-eye"></i></button>
         </div>`);
         input.before(tpl);
+
         input.detach();
+        feedback.detach();
         $('button', tpl).before(input);
+        $('button', tpl).after(feedback);
+
         $('button', tpl).on('click', function () {
           let icon = $('.fa', this);
           if (icon.is('.fa-eye')) {
