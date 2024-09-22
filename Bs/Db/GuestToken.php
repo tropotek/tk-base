@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Au\Auth;
 use Bs\Traits\SystemTrait;
 use Tk\DataMap\DataMap;
 use Tk\DataMap\Db\DateTime;
@@ -28,11 +29,6 @@ class GuestToken extends Model
     public ?\DateTime $created = null;
     public ?\DateTime $expiry = null;
 
-
-    public function getUrl(): Uri
-    {
-        return Uri::create('/')->set(self::TOKEN_RID, $this->token);
-    }
 
     /**
      * create a custom data map
@@ -85,14 +81,39 @@ class GuestToken extends Model
         return $gt;
     }
 
-	public static function delete(string $token): bool
+    public function getUrl(): Uri
+    {
+        return Uri::create('/')->set(self::TOKEN_RID, $this->token);
+    }
+
+    public function hasUrl(string|Uri $url): bool
+    {
+        $url = Uri::create($url);
+        foreach ($this->pages as $page) {
+            $u = Uri::create($page);
+            if ($url->getPath() == $u->getPath()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+	public function delete(): bool
 	{
+        Auth::logout();
+        unset($_SESSION[GuestToken::TOKEN_SID]);
+
 		return false !== DB::execute("
 			DELETE from guest_token
 			WHERE token = :token",
-			compact('token')
+			$this
 		);
 	}
+
+    public static function getSessionToken(): ?static
+    {
+        return GuestToken::find($_SESSION[GuestToken::TOKEN_SID] ?? '');
+    }
 
     /**
      * @todo: test this, and see if we need it

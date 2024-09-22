@@ -9,7 +9,9 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tk\Alert;
+use Tk\Exception;
 use Tk\Log;
+use Tk\Uri;
 
 class GuestHandler implements EventSubscriberInterface
 {
@@ -19,6 +21,20 @@ class GuestHandler implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event)
     {
+        // validate the page if token exists is session
+        $gt = GuestToken::getSessionToken();
+        if (!is_null($gt) && !isset($_GET[GuestToken::TOKEN_RID])) {
+            // check the requested page is a valid token page
+            if (!$gt->hasUrl(Uri::create())) {
+                //throw new Exception("The link you followed is invalid. Please check the link and try again.");
+                Alert::addError("The link you followed is invalid. Please check the link and try again.");
+                unset($_SESSION[GuestToken::TOKEN_SID]);
+                Uri::create('/')->redirect();
+            }
+            return;
+        }
+
+        // access page using token if token string exists
         if (!isset($_GET[GuestToken::TOKEN_RID])) return;
 
         $token = trim($_GET[GuestToken::TOKEN_RID]);
@@ -32,7 +48,6 @@ class GuestHandler implements EventSubscriberInterface
             Alert::addError("The link you followed is invalid. Please check the link and try again.");
             return;
         }
-
         Auth::logout();
 
         $_SESSION[GuestToken::TOKEN_SID] = $token;
