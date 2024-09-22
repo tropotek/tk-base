@@ -17,20 +17,20 @@ class Remember
     const REMEMBER_CID = '__rmb';
 
 
-    public static function rememberMe(int $authId, int $day = 30): void
+    public static function rememberMe(int $authId, int $days = 5): void
     {
         [$selector, $validator, $token] = self::generateToken();
 
         // remove all existing token associated with the user id
         self::deleteToken($authId);
 
-        // set expiration date
-        $expires_sec = time() + 60 * 60 * 24 * $day;
-        $expiry = date('Y-m-d H:i:s', $expires_sec);
+        // set TTL in minutes
+        $ttl_mins = 60 * 24 * $days;
+
         // insert a token to the database
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
-        if (self::insertToken($authId, $selector, $hash_validator, $expiry)) {
-            Factory::instance()->getCookie()->set(self::REMEMBER_CID, $token, $expires_sec);
+        if (self::insertToken($authId, $selector, $hash_validator, $ttl_mins)) {
+            Factory::instance()->getCookie()->set(self::REMEMBER_CID, $token, time() + 60 * $ttl_mins);
         }
     }
 
@@ -87,10 +87,10 @@ class Remember
     /**
      * Add a new row to the user_remember table
      */
-    public static function insertToken(int $auth_id, string $selector, string $hashed_validator, string $expiry): int|bool
+    public static function insertToken(int $auth_id, string $selector, string $hashed_validator, string $ttl_mins): int|bool
     {
         $browser_id = Factory::instance()->getCookie()->getBrowserId();
-        return Db::insert('auth_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'expiry'));
+        return Db::insert('auth_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'ttl_mins'));
     }
 
     /**

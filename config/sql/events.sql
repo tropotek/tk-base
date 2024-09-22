@@ -15,7 +15,23 @@ CREATE EVENT evt_delete_expired_auth_remember
   COMMENT 'Delete expired auth remember me login tokens'
   DO
   BEGIN
-    DELETE FROM auth_remember WHERE expiry < NOW();
+    DELETE FROM auth_remember
+    WHERE expiry < NOW();
   END
 //
 DELIMITER ;
+
+-- remove expired guest login tokens
+DROP EVENT IF EXISTS evt_remove_expired_guest_tokens;
+DELIMITER //
+CREATE EVENT evt_remove_expired_guest_tokens
+  ON SCHEDULE EVERY 1 MINUTE
+  COMMENT 'Remove expired guest login tokens'
+  DO
+  BEGIN
+    DELETE FROM guest_token
+    WHERE expiry < NOW();
+  END
+//
+DELIMITER ;
+

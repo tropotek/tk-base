@@ -154,10 +154,10 @@ class File extends Model
         );
     }
 
-    public static function findAll(): ?static
+    public static function findAll(): array
     {
         self::install();
-        return Db::queryOne("
+        return Db::query("
             SELECT *
             FROM v_file",
             [],

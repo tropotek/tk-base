@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Bs\Listener\GuestHandler;
 use Bs\Listener\MaintenanceHandler;
 use Bs\Listener\PageHandler;
 use Bs\Listener\RememberMeHandler;
@@ -103,6 +104,8 @@ class Dispatch
         if ($pageBytes) {
             $this->getDispatcher()->addSubscriber(new PageBytesHandler($pageBytes));
         }
+
+        $this->getDispatcher()->addSubscriber(new GuestHandler());
 
     }
 
