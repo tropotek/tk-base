@@ -51,7 +51,7 @@ class ExceptionListener implements EventSubscriberInterface
 
             throw $e;
         }
-
+        
         $event->setResponse($response);
 
         if ($this->debug) {

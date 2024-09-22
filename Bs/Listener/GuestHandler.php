@@ -21,15 +21,16 @@ class GuestHandler implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event)
     {
+        // ignore error pages
+        if($event->getRequest()->attributes->get('e') instanceof \Exception) return;
+
         // validate the page if token exists is session
         $gt = GuestToken::getSessionToken();
         if (!is_null($gt) && !isset($_GET[GuestToken::TOKEN_RID])) {
             // check the requested page is a valid token page
             if (!$gt->hasUrl(Uri::create())) {
-                //throw new Exception("The link you followed is invalid. Please check the link and try again.");
-                Alert::addError("The link you followed is invalid. Please check the link and try again.");
                 unset($_SESSION[GuestToken::TOKEN_SID]);
-                Uri::create('/')->redirect();
+                throw new Exception("The link you followed is invalid. Close window and try again.");
             }
             return;
         }
@@ -45,7 +46,7 @@ class GuestHandler implements EventSubscriberInterface
         if ($this->gt && count($this->gt->pages) == 0) Log::error("no pages available for token {$token}");
 
         if (is_null($this->gt) || count($this->gt->pages) == 0 || $_SERVER['REQUEST_METHOD'] == "HEAD") {
-            Alert::addError("The link you followed is invalid. Please check the link and try again.");
+            Alert::addError("The link you followed is invalid. Close window and try again.");
             return;
         }
         Auth::logout();
@@ -56,6 +57,8 @@ class GuestHandler implements EventSubscriberInterface
 
     public function onView(ViewEvent $event)
     {
+        // ignore error pages
+        if($event->getRequest()->attributes->get('e') instanceof \Exception) return;
         if (is_null($this->gt)) return;
 
         // redirect to the first page in the pages list with Javascript
