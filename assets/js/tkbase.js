@@ -15,11 +15,6 @@
  * ```javascript
  * let config = {
  *   baseUrl        : '/Projects/tk8base',
- *   dataUrl        : '/Projects/tk8base/data',
- *   templateUrl    : '/Projects/tk8base/html',
- *   vendorUrl      : '/Projects/tk8base/vendor',
- *   vendorOrgUrl   : '/Projects/tk8base/vendor/ttek',
- *   debug          : true,
  *   dateFormat: {
  *     jqDatepicker : 'dd/mm/yy',
  *     bsDatepicker : 'dd/mm/yyyy',

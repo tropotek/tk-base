@@ -152,8 +152,8 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 function getElfinderPath(string $customDataPath = '/media'): array
 {
     $config = \Tk\Config::instance();
-    $dataPath = $config->getDataPath() . $customDataPath;
-    $dataUrl = $config->getDataUrl() . $customDataPath;
+    $dataPath = \Tk\Config::makePath(\Tk\Config::getDataPath() . $customDataPath);
+    $dataUrl = \Tk\Config::makeUrl(\Tk\Config::getDataPath() . $customDataPath);
     if (!is_dir($dataPath)) {
         mkdir($dataPath, 0777, true);
     }

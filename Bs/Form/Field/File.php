@@ -2,6 +2,7 @@
 namespace Bs\Form\Field;
 
 use Bs\Traits\SystemTrait;
+use Tk\Config;
 use Tk\Db\Model;
 use Tk\FileUtil;
 use Tk\System;
@@ -44,7 +45,7 @@ class File extends \Tk\Form\Field\File
     {
         if ($this->hasFile()) {
             foreach ($this->getUploads() as $file) {
-                $dest = $this->getConfig()->getDataPath() . $this->getModel()->getDataPath() . '/' . $file['name'];
+                $dest = Config::makePath(Config::getDataPath() . $this->getModel()->getDataPath() . '/' . $file['name']);
                 FileUtil::mkdir(dirname($dest));
                 move_uploaded_file($file['tmp_name'], dirname($dest)."/".basename($dest));
 

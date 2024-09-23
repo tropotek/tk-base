@@ -56,7 +56,7 @@ class Dispatch
      */
     protected function commonInit(): void
     {
-        if (Config::instance()->isDev()) {
+        if (Config::isDev()) {
             $this->getDispatcher()->addSubscriber(new StartupHandler());
             $this->getDispatcher()->addSubscriber(new ShutdownHandler(Config::instance()->get('script.start.time')));
         }
@@ -73,7 +73,7 @@ class Dispatch
         ));
 
         $this->getDispatcher()->addSubscriber(new LogExceptionListener(
-            Config::instance()->isDebug()
+            Config::isDebug()
         ));
 
         $this->getDispatcher()->addSubscriber(new ViewHandler());
@@ -82,10 +82,10 @@ class Dispatch
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
-            Config::instance()->isDebug()
+            Config::isDebug()
         ));
 
-        if (Config::instance()->isProd()) {
+        if (Config::isProd()) {
             $this->getDispatcher()->addSubscriber(new ExceptionEmailListener(
                 Config::instance()->get('system.email.exception', []),
                 Registry::instance()->get('site.name')

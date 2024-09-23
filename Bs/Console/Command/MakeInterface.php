@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Bs\Console\Console;
 use Bs\Util\Db\ModelGenerator;
+use Tk\Config;
 use Tk\System;
 
 class MakeInterface extends Console
@@ -30,13 +31,13 @@ class MakeInterface extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$this->getConfig()->isDev()) {
+        if (!Config::isDev()) {
             throw new \Exception('Error: Only run this command in a debug environment.');
         }
 
         $this->basePath = $input->getOption('basepath');
         if (!$this->getBasePath())
-            $this->basePath = System::makePath($this->getConfig()->get('path.src'));
+            $this->basePath = Config::makePath($this->getConfig()->get('path.src'));
 
         $this->gen = ModelGenerator::create(
             $input->getArgument('table'),

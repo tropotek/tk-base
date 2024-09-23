@@ -28,9 +28,9 @@ class PageHandler implements EventSubscriberInterface
         if (!($event->getController()[0] instanceof ControllerInterface)) return;
         $this->controller = $event->getController()[0];
 
-        $pageTemplate = System::makePath($this->controller->getPageTemplate());
+        $pageTemplate = Config::makePath($this->controller->getPageTemplate());
         if (!is_file($pageTemplate)) {
-            $pageTemplate = System::makePath(Config::instance()->get('path.template.public', ''));
+            $pageTemplate = Config::makePath(Config::instance()->get('path.template.public', ''));
         }
         $this->page = Factory::instance()->initPage($pageTemplate);
     }

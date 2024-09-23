@@ -6,6 +6,7 @@ use Au\Auth;
 use Bs\Ui\Crumbs;
 use Dom\Modifier\JsLast;
 use Dom\Template;
+use Tk\Config;
 use Tk\System;
 use Tk\Uri;
 
@@ -18,25 +19,25 @@ class Page extends PageDomInterface
         $template = $this->getTemplate();
 
         $jsConfig = [
-            'baseUrl' => $this->getConfig()->getBaseUrl(),
-            'dataUrl' => $this->getConfig()->getDataUrl(),
-            'templateUrl' => $this->getConfig()->getTemplateUrl(),
-            'vendorUrl' => System::makeUrl($this->getConfig()->get('path.vendor')),
-            'vendorOrgUrl' => System::makeUrl($this->getConfig()->get('path.vendor.org')),
-            'debug' => $this->getConfig()->isDebug(),
-            'isProd' => $this->getConfig()->isProd(),
-            'isDev' => $this->getConfig()->isDev(),
+            'baseUrl' => Config::getBaseUrl(),
+            'isProd' => Config::isProd(),
             'dateFormat' => [
                 'jqDatepicker' => 'dd/mm/yy',
                 'bsDatepicker' => 'dd/mm/yyyy',
                 'sugarjs' => '%d/%m/%Y',
             ],
+            //'dataUrl' => $this->getConfig()->getDataUrl(),
+            //'templateUrl' => $this->getConfig()->getTemplateUrl(),
+            //'vendorUrl' => System::makeUrl($this->getConfig()->get('path.vendor')),
+            //'vendorOrgUrl' => System::makeUrl($this->getConfig()->get('path.vendor.org')),
+            //'debug' => Config::isDebug(),
+            //'isDev' => Config::isDev(),
         ];
         $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
 
         $template->setTitleText($this->getTitle());
-        if ($this->getConfig()->isDebug()) {
+        if (Config::isDebug()) {
             $template->setTitleText('DEBUG: ' . $template->getTitleText());
         }
 

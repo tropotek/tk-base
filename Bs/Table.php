@@ -37,7 +37,7 @@ class Table extends \Tk\Table
         $this->renderer = new DomRenderer($this);
 
         // add reset table session action
-        if (Config::instance()->isDev()) {
+        if (Config::isDev()) {
             $this->addResetAction();
         }
     }
@@ -129,7 +129,7 @@ HTML;
             $this->form = new Form($this->getId().'f');
             $this->form->addCss('tk-table-filter');
             // Inline Dom Form Renderer
-            $tplFile = System::makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
+            $tplFile = Config::makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
             $this->formRenderer = new Renderer($this->form, $tplFile);
         }
         return $this->form;

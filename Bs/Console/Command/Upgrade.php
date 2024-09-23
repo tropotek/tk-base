@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Bs\Console\Console;
+use Tk\Config;
 use Tk\Exception;
 
 class Upgrade extends Console
@@ -20,7 +21,7 @@ class Upgrade extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($this->getConfig()->isDev()) {
+        if (Config::isDev()) {
             $this->writeError('Error: Only run this command in a live environment.');
             return Command::FAILURE;
         }
@@ -40,7 +41,7 @@ class Upgrade extends Console
                 'composer update'
             ];
 
-            if ($this->getConfig()->isDev()) {        // For testing
+            if (Config::isDev()) {        // For testing
                 array_unshift($cmdList, 'ci');
                 $cmdList[] = 'git reset --hard';
                 $cmdList[] = 'git checkout master';

@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Bs\Console\Console;
+use Tk\Config;
 use Tk\Db;
 
 class CleanData extends Console
@@ -21,9 +22,15 @@ class CleanData extends Console
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->deleteEmptyFolders($this->getConfig()->getDataPath());
-            $this->deleteOldFiles($this->getConfig()->getTempPath(), \Tk\Date::create()->sub(new \DateInterval('P7D')));
-            $this->deleteOldFiles($this->getConfig()->getCachePath(), \Tk\Date::create()->sub(new \DateInterval('P7D')));
+            $this->deleteEmptyFolders(Config::makePath(Config::getDataPath()));
+            $this->deleteOldFiles(
+                Config::makePath(Config::getTempPath()),
+                \Tk\Date::create()->sub(new \DateInterval('P7D'))
+            );
+            $this->deleteOldFiles(
+                Config::makePath(Config::getCachePath()),
+                \Tk\Date::create()->sub(new \DateInterval('P7D'))
+            );
         } catch (\Exception $e) {
             $this->writeError($e->getMessage());
             return Command::FAILURE;

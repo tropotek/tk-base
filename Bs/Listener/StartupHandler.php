@@ -73,7 +73,7 @@ class StartupHandler implements EventSubscriberInterface
             if (System::getVersion()) {
                 $siteName .= sprintf(' [v%s]', System::getVersion());
             }
-            if (Config::instance()->isDev()) {
+            if (Config::isDev()) {
                 $siteName .= ' {Dev}';
             }
             $this->debug('- Project: ' . trim($siteName));
@@ -104,7 +104,7 @@ class StartupHandler implements EventSubscriberInterface
         } else {
             if (self::hasParam(self::REQUEST_URI)) {
                 $this->debug('- CLI: ' . implode(' ', $_SERVER['argv']));
-                $this->debug('- Path: ' . Config::instance()->getBasePath());
+                $this->debug('- Path: ' . Config::getBasePath());
             }
         }
 

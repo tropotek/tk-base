@@ -20,21 +20,21 @@ class Bootstrap
         $config = Config::instance();
 
         // Apply all php config settings to php
-        foreach ($config->getGroup('php', true) as $k => $v) {
+        foreach (Config::getGroup('php', true) as $k => $v) {
             @ini_set($k, $v);
         }
 
         // make app directories if not exists
-        FileUtil::mkdir(System::makePath($config->get('path.temp')), true);
-        FileUtil::mkdir(System::makePath($config->get('path.cache')), true);
+        FileUtil::mkdir(Config::makePath(Config::getTempPath()));
+        FileUtil::mkdir(Config::makePath(Config::getCachePath()));
 
         // Setup default migration paths
-        $vendorPath = $config->getBasePath() . $config->get('path.vendor.org');
+        $vendorPath = Config::makePath($config->get('path.vendor.org'));
         $libPaths = scandir($vendorPath);
         array_shift($libPaths);
         array_shift($libPaths);
         $migratePaths = array_map(fn($path) => $vendorPath . '/' . $path . '/config/sql' , $libPaths);
-        array_unshift($migratePaths, $config->getBasePath() . '/src/config/sql');
+        array_unshift($migratePaths, Config::makePath('/src/config/sql'));
         $config->set('db.migrate.paths', $migratePaths);
 
         if ($config->has('db.mysql')) {
@@ -57,7 +57,7 @@ class Bootstrap
 
         TextEncrypt::$encryptKey = $config->get('system.encrypt', '');
 
-        if ($config->isDev()) {
+        if (Config::isDev()) {
             // Allow self-signed certs in file_get_contents in dev environment
             stream_context_set_default(["ssl" => [
                 "verify_peer" => false,
@@ -77,18 +77,16 @@ class Bootstrap
 
     protected function httpInit(): void
     {
-        $config = Config::instance();
-
         /**
          * This makes our life easier when dealing with paths. Everything is relative
          * to the application root now.
          */
-        chdir($config->getBasePath());
+        chdir(Config::getBasePath());
 
-        Uri::$SITE_HOSTNAME = $config->getHostname();
-        Uri::$BASE_URL = $config->getBaseUrl();
+        Uri::$SITE_HOSTNAME = Config::getHostname();
+        Uri::$BASE_URL = Config::getBaseUrl();
 
-        if ($config->isDev()) {
+        if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;
         }
 

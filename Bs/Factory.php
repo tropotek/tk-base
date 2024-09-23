@@ -92,7 +92,7 @@ class Factory extends Collection
     public function initSession(): ?\Tk\Db\Session
     {
         if (!$this->has('session')) {
-            session_name('sn_' . md5($this->getConfig()->getBaseUrl()));
+            session_name('sn_' . md5(Config::getBaseUrl()));
             // init DB session if enabled
             if ($this->getConfig()->get('session.db_enable', false)) {
                 \Tk\Db\Session::instance();
@@ -141,7 +141,7 @@ class Factory extends Collection
     {
         // Setup Routes and cache results.
         // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
-        $systemCache = new Cache(new Filesystem(System::makePath($this->getConfig()->get('path.cache'))));
+        $systemCache = new Cache(new Filesystem(Config::makePath($this->getConfig()->get('path.cache'))));
         if (!($compiledRoutes = $systemCache->fetch('compiledRoutes')) || System::isRefreshCacheRequest()) {
             ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
             $compiledRoutes = (new CompiledUrlMatcherDumper($this->getRouteCollection()))->getCompiledRoutes();
@@ -325,20 +325,25 @@ class Factory extends Collection
 
             if (class_exists('ScssPhp\ScssPhp\Compiler')) {
                 $vars = [
-                    'baseUrl' => $this->getConfig()->getBaseUrl(),
-                    'dataUrl' => System::makeUrl($this->getConfig()->getDataPath())
+                    'baseUrl' => Config::getBaseUrl(),
+                    'dataUrl' => Config::makeUrl(Config::getDataPath())
                 ];
-                $scss = new Modifier\Scss($this->getConfig()->getBasePath(), $this->getConfig()->getBaseUrl(), $this->getConfig()->getCachePath(), $vars);
+                $scss = new Modifier\Scss(
+                    Config::getBasePath(),
+                    Config::getBaseUrl(),
+                    Config::makePath(Config::getCachePath()),
+                    $vars
+                );
                 $scss->setCompress(true);
                 $scss->setCacheEnabled(!System::isRefreshCacheRequest());
                 $scss->setCacheTimeout(\Tk\Date::DAY*14);
                 $dm->addFilter('scss', $scss);
             }
 
-            $dm->addFilter('urlPath', new Modifier\UrlPath($this->getConfig()->getBaseUrl()));
+            $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
             $dm->addFilter('jsLast', new Modifier\JsLast());
-            if ($this->getConfig()->isDebug()) {
-                $dm->addFilter('pageBytes', new Modifier\PageBytes($this->getConfig()->getBasePath()));
+            if (Config::isDebug()) {
+                $dm->addFilter('pageBytes', new Modifier\PageBytes(Config::getBasePath()));
             }
 
             $this->set('templateModifier', $dm);
@@ -347,27 +352,12 @@ class Factory extends Collection
     }
 
     /**
-     * @deprecated
-     */
-    public function getTemplateLoader(): ?Loader
-    {
-        if (!$this->has('templateLoader')) {
-            $loader = new Loader();
-            $path = $this->getConfig()->getTemplatePath() . '/templates';
-            $loader->addAdapter(new Loader\DefaultAdapter());
-            $loader->addAdapter(new Loader\ClassPathAdapter($path));
-            $this->set('templateLoader', $loader);
-        }
-        return $this->get('templateLoader');
-    }
-
-    /**
      * @param string $template (optional) If no param supplied then the system default template is used
      */
     public function createMessage(string $template = ''): CurlyMessage
     {
         if (empty($template)) {
-            $tplPath = System::makePath($this->getConfig()->get('system.mail.template'));
+            $tplPath = Config::makePath($this->getConfig()->get('system.mail.template'));
             if (is_file($tplPath)) {
                 $template = file_get_contents($tplPath);
                 if (!$template) {
@@ -397,7 +387,7 @@ class Factory extends Collection
             $params = $this->getConfig()->all();
             if (!System::isCli()) {
                 $params['clientIp'] = System::getClientIp();
-                $params['hostname'] = $this->getConfig()->getHostname();
+                $params['hostname'] = Config::getHostname();
                 $params['referer']  = $_SERVER['HTTP_REFERER'] ?? '';
             }
             $gateway = new \Tk\Mail\Gateway($params);
@@ -462,7 +452,7 @@ class Factory extends Collection
             $app->add(new \Bs\Console\Command\Maintenance());
             $app->add(new \Bs\Console\Command\DbBackup());
             $app->add(new \Bs\Console\Command\Migrate());
-            if ($this->getConfig()->isDev()) {
+            if (Config::isDev()) {
                 $app->add(new \Bs\Console\Command\Debug());
                 $app->add(new \Bs\Console\Command\Mirror());
                 // todo refactor these for the lib updates

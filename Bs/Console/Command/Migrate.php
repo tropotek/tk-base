@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Bs\Console\Console;
 use Bs\Util\Db\SqlMigrate;
+use Tk\Config;
 use Tk\Db;
 
 class Migrate extends Console
@@ -33,7 +34,7 @@ class Migrate extends Console
 
             if ($drop) {
                 $exclude = [];
-                if ($this->getConfig()->isDev()) {
+                if (Config::isDev()) {
                     $exclude = [$this->getConfig()->get('session.db_table')];
                 }
                 Db::dropAllTables(true, $exclude);

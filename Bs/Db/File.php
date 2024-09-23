@@ -54,8 +54,9 @@ class File extends Model
         $obj = new static();
 
         $obj->path = $file;
-        if (str_starts_with($file, $obj->getConfig()->getDataPath())) {
-            $obj->path = str_replace($obj->getConfig()->getDataPath(), '', $file);
+        $dataPath = Config::makePath(Config::getDataPath());
+        if (str_starts_with($file, $dataPath)) {
+            $obj->path = str_replace($dataPath, '', $file);
         }
 
         $obj->label = \Tk\FileUtil::removeExtension(basename($file));
@@ -108,12 +109,12 @@ class File extends Model
 
     public function getFullPath(): string
     {
-        return $this->getConfig()->getDataPath() . $this->path;
+        return Config::makePath(Config::getDataPath() . $this->path);
     }
 
     public function getUrl(): Uri
     {
-        return Uri::create($this->getConfig()->getDataUrl() . $this->path);
+        return Uri::create(Config::makeUrl(Config::getDataPath() . $this->path));
     }
 
     public function isImage(): bool

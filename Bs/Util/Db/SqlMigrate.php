@@ -72,7 +72,7 @@ class SqlMigrate
     {
         $config = Config::instance();
         foreach ($config->get('db.migrate.static') as $file) {
-            $path = "{$config->getBasePath()}{$file}";
+            $path = Config::makePath($file);
             if (is_file($path)) {
                 call_user_func_array($write, ['Applying ' . $file]);
                 $options = Db::parseDsn($config->get('db.mysql'));
@@ -88,13 +88,12 @@ class SqlMigrate
      */
     public static function migrateDev(?callable $write = null) :bool
     {
-        $config = Config::instance();
-        if (!$config->isDev()) {
+        if (!Config::isDev()) {
             return false;
         }
-        $devFile = $config->getBasePath() . $config->get('debug.script');
+        $devFile = Config::makePath(Config::instance()->get('debug.script'));
         if (is_file($devFile)) {
-            call_user_func_array($write, ['Setup dev environment: ' . $config->get('debug.script')]);
+            call_user_func_array($write, ['Setup dev environment: ' . Config::instance()->get('debug.script')]);
             include($devFile);
         }
         return true;
@@ -133,13 +132,13 @@ class SqlMigrate
         try {
             $this->install();
 
-            $file = Config::instance()->getBasePath() . $this->toRelative($file);
+            $file = Config::makePath($this->toRelative($file));
             if (!is_readable($file)) return false;
             if ($this->hasPath($this->toRelative($file))) return false;
 
             if (!$this->backupFile) {   // only run once per session.
                 $options = Db::parseDsn(Config::instance()->get('db.mysql'));
-                $this->backupFile = Db\DbBackup::save(Config::instance()->getTempPath(), $options);
+                $this->backupFile = Db\DbBackup::save(Config::makePath(Config::getTempPath()), $options);
             }
             if (preg_match('/\.php$/i', basename($file))) {  // Include .php files
                 $callback = include $file;
@@ -277,7 +276,7 @@ SQL;
 
     private function toRelative(string $path): string
     {
-        return rtrim(str_replace(Config::instance()->getBasePath(), '', $path), '/');
+        return rtrim(str_replace(Config::getBasePath(), '', $path), '/');
     }
 
     /**

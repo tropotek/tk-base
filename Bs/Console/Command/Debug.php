@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Bs\Console\Console;
+use Tk\Config;
 use Tk\System;
 
 /**
@@ -24,13 +25,13 @@ class Debug extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$this->getConfig()->isDebug()) {
+        if (!Config::isDebug()) {
             $this->writeError('Error: Only run this command in a debug environment.');
             return Command::FAILURE;
         }
 
         try {
-            $devFile = System::makePath($this->getConfig()->get('debug.script'));
+            $devFile = Config::makePath($this->getConfig()->get('debug.script'));
             if (is_file($devFile)) {
                 $this->writeComment('Setup dev environment: ' . $this->getConfig()->get('debug.script'));
                 include($devFile);

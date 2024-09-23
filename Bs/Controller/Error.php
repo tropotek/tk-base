@@ -8,7 +8,7 @@ class Error
 
     public function doDefault(\Throwable $e): string
     {
-        return $this->getExceptionHtml($e, Config::instance()->isDebug());
+        return $this->getExceptionHtml($e, Config::isDebug());
     }
 
     public function getExceptionHtml(\Throwable $e, bool $withTrace = false): string
@@ -48,6 +48,6 @@ class Error
 </html>
 HTML;
 
-        return strval(str_replace($config->getBasePath(), '', $html));
+        return strval(str_replace(Config::getBasePath(), '', $html));
     }
 };

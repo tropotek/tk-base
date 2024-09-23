@@ -42,7 +42,7 @@ class Mirror
         $options = Db::parseDsn(Config::instance()->get('db.mysql'));
         $options['exclude'] = [Config::instance()->get('session.db_table')];
 
-        $path = Config::instance()->getTempPath() . '/db_mirror.sql';
+        $path = Config::makePath(Config::getTempPath() . '/db_mirror.sql');
         Db\DbBackup::save($path, $options);
 
         if (is_file($path . '.gz'))
@@ -93,12 +93,12 @@ class Mirror
 //            throw new \Tk\Exception('Only available for live sites.');
 //        }
 
-        $srcFile = Config::instance()->getBasePath() . '/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz';
+        $srcFile = Config::makePath('/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz');
         if (is_file($srcFile)) unlink($srcFile);
         $cmd = sprintf('cd %s && tar zcf %s %s',
-            Config::instance()->getBasePath(),
+            Config::getBasePath(),
             escapeshellarg(basename($srcFile)),
-            basename(Config::instance()->getDataPath())
+            basename(Config::makePath(Config::getDataPath()))
         );
         //Log::info($cmd);
         system($cmd);

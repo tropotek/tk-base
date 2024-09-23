@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Bs\Console\Console;
+use Tk\Config;
 use Tk\Uri;
 use Tk\Db;
 
@@ -27,7 +28,7 @@ class Mirror extends Console
     {
         try {
             $config = $this->getConfig();
-            if (!$config->isDev()) {
+            if (!Config::isDev()) {
                 $this->writeError('Only run this command in a dev environment.');
                 return Command::FAILURE;
             }
@@ -40,11 +41,11 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            $backupSqlFile = $config->getTempPath() . '/tmpt.sql';
-            $mirrorSqlFile = $config->getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz';
+            $backupSqlFile = Config::makePath(Config::getTempPath() . '/tmpt.sql');
+            $mirrorSqlFile = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
 
             // Delete live cached files
-            $list = glob($config->getTempPath() . '/*-tmpl.sql.gz');
+            $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql.gz'));
             foreach ($list as $file) {
                 if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
                     if (is_file($file)) unlink($file);
@@ -89,9 +90,9 @@ class Mirror extends Console
             // if with Data, copy the data folder and its files
             if ($input->getOption('copy-data')) {
 
-                $dataPath = $config->getDataPath();
+                $dataPath = Config::makePath(Config::getDataPath());
                 $dataBakPath = $dataPath . '_bak';
-                $tempDataFile = $config->getBasePath() . '/dest-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz';
+                $tempDataFile = Config::makePath('/dest-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
 
                 $this->write('Downloading live data files...[Please wait]');
                 if (is_file($tempDataFile)) unlink($tempDataFile);
@@ -113,7 +114,7 @@ class Mirror extends Console
 
                 if (is_dir($dataPath)) {    // Move temp data to data
                     $this->write('Extract downloaded data files to: ' . $dataPath);
-                    $cmd = sprintf('cd %s && tar zxf %s ', escapeshellarg($config->getBasePath()), escapeshellarg(basename($tempDataFile)));
+                    $cmd = sprintf('cd %s && tar zxf %s ', escapeshellarg(Config::getBasePath()), escapeshellarg(basename($tempDataFile)));
                     system($cmd);
                 }
             }
