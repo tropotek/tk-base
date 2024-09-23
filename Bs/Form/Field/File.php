@@ -45,7 +45,7 @@ class File extends \Tk\Form\Field\File
     {
         if ($this->hasFile()) {
             foreach ($this->getUploads() as $file) {
-                $dest = Config::makePath(Config::getDataPath() . $this->getModel()->getDataPath() . '/' . $file['name']);
+                $dest = Config::makePath(Config::getDataPath() . $this->getModel()->dataPath . '/' . $file['name']);
                 FileUtil::mkdir(dirname($dest));
                 move_uploaded_file($file['tmp_name'], dirname($dest)."/".basename($dest));
 
