@@ -52,10 +52,10 @@ class Remember
             [$selector, $validator] = self::parseToken($token);
             $tokens = self::findTokenBySelector($selector);
             if ($tokens && password_verify($validator, $tokens['hashed_validator'])) {
-                $user = Auth::findBySelector($selector);
-                if ($user) {
-                    Factory::instance()->getAuthController()->getStorage()->write($user->username);
-                    return $user;
+                $auth = Auth::findBySelector($selector);
+                if ($auth) {
+                    Factory::instance()->getAuthController()->getStorage()->write($auth->username);
+                    return $auth;
                 }
             }
         }

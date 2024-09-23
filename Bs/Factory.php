@@ -252,36 +252,6 @@ class Factory extends Collection
         return $this->getEventDispatcher();
     }
 
-    /**
-     * Return a User object or record that is located from the Auth's getIdentity() method
-     * Override this method in your own site's Factory object
-     * @return null|User Null if no user logged in
-     */
-//    public function getAuthUser(): null|User
-//    {
-//        if (!$this->has('authUser')) {
-//            if ($this->getAuthController()->hasIdentity()) {
-//                $user = User::findByUsername($this->getAuthController()->getIdentity());
-//                $this->set('authUser', $user);
-//            }
-//        }
-//        $user = $this->get('authUser');
-//        if ($user instanceof User && !$user->active) {
-//            User::logout($user);
-//            Uri::create('/')->redirect();
-//        }
-//        return $user;
-//    }
-
-    /**
-     * Return a User object or record that is located from the Auth's getIdentity() method
-     * Override this method in your own site's Factory object
-     */
-    public function getAuthUser(): ?\Au\Auth
-    {
-        return \Au\Auth::getAuthUser();
-    }
-
     public function getAuthController(): Auth
     {
         if (!$this->has('authController')) {
@@ -450,7 +420,7 @@ class Factory extends Collection
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
-                if ($this->getAuthUser()) {
+                if (\Au\Auth::getAuthUser()) {
                     $crumbs->setHomeUrl('/dashboard');
                 }
                 $crumbs->reset();
@@ -468,8 +438,8 @@ class Factory extends Collection
         if ($crumbUrl->toString() != $thisUrl->toString()) {
             return $crumbUrl;
         }
-        if ($this->getAuthUser()) {
-            return $this->getAuthUser()->getHomeUrl();
+        if (\Au\Auth::getAuthUser()) {
+            return \Au\Auth::getAuthUser()->getHomeUrl();
         }
         return Uri::create('/');
     }

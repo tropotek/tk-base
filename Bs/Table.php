@@ -161,11 +161,6 @@ HTML;
         return $this->renderer;
     }
 
-    public function getAuthUser(): ?Auth
-    {
-        return Auth::getAuthUser();
-    }
-
     public function addResetAction(): Action
     {
         return $this->appendAction('__reset')

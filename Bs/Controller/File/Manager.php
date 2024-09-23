@@ -41,7 +41,7 @@ class Manager extends ControllerAdmin
 
         // setup the upload file form
         $this->form = Form::create('upload');
-        $this->form->appendField(new \Bs\Form\Field\File('file', $this->getFactory()->getAuthUser()))->setLabel('Create File');
+        $this->form->appendField(new \Bs\Form\Field\File('file', Auth::getAuthUser()))->setLabel('Create File');
         $this->form->appendField(new Form\Action\Submit('save', [$this, 'onSubmit']));
         $this->form->execute($_POST);
 

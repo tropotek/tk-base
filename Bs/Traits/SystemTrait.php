@@ -45,11 +45,6 @@ trait SystemTrait
         return Factory::instance()->getBackUrl();
     }
 
-    public function getAuthUser(): ?Auth
-    {
-        return Auth::getAuthUser();
-    }
-
     public function makePath(string $path): string
     {
         return System::makePath($path);

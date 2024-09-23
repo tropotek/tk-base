@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Au\Auth;
 use Bs\Traits\SystemTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -18,10 +19,10 @@ abstract class ControllerInterface
 
     protected function setAccess(int $access): static
     {
-        $user = $this->getAuthUser();
-        if (!$user || !$user->hasPermission($access)) {
+        $auth = Auth::getAuthUser();
+        if (!$auth || !$auth->hasPermission($access)) {
             Alert::addWarning('You do not have permission to access the page: <b>' . Uri::create()->getRelativePath() . '</b>');
-            if ($user) $user->getHomeUrl()->redirect();
+            $auth?->getHomeUrl()->redirect();
             Uri::create('/')->redirect();
         }
         return $this;

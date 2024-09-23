@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Au\Auth;
 use Bs\Db\Traits\CreatedTrait;
 use Bs\Db\Traits\ForeignModelTrait;
 use Bs\Factory;
@@ -64,8 +65,8 @@ class File extends Model
         if (!$userId) {
             if ($model && property_exists($model, 'userId')) {
                 $userId = $model->userId;
-            } else if ($obj->getAuthUser()) {
-                $userId = $obj->getAuthUser()->userId;
+            } else if (Auth::getAuthUser()) {
+                $userId = Auth::getAuthUser()->fid;
             }
         }
         $obj->userId = $userId;
