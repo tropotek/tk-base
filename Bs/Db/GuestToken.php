@@ -13,6 +13,30 @@ use Tk\Db;
 use Tk\Db\Model;
 use Tk\Uri;
 
+/**
+ * Use a guest token to access public pages that require security.
+ * limit the user to those pages required and set query string values in the payload
+ * array to protect that data, userId's, hashes, ect will not be visible to the browser.
+ *
+ * If a user tries to access a sites pages while using the token session they will
+ * be shown an error page and the token session will end, then they can return back to
+ * the public site manually.
+ *
+ * Once the token link is visited the user must complete the process until the token is deleted
+ * to access the site normally again.
+ *
+ * Example:
+ * ```php
+ *      $gt = GuestToken::create([
+ *          Uri::create('/recoverUpdate')->getPath(),
+ *      ], [
+ *          'h' => $user->hash,
+ *          'p' => $password,
+ *      ], 20);
+ *      ...
+ *      $message->set('token-url', $gt->getUrl()->toString());
+ * ```
+ */
 class GuestToken extends Model
 {
     use SystemTrait;
