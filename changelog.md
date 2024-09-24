@@ -1,5 +1,17 @@
 #CHANGELOG#
 
+Ver 8.0.58 [2024-09-25]:
+-------------------------------
+  - cleanup config methods
+  - Update user system
+  - Updated guest token system
+  - Added guest token system
+  - refactor user reg and Uri init
+  - implement new auth and user system
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - refactor MVC objects
+
+
 Ver 8.0.56 [2024-09-20]:
 -------------------------------
 
