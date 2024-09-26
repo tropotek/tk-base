@@ -1,11 +1,8 @@
 <?php
 namespace Bs;
 
-use Bs\Db\Permissions;
-use Bs\Db\User;
 use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
-use Dom\Loader;
 use Dom\Modifier;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Application;
@@ -274,25 +271,6 @@ class Factory extends Collection
         return $this->get('authAdapter');
     }
 
-    public function getPermissions(): array
-    {
-        return Permissions::PERMISSION_LIST;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getAvailablePermissions(?User $user): array
-    {
-        $list = [];
-        if ($user) {
-            if ($user->isStaff()) {
-                $list = Permissions::PERMISSION_LIST;
-            }
-        }
-        return $list;
-    }
-
     public function initPage(string $templatePath = ''): PageInterface
     {
         $page = $this->get('pageRenderer');
@@ -341,7 +319,9 @@ class Factory extends Collection
             }
 
             $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
-            $dm->addFilter('jsLast', new Modifier\JsLast());
+            // TODO: see if we can live without this, would rather leave it to the template
+            //       we will lose control over where we add scripts but it may not matter.
+            //$dm->addFilter('jsLast', new Modifier\JsLast());
             if (Config::isDebug()) {
                 $dm->addFilter('pageBytes', new Modifier\PageBytes(Config::getBasePath()));
             }

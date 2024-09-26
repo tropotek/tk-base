@@ -48,7 +48,7 @@ class Masquerade
         // Save the updated masquerade queue
         $_SESSION[static::SID] = $msqArr;
 
-        // Simulates an AuthAdapter authenticate() method
+        // Simulates an AuthAdapter authenticate() method call
         $factory->getAuthController()->getStorage()->write($msqAuth->username);
 
         return true;

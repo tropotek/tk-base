@@ -5,6 +5,7 @@ use Bs\Db\Traits\ForeignModelTrait;
 use Bs\Factory;
 use Bs\Db\Traits\TimestampTrait;
 use Tk\Config;
+use Tk\Exception;
 use Tk\Uri;
 use Tk\Db;
 use Tk\Db\Filter;
@@ -18,6 +19,13 @@ class Auth extends Model
     const PERM_NONE             = 0;
     const PERM_ADMIN            = 0x1;
 
+    /**
+     * valid options for externally created accounts
+     */
+    const EXT_MICROSOFT  = 'microsoft';
+    const EXT_GOOGLE     = 'google';
+    const EXT_FACEBOOK   = 'facebook';
+
 
     public int        $authId        = 0;
     public string     $uid           = '';
@@ -29,6 +37,10 @@ class Auth extends Model
     public string     $email         = '';
     public string     $timezone      = '';
     public bool       $active        = true;
+    /**
+     * value set if account created when logged in by external SSI/oAuth
+     */
+    public string     $external      = '';
     public string     $sessionId     = '';
     public string     $hash          = '';
     public ?\DateTime $lastLogin     = null;
@@ -65,9 +77,11 @@ class Auth extends Model
 
     public static function create(Model $model): self
     {
+        $id = self::getDbModelId($model);
+        if (!$id) throw new Exception("model id must be set before creating Auth object");
         $obj = new self();
         $obj->fkey     = $model::class;
-        $obj->fid      = self::getDbModelId($model);
+        $obj->fid      = $id;
         $obj->timezone = Config::instance()->get('php.date.timezone');
         return $obj;
     }
@@ -98,7 +112,6 @@ class Auth extends Model
     public static function logout(Auth $authUser = null, bool $cookie = true): void
     {
         if (!$authUser) $authUser = Auth::getAuthUser();
-
         if ($authUser) {
             if (Masquerade::isMasquerading()) {
                 Masquerade::masqueradeLogout();
@@ -110,8 +123,6 @@ class Auth extends Model
             }
             $authUser->sessionId = '';
             $authUser->save();
-            Factory::instance()->getCrumbs()?->reset();
-            Uri::create('/')->redirect();
         }
     }
 

@@ -40,6 +40,9 @@ class Sessions extends ControllerAdmin
         //     ->addCss('text-nowrap');
         $this->table->appendCell('type')
             ->addCss('text-nowrap');
+        $this->table->appendCell('sso')
+            ->setHeader('SSO')
+            ->addCss('text-nowrap');
         $this->table->appendCell('activity')
             ->addCss('text-nowrap');
         $this->table->appendCell('lifetime')
@@ -143,6 +146,7 @@ CSS;
                 'ip'          => $_SESSION[Session::SID_IP] ?? '',
                 'agent'       => $_SESSION[Session::SID_AGENT] ?? '',
                 'sessionId'   => $_SESSION['_session.id'] ?? '',
+                'sso'         => $_SESSION['_OAUTH'] ?? '',
                 'type'        => $type,
                 'name'        => $name,
                 'breadcrumbs' => $breadcrumbs,
