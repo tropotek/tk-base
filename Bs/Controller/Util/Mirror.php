@@ -1,43 +1,75 @@
 <?php
 namespace Bs\Controller\Util;
 
-use Symfony\Component\HttpFoundation\Request;
+use Au\Auth;
+use JetBrains\PhpStorm\NoReturn;
 use Tk\Config;
 use Tk\Uri;
 use Tk\Db;
 
 /**
- * @todo The saved sql file should also be encoded with the secret key
+ * @todo Update the mirror command to encrypt the sql file before saving and after extracting.
+ *      possibly look into adding a pw to the compressed file, maybe use zip if gz dos not have this.
  */
 class Mirror
 {
 
-    public function doDefault(Request $request): string
+    public function doDefault(): string
     {
-//        if (!Config::instance()->isDebug()) {
-//            throw new \Tk\Exception('Only available for live sites.', 500);
-//        }
-
-        if (strtolower($request->getScheme()) != Uri::SCHEME_HTTP_SSL) {
-            throw new \Tk\Exception('Only available over SSL connections.', 500);
+        if (strtolower($_SERVER['REQUEST_SCHEME']) != Uri::SCHEME_HTTP_SSL) {
+            throw new \Tk\Exception('invalid SSL connection');
         }
         if (!Config::instance()->get('db.mirror.secret', false)) {
-            throw new \Tk\Exception('Access Disabled');
-        }
-        if (Config::instance()->get('db.mirror.secret', null) !== $request->request->get('secret')) {
-            throw new \Tk\Exception('Invalid access key.', 500);
+            throw new \Tk\Exception('access disabled');
         }
 
-        if ($request->request->get('action') == 'db') {
-            $this->doDbBackup($request);
-        } elseif ($request->request->get('action') == 'file') {
-            $this->doDataBackup($request);
+        $action   = trim($_POST['action'] ?? '');
+        $username = trim($_POST['un'] ?? '');
+        $secret   = trim($_POST['secret'] ?? '');
+        if (Config::instance()->get('db.mirror.secret', null) !== $secret) {
+            throw new \Tk\Exception('invalid access key');
+        }
+
+        $user = Auth::findByUsername($username);
+        if (is_null($user) || !$user->isAdmin()) {
+            throw new \Tk\Exception('Invalid access permission');
+        }
+
+        if ($action == 'db') {
+            $this->doDbBackup();
+        } elseif ($action == 'file') {
+            $this->doDataBackup();
         }
 
         return 'Invalid access request.';
     }
 
-    public function doDbBackup(Request $request): void
+    /**
+     * @todo exclude cache, tmp folders
+     */
+    #[NoReturn] public function doDataBackup()
+    {
+        $srcFile = Config::makePath('/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz');
+        if (is_file($srcFile)) unlink($srcFile);
+        $cmd = sprintf('cd %s && tar zcf %s %s',
+            Config::getBasePath(),
+            escapeshellarg(basename($srcFile)),
+            basename(Config::makePath(Config::getDataPath()))
+        );
+        system($cmd);
+
+        $public_name = basename($srcFile);
+        $filesize = filesize($srcFile);
+        header("Content-Disposition: attachment; filename=$public_name;");
+        header("Content-Type: application/octet-stream");
+        header('Content-Length: '.$filesize);
+        $this->_fileOutput($srcFile);
+        if (is_file($srcFile)) unlink($srcFile);
+
+        exit;
+    }
+
+    public function doDbBackup(): void
     {
         $options = Db::parseDsn(Config::instance()->get('db.mysql'));
         $options['exclude'] = [Config::instance()->get('session.db_table')];
@@ -85,33 +117,6 @@ class Mirror
             // Therefore, we only use file_get_contents() on small files.
             echo file_get_contents($filename);
         }
-    }
-
-    public function doDataBackup(Request $request)
-    {
-//        if (!$this->getConfig()->isDebug()) {
-//            throw new \Tk\Exception('Only available for live sites.');
-//        }
-
-        $srcFile = Config::makePath('/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz');
-        if (is_file($srcFile)) unlink($srcFile);
-        $cmd = sprintf('cd %s && tar zcf %s %s',
-            Config::getBasePath(),
-            escapeshellarg(basename($srcFile)),
-            basename(Config::makePath(Config::getDataPath()))
-        );
-        //Log::info($cmd);
-        system($cmd);
-
-        $public_name = basename($srcFile);
-        $filesize = filesize($srcFile);
-        header("Content-Disposition: attachment; filename=$public_name;");
-        header("Content-Type: application/octet-stream");
-        header('Content-Length: '.$filesize);
-        $this->_fileOutput($srcFile);
-        if (is_file($srcFile)) unlink($srcFile);
-
-        exit;
     }
 
 }

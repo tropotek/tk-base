@@ -1,12 +1,14 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console;
 
 use Bs\Registry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Bs\Console\Console;
 
+/**
+ * Enable/Disable the sites maintenance mode.
+ */
 class Maintenance extends Console
 {
 

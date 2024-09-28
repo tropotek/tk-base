@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -31,13 +32,17 @@ class ExceptionListener implements EventSubscriberInterface
 
     public function onKernelException(ExceptionEvent $event): void
     {
-        if (null === $this->controller) return;
-
+        if (is_null($this->controller)) return;
         $throwable = $event->getThrowable();
         $request = $this->duplicateRequest($throwable, $event->getRequest());
+        $code = 500;
+        if ($throwable instanceof HttpException) {
+            $code = $throwable->getStatusCode();
+        }
 
         try {
             $response = $event->getKernel()->handle($request, HttpKernelInterface::SUB_REQUEST, false);
+            $response->setStatusCode($code);
         } catch (\Exception $e) {
             $prev = $e;
             do {

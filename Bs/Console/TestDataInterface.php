@@ -1,9 +1,7 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console;
 
-use Bs\Console\Console;
-
-class TestData extends Console
+class TestDataInterface extends Console
 {
 
     public function createUniqueEmail(string $username = ''): string

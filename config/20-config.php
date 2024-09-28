@@ -1,15 +1,7 @@
 <?php
 use Tk\Config;
 
-/*
- * @see https://symfony.com/doc/current/routing.html
- *
- * Selecting a template:
- *   You can select the page's template by adding `->defaults(['template' => '{public|admin|user|login|maintenance|error}'])`.
- *
- *   Other options may be available if you have created new template paths in the `20-config.php` file.
- *   Create a new path with `$config->set('path.template.custom', '/html/newTemplate/index.html');`
- *   then add `->defaults(['template' => 'custom'])` to the route. (case-sensitive)
+/**
  *
  */
 return function (Config $config) {
@@ -27,7 +19,7 @@ return function (Config $config) {
     /**
      * Script to execute in dev mode after update/migrate
      */
-    $config->set('debug.script', $config->get('path.config') . '/dev.php');
+    $config['debug.script'] = $config->get('path.config') . '/dev.php';
 
     /**
      * Validate user passwords on input
@@ -45,7 +37,7 @@ return function (Config $config) {
     /**
      * These files are execute on update/migrate if they exist
      */
-    $config->set('db.migrate.static', [
+    $config['db.migrate.static'] = [
         '/vendor/ttek/tk-base/config/sql/views.sql',
         '/vendor/ttek/tk-base/config/sql/procedures.sql',
         '/vendor/ttek/tk-base/config/sql/events.sql',
@@ -54,5 +46,13 @@ return function (Config $config) {
         '/src/config/sql/procedures.sql',
         '/src/config/sql/events.sql',
         '/src/config/sql/triggers.sql'
-    ]);
+    ];
+
+    /**
+     * DB mirror command secret API key and URI
+     * Ensure the Secret Key is on both the dev and prod sites
+     * The url is only required for the client dev site accessing the prod site
+     */
+    //$config['db.mirror.secret'] = '';
+    //$config['db.mirror.url'] = '';
 };

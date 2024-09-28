@@ -1,14 +1,20 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console;
 
 use Bs\Registry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Bs\Console\Console;
 use Tk\Config;
 use Tk\Exception;
 
+/**
+ * Upgrade
+ *
+ * Downloads the current git repository code for the site
+ * Then updates the dependencies using `composer update`
+ *
+ */
 class Upgrade extends Console
 {
 
@@ -16,7 +22,7 @@ class Upgrade extends Console
     {
         $this->setName('upgrade')
             ->setAliases(['ug'])
-            ->setDescription('Call this to upgrade the site from git and update its dependencies');
+            ->setDescription('Upgrade site from git repo. and its dependencies');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

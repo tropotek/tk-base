@@ -1,14 +1,16 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console;
 
 use FilesystemIterator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Bs\Console\Console;
 use Tk\Config;
-use Tk\Db;
 
+/**
+ * Clean out empty folders in the /data dir
+ *
+ */
 class CleanData extends Console
 {
 

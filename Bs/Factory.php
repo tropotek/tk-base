@@ -427,14 +427,14 @@ class Factory extends Collection
 
             // Setup Global Console Commands
             $app->add(new \Bs\Console\Password());
-            $app->add(new \Bs\Console\Command\CleanData());
-            $app->add(new \Bs\Console\Command\Upgrade());
-            $app->add(new \Bs\Console\Command\Maintenance());
-            $app->add(new \Bs\Console\Command\DbBackup());
-            $app->add(new \Bs\Console\Command\Migrate());
+            $app->add(new \Bs\Console\CleanData());
+            $app->add(new \Bs\Console\Upgrade());
+            $app->add(new \Bs\Console\Maintenance());
+            $app->add(new \Bs\Console\DbBackup());
+            $app->add(new \Bs\Console\Migrate());
             if (Config::isDev()) {
-                $app->add(new \Bs\Console\Command\Debug());
-                $app->add(new \Bs\Console\Command\Mirror());
+                $app->add(new \Bs\Console\Mirror());
+                $app->add(new \Bs\Console\MirrorData());
                 // todo refactor these for the lib updates
 //                $app->add(new \Bs\Console\Command\MakeModel());
 //                $app->add(new \Bs\Console\Command\MakeMapper());

@@ -1,7 +1,8 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -10,18 +11,22 @@ use Tk\Config;
 use Tk\Uri;
 use Tk\Db;
 
+/**
+ *
+ */
 class Mirror extends Console
 {
 
     protected function configure(): void
     {
         $this->setName('mirror')
-            ->setAliases(array('mi'))
+            ->setAliases(['mi'])
+            ->setDescription('Mirror the data and files from the Live site')
+            ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
             ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
-            ->addOption('no-sql', 'S', InputOption::VALUE_NONE, 'Do not execute the sql component of the mirror')
-            ->addOption('no-dev', 'f', InputOption::VALUE_NONE, 'Do not execute the dev sql file')
-            ->addOption('copy-data', 'd', InputOption::VALUE_NONE, 'Copy the \'/data\' files from the live site.')
-            ->setDescription('Mirror the data and files from the Live site');
+            ->addOption('no-sql', 'S', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
+            //->addOption('no-dev', 'f', InputOption::VALUE_NONE, 'Do not execute the dev sql file')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -54,6 +59,8 @@ class Mirror extends Console
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
             $options['exclude'] = [$config->get('session.db_table')];
+            $secret   = $this->getConfig()->get('db.mirror.secret');
+            $username = trim($input->getArgument('username'));
 
             if (!$input->getOption('no-sql')) {
                 if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
@@ -61,9 +68,11 @@ class Mirror extends Console
                     if (is_file($mirrorSqlFile)) unlink($mirrorSqlFile);
 
                     // get a copy of the remote DB to be mirrored
-                    $url = Uri::create($config->get('db.mirror.url'))->set('action', 'db');
-                    $this->postRequest($url, $mirrorSqlFile);
-
+                    $mirrorUrl = Uri::create($this->getConfig()->get('db.mirror.url') . '/util/mirror')
+                        ->set('action', 'db')
+                        ->set('secret', $secret)
+                        ->set('un', $username);
+                    $this->postRequest($mirrorUrl, $mirrorSqlFile);
                 } else {
                     $this->writeComment('Using existing mirror file: ' . $mirrorSqlFile);
                 }
@@ -87,37 +96,6 @@ class Mirror extends Console
                 //unlink($backupSqlFile);
             }
 
-            // if with Data, copy the data folder and its files
-            if ($input->getOption('copy-data')) {
-
-                $dataPath = Config::makePath(Config::getDataPath());
-                $dataBakPath = $dataPath . '_bak';
-                $tempDataFile = Config::makePath('/dest-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
-
-                $this->write('Downloading live data files...[Please wait]');
-                if (is_file($tempDataFile)) unlink($tempDataFile);
-
-                $url = Uri::create($config->get('db.mirror.url'))->set('action', 'file');
-                $this->postRequest($url, $tempDataFile);
-                $this->write('Download Complete!');
-
-                if (is_dir($dataBakPath)) { // Remove any old bak data folder
-                    $this->write('Deleting existing data backup: ' . $dataBakPath);
-                    $cmd = sprintf('rm -rf %s ', escapeshellarg($dataBakPath));
-                    system($cmd);
-                }
-                if (is_dir($dataPath)) {    // Move existing data to data_bak
-                    $this->write('Move current data files to backup location: ' . $dataBakPath);
-                    $cmd = sprintf('mv %s %s ', escapeshellarg($dataPath), escapeshellarg($dataBakPath));
-                    system($cmd);
-                }
-
-                if (is_dir($dataPath)) {    // Move temp data to data
-                    $this->write('Extract downloaded data files to: ' . $dataPath);
-                    $cmd = sprintf('cd %s && tar zxf %s ', escapeshellarg(Config::getBasePath()), escapeshellarg(basename($tempDataFile)));
-                    system($cmd);
-                }
-            }
         } catch(\Exception $e) {
             $this->writeError($e->getMessage());
             return Command::FAILURE;
@@ -128,14 +106,15 @@ class Mirror extends Console
         return  Command::SUCCESS;
     }
 
-    protected function postRequest(Uri|string $srcUrl, string $destPath)
+    protected function postRequest(Uri|string $srcUrl, string $destPath): bool
     {
+        $error = false;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);
-        $srcUrl->set('secret', $this->getConfig()->get('db.mirror.secret'));
         $query = $srcUrl->getQuery();
+        $srcUrl->reset();
 
         $fp = fopen($destPath, 'w');
-        $curl = curl_init($srcUrl->reset()->toString());
+        $curl = curl_init($srcUrl->toString());
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
@@ -145,11 +124,12 @@ class Mirror extends Console
         curl_setopt($curl, CURLOPT_FILE, $fp);
 
         curl_exec($curl);
-        if(curl_error($curl)) {
-            fwrite($fp, curl_error($curl));
+        if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
+            $error = true;
         }
         curl_close($curl);
         fclose($fp);
+        return $error;
     }
 
 }

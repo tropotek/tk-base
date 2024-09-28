@@ -1,14 +1,23 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Bs\Console\Console;
 use Bs\Util\Db\SqlMigrate;
 use Tk\Config;
 use Tk\Db;
 
+/**
+ * Migrate the sites DB files
+ * This will execute any SQL files that are not already listed in the _migrate table
+ * Call this when upgrading the code and the database needs to be updated to the current release version
+ *
+ * In dev mode the /src/config/dev.php file is executed to setup a dev site
+ *
+ * Note: There is no rollback functions only forward migrations are supported.
+ * Ensure you have a backup copy of the DB you are upgrading.
+ */
 class Migrate extends Console
 {
 
