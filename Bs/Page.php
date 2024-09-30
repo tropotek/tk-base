@@ -2,6 +2,7 @@
 namespace Bs;
 
 use App\Db\User;
+use App\Ui\Notify;
 use Au\Auth;
 use Bs\Ui\Crumbs;
 use Dom\Modifier\JsLast;
@@ -20,18 +21,13 @@ class Page extends PageDomInterface
 
         $jsConfig = [
             'baseUrl' => Config::getBaseUrl(),
-            'isProd' => Config::isProd(),
+            'isProd'  => Config::isProd(),
+            'isAuth'  => !is_null(Auth::getAuthUser()),
             'dateFormat' => [
                 'jqDatepicker' => 'dd/mm/yy',
                 'bsDatepicker' => 'dd/mm/yyyy',
                 'sugarjs' => '%d/%m/%Y',
             ],
-            //'dataUrl' => $this->getConfig()->getDataUrl(),
-            //'templateUrl' => $this->getConfig()->getTemplateUrl(),
-            //'vendorUrl' => System::makeUrl($this->getConfig()->get('path.vendor')),
-            //'vendorOrgUrl' => System::makeUrl($this->getConfig()->get('path.vendor.org')),
-            //'debug' => Config::isDebug(),
-            //'isDev' => Config::isDev(),
         ];
         $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
@@ -48,6 +44,10 @@ class Page extends PageDomInterface
 
         // Default crumbs css (probably not the best place for this...
         $this->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
+
+        $notify = new Notify();
+        $template->prependTemplate('user-menu', $notify->show());
+
 
         return parent::show();
     }

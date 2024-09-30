@@ -360,7 +360,6 @@ let tkbase = function () {
 
   };  // end initTinymce()
 
-
   return {
     initSugar: initSugar,
     initDialogConfirm: initDialogConfirm,

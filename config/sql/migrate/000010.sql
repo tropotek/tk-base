@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS auth_remember
   KEY (selector),
   KEY (browser_id),
   KEY (auth_id),
-  CONSTRAINT fk_auth_remember__auth_id FOREIGN KEY (auth_id) REFERENCES auth (auth_id) ON DELETE CASCADE
+  CONSTRAINT fk_auth_remember__auth_id FOREIGN KEY (auth_id) REFERENCES auth (auth_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS guest_token
