@@ -1,14 +1,11 @@
 <?php
 namespace Bs;
 
-use App\Db\User;
-use App\Ui\Notify;
 use Au\Auth;
 use Bs\Ui\Crumbs;
 use Dom\Modifier\JsLast;
 use Dom\Template;
 use Tk\Config;
-use Tk\System;
 use Tk\Uri;
 
 class Page extends PageDomInterface
@@ -44,10 +41,6 @@ class Page extends PageDomInterface
 
         // Default crumbs css (probably not the best place for this...
         $this->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
-
-        $notify = new Notify();
-        $template->prependTemplate('user-menu', $notify->show());
-
 
         return parent::show();
     }
