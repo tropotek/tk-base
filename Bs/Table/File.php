@@ -22,7 +22,6 @@ class File extends Table
         $rowSelect = RowSelect::create('id', 'fileId');
         $this->appendCell($rowSelect);
 
-
         $this->appendCell('actions')
             ->addCss('text-nowrap text-center')
             ->addOnValue(function(\Bs\Db\File $file, Cell $cell) {

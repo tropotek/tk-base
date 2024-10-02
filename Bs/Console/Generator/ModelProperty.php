@@ -345,35 +345,38 @@ class ModelProperty extends \Tk\Collection
         );
     }
 
-    public function getTableCell(string $className, string $namespace): string
+    public function getTableCell(string $className, string $primaryKey, string $tableProperty = ''): string
     {
-        $mapClass = 'Cell\Text';
+        if (!empty($tableProperty)) $tableProperty .= '->';
+        $append = '';
         switch ($this->getType()) {
             case self::TYPE_BOOL:
-                $mapClass = 'Cell\Boolean';
+                $append .= "\n            ->addOnValue('\Tk\Table\Type\Boolean::onValue')";
                 break;
-//            case self::TYPE_DATE:
-//                $mapClass = 'Cell\Date';
-//                break;
-        }
-        if ($this->isPrimaryKey()) {
-            $mapClass = 'Cell\Checkbox';
+            case self::TYPE_DATE:
+                $append .= "\n            ->addOnValue('\Tk\Table\Type\DateFmt::onValue')";
+                break;
         }
 
-        $propertyName = $this->quote($this->getName());
-        $append = '';
+        $propertyName = $this->getName();
+        $classLower = strtolower($className);
         if ($this->getName() == 'name' || $this->getName() == 'title') {
-            $append .= '->addCss(\'key\')';
-            $append .= '->setUrl($editUrl)';
+            $append .= "\n            ->addHeaderCss('max-width')";
+            $append .= "\n            ->addOnValue(function($className \$obj, Cell \$cell) {
+                \$url = Uri::create('/{$classLower}Edit', ['{$primaryKey}' => \$obj->{$primaryKey}]);
+                return sprintf('<a href=\"%s\">%s</a>', \$url, \$obj->$propertyName);
+            })";
         }
 
         $tpl = <<<TPL
-                \$this->appendCell(new %s(%s))%s;
+                \$this->%sappendCell(%s)
+                    ->addCss('text-nowrap')
+                    ->setSortable(true)%s;\n
         TPL;
 
         return sprintf($tpl,
-            $mapClass,
-            $propertyName,
+            $tableProperty,
+            $this->quote($propertyName),
             $append
         );
     }

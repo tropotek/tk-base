@@ -1,7 +1,9 @@
 <?php
 namespace Bs;
 
+use Bs\Console\Generator\MakeManager;
 use Bs\Console\Generator\MakeModel;
+use Bs\Console\Generator\MakeTable;
 use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;
@@ -438,8 +440,9 @@ class Factory extends Collection
                 $app->add(new \Bs\Console\MirrorData());
                 // todo refactor these for the lib updates
                 $app->add(new MakeModel());
+                $app->add(new MakeManager());
+                $app->add(new MakeTable());
 //                $app->add(new \Bs\Console\Command\MakeMapper());
-//                $app->add(new \Bs\Console\Command\MakeTable());
 //                $app->add(new \Bs\Console\Command\MakeForm());
 //                $app->add(new \Bs\Console\Command\MakeManager());
 //                $app->add(new \Bs\Console\Command\MakeEdit());

@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console\Generator;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

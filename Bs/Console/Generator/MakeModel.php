@@ -20,6 +20,7 @@ class MakeModel extends MakeInterface
     {
         parent::execute($input, $output);
         $this->makeModel();
+
         return Command::SUCCESS;
     }
 

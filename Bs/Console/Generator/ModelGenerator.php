@@ -336,33 +336,24 @@ STR;
     /**
      *
      */
-    public function makeTable(array $params = []): string
-    {
-        $tpl = $this->createTableTemplate();
-        $data = $this->arrayMerge($this->getDefaultData(), $this->processTable(), $params);
-        return $tpl->parse($data);
-    }
-
-    /**
-     *
-     */
     public function makeManager(array $params = []): string
     {
         $tpl = $this->createTableManagerTemplate();
-        $data = $this->getDefaultData();
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processTable('table'), $params);
         return $tpl->parse($data);
     }
 
-    protected function processTable(): array
+    protected function processTable(string $tableProperty = ''): array
     {
         $data = [
             'cell-list' => ''
         ];
+        $default = $this->getDefaultData();
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create((array)$col);
             if ($mp->getName() == 'del') continue;
             if ($mp->get('Type') != 'text')
-                $data['cell-list'] .= $mp->getTableCell($this->getClassName(), $this->getNamespace()) . "\n";
+                $data['cell-list'] .= $mp->getTableCell($this->getClassName(), $default['primary-prop'], $tableProperty) . "\n";
         }
         return $data;
     }
@@ -373,47 +364,88 @@ STR;
 <?php
 namespace {controller-namespace}\{classname};
 
-use Bs\PageController;
-use Bs\Table\ManagerTrait;
+use {db-namespace}\{classname};
+use Bs\ControllerAdmin;
+use Bs\Table;
 use Dom\Template;
-use Bs\Db\User;
-use Symfony\Component\HttpFoundation\Request;
+use Tk\Form\Field\Input;
+use Tk\Table\Action\Csv;
+use Tk\Table\Cell;
+use Tk\Table\Cell\RowSelect;
+use Tk\Table\Action\Delete;
+use Tk\Uri;
+use Tk\Db;
 
 /**
- * Add Route to /src/config/routes.php:
- * ```php
- *   \$routes->add('{table-id}-manager', '/{namespace-url}Manager')
- *       ->controller([{controller-namespace}\{classname}\Manager::class, 'doDefault']);
- * ```
+ *
  */
-class Manager extends PageController
+class Manager extends ControllerAdmin
 {
-    use ManagerTrait;
+    protected ?Table \$table = null;
 
-    public function __construct()
+    public function doDefault(): void
     {
-        parent::__construct(\$this->getFactory()->getAdminPage());
         \$this->getPage()->setTitle('{name} Manager');
-        \$this->setAccess(Permissions::PERM_MANAGE_STAFF);
-    }
 
-    public function doDefault(Request \$request): \App\Page|\Dom\Mvc\Page
-    {
-        \$this->setTable(new \{table-namespace}\{classname}());
-        \$this->getTable()->init();
-        \$this->getTable()->findList([], \$this->getTable()->getTool());
-        \$this->getTable()->execute(\$request);
+        // init table
+        \$this->table = new \Bs\Table();
+        \$this->table->setOrderBy('{primary-col}');
+        \$this->table->setLimit(25);
 
-        return \$this->getPage();
+        \$rowSelect = RowSelect::create('id', 'userId');
+        \$this->table->appendCell(\$rowSelect);
+
+        \$this->table->appendCell('actions')
+            ->addCss('text-nowrap text-center')
+            ->addOnValue(function({classname} \${name}, Cell \$cell) {
+                \$url = Uri::create('/{namespace-url}Edit')->set('{primary-prop}', \${name}->{primary-prop});
+                return <<<HTML
+                    <a class="btn btn-outline-success" href="\$url" title="Edit"><i class="fa fa-fw fa-edit"></i></a>
+                HTML;
+            });
+{cell-list}
+        // Add Filter Fields
+        \$this->table->getForm()->appendField(new Input('search'))
+            ->setAttr('placeholder', 'Search');
+
+        // init filter fields for actions to access to the filter values
+        \$this->table->initForm();
+
+        // Add Table actions
+        \$this->table->appendAction(Delete::create(\$rowSelect))
+            ->addOnDelete(function(Delete \$action, array \$selected) {
+                foreach (\$selected as \${primary-col}) {
+                    Db::delete('{table}', compact('{primary-col}'));
+                }
+            });
+
+        \$this->table->appendAction(Csv::create(\$rowSelect))
+            ->addOnCsv(function(Csv \$action, array \$selected) {
+                \$action->setExcluded(['id', 'actions']);
+                \$filter = \$this->table->getDbFilter();
+                if (\$selected) {
+                    \$rows = {classname}::findFiltered(\$filter);
+                } else {
+                    \$rows = {classname}::findFiltered(\$filter->resetLimits());
+                }
+                return \$rows;
+            });
+
+        \$this->table->execute();
+
+        // Set the table rows
+        \$filter = \$this->table->getDbFilter();
+        \$rows = {classname}::findFiltered(\$filter);
+        \$this->table->setRows(\$rows, Db::getLastStatement()->getTotalRows());
     }
 
     public function show(): ?Template
     {
         \$template = \$this->getTemplate();
         \$template->setText('title', \$this->getPage()->getTitle());
-        \$template->setAttr('create', 'href', \$this->getBackUrl());
+        \$template->setAttr('back', 'href', \$this->getBackUrl());
 
-        \$template->appendTemplate('content', \$this->getTable()->show());
+        \$template->appendTemplate('content', \$this->table->show());
 
         return \$template;
     }
@@ -422,7 +454,7 @@ class Manager extends PageController
     {
         \$html = <<<HTML
 <div>
-  <div class="card mb-3">
+  <div class="page-actions card mb-3">
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
@@ -435,12 +467,23 @@ class Manager extends PageController
   </div>
 </div>
 HTML;
-        return \$this->loadTemplate(\$html);
+        return Template::load(\$html);
     }
 
 }
 PHP;
         return \Tk\CurlyTemplate::create($classTpl);
+    }
+
+
+    /**
+     *
+     */
+    public function makeTable(array $params = []): string
+    {
+        $tpl = $this->createTableTemplate();
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processTable(), $params);
+        return $tpl->parse($data);
     }
 
     protected function createTableTemplate(): \Tk\CurlyTemplate
@@ -449,56 +492,69 @@ PHP;
 <?php
 namespace {table-namespace};
 
-use {db-namespace}\{classname}Map;
+use Bs\Table;
 use Dom\Template;
-use Bs\Table\ManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Tk\Db\Mapper\Result;
-use Tk\Form\Field;
-use Tk\Table\Cell;
-use Tk\Table\Action;
-use Tk\Db\Tool;
+use Tk\Alert;
 use Tk\Uri;
+use Tk\Db;
+use Tk\Table\Action\Csv;
+use Tk\Table\Action\Delete;
+use Tk\Form\Field\Input;
+use Tk\Table\Cell;
+use Tk\Table\Cell\RowSelect;
 
-class {classname} extends ManagerInterface
+class {classname} extends Table
 {
 
-    public function initCells(): void
+    public function init(): static
     {
         \$editUrl = Uri::create('/{namespace-url}Edit');
 
+        \$rowSelect = RowSelect::create('id', '{primary-prop}');
+        \$this->appendCell(\$rowSelect);
+
+        \$this->appendCell('actions')
+            ->addCss('text-nowrap text-center')
+            ->addOnValue(function(\{db-namespace}\{classname} \$obj, Cell \$cell) {
+                \$url = Uri::create('/{namespace-url}Edit')->set('{primary-prop}', \$obj->{primary-prop});
+                return <<<HTML
+                    <a class="btn btn-outline-success" href="\$url" title="Edit"><i class="fa fa-fw fa-edit"></i></a>
+                HTML;
+            });
 {cell-list}
+        // Add Filter Fields
+        \$this->getForm()->appendField(new Input('search'))
+            ->setAttr('placeholder', 'Search');
 
-        // Filters
-        \$this->getFilterForm()->appendField(new Field\Input('search'))->setAttr('placeholder', 'Search');
+        // init filter fields for actions to access to the filter values
+        \$this->initForm();
 
-        // Actions
-        //\$this->appendAction(new Action\Button('Create'))->setUrl(\$editUrl);
-        \$this->appendAction(new Action\Delete());
-        \$this->appendAction(new Action\Csv())->addExcluded('actions');
+        // Add Table actions
+        \$this->appendAction(Delete::create(\$rowSelect))
+            ->addOnDelete(function(Delete \$action, array \$selected) {
+                foreach (\$selected as \${primary-col}) {
+                    Db::delete('{table}', compact('{primary-col}'));
+                }
+            });
 
-    }
+        \$this->appendAction(Csv::create(\$rowSelect))
+            ->addOnCsv(function(Csv \$action, array \$selected) {
+                \$action->setExcluded(['id', 'actions']);
+                \$filter = \$this->getDbFilter();
+                if (\$selected) {
+                    \$rows = \{db-namespace}\{classname}::findFiltered(\$filter);
+                } else {
+                    \$rows = \{db-namespace}\{classname}::findFiltered(\$filter->resetLimits());
+                }
+                return \$rows;
+            });
 
-    public function execute(Request \$request): static
-    {
-        parent::execute(\$request);
         return \$this;
-    }
-
-    public function findList(array \$filter = [], ?Tool \$tool = null): null|array|Result
-    {
-        if (!\$tool) \$tool = \$this->getTool();
-        \$filter = array_merge(\$this->getFilterForm()->getFieldValues(), \$filter);
-        \$list = {classname}Map::create()->findFiltered(\$filter, \$tool);
-        \$this->setList(\$list);
-        return \$list;
     }
 
     public function show(): ?Template
     {
-        \$renderer = \$this->getTableRenderer();
-        \$this->getRow()->addCss('text-nowrap');
-        \$this->showFilterForm();
+        \$renderer = \$this->getRenderer();
         return \$renderer->show();
     }
 }
