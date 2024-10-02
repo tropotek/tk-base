@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console\Generator;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -7,9 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Bs\Console\Console;
-use Bs\Util\Db\ModelGenerator;
 use Tk\Config;
-use Tk\System;
 
 class MakeInterface extends Console
 {
@@ -23,8 +21,7 @@ class MakeInterface extends Console
     {
         $this->addArgument('table', InputArgument::REQUIRED, 'The name of the table to generate the class file from.')
             ->addOption('overwrite', 'o', InputOption::VALUE_NONE, 'Overwrite existing class files.')
-            ->addOption('modelForm', 'm', InputOption::VALUE_NONE, 'Generate a ModelForm object instead')       // This object is deprecated
-            ->addOption('namespace', 'N', InputOption::VALUE_OPTIONAL, 'A custom namespace (Default: App)', '')
+            ->addOption('namespace', 'N', InputOption::VALUE_OPTIONAL, 'A custom namespace (Default: `App`)', '')
             ->addOption('classname', 'C', InputOption::VALUE_OPTIONAL, 'A custom Classname (Default: `TableName`)', '')
             ->addOption('basepath', 'B', InputOption::VALUE_OPTIONAL, 'A base src path to save the file (Default: {sitePath}/src)', '');
     }
@@ -51,11 +48,12 @@ class MakeInterface extends Console
     protected function makeAll(): void
     {
         $this->makeModel();
-        $this->makeMapper();
-        $this->makeTable();
-        $this->makeForm();
+        //$this->makeMapper();
         $this->makeManager();
         $this->makeEdit();
+        // allow to create as standalone files only
+        //$this->makeTable();
+        //$this->makeForm();
     }
 
     protected function makeModel(): void
@@ -66,20 +64,21 @@ class MakeInterface extends Console
         $this->writeComment('Writing Model: ' . $file);
     }
 
-    protected function makeMapper(): void
-    {
-        $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getDbNamespace()) . '/' . $this->getGen()->getClassName() . 'Map.php';
-        $code = $this->getGen()->makeMapper($this->getInput()->getOptions());
-        $file = $this->writeFile($file, $code);
-        $this->writeComment('Writing Mapper: ' . $file);
-    }
+//    protected function makeMapper(): void
+//    {
+//        $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getDbNamespace()) . '/' . $this->getGen()->getClassName() . 'Map.php';
+//        $code = $this->getGen()->makeMapper($this->getInput()->getOptions());
+//        $file = $this->writeFile($file, $code);
+//        $this->writeComment('Writing Mapper: ' . $file);
+//    }
 
-    protected function makeForm(): void
+
+    protected function makeManager(): void
     {
-        $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getFormNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
-        $code = $this->getGen()->makeForm($this->getInput()->getOptions());
+        $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Manager.php';
+        $code = $this->getGen()->makeManager($this->getInput()->getOptions());
         $file = $this->writeFile($file, $code);
-        $this->writeComment('Writing Form: ' . $file);
+        $this->writeComment('Writing Manager Form: ' . $file);
     }
 
     protected function makeEdit(): void
@@ -90,6 +89,16 @@ class MakeInterface extends Console
         $this->writeComment('Writing Edit Form: ' . $file);
     }
 
+
+
+    protected function makeForm(): void
+    {
+        $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getFormNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
+        $code = $this->getGen()->makeForm($this->getInput()->getOptions());
+        $file = $this->writeFile($file, $code);
+        $this->writeComment('Writing Form: ' . $file);
+    }
+
     protected function makeTable(): void
     {
         $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getTableNamespace()) . '/' . $this->getGen()->getClassName() . '.php';
@@ -98,13 +107,6 @@ class MakeInterface extends Console
         $this->writeComment('Writing Table: ' . $file);
     }
 
-    protected function makeManager(): void
-    {
-        $file = $this->getBasePath() . '/' . str_replace('\\', '/', $this->getGen()->getControllerNamespace()) . '/' . $this->getGen()->getClassName() . '/Manager.php';
-        $code = $this->getGen()->makeManager($this->getInput()->getOptions());
-        $file = $this->writeFile($file, $code);
-        $this->writeComment('Writing Manager Form: ' . $file);
-    }
 
     protected function writeFile(string $file, string $code): string
     {

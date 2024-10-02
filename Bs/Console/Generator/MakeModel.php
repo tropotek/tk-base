@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console\Generator;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,8 +20,6 @@ class MakeModel extends MakeInterface
     {
         parent::execute($input, $output);
         $this->makeModel();
-        //$this->makeMapper();
-
         return Command::SUCCESS;
     }
 

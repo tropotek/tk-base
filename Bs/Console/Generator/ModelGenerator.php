@@ -1,15 +1,17 @@
 <?php
-namespace Bs\Util\Db;
+namespace Bs\Console\Generator;
 
 use Tk\Exception;
 use Tk\Db;
 
 /**
  * @todo Update to use the new \Tk\Db\Model system
+ *     -
  */
 class ModelGenerator
 {
     protected string $table     = '';
+    protected string $view      = '';
     protected string $className = '';
     protected string $namespace = '';
     protected array  $tableInfo = [];
@@ -20,7 +22,11 @@ class ModelGenerator
      */
     protected function __construct(string $table, string $namespace = 'App', string $className = '')
     {
-        $this->table = $table;
+        $this->table = $this->view = $table;
+        if (str_starts_with($table, 'v_')) {
+            $this->table = substr($table, 2);
+        }
+
         $namespace = trim($namespace);
         if (!$namespace)
             $namespace = 'App';
@@ -28,15 +34,18 @@ class ModelGenerator
 
         $className = trim($className);
         if (!$className) {
-            $className = $this->makeClassname($table);
+            $className = $this->makeClassname($this->table);
         }
         $this->setClassName($className);
 
-        if (!Db::tableExists($table)) {   // Check the DB for the table
-            throw new \Exception('Table `' . $table . '` not found in the DB `' . Db::getDbName() . '`');
+        if (!Db::tableExists($this->table)) {   // Check the DB for the table
+            throw new \Exception('Table `' . $this->table . '` not found in the DB `' . Db::getDbName() . '`');
         }
 
-        $this->tableInfo = Db::getTableInfo($table);
+        // merge both info arrays to ensure we have the pri key data
+        $t1 = Db::getTableInfo($this->table);
+        $t2 = Db::getTableInfo($this->view);
+        $this->tableInfo = array_merge($t2, $t1);
     }
 
     /**
@@ -66,8 +75,9 @@ class ModelGenerator
     protected function getDefaultData(): array
     {
         $now = \Tk\Date::create();
-        $primaryKey = 'id';
+        $primaryKey = $this->table . '_id';
         foreach ($this->tableInfo as $col => $info) {
+            $info = (array)$info;
             if (($info['Key'] ?? '') == 'PRI') {
                 $primaryKey = $info['Field'];
             }
@@ -81,7 +91,7 @@ class ModelGenerator
             'classname'            => $this->getClassName(),
             'name'                 => trim(preg_replace('/[A-Z]/', ' $0', $this->getClassName())),
             'table'                => $this->getTable(),
-            'view'                 => 'v_' . $this->getTable(),
+            'view'                 => $this->getView(),
             'namespace'            => $this->getNamespace(),
             'db-namespace'         => $this->getDbNamespace(),
             'table-namespace'      => $this->getTableNamespace(),
@@ -136,6 +146,11 @@ class ModelGenerator
         return $this->table;
     }
 
+    public function getView(): string
+    {
+        return $this->view;
+    }
+
     public function setClassName(string $className): static
     {
         $this->className = trim($className, '\\');
@@ -155,8 +170,9 @@ class ModelGenerator
         return array_merge($data, $classData, $params);
     }
 
+
     /**
-     * @throws Exception
+     *
      */
     public function makeModel(array $params = []): string
     {
@@ -172,17 +188,19 @@ class ModelGenerator
             'construct' => '',
             'validators' => '',
             'accessors' => '',
+            'prepared-filter-queries' => '',
         ];
         foreach ($this->tableInfo as $col) {
-            $mp = ModelProperty::create($col);
+            $mp = ModelProperty::create((array)$col);
             if ($mp->getName() == 'del') continue;
-            $data['properties'] .= "\n" . $mp->getDefinition() . "\n";
+            $data['properties'] .= $mp->getDefinition() . "\n";
 
 //            if ($mp->getName() != 'id')
 //                $data['accessors'] .= "\n" . $mp->getAccessor() . "\n\n" . $mp->getMutator($this->getClassName()) . "\n";
 
-            if ($mp->getType() == '\DateTime' && $mp->get('Null') == 'NO')
+            if ($mp->getType() == '\DateTime' && $mp->get('Null') == 'NO') {
                 $data['construct'] .= $mp->getInitaliser() . "\n";
+            }
             if (
                 $mp->get('Null') == 'NO' &&
                 $mp->get('Type') != 'text' &&
@@ -190,8 +208,13 @@ class ModelGenerator
                 $mp->getType() != ModelProperty::TYPE_BOOL &&
                 $mp->getName() != 'id' &&
                 $mp->getName() != 'orderBy'
-            )
+            ) {
                 $data['validators'] .= "\n" . $mp->getValidation() . "\n";
+            }
+
+            if ($mp->getType() != ModelProperty::TYPE_DATE && $mp->get('Type') != 'text') {
+                $data['prepared-filter-queries'] .= $mp->getPreparedFilterQuery() . "\n";
+            }
         }
         return $data;
     }
@@ -237,7 +260,7 @@ class {classname} extends Model
     {
         return Db::queryOne("
             SELECT *
-            FROM {table}
+            FROM {view}
             WHERE {primary-col} = :{primary-prop}",
             compact('{primary-prop}'),
             self::class
@@ -251,12 +274,11 @@ class {classname} extends Model
     {
         return Db::query("
             SELECT *
-            FROM {table}",
+            FROM {view}",
             [],
             self::class
         );
     }
-
 
     /**
      * @return array<int,{classname}>
@@ -288,11 +310,10 @@ class {classname} extends Model
             if (!is_array(\$filter['exclude'])) \$filter['exclude'] = [\$filter['exclude']];
             \$filter->appendWhere('a.{primary-col} NOT IN :exclude AND ', \$filter['exclude']);
         }
-{filter-queries}
-
+{prepared-filter-queries}
         return Db::query("
             SELECT *
-            FROM {table} a
+            FROM {view} a
             {\$filter->getSql()}",
             \$filter->all(),
             self::class
@@ -313,218 +334,7 @@ STR;
 
 
     /**
-     * @throws \Exception
-     */
-    public function makeMapper(array $params = []): string
-    {
-        //$tpl = $this->createMapperTemplate();
-        $tpl = $this->createPreparedMapperTemplate();
-        $data = $this->arrayMerge($this->getDefaultData(), $this->processMapper(), $params);
-        return $tpl->parse($data);
-    }
-
-    protected function processMapper(): array
-    {
-        $data = [
-            'db-maps' => '',
-            'form-maps' => '',
-            'table-maps' => '',
-            'filter-queries' => '',
-            'prepared-filter-queries' => '',
-            'set-table' => ''
-        ];
-        foreach ($this->tableInfo as $col) {
-            $mp = ModelProperty::create($col);
-
-            $exclude = ['del'];
-            if (!in_array($mp->getName(), $exclude)) {
-                $data['db-maps'] .= $mp->getColumnMap() . "\n";
-            }
-
-            $exclude = ['del', 'orderBy', 'modified', 'created'];
-            if (!in_array($mp->getName(), $exclude)) {
-                $data['form-maps'] .= $mp->getFormMap() . "\n";
-            }
-
-            $exclude = ['del'];
-            if (!in_array($mp->getName(), $exclude)) {
-                $data['table-maps'] .= $mp->getTableMap() . "\n";
-            }
-
-            if ($mp->getType() != ModelProperty::TYPE_DATE && $mp->get('Type') != 'text') {
-                $data['filter-queries'] .= $mp->getFilterQuery() . "\n";
-                $data['prepared-filter-queries'] .= $mp->getPreparedFilterQuery() . "\n";
-                if ($this->getTable() != $this->tableFromClass()) {
-                    $data['set-table'] = "\n" . sprintf("            \$this->setTable('%s');", $this->getTable()) . "\n";
-                }
-            }
-        }
-        return $data;
-    }
-
-    protected function createMapperTemplate(): \Tk\CurlyTemplate
-    {
-        $classTpl = <<<STR
-<?php
-namespace {db-namespace};
-
-use Tk\DataMap\DataMap;
-use Tk\Db\Mapper\Filter;
-use Tk\Db\Mapper\Mapper;
-use Tk\Db\Mapper\Result;
-use Tk\Db\Tool;
-use Tk\DataMap\Db;
-use Tk\DataMap\Form;
-use Tk\DataMap\Table;
-
-class {classname}Map extends Mapper
-{
-
-    public function makeDataMaps(): void
-    { {set-table}
-        if (!\$this->getDataMappers()->has(self::DATA_MAP_DB)) {
-            \$map = new DataMap();
-{db-maps}
-            \$this->addDataMap(self::DATA_MAP_DB, \$map);
-        }
-
-        if (!\$this->getDataMappers()->has(self::DATA_MAP_FORM)) {
-            \$map = new DataMap();
-{form-maps}
-            \$this->addDataMap(self::DATA_MAP_FORM, \$map);
-        }
-
-        if (!\$this->getDataMappers()->has(self::DATA_MAP_TABLE)) {
-            \$map = new DataMap();
-{table-maps}
-            \$this->addDataMap(self::DATA_MAP_TABLE, \$map);
-        }
-    }
-
-    /**
-     * @return Result|{classname}[]
-     */
-    public function findFiltered(array|Filter \$filter, ?Tool \$tool = null): Result
-    {
-        return \$this->selectFromFilter(\$this->makeQuery(Filter::create(\$filter)), \$tool);
-    }
-
-    public function makeQuery(Filter \$filter): Filter
-    {
-        \$filter->appendFrom('%s a', \$this->quoteParameter(\$this->getTable()));
-
-        if (!empty(\$filter['search'])) {
-            \$kw = '%' . \$this->escapeString(\$filter['search']) . '%';
-            \$w = '';
-            //\$w .= sprintf('a.name LIKE %s OR ', \$this->quote(\$kw));
-            if (is_numeric(\$filter['search'])) {
-                \$id = (int)\$filter['search'];
-                \$w .= sprintf('a.{primary-col} = %d OR ', \$id);
-            }
-            if (\$w) \$filter->appendWhere('(%s) AND ', substr(\$w, 0, -3));
-        }
-
-        if (!empty(\$filter['id'])) {
-            \$filter['{primary-prop}'] = \$filter['id'];
-        }
-        if (!empty(\$filter['{primary-prop}'])) {
-            \$w = \$this->makeMultiQuery(\$filter['{primary-prop}'], 'a.{primary-col}');
-            if (\$w) \$filter->appendWhere('(%s) AND ', \$w);
-        }
-{filter-queries}
-        if (!empty(\$filter['exclude'])) {
-            \$w = \$this->makeMultiQuery(\$filter['exclude'], 'a.{primary-col}', 'AND', '!=');
-            if (\$w) \$filter->appendWhere('(%s) AND ', \$w);
-        }
-
-        return \$filter;
-    }
-
-}
-STR;
-        return \Tk\CurlyTemplate::create($classTpl);
-    }
-
-    protected function createPreparedMapperTemplate(): \Tk\CurlyTemplate
-    {
-        $classTpl = <<<STR
-<?php
-namespace {db-namespace};
-
-use Tk\DataMap\DataMap;
-use Tk\Db\Mapper\Filter;
-use Tk\Db\Mapper\Mapper;
-use Tk\Db\Mapper\Result;
-use Tk\Db\Tool;
-use Tk\DataMap\Db;
-use Tk\DataMap\Form;
-use Tk\DataMap\Table;
-
-class {classname}Map extends Mapper
-{
-
-    public function makeDataMaps(): void
-    { {set-table}
-        if (!\$this->getDataMappers()->has(self::DATA_MAP_DB)) {
-            \$map = new DataMap();
-{db-maps}
-            \$this->addDataMap(self::DATA_MAP_DB, \$map);
-        }
-
-        if (!\$this->getDataMappers()->has(self::DATA_MAP_FORM)) {
-            \$map = new DataMap();
-{form-maps}
-            \$this->addDataMap(self::DATA_MAP_FORM, \$map);
-        }
-
-        if (!\$this->getDataMappers()->has(self::DATA_MAP_TABLE)) {
-            \$map = new DataMap();
-{table-maps}
-            \$this->addDataMap(self::DATA_MAP_TABLE, \$map);
-        }
-    }
-
-    /**
-     * @return Result|{classname}[]
-     */
-    public function findFiltered(array|Filter \$filter, ?Tool \$tool = null): Result
-    {
-        return \$this->prepareFromFilter(\$this->makeQuery(Filter::create(\$filter)), \$tool);
-    }
-
-    public function makeQuery(Filter \$filter): Filter
-    {
-        \$filter->appendFrom('%s a', \$this->quoteParameter(\$this->getTable()));
-
-        if (!empty(\$filter['search'])) {
-            \$filter['search'] = '%' . \$this->getDb()->escapeString(\$filter['search']) . '%';
-            \$w  = 'a.{primary-col} LIKE :search OR ';
-            //\$w .= 'a.name LIKE :search OR ';
-            if (\$w) \$filter->appendWhere('(%s) AND ', substr(\$w, 0, -3));
-        }
-
-        if (!empty(\$filter['id'])) {
-            \$filter['{primary-prop}'] = \$filter['id'];
-        }
-        if (!empty(\$filter['{primary-prop}'])) {
-            \$filter->appendWhere('(a.{primary-col} IN (:{primary-prop})) AND ');
-        }
-{prepared-filter-queries}
-        if (!empty(\$filter['exclude'])) {
-            \$filter->appendWhere('(a.{primary-col} NOT IN (:exclude)) AND ');
-        }
-
-        return \$filter;
-    }
-
-}
-STR;
-        return \Tk\CurlyTemplate::create($classTpl);
-    }
-
-
-    /**
-     * @throws \Exception
+     *
      */
     public function makeTable(array $params = []): string
     {
@@ -534,7 +344,7 @@ STR;
     }
 
     /**
-     * @throws \Exception
+     *
      */
     public function makeManager(array $params = []): string
     {
@@ -549,7 +359,7 @@ STR;
             'cell-list' => ''
         ];
         foreach ($this->tableInfo as $col) {
-            $mp = ModelProperty::create($col);
+            $mp = ModelProperty::create((array)$col);
             if ($mp->getName() == 'del') continue;
             if ($mp->get('Type') != 'text')
                 $data['cell-list'] .= $mp->getTableCell($this->getClassName(), $this->getNamespace()) . "\n";
@@ -724,7 +534,7 @@ PHP;
             'field-list' => ''
         ];
         foreach ($this->tableInfo as $col) {
-            $mp = ModelProperty::create($col);
+            $mp = ModelProperty::create((array)$col);
             if ($mp->getName() == 'del' || $mp->getName() == 'modified' || $mp->getName() == 'created' || $mp->getName() == 'id') continue;
             $data['field-list'] .= $mp->getFormField($this->getClassName(), $this->getNamespace(), $isModelForm) . "\n";
         }
