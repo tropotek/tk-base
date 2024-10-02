@@ -78,7 +78,6 @@ class Auth extends Model
     public static function create(Model $model): self
     {
         $id = self::getDbModelId($model);
-        if (!$id) throw new Exception("model id must be set before creating Auth object");
         $obj = new self();
         $obj->fkey     = $model::class;
         $obj->fid      = $id;
