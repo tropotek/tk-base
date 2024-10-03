@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Db;
 
+use Bs\Auth;
 use Bs\Factory;
 use Tk\Db;
 

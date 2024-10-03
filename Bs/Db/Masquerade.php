@@ -2,6 +2,7 @@
 namespace Bs\Db;
 
 use Bs\Factory;
+use Bs\Auth;
 
 class Masquerade
 {

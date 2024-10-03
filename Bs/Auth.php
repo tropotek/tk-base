@@ -12,6 +12,15 @@ use Tk\Db;
 use Tk\Db\Filter;
 use Tk\Db\Model;
 
+/**
+ * This object manages user authentication within the DB
+ * In your app create User Models that use the \Bs\Traits\AuthTrait
+ * And when creating new users create an Auth object to store the users credentials
+ *
+ * You Apps user models should focus on the user data not authentication data
+ * Create a view for your model that links the auth fields to have access to permissions, username, email, etc.
+ *
+ */
 class Auth extends Model
 {
     use ForeignModelTrait;
