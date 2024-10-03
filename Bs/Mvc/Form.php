@@ -1,6 +1,6 @@
 <?php
 
-namespace Bs;
+namespace Bs\Mvc;
 
 use Bs\Traits\SystemTrait;
 use Dom\Renderer\DisplayInterface;
@@ -8,6 +8,7 @@ use Dom\Template;
 use Tk\Form\Renderer\Dom\Renderer;
 use Tk\Uri;
 use Tk\Db\Model;
+use Bs\Factory;
 
 /**
  * New form and renderer to replace \Bs\Form\EditInterface

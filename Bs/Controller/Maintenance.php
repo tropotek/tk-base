@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Controller;
 
-use Bs\ControllerDomInterface;
+use Bs\Mvc\ControllerDomInterface;
 use Bs\Registry;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;

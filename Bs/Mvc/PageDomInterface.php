@@ -1,5 +1,6 @@
 <?php
-namespace Bs;
+namespace Bs\Mvc
+;
 
 use Dom\Modifier;
 use Dom\Renderer\DisplayInterface;

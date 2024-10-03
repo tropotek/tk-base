@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Listener;
 
-use Au\Auth;
+use Bs\Auth;
 use Bs\Db\GuestToken;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -9,7 +9,6 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tk\Alert;
-use Tk\Exception;
 use Tk\Log;
 use Tk\Uri;
 

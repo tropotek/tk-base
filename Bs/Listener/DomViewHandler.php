@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Listener;
 
-use Bs\ControllerInterface;
+use Bs\Mvc\ControllerInterface;
 use Dom\Modifier;
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;

@@ -1,8 +1,8 @@
 <?php
-namespace Au\Listener;
+namespace Bs\Listener;
 
-use Au\Auth;
-use Au\Remember;
+use Bs\Auth;
+use Bs\Db\Remember;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

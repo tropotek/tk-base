@@ -1,7 +1,7 @@
 <?php
-namespace Au\Traits;
+namespace Bs\Traits;
 
-use Au\Auth;
+use Bs\Auth;
 
 trait AuthTrait
 {

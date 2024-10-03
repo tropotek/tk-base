@@ -1,6 +1,6 @@
 <?php
 
-namespace Bs;
+namespace Bs\Mvc;
 
 abstract class ControllerPublic extends ControllerDomInterface
 {

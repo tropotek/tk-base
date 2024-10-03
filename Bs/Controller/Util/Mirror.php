@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Controller\Util;
 
-use Au\Auth;
+use Bs\Auth;
 use JetBrains\PhpStorm\NoReturn;
 use Tk\Config;
 use Tk\Uri;

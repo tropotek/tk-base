@@ -1,5 +1,5 @@
 <?php
-namespace Au;
+namespace Bs\Db;
 
 use Bs\Factory;
 use Tk\Db;

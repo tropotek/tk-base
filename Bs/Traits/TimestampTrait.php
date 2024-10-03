@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Db\Traits;
+namespace Bs\Traits;
 
 use DateTime;
 

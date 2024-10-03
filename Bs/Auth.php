@@ -1,11 +1,12 @@
 <?php
-namespace Au;
+namespace Bs;
 
-use Bs\Db\Traits\ForeignModelTrait;
-use Bs\Factory;
-use Bs\Db\Traits\TimestampTrait;
+use Bs\Db\Masquerade;
+use Bs\Db\Remember;
+use Bs\Db\UserInterface;
+use Bs\Traits\ForeignModelTrait;
+use Bs\Traits\TimestampTrait;
 use Tk\Config;
-use Tk\Exception;
 use Tk\Uri;
 use Tk\Db;
 use Tk\Db\Filter;

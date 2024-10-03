@@ -365,8 +365,8 @@ STR;
 namespace {controller-namespace}\{classname};
 
 use {db-namespace}\{classname};
-use Bs\ControllerAdmin;
-use Bs\Table;
+use Bs\Mvc\ControllerAdmin;
+use Bs\Mvc\Table;
 use Dom\Template;
 use Tk\Form\Field\Input;
 use Tk\Table\Action\Csv;
@@ -388,7 +388,7 @@ class Manager extends ControllerAdmin
         \$this->getPage()->setTitle('{name} Manager');
 
         // init table
-        \$this->table = new \Bs\Table();
+        \$this->table = new \Bs\Mvc\Table();
         \$this->table->setOrderBy('{primary-col}');
         \$this->table->setLimit(25);
 
@@ -492,7 +492,7 @@ PHP;
 <?php
 namespace {table-namespace};
 
-use Bs\Table;
+use Bs\Mvc\Table;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Uri;
@@ -630,9 +630,9 @@ PHP;
 namespace {controller-namespace}\{classname};
 
 use {db-namespace}\{classname};
-use Bs\ControllerAdmin;
+use Bs\Mvc\ControllerAdmin;
 use Bs\Factory;
-use Bs\Form;
+use Bs\Mvc\Form;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Exception;
@@ -745,9 +745,9 @@ STR;
 <?php
 namespace {form-namespace};
 
-use Bs\ControllerAdmin;
+use Bs\Mvc\ControllerAdmin;
 use Bs\Factory;
-use Bs\Form;
+use Bs\Mvc\Form;
 use Dom\Template;
 use Tk\Alert;
 use Tk\Exception;

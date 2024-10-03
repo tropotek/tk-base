@@ -1,5 +1,5 @@
 <?php
-namespace Bs;
+namespace Bs\Mvc;
 
 use Bs\Traits\SystemTrait;
 

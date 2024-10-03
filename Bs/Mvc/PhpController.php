@@ -1,6 +1,6 @@
 <?php
 
-namespace Bs;
+namespace Bs\Mvc;
 
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Config;

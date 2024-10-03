@@ -1,6 +1,6 @@
 <?php
 
-namespace Bs;
+namespace Bs\Mvc;
 
 use Tk\Config;
 

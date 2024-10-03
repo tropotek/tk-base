@@ -1,5 +1,5 @@
 <?php
-namespace Au;
+namespace Bs\Db;
 
 interface UserInterface { }
 

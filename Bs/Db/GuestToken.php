@@ -1,14 +1,13 @@
 <?php
 namespace Bs\Db;
 
-use Au\Auth;
+use Bs\Auth;
 use Bs\Traits\SystemTrait;
 use Tk\DataMap\DataMap;
 use Tk\DataMap\Db\DateTime;
 use Tk\DataMap\Db\Integer;
 use Tk\DataMap\Db\Json;
 use Tk\DataMap\Db\Text;
-use Tk\Date;
 use Tk\Exception;
 use Tk\Db;
 use Tk\Db\Model;

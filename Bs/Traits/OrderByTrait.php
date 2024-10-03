@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Db\Traits;
+namespace Bs\Traits;
 
 trait OrderByTrait
 {
@@ -16,7 +16,7 @@ trait OrderByTrait
      * @param int $orderBy
      * @return $this
      */
-    public function setOrderBy($orderBy)
+    public function setOrderBy($orderBy): static
     {
         $this->orderBy = $orderBy;
         return $this;

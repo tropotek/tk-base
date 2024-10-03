@@ -1,14 +1,14 @@
 <?php
-namespace Bs;
+namespace Bs\Mvc;
 
-use Au\Auth;
+use Bs\Auth;
 use Bs\Traits\SystemTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Tk\Alert;
 use Tk\Exception;
-use Tk\Log;
 use Tk\Uri;
+use Bs\Factory;
 
 abstract class ControllerInterface
 {

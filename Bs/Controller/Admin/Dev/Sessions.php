@@ -1,12 +1,11 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
-use Au\Auth;
-use Bs\ControllerAdmin;
-use Bs\Db\Permissions;
-use Bs\Table;
+use Bs\Auth;
+use Bs\Mvc\ControllerAdmin;
+use Bs\Mvc\Table;
 use Bs\Ui\Crumbs;
-use Au\Masquerade;
+use Bs\Db\Masquerade;
 use Dom\Template;
 use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
@@ -158,7 +157,6 @@ CSS;
         }
         // reset back to original user session
         session_reset();
-        // todo: sort user sessions first
 
         return $rows;
     }

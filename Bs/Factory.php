@@ -1,6 +1,10 @@
 <?php
 namespace Bs;
 
+use Bs\Mvc\Page;
+use Bs\Mvc\PageDomInterface;
+use Bs\Mvc\PageInterface;
+use Bs\Mvc\PagePhp;
 use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;

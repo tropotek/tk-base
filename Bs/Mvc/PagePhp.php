@@ -1,5 +1,5 @@
 <?php
-namespace Bs;
+namespace Bs\Mvc;
 
 class PagePhp extends PageInterface
 {

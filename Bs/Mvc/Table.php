@@ -1,14 +1,11 @@
 <?php
 
-namespace Bs;
+namespace Bs\Mvc;
 
-use Au\Auth;
-use Bs\Db\User;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
 use Tk\Config;
 use Tk\Form;
-use Tk\System;
 use Tk\Uri;
 use Tk\Db\Filter;
 use Tk\Table\Action;

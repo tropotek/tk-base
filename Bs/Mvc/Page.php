@@ -1,12 +1,13 @@
 <?php
-namespace Bs;
+namespace Bs\Mvc;
 
-use Au\Auth;
+use Bs\Auth;
 use Bs\Ui\Crumbs;
 use Dom\Modifier\JsLast;
 use Dom\Template;
 use Tk\Config;
 use Tk\Uri;
+use Bs\Registry;
 
 class Page extends PageDomInterface
 {

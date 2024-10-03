@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Console;
 
-use Au\Auth;
+use Bs\Auth;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;

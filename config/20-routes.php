@@ -3,10 +3,6 @@ use Symfony\Component\Routing\Loader\Configurator\CollectionConfigurator;
 
 return function (CollectionConfigurator $routes) {
 
-    // Filesystem
-    $routes->add('file-manager', '/fileManager')
-        ->controller([\Bs\Controller\File\Manager::class, 'doDefault']);
-
     // Dev/info Pages
     $routes->add('sessions', '/sessions')
         ->controller([\Bs\Controller\Admin\Dev\Sessions::class, 'doDefault']);

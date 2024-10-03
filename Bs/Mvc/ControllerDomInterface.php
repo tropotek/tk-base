@@ -1,5 +1,5 @@
 <?php
-namespace Bs;
+namespace Bs\Mvc;
 
 use Dom\Renderer\RendererInterface;
 use Dom\Renderer\Traits\RendererTrait;

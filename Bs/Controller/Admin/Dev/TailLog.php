@@ -1,8 +1,8 @@
 <?php
 namespace Bs\Controller\Admin\Dev;
 
-use Au\Auth;
-use Bs\ControllerAdmin;
+use Bs\Auth;
+use Bs\Mvc\ControllerAdmin;
 use Dom\Template;
 use JetBrains\PhpStorm\NoReturn;
 use Tk\Uri;

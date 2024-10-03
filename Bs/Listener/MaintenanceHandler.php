@@ -1,7 +1,7 @@
 <?php
 namespace Bs\Listener;
 
-use Au\Auth;
+use Bs\Auth;
 use Bs\Controller\Maintenance;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
