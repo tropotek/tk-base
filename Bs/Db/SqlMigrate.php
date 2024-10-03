@@ -1,5 +1,5 @@
 <?php
-namespace Bs\Util\Db;
+namespace Bs\Db;
 
 use Tk\Config;
 use Tk\FileUtil;

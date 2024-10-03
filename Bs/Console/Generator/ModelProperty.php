@@ -345,7 +345,7 @@ class ModelProperty extends \Tk\Collection
         );
     }
 
-    public function getTableCell(string $className, string $primaryKey, string $tableProperty = ''): string
+    public function getTableCell(string $className, string $namespace, string $primaryKey, string $tableProperty = ''): string
     {
         if (!empty($tableProperty)) $tableProperty .= '->';
         $append = '';
@@ -362,7 +362,7 @@ class ModelProperty extends \Tk\Collection
         $classLower = strtolower($className);
         if ($this->getName() == 'name' || $this->getName() == 'title') {
             $append .= "\n            ->addHeaderCss('max-width')";
-            $append .= "\n            ->addOnValue(function($className \$obj, Cell \$cell) {
+            $append .= "\n            ->addOnValue(function(\\$namespace\\$className \$obj, Cell \$cell) {
                 \$url = Uri::create('/{$classLower}Edit', ['{$primaryKey}' => \$obj->{$primaryKey}]);
                 return sprintf('<a href=\"%s\">%s</a>', \$url, \$obj->$propertyName);
             })";
@@ -381,34 +381,31 @@ class ModelProperty extends \Tk\Collection
         );
     }
 
-    public function getFormField(string $className, string $namespace, bool $isModelForm = false): string
+    public function getFormField(string $className, string $namespace, string $formProperty = ''): string
     {
-        $mapClass = 'Field\Input';
+        if (!empty($formProperty)) $formProperty .= '->';
+        $mapClass = 'Input';
         $argAppend = '';
         $append = '';
         if ($this->get('Type') == 'text') {
-            $mapClass = 'Field\Textarea';
+            $mapClass = 'Textarea';
         }
         if ($this->getType() == self::TYPE_BOOL) {
-            $mapClass = 'Field\Checkbox';
+            $mapClass = 'Checkbox';
         }
         if (str_ends_with($this->getName(), 'Id')) {
-            $mapClass = 'Field\Select';
+            $mapClass = 'Select';
             $argAppend = sprintf(', []');
             $append = sprintf('->prependOption(\'-- Select --\', \'\')');
         }
         $propertyName = $this->quote($this->getName());
 
         $tpl = <<<TPL
-                \$this->appendField(new %s(%s%s))%s;
+                \$this->%sappendField(new %s(%s%s))%s;
         TPL;
-        if ($isModelForm) {
-            $tpl = <<<TPL
-                    \$this->appendField(new %s(%s%s))%s;
-            TPL;
-        }
 
         return sprintf($tpl,
+            $formProperty,
             $mapClass,
             $propertyName,
             $argAppend,

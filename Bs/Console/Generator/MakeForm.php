@@ -1,30 +1,26 @@
 <?php
-namespace Bs\Console\Command;
+namespace Bs\Console\Generator;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MakeAll extends MakeInterface
+class MakeForm extends MakeInterface
 {
 
     protected function configure(): void
     {
-        $this->setName('make-all')
-            ->setAliases(['ma'])
-            ->setDescription('Create all DB objects table, form and Controllers.');
+        $this->setName('make-form')
+            ->setAliases(array('mf'))
+            ->setDescription('Create a PHP Form Edit Class from the DB schema');
         parent::configure();
     }
 
-    /**
-     * @throws \Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
-        $this->makeAll();
+        $this->makeForm();
 
         return Command::SUCCESS;
     }
-
 }

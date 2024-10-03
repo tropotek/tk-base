@@ -4,7 +4,7 @@ namespace Bs\Console;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Bs\Util\Db\SqlMigrate;
+use Bs\Db\SqlMigrate;
 use Tk\Config;
 use Tk\Db;
 

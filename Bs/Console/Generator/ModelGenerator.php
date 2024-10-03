@@ -353,7 +353,7 @@ STR;
             $mp = ModelProperty::create((array)$col);
             if ($mp->getName() == 'del') continue;
             if ($mp->get('Type') != 'text')
-                $data['cell-list'] .= $mp->getTableCell($this->getClassName(), $default['primary-prop'], $tableProperty) . "\n";
+                $data['cell-list'] .= $mp->getTableCell($this->getClassName(), $this->getDbNamespace(), $default['primary-prop'], $tableProperty) . "\n";
         }
         return $data;
     }
@@ -503,6 +503,34 @@ use Tk\Form\Field\Input;
 use Tk\Table\Cell;
 use Tk\Table\Cell\RowSelect;
 
+/**
+ * Example Controller:
+ * <code>
+ * class Manager extends \Bs\ControllerAdmin {
+ *      protected ?Table \$table = null;
+ *      public function doDefault(mixed \$request, string \$type): void
+ *      {
+ *          ...
+ *          // init the user table
+ *          \$this->table = new \{table-namespace}\{classname}();
+ *          \$this->table->setOrderBy('name');
+ *          \$this->table->setLimit(25);
+ *          \$this->table->execute();
+ *          // Set the table rows
+ *          \$filter = \$this->table->getDbFilter();
+ *          \$rows = User::findFiltered(\$filter);
+ *          \$this->table->setRows(\$rows, Db::getLastStatement()->getTotalRows());
+ *          ...
+ *      }
+ *      public function show(): ?Template
+ *      {
+ *          \$template = \$this->getTemplate();
+ *          \$template->appendTemplate('content', \$this->table->show());
+ *          return \$template;
+ *      }
+ * }
+ * </code>
+ */
 class {classname} extends Table
 {
 
@@ -568,9 +596,7 @@ PHP;
     public function makeForm(array $params = []): string
     {
         $tpl = $this->createFormTemplate();
-//        if (!empty($params['modelForm']))
-//            $tpl = $this->createModelFormTemplate();
-        $data = $this->arrayMerge($this->getDefaultData(), $this->processForm(!empty($params['modelForm'])), $params);
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processForm(), $params);
         return $tpl->parse($data);
     }
 
@@ -580,11 +606,11 @@ PHP;
     public function makeEdit(array $params = []): string
     {
         $tpl = $this->createFormEditTemplate();
-        $data = $this->getDefaultData();
+        $data = $this->arrayMerge($this->getDefaultData(), $this->processForm('form'), $params);
         return $tpl->parse($data);
     }
 
-    protected function processForm(bool $isModelForm = false): array
+    protected function processForm(string $formProperty = ''): array
     {
         $data = [
             'field-list' => ''
@@ -592,7 +618,7 @@ PHP;
         foreach ($this->tableInfo as $col) {
             $mp = ModelProperty::create((array)$col);
             if ($mp->getName() == 'del' || $mp->getName() == 'modified' || $mp->getName() == 'created' || $mp->getName() == 'id') continue;
-            $data['field-list'] .= $mp->getFormField($this->getClassName(), $this->getNamespace(), $isModelForm) . "\n";
+            $data['field-list'] .= $mp->getFormField($this->getClassName(), $this->getNamespace(), $formProperty) . "\n";
         }
         return $data;
     }
@@ -604,56 +630,85 @@ PHP;
 namespace {controller-namespace}\{classname};
 
 use {db-namespace}\{classname};
-use {db-namespace}\{classname}Map;
-use Bs\Form\EditTrait;
-use Bs\PageController;
+use Bs\ControllerAdmin;
+use Bs\Factory;
+use Bs\Form;
 use Dom\Template;
-use Symfony\Component\HttpFoundation\Request;
-use Bs\Db\User;
+use Tk\Alert;
 use Tk\Exception;
+use Tk\Form\Action\Link;
+use Tk\Form\Action\SubmitExit;
+use Tk\Form\Action\Submit;
+use Tk\Form\Field\Checkbox;
+use Tk\Form\Field\Textarea;
+use Tk\Form\Field\Hidden;
+use Tk\Form\Field\Input;
+use Tk\Form\Field\Select;
+use Tk\Uri;
 
-/**
- * Add Route to /src/config/routes.php:
- * ```php
- *   \$routes->add('{table-id}-manager', '/{namespace-url}Edit')
- *       ->controller([{controller-namespace}\{classname}\Edit::class, 'doDefault']);
- * ```
- */
-class Edit extends PageController
+class Edit extends ControllerAdmin
 {
-    use EditTrait;
-
     protected ?{classname} \${property-name} = null;
+    protected ?Form  \$form = null;
 
 
-    public function __construct()
+    public function doDefault(): void
     {
-        parent::__construct(\$this->getFactory()->getAdminPage());
         \$this->getPage()->setTitle('Edit {name}');
-        \$this->setAccess(Permissions::PERM_ADMIN);
+
+        \${primary-prop} = intval(\$_GET['{primary-prop}'] ?? 0);
+
+        \$this->{property-name} = new {classname}();
+        if (\${primary-prop}) {
+            \$this->{property-name} = {classname}::find(\${primary-prop});
+            if (!(\$this->{property-name} instanceof {classname})) {
+                throw new Exception("invalid {primary-prop} \${primary-prop}");
+            }
+        }
+
+        // todo: \$this->setAccess(...);
+
+        // Get the form template
+        \$this->form = new Form();
+{field-list}
+        \$this->form->appendField(new SubmitExit('save', [\$this, 'onSubmit']));
+        \$this->form->appendField(new Link('cancel', Uri::create('/{property-name}Manager')));
+
+        \$load = \$this->form->unmapModel(\$this->{property-name});
+        \$this->form->setFieldValues(\$load);
+
+        \$this->form->execute(\$_POST);
+
     }
 
-    public function doDefault(Request \$request): \App\Page|\Dom\Mvc\Page
+    public function onSubmit(Form \$form, Submit \$action): void
     {
-        \$this->{property-name} = new {classname}();
-        if (\$request->query->getInt('{primary-prop}')) {
-            \$this->{property-name} = {classname}Map::create()->find(\$request->query->getInt('{primary-prop}'));
-        }
-        if (!\$this->{property-name}) {
-            throw new Exception('Invalid {classname} ID: ' . \$request->query->getInt('{primary-prop}'));
+        \$form->mapModel(\$this->{property-name});
+
+        \$form->addFieldErrors(\$this->{property-name}->validate());
+        if (\$form->hasErrors()) {
+            return;
         }
 
-        \$this->setForm(new \{form-namespace}\{classname}(\$this->{property-name}));
-        \$this->getForm()->init()->execute(\$request->request->all());
+        \$isNew = (\$this->{property-name}->{primary-prop} == 0);
+        \$this->{property-name}->save();
 
-        return \$this->getPage();
+        Alert::addSuccess('Form save successfully.');
+        \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->{property-name}->{primary-prop}));
+        if (\$form->getTriggeredAction()->isExit()) {
+            \$action->setRedirect(Factory::instance()->getBackUrl());
+        }
     }
 
     public function show(): ?Template
     {
+        // Setup field group widths with bootstrap classes
+        //\$this->form->getField('username')->addFieldCss('col-6');
+        //\$this->form->getField('email')->addFieldCss('col-6');
+
         \$template = \$this->getTemplate();
         \$template->setText('title', \$this->getPage()->getTitle());
-        \$template->setAttr('back', 'href', \$this->getBackUrl());
+        \$template->setAttr('back', 'href', Factory::instance()->getBackUrl());
 
         \$template->appendTemplate('content', \$this->form->show());
 
@@ -664,7 +719,7 @@ class Edit extends PageController
     {
         \$html = <<<HTML
 <div>
-  <div class="card mb-3">7
+  <div class="page-actions card mb-3">7
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
@@ -676,7 +731,7 @@ class Edit extends PageController
   </div>
 </div>
 HTML;
-        return \$this->loadTemplate(\$html);
+        return Template::load(\$html);
     }
 
 }
@@ -690,69 +745,94 @@ STR;
 <?php
 namespace {form-namespace};
 
-use Bs\Form\EditInterface;
+use Bs\ControllerAdmin;
+use Bs\Factory;
+use Bs\Form;
 use Dom\Template;
 use Tk\Alert;
-use Tk\Form;
-use Tk\Form\Field;
-use Tk\Form\Action;
+use Tk\Exception;
+use Tk\Form\Action\Link;
+use Tk\Form\Action\SubmitExit;
+use Tk\Form\Action\Submit;
+use Tk\Form\Field\Checkbox;
+use Tk\Form\Field\Textarea;
+use Tk\Form\Field\Hidden;
+use Tk\Form\Field\Input;
+use Tk\Form\Field\Select;
 use Tk\Uri;
 
-class {classname} extends EditInterface
+/**
+ * Example Controller:
+ * <code>
+ * class Edit extends \Bs\ControllerAdmin {
+ *      protected ?\Bs\Form \$form = null;
+ *      public function doDefault(mixed \$request, string \$type): void
+ *      {
+ *          ...
+ *          \$this->form = new \Bs\Form\{classname}(\$this->get{classname}());
+ *          \$this->form->execute(\$_POST);
+ *          ...
+ *      }
+ *      public function show(): ?Template
+ *      {
+ *          \$template = \$this->getTemplate();
+ *          \$template->appendTemplate('content', \$this->form->show());
+ *          return \$template;
+ *      }
+ * }
+ * </code>
+ */
+class {classname} extends Form
 {
 
-    protected function initFields(): void
+    public function init(): static
     {
 {field-list}
+        \$this->appendField(new SubmitExit('save', [\$this, 'onSubmit']));
+        \$this->appendField(new Link('cancel', Factory::instance()->getBackUrl()));
 
-        \$this->getForm()->appendField(new Action\SubmitExit('save', [\$this, 'onSubmit']));
-        \$this->getForm()->appendField(new Action\Link('cancel', Uri::create('/{property-name}Manager')));
-
-        \$load = \$this->{property-name}->getMapper()->getFormMap()->getArray(\$this->{property-name});
-        \$load['id'] = \$this->{property-name}->getId();
-        \$this->getForm()->setFieldValues(\$load); // Use form data mapper if loading objects
-
-        \$this->getForm()->execute(\$request->request->all());
-
-        \$this->setFormRenderer(new FormRenderer(\$this->getForm()));
-
+        return \$this;
     }
 
     public function execute(array \$values = []): static
     {
-        \$load = \$this->get{classname}()->getMapper()->getFormMap()->getArray(\$this->get{classname}());
-        \$load['{primary-prop}'] = \$this->get{classname}()->get{classname}Id();
-        \$this->getForm()->setFieldValues(\$load);
+        \$this->init();
+
+        // Load form with object values
+        \$load = \$this->unmapModel(\$this->get{classname}());
+        \$this->setFieldValues(\$load);
+
         parent::execute(\$values);
         return \$this;
     }
 
-    public function onSubmit(Form \$form, Action\ActionInterface \$action): void
+    public function onSubmit(Form \$form, Submit \$action): void
     {
-        \$this->{property-name}->getMapper()->getFormMap()->loadObject(\$this->{property-name}, \$form->getFieldValues());
+        \$form->mapModel(\$this->get{classname}());
 
-        \$form->addFieldErrors(\$this->{property-name}->validate());
+        \$form->addFieldErrors(\$this->get{classname}()->validate());
         if (\$form->hasErrors()) {
             return;
         }
 
-        \$this->{property-name}->save();
+        \$isNew = (\$this->get{classname}()->{primary-prop} == 0);
+        \$this->get{classname}()->save();
 
         Alert::addSuccess('Form save successfully.');
-        \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->{property-name}->get{classname}Id()));
+        \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->get{classname}()->{primary-prop}));
         if (\$form->getTriggeredAction()->isExit()) {
-            \$action->setRedirect(Uri::create('/{property-name}Manager'));
+            \$action->setRedirect(Factory::instance()->getBackUrl());
         }
     }
 
     public function show(): ?Template
     {
         // Setup field group widths with bootstrap classes
-        //\$this->getForm()->getField('username')->addFieldCss('col-6');
-        //\$this->getForm()->getField('email')->addFieldCss('col-6');
+        //\$this->getField('username')->addFieldCss('col-6');
+        //\$this->getField('email')->addFieldCss('col-6');
 
-        \$renderer = \$this->getFormRenderer();
-        \$renderer->addFieldCss('mb-3');
+        \$renderer = \$this->getRenderer();
+        \$renderer?->addFieldCss('mb-3');
 
         return \$renderer->show();
     }
@@ -760,7 +840,9 @@ class {classname} extends EditInterface
 
     public function get{classname}(): ?\{db-namespace}\{classname}
     {
-        return \$this->getModel();
+        /** @var \{db-namespace}\{classname} \$obj */
+        \$obj = \$this->getModel();
+        return \$obj;
     }
 
 }

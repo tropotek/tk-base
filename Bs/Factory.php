@@ -1,9 +1,6 @@
 <?php
 namespace Bs;
 
-use Bs\Console\Generator\MakeManager;
-use Bs\Console\Generator\MakeModel;
-use Bs\Console\Generator\MakeTable;
 use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;
@@ -438,15 +435,13 @@ class Factory extends Collection
             if (Config::isDev()) {
                 $app->add(new \Bs\Console\Mirror());
                 $app->add(new \Bs\Console\MirrorData());
-                // todo refactor these for the lib updates
-                $app->add(new MakeModel());
-                $app->add(new MakeManager());
-                $app->add(new MakeTable());
-//                $app->add(new \Bs\Console\Command\MakeMapper());
-//                $app->add(new \Bs\Console\Command\MakeForm());
-//                $app->add(new \Bs\Console\Command\MakeManager());
-//                $app->add(new \Bs\Console\Command\MakeEdit());
-//                $app->add(new \Bs\Console\Command\MakeAll());
+                // model generator commands
+                $app->add(new \Bs\Console\Generator\MakeModel());
+                $app->add(new \Bs\Console\Generator\MakeManager());
+                $app->add(new \Bs\Console\Generator\MakeTable());
+                $app->add(new \Bs\Console\Generator\MakeEdit());
+                $app->add(new \Bs\Console\Generator\MakeForm());
+                $app->add(new \Bs\Console\Generator\MakeAll());
             }
 
             $this->set('console', $app);
