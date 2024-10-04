@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Bs\Console\Console;
 use Tk\Config;
+use Tk\Log;
 use Tk\Uri;
 use Tk\Db;
 
@@ -68,10 +69,16 @@ class Mirror extends Console
                     if (is_file($mirrorSqlFile)) unlink($mirrorSqlFile);
 
                     // get a copy of the remote DB to be mirrored
-                    $mirrorUrl = Uri::create($this->getConfig()->get('db.mirror.url') . '/util/mirror')
+                    vd(
+                        $this->getConfig()->get('db.mirror.url'),
+                        rtrim('/', $this->getConfig()->get('db.mirror.url')),
+                        Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
+                    );
+                    $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
                         ->set('action', 'db')
                         ->set('secret', $secret)
                         ->set('un', $username);
+                    Log::debug("Requesting Data: {$mirrorUrl}");
                     $this->postRequest($mirrorUrl, $mirrorSqlFile);
                 } else {
                     $this->writeComment('Using existing mirror file: ' . $mirrorSqlFile);

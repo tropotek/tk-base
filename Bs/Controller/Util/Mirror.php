@@ -97,7 +97,7 @@ class Mirror
         exit;
     }
 
-    protected function _fileOutput($filename)
+    protected function _fileOutput($filename): void
     {
         $filesize = filesize($filename);
         $chunksize = 4096;
