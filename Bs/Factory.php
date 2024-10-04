@@ -394,7 +394,7 @@ class Factory extends Collection
             if (!$crumbs instanceof Crumbs) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
-                if (\Au\Auth::getAuthUser()) {
+                if (\Bs\Auth::getAuthUser()) {
                     $crumbs->setHomeUrl('/dashboard');
                 }
                 $crumbs->reset();
