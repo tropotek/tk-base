@@ -72,7 +72,8 @@ class Mirror
     public function doDbBackup(): void
     {
         $options = Db::parseDsn(Config::instance()->get('db.mysql'));
-        $options['exclude'] = [Config::instance()->get('session.db_table')];
+        // must exclude _migrate table for migrate cmd to work in mirror cmd
+        $options['exclude'] = ['_session', '_migrate'];
 
         $path = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql');
         Db\DbBackup::save($path, $options);

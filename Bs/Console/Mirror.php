@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Console;
 
+use Bs\Db\SqlMigrate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,7 +55,8 @@ class Mirror extends Console
             $newSqlFile = substr($newZipFile, 0, -3);
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
-            $options['exclude'] = [$config->get('session.db_table')];
+            // must exclude _migrate table for below migrate cmd to work
+            $options['exclude'] = ['_session', '_migrate'];
             $secret   = $this->getConfig()->get('db.mirror.secret');
             $username = trim($input->getArgument('username'));
 
@@ -100,10 +102,10 @@ class Mirror extends Console
                 Db\DbBackup::restore($newZipFile, $options);
 
                 // Execute static files
-                //SqlMigrate::migrateStatic([$this, 'writeGreen']);
+                SqlMigrate::migrateStatic([$this, 'writeGreen']);
 
                 // setup dev environment if site in dev mode
-                //SqlMigrate::migrateDev([$this, 'writeBlue']);
+                SqlMigrate::migrateDev([$this, 'writeBlue']);
 
                 //unlink($backupSqlFile);
             }
