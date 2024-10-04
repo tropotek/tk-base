@@ -74,7 +74,7 @@ class Mirror
         $options = Db::parseDsn(Config::instance()->get('db.mysql'));
         $options['exclude'] = [Config::instance()->get('session.db_table')];
 
-        $path = Config::makePath(Config::getTempPath() . '/db_mirror.sql');
+        $path = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql');
         Db\DbBackup::save($path, $options);
 
         if (is_file($path . '.gz'))

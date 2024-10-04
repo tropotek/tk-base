@@ -47,16 +47,8 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            $backupSqlFile = Config::makePath(Config::getTempPath() . '/tmpt.sql');
-            $mirrorSqlFile = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
-
-            // Delete live cached files
-            $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql.gz'));
-            foreach ($list as $file) {
-                if ($input->getOption('no-cache') || $file != $mirrorSqlFile) {
-                    if (is_file($file)) unlink($file);
-                }
-            }
+            $backupSqlFile = Config::makePath(Config::getTempPath() . '/bak_db.sql');
+            $newZipFile = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
             $options['exclude'] = [$config->get('session.db_table')];
@@ -64,9 +56,15 @@ class Mirror extends Console
             $username = trim($input->getArgument('username'));
 
             if (!$input->getOption('no-sql')) {
-                if (!is_file($mirrorSqlFile) || $input->getOption('no-cache')) {
-                    $this->writeComment('Download fresh mirror file: ' . $mirrorSqlFile);
-                    if (is_file($mirrorSqlFile)) unlink($mirrorSqlFile);
+                if (!is_file($newZipFile) || $input->getOption('no-cache')) {
+                    $this->writeComment('Download fresh mirror file: ' . $newZipFile);
+                    if (is_file($newZipFile)) {
+                        // Delete cached mirror files
+                        $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql.gz'));
+                        foreach ($list as $file) {
+                            if (is_file($file)) unlink($file);
+                        }
+                    }
 
                     // get a copy of the remote DB to be mirrored
                     $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
@@ -74,9 +72,9 @@ class Mirror extends Console
                         ->set('secret', $secret)
                         ->set('un', $username);
                     Log::debug("Requesting Data: {$mirrorUrl}");
-                    $this->postRequest($mirrorUrl, $mirrorSqlFile);
+                    $this->postRequest($mirrorUrl, $newZipFile);
                 } else {
-                    $this->writeComment('Using existing mirror file: ' . $mirrorSqlFile);
+                    $this->writeComment('Using existing mirror file: ' . $newZipFile);
                 }
 
                 // Prevent accidental writing to live DB
@@ -87,7 +85,7 @@ class Mirror extends Console
                 Db::dropAllTables(true, $options['exclude'] ?? []);
 
                 $this->write('Import mirror file to this DB');
-                Db\DbBackup::restore($mirrorSqlFile, $options);
+                Db\DbBackup::restore($newZipFile, $options);
 
                 // Execute static files
                 //SqlMigrate::migrateStatic([$this, 'writeGreen']);
@@ -95,7 +93,7 @@ class Mirror extends Console
                 // setup dev environment if site in dev mode
                 //SqlMigrate::migrateDev([$this, 'writeBlue']);
 
-                //unlink($backupSqlFile);
+                unlink($backupSqlFile);
             }
 
         } catch(\Exception $e) {
@@ -108,14 +106,13 @@ class Mirror extends Console
         return  Command::SUCCESS;
     }
 
-    protected function postRequest(Uri|string $srcUrl, string $destPath): bool
+    protected function postRequest(Uri|string $srcUrl): bool
     {
         $error = false;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);
         $query = $srcUrl->getQuery();
         $srcUrl->reset();
 
-        $fp = fopen($destPath, 'w');
         $curl = curl_init($srcUrl->toString());
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -123,14 +120,13 @@ class Mirror extends Console
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_FILE, $fp);
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
             $error = true;
         }
         curl_close($curl);
-        fclose($fp);
+
         return $error;
     }
 
