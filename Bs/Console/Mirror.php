@@ -17,6 +17,7 @@ use Tk\Db;
  */
 class Mirror extends Console
 {
+    protected string $error = '';
 
     protected function configure(): void
     {
@@ -48,39 +49,50 @@ class Mirror extends Console
             }
 
             $backupSqlFile = Config::makePath(Config::getTempPath() . '/bak_db.sql');
-            $newZipFile = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
+            $newZipFile = Config::makePath(Config::getTempPath() .
+                '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
+            $newSqlFile = substr($newZipFile, 0, -3);
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
             $options['exclude'] = [$config->get('session.db_table')];
             $secret   = $this->getConfig()->get('db.mirror.secret');
             $username = trim($input->getArgument('username'));
 
-            if (!$input->getOption('no-sql')) {
-                if (!is_file($newZipFile) || $input->getOption('no-cache')) {
-                    $this->writeComment('Download fresh mirror file: ' . $newZipFile);
-                    if (is_file($newZipFile)) {
-                        // Delete cached mirror files
-                        $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql.gz'));
-                        foreach ($list as $file) {
-                            if (is_file($file)) unlink($file);
-                        }
+            if (!is_file($newSqlFile) || $input->getOption('no-cache')) {
+                $this->writeComment('Download fresh mirror file: ' . $newZipFile);
+                if (is_file($newZipFile)) {
+                    // Delete cached mirror files
+                    $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
+                    foreach ($list as $file) {
+                        if (is_file($file)) unlink($file);
                     }
-
-                    // get a copy of the remote DB to be mirrored
-                    $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
-                        ->set('action', 'db')
-                        ->set('secret', $secret)
-                        ->set('un', $username);
-                    Log::debug("Requesting Data: {$mirrorUrl}");
-                    $this->postRequest($mirrorUrl, $newZipFile);
-                } else {
-                    $this->writeComment('Using existing mirror file: ' . $newZipFile);
                 }
 
-                // Prevent accidental writing to live DB
-                $this->writeComment('Backup this DB to file: ' . $backupSqlFile);
-                Db\DbBackup::save($backupSqlFile, $options);
+                // get a copy of the remote DB to be mirrored
+                $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
+                    ->set('action', 'db')
+                    ->set('secret', $secret)
+                    ->set('un', $username);
+                Log::debug("Requesting Data: {$mirrorUrl}");
 
+                if (!$this->postRequest($mirrorUrl)) {
+                    $this->writeError("Error requesting mirror: " . $this->error);
+                    return Command::FAILURE;
+                }
+                if (!is_file($newZipFile)) {
+                    $this->writeError("Error downloading mirror");
+                    return Command::FAILURE;
+                }
+            } else {
+                $this->writeComment('Using existing mirror file: ' . $newSqlFile);
+            }
+
+            // Prevent accidental writing to live DB
+            $this->writeComment('Backup this DB to file: ' . $backupSqlFile);
+            Db\DbBackup::save($backupSqlFile, $options);
+
+            // dont execute if no-sql flag set
+            if (!$input->getOption('no-sql')) {
                 $this->write('Drop this DB tables');
                 Db::dropAllTables(true, $options['exclude'] ?? []);
 
@@ -93,7 +105,7 @@ class Mirror extends Console
                 // setup dev environment if site in dev mode
                 //SqlMigrate::migrateDev([$this, 'writeBlue']);
 
-                unlink($backupSqlFile);
+                //unlink($backupSqlFile);
             }
 
         } catch(\Exception $e) {
@@ -108,7 +120,7 @@ class Mirror extends Console
 
     protected function postRequest(Uri|string $srcUrl): bool
     {
-        $error = false;
+        $ok = true;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);
         $query = $srcUrl->getQuery();
         $srcUrl->reset();
@@ -123,11 +135,12 @@ class Mirror extends Console
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
-            $error = true;
+            $this->error = curl_error($curl);
+            $ok = false;
         }
         curl_close($curl);
 
-        return $error;
+        return $ok;
     }
 
 }
