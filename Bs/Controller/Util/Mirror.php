@@ -23,16 +23,20 @@ class Mirror
             throw new \Tk\Exception('access disabled');
         }
 
-        $action   = trim($_POST['action'] ?? '');
-        $username = trim($_POST['un'] ?? '');
-        $secret   = trim($_POST['secret'] ?? '');
-        if (Config::instance()->get('db.mirror.secret', null) !== $secret) {
-            throw new \Tk\Exception('invalid access key');
-        }
+        $action   = trim($_POST['a'] ?? '');
+        $username = trim($_POST['u'] ?? '');
 
         $user = Auth::findByUsername($username);
         if (is_null($user) || !$user->isAdmin()) {
             throw new \Tk\Exception('Invalid access permission');
+        }
+
+        // todo: this should be a token linked to the user,
+        //       allow admin users to generate tokens in their profile page???
+        $headers  = getallheaders();
+        $secret   = trim($headers['Authorization-Key'] ?? '');
+        if (Config::instance()->get('db.mirror.secret', null) !== $secret) {
+            throw new \Tk\Exception('invalid access key');
         }
 
         if ($action == 'db') {
@@ -47,10 +51,11 @@ class Mirror
     /**
      * @todo exclude cache, tmp folders
      */
-    #[NoReturn] public function doDataBackup()
+    #[NoReturn] public function doDataBackup(): void
     {
         $srcFile = Config::makePath('/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz');
         if (is_file($srcFile)) unlink($srcFile);
+
         $cmd = sprintf('cd %s && tar zcf %s %s',
             Config::getBasePath(),
             escapeshellarg(basename($srcFile)),
@@ -75,25 +80,27 @@ class Mirror
         // must exclude _migrate table for migrate cmd to work in mirror cmd
         $options['exclude'] = ['_session', '_migrate'];
 
-        $path = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql');
-        Db\DbBackup::save($path, $options);
+        //$path = Config::makePath(Config::getTempPath() . '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql');
+        $srcBak = Config::makePath(Config::getTempPath() . '/src-bak.sql');
+        Db\DbBackup::save($srcBak, $options);
 
-        if (is_file($path . '.gz'))
-            @unlink($path . '.gz');
+        if (is_file($srcBak . '.gz'))
+            @unlink($srcBak . '.gz');
 
-        $command = sprintf('gzip ' . $path);
+        $command = sprintf('gzip ' . $srcBak);
         exec($command, $out, $ret);
         if ($ret != 0) {
             throw new \Tk\Db\Exception(implode("\n", $out));
         }
-        $path .= '.gz';
+        $srcBak .= '.gz';
 
-        $public_name = basename($path);
-        $filesize = filesize($path);
+        $public_name = basename($srcBak);
+        $filesize = filesize($srcBak);
         header("Content-Disposition: attachment; filename=$public_name;");
         header("Content-Type: application/octet-stream");
         header('Content-Length: '.$filesize);
-        $this->_fileOutput($path);
+        $this->_fileOutput($srcBak);
+        // todo: cleanup bak file
 
         exit;
     }

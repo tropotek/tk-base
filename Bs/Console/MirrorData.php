@@ -22,6 +22,7 @@ use Tk\Uri;
  */
 class MirrorData extends Console
 {
+    protected string $error = '';
 
     protected function configure(): void
     {
@@ -53,23 +54,25 @@ class MirrorData extends Console
             return Command::FAILURE;
         }
 
-        $secret       = $this->getConfig()->get('db.mirror.secret');
         $username     = trim($input->getArgument('username'));
-        $tempDataFile = Config::makePath('/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
+        $dstDataFile = Config::makePath('/dst-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
 
         $this->write('Downloading live data files...[Please wait]');
-        if (is_file($tempDataFile)) unlink($tempDataFile);
+        if (is_file($dstDataFile)) unlink($dstDataFile);
 
         $mirrorUrl = Uri::create($this->getConfig()->get('db.mirror.url') . '/util/mirror')
-            ->set('action', 'file')
-            ->set('secret', $secret)
-            ->set('un', $username);
+            ->set('a', 'file')
+            ->set('u', $username);
 
-        $error = $this->postRequest($mirrorUrl, $tempDataFile);
-        if (!empty($error)) {
-            $this->writeError('Error downloading data archive');
+
+        if (!$this->postRequest($mirrorUrl, $dstDataFile)) {
+            $this->writeError('Error requesting mirror archive');
             return Command::FAILURE;
 
+        }
+        if (!is_file($dstDataFile)) {
+            $this->writeError('Error mirror data archive');
+            return Command::FAILURE;
         }
         $this->write('Download Complete!');
 
@@ -82,7 +85,7 @@ class MirrorData extends Console
         $this->write('Extracting files to: ' . $tmpgz);
         $cmd = sprintf('cd %s && tar zxf %s -C %s',
             escapeshellarg(Config::getBasePath()),
-            escapeshellarg(basename($tempDataFile)),
+            escapeshellarg(basename($dstDataFile)),
             escapeshellarg($tmpgz)
         );
         exec($cmd, $out, $ret);
@@ -112,7 +115,7 @@ class MirrorData extends Console
             return Command::FAILURE;
         }
 
-        FileUtil::rmdir($tempDataFile);
+        FileUtil::rmdir($dstDataFile);
         FileUtil::rmdir($tmpgz);
 
         $this->write('Complete!!!');
@@ -130,29 +133,40 @@ class MirrorData extends Console
         return $path;
     }
 
-    protected function postRequest(Uri|string $srcUrl, string $destPath): bool
+    protected function postRequest(Uri|string $srcUrl, $filename): bool
     {
-        $error = false;
+        $ok     = true;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);
-        $query = $srcUrl->getQuery();
+        $query  = $srcUrl->getQuery();
         $srcUrl->reset();
+        $secret = $this->getConfig()->get('db.mirror.secret', '');
+        if (empty($secret)) {
+            $this->error = "Invalid API secret";
+            return false;
+        }
 
-        $fp = fopen($destPath, 'w');
+        $fp = fopen($filename, "w");
         $curl = curl_init($srcUrl->toString());
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_FILE, $fp);
+        curl_setopt_array($curl, [
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_POSTFIELDS     => $query,
+            CURLOPT_FILE           => $fp,
+            CURLOPT_HTTPHEADER     => [
+                "Authorization-Key: " . $secret,
+            ],
+        ]);
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
-            $error = true;
+            $this->error = curl_error($curl);
+            $ok = false;
         }
         curl_close($curl);
         fclose($fp);
-        return $error;
+
+        return $ok;
     }
 }

@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Bs\Console\Console;
 use Tk\Config;
 use Tk\Log;
 use Tk\Uri;
@@ -49,7 +48,7 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            $backupSqlFile = Config::makePath(Config::getTempPath() . '/bak_db.sql');
+            $dstBakFile = Config::makePath(Config::getTempPath() . '/dst-bak.sql');
             $newZipFile = Config::makePath(Config::getTempPath() .
                 '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
             $newSqlFile = substr($newZipFile, 0, -3);
@@ -57,12 +56,11 @@ class Mirror extends Console
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
             // must exclude _migrate table for below migrate cmd to work
             $options['exclude'] = ['_session', '_migrate'];
-            $secret   = $this->getConfig()->get('db.mirror.secret');
             $username = trim($input->getArgument('username'));
 
             if (!is_file($newSqlFile) || $input->getOption('no-cache')) {
                 $this->writeComment('Download fresh mirror file: ' . $newZipFile);
-                if (is_file($newZipFile)) {
+                if (is_file($newSqlFile)) {
                     // Delete cached mirror files
                     $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
                     foreach ($list as $file) {
@@ -72,12 +70,11 @@ class Mirror extends Console
 
                 // get a copy of the remote DB to be mirrored
                 $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
-                    ->set('action', 'db')
-                    ->set('secret', $secret)
-                    ->set('un', $username);
+                    ->set('a', 'db')
+                    ->set('u', $username);
                 Log::debug("Requesting Data: {$mirrorUrl}");
 
-                if (!$this->postRequest($mirrorUrl)) {
+                if (!$this->postRequest($mirrorUrl, $newZipFile)) {
                     $this->writeError("Error requesting mirror: " . $this->error);
                     return Command::FAILURE;
                 }
@@ -90,14 +87,23 @@ class Mirror extends Console
             }
 
             // Prevent accidental writing to live DB
-            $this->writeComment('Backup this DB to file: ' . $backupSqlFile);
-            Db\DbBackup::save($backupSqlFile, $options);
+            $this->writeComment('Backup this DB to file: ' . $dstBakFile);
+            Db\DbBackup::save($dstBakFile, $options);
+            if (!is_file($dstBakFile)) {
+                $this->writeError("Error backing up system DB");
+                return Command::FAILURE;
+            }
 
             // dont execute if no-sql flag set
             if (!$input->getOption('no-sql')) {
                 $this->write('Drop this DB tables');
                 Db::dropAllTables(true, $options['exclude'] ?? []);
 
+                if (!is_file($newZipFile)) $newZipFile = $newSqlFile;
+                if (!is_file($newZipFile)) {
+                    $this->writeError("Error executing mirror");
+                    return Command::FAILURE;
+                }
                 $this->write('Import mirror file to this DB');
                 Db\DbBackup::restore($newZipFile, $options);
 
@@ -107,7 +113,7 @@ class Mirror extends Console
                 // setup dev environment if site in dev mode
                 SqlMigrate::migrateDev([$this, 'writeBlue']);
 
-                //unlink($backupSqlFile);
+                //unlink($dstBakFile);
             }
 
         } catch(\Exception $e) {
@@ -120,20 +126,31 @@ class Mirror extends Console
         return  Command::SUCCESS;
     }
 
-    protected function postRequest(Uri|string $srcUrl): bool
+    protected function postRequest(Uri|string $srcUrl, $filename): bool
     {
-        $ok = true;
+        $ok     = true;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);
-        $query = $srcUrl->getQuery();
+        $query  = $srcUrl->getQuery();
         $srcUrl->reset();
+        $secret = $this->getConfig()->get('db.mirror.secret', '');
+        if (empty($secret)) {
+            $this->error = "Invalid API secret";
+            return false;
+        }
 
+        $fp = fopen($filename, "w");
         $curl = curl_init($srcUrl->toString());
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt_array($curl, [
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_POSTFIELDS     => $query,
+            CURLOPT_FILE           => $fp,
+			CURLOPT_HTTPHEADER     => [
+				"Authorization-Key: " . $secret,
+			],
+		]);
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
@@ -141,6 +158,7 @@ class Mirror extends Console
             $ok = false;
         }
         curl_close($curl);
+        fclose($fp);
 
         return $ok;
     }
