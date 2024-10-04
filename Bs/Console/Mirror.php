@@ -69,11 +69,6 @@ class Mirror extends Console
                     if (is_file($mirrorSqlFile)) unlink($mirrorSqlFile);
 
                     // get a copy of the remote DB to be mirrored
-                    vd(
-                        $this->getConfig()->get('db.mirror.url'),
-                        rtrim('/', $this->getConfig()->get('db.mirror.url')),
-                        Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
-                    );
                     $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
                         ->set('action', 'db')
                         ->set('secret', $secret)
