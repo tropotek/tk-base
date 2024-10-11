@@ -132,6 +132,7 @@ class Auth extends Model
             }
             $authUser->sessionId = '';
             $authUser->save();
+            session_destroy();
         }
     }
 
@@ -142,7 +143,9 @@ class Auth extends Model
 
     public function getHomeUrl(): Uri
     {
-        return $this->getDbModel()->getHomeUrl();
+        /** @var UserInterface $user */
+        $user = $this->getDbModel();
+        return $user->getHomeUrl();
     }
 
     public function hasPermission(int $permission): bool

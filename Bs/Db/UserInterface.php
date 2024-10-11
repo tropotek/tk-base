@@ -1,5 +1,11 @@
 <?php
 namespace Bs\Db;
 
-interface UserInterface { }
+use Tk\Uri;
+
+interface UserInterface {
+
+    public function getHomeUrl(): Uri;
+
+}
 

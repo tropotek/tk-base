@@ -217,9 +217,9 @@ class Factory extends Collection
         Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
         $logfile = $this->getConfig()->get('php.error_log', ini_get('error_log'));
         if (is_writable($logfile)) {
-            Log::addHandler(new StreamLog($logfile, $logLevel));
+            Log::addLogger(new StreamLog($logfile, $logLevel));
         } else {
-            Log::addHandler(new ErrorLog($logLevel));
+            Log::addLogger(new ErrorLog($logLevel));
         }
     }
 
@@ -386,12 +386,14 @@ class Factory extends Collection
      */
     public function getCrumbs(): ?Crumbs
     {
-        $type = $_GET['template'] ?? 'public';
-        $id = 'breadcrumbs.' . $type;
+        $id = 'breadcrumbs.public';
+        if (\Bs\Auth::getAuthUser()) {
+            $id = sprintf('breadcrumbs.%s', \Bs\Auth::getAuthUser()->username);
+        }
 
         if (!$this->has($id)) {
             $crumbs = $_SESSION[$id] ?? null;
-            if (!$crumbs instanceof Crumbs) {
+            if (!($crumbs instanceof Crumbs)) {
                 $crumbs = Crumbs::create();
                 $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
                 if (\Bs\Auth::getAuthUser()) {
@@ -402,6 +404,7 @@ class Factory extends Collection
             }
             $this->set($id, $crumbs);
         }
+
         return $this->get($id);
     }
 
@@ -412,8 +415,8 @@ class Factory extends Collection
         if ($crumbUrl->toString() != $thisUrl->toString()) {
             return $crumbUrl;
         }
-        if (\Au\Auth::getAuthUser()) {
-            return \Au\Auth::getAuthUser()->getHomeUrl();
+        if (\Bs\Auth::getAuthUser()) {
+            return \Bs\Auth::getAuthUser()->getHomeUrl();
         }
         return Uri::create('/');
     }
