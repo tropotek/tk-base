@@ -310,6 +310,7 @@ class Factory extends Collection
                     'baseUrl' => Config::getBaseUrl(),
                     'dataUrl' => Config::makeUrl(Config::getDataPath())
                 ];
+                Modifier\Scss::$IS_DEBUG = Config::isDebug();
                 $scss = new Modifier\Scss(
                     Config::getBasePath(),
                     Config::getBaseUrl(),
@@ -322,10 +323,13 @@ class Factory extends Collection
                 $dm->addFilter('scss', $scss);
             }
 
+            Modifier\UrlPath::$IS_DEBUG = Config::isDebug();
             $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
+
             // TODO: see if we can live without this, would rather leave it to the template
             //       we will lose control over where we add scripts but it may not matter.
             //$dm->addFilter('jsLast', new Modifier\JsLast());
+
             if (Config::isDebug()) {
                 $dm->addFilter('pageBytes', new Modifier\PageBytes(Config::getBasePath()));
             }
