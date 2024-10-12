@@ -18,7 +18,7 @@ class PageBytesHandler implements EventSubscriberInterface
         $this->pageBytes = $pageBytes;
     }
 
-    public function onTerminate(TerminateEvent $event)
+    public function onTerminate(TerminateEvent $event): void
     {
         if (!StartupHandler::$SCRIPT_CALLED) return;
         if (StartupHandler::hasParam(StartupHandler::METRICS)) {

@@ -65,8 +65,8 @@ class GuestToken extends Model
         $map = new DataMap();
         //$map->addType(new Text('token'))->setFlag(DataMap::PRI);
         $map->addType(new Text('token'));
-        $map->addType(new Json('pages'))->setAssociative(true);
-        $map->addType(new Json('payload'))->setAssociative(true);
+        $map->addType((new Json('pages'))->setAssociative(true));
+        $map->addType((new Json('payload'))->setAssociative(true));
         $map->addType(new Integer('ttlMins', 'ttl_mins'));
         $map->addType(new DateTime('created'), DataMap::READ);
         $map->addType(new DateTime('expiry'), DataMap::READ);
@@ -75,18 +75,18 @@ class GuestToken extends Model
         return $map;
     }
 
-    public static function create(array $pages, array $payload, int $ttlMins): static
+    public static function create(array $pages, array $payload, int $ttlMins): self
     {
         if (!$pages) {
             throw new Exception('no pages available');
         }
 
-        $obj = new static();
+        $obj = new self();
         $obj->pages = $pages;
         $obj->payload = $payload;
         $obj->ttlMins = $ttlMins;
 
-        $map = static::getDataMap();
+        $map = self::getDataMap();
         $gt = (object)$map->getArray($obj);
 
 		$ok = 0;
@@ -134,7 +134,7 @@ class GuestToken extends Model
 		);
 	}
 
-    public static function getSessionToken(): ?static
+    public static function getSessionToken(): ?self
     {
         return GuestToken::find($_SESSION[GuestToken::TOKEN_SID] ?? '');
     }
@@ -154,7 +154,7 @@ class GuestToken extends Model
 		);
 	}
 
-    public static function find(string $token): ?static
+    public static function find(string $token): ?self
     {
         $token = trim($token);
         if (empty($token)) return null;

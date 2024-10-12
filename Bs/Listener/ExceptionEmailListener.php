@@ -103,7 +103,6 @@ HTML;
 
     }
 
-
     public static function getSubscribedEvents(): array
     {
         return array(

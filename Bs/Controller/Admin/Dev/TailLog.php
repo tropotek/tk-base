@@ -30,10 +30,10 @@ class TailLog extends ControllerAdmin
 
     }
 
-    #[NoReturn] public function doRefresh(): void
+    public function doRefresh(): void
     {
         if (!is_readable($this->logPath)) {
-            echo sprintf('Cannot read log file: ' . $this->logPath . "\n");
+            echo sprintf("Cannot read log file: %s\n", $this->logPath);
             exit;
         }
 
@@ -50,7 +50,7 @@ class TailLog extends ControllerAdmin
         exit();
     }
 
-    public function doSeek($seekAdjust = 0): void
+    public function doSeek(int $seekAdjust = 0): void
     {
         $handle = fopen($this->logPath, 'r');
         fseek($handle, 0, \SEEK_END);

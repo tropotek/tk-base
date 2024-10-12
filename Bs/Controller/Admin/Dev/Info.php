@@ -8,7 +8,7 @@ use Dom\Template;
 class Info extends ControllerAdmin
 {
 
-    public function doDefault()
+    public function doDefault(): void
     {
         $this->getPage()->setTitle('PHP Info');
         $this->setAccess(Auth::PERM_ADMIN);

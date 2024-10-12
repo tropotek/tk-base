@@ -70,7 +70,7 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
     /**
      * ensure the id is unique
      */
-    protected function setId($id): static
+    protected function setId(string $id): static
     {
         static $instances = [];
         if ($this->getId()) return $this;
@@ -101,9 +101,6 @@ class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Button[]
-     */
     public function getButtonList(): Collection
     {
         return $this->buttonList;

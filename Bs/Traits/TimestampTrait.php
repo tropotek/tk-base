@@ -11,12 +11,10 @@ trait TimestampTrait
      * TimestampTrait constructor
      * Call this in parent object constructor
      */
-    protected function _TimestampTrait()
+    protected function _TimestampTrait(): void
     {
-        try {
-            $this->modified = new \DateTime();
-            $this->_CreatedTrait();
-        } catch (\Exception $e) {}
+        $this->modified = new \DateTime();
+        $this->_CreatedTrait();
     }
 
     /**
@@ -24,8 +22,9 @@ trait TimestampTrait
      */
     public function getModified(string $format = ''): string|DateTime
     {
-        if ($format && $this->modified)
+        if (!empty($format)) {
             return $this->modified->format($format);
+        }
         return $this->modified;
     }
 

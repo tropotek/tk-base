@@ -5,8 +5,7 @@ use Tk\Exception;
 use Tk\Db;
 
 /**
- * @todo Update to use the new \Tk\Db\Model system
- *     -
+ *
  */
 class ModelGenerator
 {
@@ -17,9 +16,6 @@ class ModelGenerator
     protected array  $tableInfo = [];
 
 
-    /**
-     * @throws \Exception
-     */
     protected function __construct(string $table, string $namespace = 'App', string $className = '')
     {
         $this->table = $this->view = $table;
@@ -48,12 +44,9 @@ class ModelGenerator
         $this->tableInfo = array_merge($t2, $t1);
     }
 
-    /**
-     * @throws \Exception
-     */
-    public static function create(string $table, string $namespace = 'App', string $className = ''): ModelGenerator
+    public static function create(string $table, string $namespace = 'App', string $className = ''): self
     {
-        return new static($table, $namespace, $className);
+        return new self($table, $namespace, $className);
     }
 
     protected function makeClassname(string $table): string

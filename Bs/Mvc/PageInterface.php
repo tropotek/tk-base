@@ -27,14 +27,14 @@ abstract class PageInterface
     abstract public function getHtml(): string;
 
 
-    public function addContent(mixed $renderer, string $name = ''): self
+    public function addContent(mixed $renderer, string $name = ''): static
     {
         $name = $name ?: 'content';
         $this->contentList[$name][] = $renderer;
         return $this;
     }
 
-    public function getContent($name): array
+    public function getContent(string $name): array
     {
         return $this->contentList[$name] ?? [];
     }

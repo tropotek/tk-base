@@ -16,16 +16,16 @@ class Registry extends Db\Collection
     protected static mixed $_instance = null;
 
 
-    public function __construct(\PDO $pdo = null)
+    public function __construct()
     {
-        parent::__construct(self::$DB_TABLE, $pdo);
+        parent::__construct(self::$DB_TABLE);
         $this->load();
     }
 
-    public static function instance(): static
+    public static function instance(): self
     {
         if (is_null(self::$_instance)) {
-            self::$_instance = new static();
+            self::$_instance = new self();
         }
         return self::$_instance;
     }

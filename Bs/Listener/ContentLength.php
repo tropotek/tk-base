@@ -11,17 +11,17 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ContentLength implements EventSubscriberInterface
 {
-    public function onResponse(ResponseEvent $event)
+    public function onResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();
         $headers = $response->headers;
 
         if (!$headers->has('Content-Length') && !$headers->has('Transfer-Encoding')) {
-            $headers->set('Content-Length', strlen($response->getContent()));
+            $headers->set('Content-Length', strval(strlen($response->getContent())));
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [KernelEvents::RESPONSE => ['onResponse', -255]];
     }

@@ -97,7 +97,7 @@ class Mirror extends Console
             // dont execute if no-sql flag set
             if (!$input->getOption('no-sql')) {
                 $this->write('Drop this DB tables');
-                Db::dropAllTables(true, $options['exclude'] ?? []);
+                Db::dropAllTables(true, $options['exclude']);
 
                 if (!is_file($newZipFile)) $newZipFile = $newSqlFile;
                 if (!is_file($newZipFile)) {
@@ -126,7 +126,7 @@ class Mirror extends Console
         return  Command::SUCCESS;
     }
 
-    protected function postRequest(Uri|string $srcUrl, $filename): bool
+    protected function postRequest(Uri|string $srcUrl, string $filename): bool
     {
         $ok     = true;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);

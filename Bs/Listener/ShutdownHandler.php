@@ -16,7 +16,7 @@ class ShutdownHandler implements EventSubscriberInterface
         $this->scriptStartTime = $scriptStartTime;
     }
 
-    public function onTerminate(TerminateEvent $event)
+    public function onTerminate(TerminateEvent $event): void
     {
         if (!StartupHandler::$SCRIPT_CALLED) return;
         if (StartupHandler::hasParam(StartupHandler::METRICS)) {
@@ -27,7 +27,7 @@ class ShutdownHandler implements EventSubscriberInterface
         }
     }
 
-    private function debug(string $str)
+    private function debug(string $str): void
     {
         Log::debug($str);
     }
@@ -35,12 +35,12 @@ class ShutdownHandler implements EventSubscriberInterface
     /**
      * Get the current script running time in seconds
      */
-    protected function scriptDuration(): string
+    protected function scriptDuration(): float
     {
-        return (string)(microtime(true) - $this->scriptStartTime);
+        return microtime(true) - $this->scriptStartTime;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(KernelEvents::TERMINATE => 'onTerminate');
     }

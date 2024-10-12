@@ -17,7 +17,7 @@ class Maintenance extends ControllerDomInterface
         $this->setPageTemplate($this->getConfig()->get('path.template.maintenance'));
     }
 
-    public function doDefault()
+    public function doDefault(): ?Response
     {
         $registry = Registry::instance();
 
@@ -31,7 +31,7 @@ class Maintenance extends ControllerDomInterface
         if (!$registry->get('system.maintenance.enabled')) {
             return new Response('Invalid URL location', Response::HTTP_NOT_FOUND);
         }
-
+        return null;
     }
 
     /**
@@ -40,7 +40,7 @@ class Maintenance extends ControllerDomInterface
      *
      * Note: If you have issues check your controller is not calling API outside the *\Api\* namespace.
      */
-    public function doApi()
+    public function doApi(): ?Response
     {
         $this->getFactory()->getPage()->setEnabled(false);
         $data = [

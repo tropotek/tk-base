@@ -11,15 +11,14 @@ trait CreatedTrait
      */
     protected function _CreatedTrait(): void
     {
-        try {
-            $this->created = new \DateTime();
-        } catch (\Exception $e) {}
+        $this->created = new \DateTime();
     }
 
     public function getCreated(string $format = ''): DateTime|string
     {
-        if ($format && $this->created)
+        if (!empty($format)) {
             return $this->created->format($format);
+        }
         return $this->created;
     }
 

@@ -2,6 +2,8 @@
 namespace Bs\Listener;
 
 use Bs\Factory;
+use Bs\Mvc\Page;
+use Bs\Mvc\PageInterface;
 use Bs\Ui\Crumbs;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -12,16 +14,16 @@ use Tk\Uri;
 class CrumbsHandler implements EventSubscriberInterface
 {
 
-    public function onRequest(RequestEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         // Init the crumb stack
         Factory::instance()->getCrumbs();
     }
 
-    public function onView(ViewEvent $event)
+    public function onView(ViewEvent $event): void
     {
         $page = Factory::instance()->getPage();
-        if (!$page) return;
+        if (!($page instanceof Page)) return;
 
         if ($page->isEnabled() && $page->isCrumbsEnabled()) {
             $crumbs = $page->getCrumbs();

@@ -31,7 +31,7 @@ use Tk\Cache\Cache;
 use Tk\Collection;
 use Tk\Config;
 use Tk\ConfigLoader;
-use Tk\Cookie;
+use Tk\Http\Cookie;
 use Tk\Log;
 use Tk\Logger\ErrorLog;
 use Tk\Logger\SessionLog;
@@ -45,6 +45,10 @@ class Factory extends Collection
 {
     protected static mixed $_instance = null;
 
+    final function __construct(array $items = [])
+    {
+        parent::__construct($items);
+    }
 
     public static function instance(): static
     {
@@ -349,7 +353,7 @@ class Factory extends Collection
             if (is_file($tplPath)) {
                 $template = file_get_contents($tplPath);
                 if (!$template) {
-                    \Tk\log::warning('Template file not found, using default template: ' . $tplPath);
+                    \Tk\Log::warning('Template file not found, using default template: ' . $tplPath);
                     $template = '{content}';
                 }
             }

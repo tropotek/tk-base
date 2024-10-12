@@ -7,6 +7,7 @@ use Bs\Db\UserInterface;
 use Bs\Traits\ForeignModelTrait;
 use Bs\Traits\TimestampTrait;
 use Tk\Config;
+use Tk\ObjectUtil;
 use Tk\Uri;
 use Tk\Db;
 use Tk\Db\Filter;
@@ -26,15 +27,15 @@ class Auth extends Model
     use ForeignModelTrait;
     use TimestampTrait;
 
-    const PERM_NONE             = 0;
-    const PERM_ADMIN            = 0x1;
+    const int PERM_NONE             = 0;
+    const int PERM_ADMIN            = 0x1;
 
     /**
      * valid options for externally created accounts
      */
-    const EXT_MICROSOFT  = 'microsoft';
-    const EXT_GOOGLE     = 'google';
-    const EXT_FACEBOOK   = 'facebook';
+    const string EXT_MICROSOFT  = 'microsoft';
+    const string EXT_GOOGLE     = 'google';
+    const string EXT_FACEBOOK   = 'facebook';
 
 
     public int        $authId        = 0;
@@ -189,7 +190,7 @@ class Auth extends Model
             }
         }
 
-        if (!class_exists($this->fkey) || !is_a($this->fkey, UserInterface::class)) {
+        if (!class_exists($this->fkey) || !is_subclass_of($this->fkey, UserInterface::class)) {
             $errors['fkey'] = 'Invalid foreign key value';
         }
 
@@ -341,7 +342,7 @@ class Auth extends Model
             $w  = 'LOWER(a.email) LIKE LOWER(:search) OR ';
             $w .= 'LOWER(a.uid) LIKE LOWER(:search) OR ';
             $w .= 'LOWER(a.auth_id) LIKE LOWER(:search) OR ';
-            if ($w) $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
+            $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
         }
 
         if (!empty($filter['authId'])) {

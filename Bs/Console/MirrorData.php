@@ -128,12 +128,12 @@ class MirrorData extends Console
         $path = $dir;
         while(is_dir(Config::makePath($path))) {
             $num++;
-            $path = sprintf('%s%s%s%s', DIRECTORY_SEPARATOR, ($num > 0 ? '_' : ''), trim($dir, DIRECTORY_SEPARATOR), ($num > 0 ? $num : ''));
+            $path = sprintf('%s%s%s%s', DIRECTORY_SEPARATOR, '_', trim($dir, DIRECTORY_SEPARATOR), $num);
         }
         return $path;
     }
 
-    protected function postRequest(Uri|string $srcUrl, $filename): bool
+    protected function postRequest(Uri|string $srcUrl, string $filename): bool
     {
         $ok     = true;
         $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);

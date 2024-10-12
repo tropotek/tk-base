@@ -18,7 +18,7 @@ class GuestHandler implements EventSubscriberInterface
     protected ?GuestToken $gt = null;
 
 
-    public function onRequest(RequestEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         // ignore error pages
         if($event->getRequest()->attributes->get('e') instanceof \Exception) return;
@@ -57,7 +57,7 @@ class GuestHandler implements EventSubscriberInterface
 
     }
 
-    public function onView(ViewEvent $event)
+    public function onView(ViewEvent $event): void
     {
         // ignore error pages
         if($event->getRequest()->attributes->get('e') instanceof \Exception) return;
@@ -85,7 +85,7 @@ class GuestHandler implements EventSubscriberInterface
         $event->setResponse(new Response($html));
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::REQUEST => 'onRequest',

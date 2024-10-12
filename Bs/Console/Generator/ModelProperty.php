@@ -2,7 +2,7 @@
 namespace Bs\Console\Generator;
 
 /**
- * @todo Update to use the new \Tk\Db\Model system
+ *
  */
 class ModelProperty extends \Tk\Collection
 {
@@ -31,9 +31,9 @@ class ModelProperty extends \Tk\Collection
         $this->getType();
     }
 
-    public static function create(array $data): ModelProperty
+    public static function create(array $data): self
     {
-        return new static($data);
+        return new self($data);
     }
 
     public function isPrimaryKey(): bool

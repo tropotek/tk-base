@@ -47,17 +47,17 @@ class StartupHandler implements EventSubscriberInterface
         return (self::$PARAMS & $flag) != 0;
     }
 
-    public function onInit(RequestEvent $event)
+    public function onInit(RequestEvent $event): void
     {
         $this->init($event->getRequest());
     }
 
-    public function onCommand(ConsoleCommandEvent $event)
+    public function onCommand(ConsoleCommandEvent $event): void
     {
         $this->init();
     }
 
-    private function init(?Request $request = null)
+    private function init(?Request $request = null): void
     {
         self::$SCRIPT_CALLED = true;
 
@@ -66,7 +66,10 @@ class StartupHandler implements EventSubscriberInterface
         }
 
         if(self::hasParam(self::SITE_NAME)) {
-            $siteName = Registry::instance()?->getSiteName() ?? implode(' ', $_SERVER['argv']);
+            $siteName = implode(' ', $_SERVER['argv'] ?? []);
+            if (!empty(Registry::instance()->getSiteName())) {
+                $siteName = Registry::instance()->getSiteName();
+            }
             if (System::getComposerJson()) {
                 $siteName .= sprintf(' [%s]', System::getComposerJson()['name']);
             }
@@ -98,7 +101,7 @@ class StartupHandler implements EventSubscriberInterface
             if (self::hasParam(self::CLIENT_AGENT)) {
                 $this->debug('- Agent: ' . $request->headers->get('User-Agent'));
             }
-            if (self::hasParam(self::SESSION_ID) && $request->getSession()) {
+            if (self::hasParam(self::SESSION_ID)) {
                 $this->debug(sprintf('- Session: %s [ID: %s]', $request->getSession()->getName(), $request->getSession()->getId()));
             }
         } else {
@@ -113,7 +116,7 @@ class StartupHandler implements EventSubscriberInterface
         }
     }
 
-    public function onRequest(RequestEvent $event)
+    public function onRequest(RequestEvent $event): void
     {
         if ($event->getRequest()->attributes->has('_route')) {
             if (!self::hasParam(self::PHP_VER)) return;
@@ -129,12 +132,12 @@ class StartupHandler implements EventSubscriberInterface
         }
     }
 
-    private function debug(string $str)
+    private function debug(string $str): void
     {
         Log::debug($str);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::REQUEST => [['onInit', 255], ['onRequest']],

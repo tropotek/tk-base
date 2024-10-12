@@ -88,7 +88,7 @@ class Remember
     /**
      * Add a new row to the user_remember table
      */
-    public static function insertToken(int $auth_id, string $selector, string $hashed_validator, string $ttl_mins): int|bool
+    public static function insertToken(int $auth_id, string $selector, string $hashed_validator, int $ttl_mins): int|bool
     {
         $browser_id = Factory::instance()->getCookie()->getBrowserId();
         return Db::insert('auth_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'ttl_mins'));

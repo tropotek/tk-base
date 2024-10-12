@@ -11,7 +11,7 @@ use Bs\Registry;
 class MaintenanceHandler implements EventSubscriberInterface
 {
 
-    public function onController(ControllerEvent $event)
+    public function onController(ControllerEvent $event): void
     {
         $controller = $event->getController();
 
@@ -52,7 +52,7 @@ class MaintenanceHandler implements EventSubscriberInterface
     /**
      * Use this to pragmatically enable/disable maintenance
      */
-    public static function enableMaintenanceMode(bool $b = true, string $message = '')
+    public static function enableMaintenanceMode(bool $b = true, string $message = ''): void
     {
         $data = Registry::instance();
         if ($b) {
@@ -65,7 +65,7 @@ class MaintenanceHandler implements EventSubscriberInterface
         $data->save();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::CONTROLLER =>  ['onController', 0],

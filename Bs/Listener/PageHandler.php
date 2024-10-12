@@ -41,12 +41,12 @@ class PageHandler implements EventSubscriberInterface
     {
         if (!is_null($event->getControllerResult())) return;
         if (is_null($this->page) || !$this->page->isEnabled()) return;
-        $result = $event->getControllerResult() ?? $this->controller;
+        $result = $this->controller;
         $this->page->addContent($result, 'content');
         $event->setResponse(new Response($this->page->getHtml()));
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::CONTROLLER => 'onController',

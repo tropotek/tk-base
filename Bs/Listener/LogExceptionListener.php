@@ -20,17 +20,17 @@ class LogExceptionListener implements EventSubscriberInterface
         $this->debug = $debug;
     }
 
-    public function onException(ExceptionEvent $event)
+    public function onException(ExceptionEvent $event): void
     {
         $this->logException($event->getThrowable());
     }
 
-    public function onConsoleError(ConsoleErrorEvent $event)
+    public function onConsoleError(ConsoleErrorEvent $event): void
     {
         $this->logException($event->getError());
     }
 
-    protected function logException(\Throwable $e)
+    protected function logException(\Throwable $e): void
     {
         if ($e instanceof ResourceNotFoundException || $e instanceof NotFoundHttpException) {
             Log::error(self::getCallerLine($e) . $e->getMessage());
@@ -62,7 +62,7 @@ class LogExceptionListener implements EventSubscriberInterface
         return sprintf('[%s:%s] ', $file, $line);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
             'console.error' => 'onConsoleError',

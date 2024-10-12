@@ -39,9 +39,9 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         $this->setHomeUrl('/home');
     }
 
-    public static function create(): static
+    public static function create(): self
     {
-        return new static();
+        return new self();
     }
 
     public function __serialize()
@@ -55,7 +55,7 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         ];
     }
 
-    public function __unserialize($data)
+    public function __unserialize(array $data)
     {
         $this->visible    = $data['visible'];
         $this->crumbStack = $data['crumbList'];

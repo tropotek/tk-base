@@ -47,12 +47,12 @@ class Upgrade extends Console
                 'composer update'
             ];
 
-            if (Config::isDev()) {        // For testing
-                array_unshift($cmdList, 'ci');
-                $cmdList[] = 'git reset --hard';
-                $cmdList[] = 'git checkout master';
-                $cmdList[] = 'composer update';
-            }
+//            if (Config::isDev()) {
+//                array_unshift($cmdList, 'ci');
+//                $cmdList[] = 'git reset --hard';
+//                $cmdList[] = 'git checkout master';
+//                $cmdList[] = 'composer update';
+//            }
 
             $tag = '';
             $output = [];

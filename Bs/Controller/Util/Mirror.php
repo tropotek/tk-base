@@ -51,7 +51,7 @@ class Mirror
     /**
      * @todo exclude cache, tmp folders
      */
-    #[NoReturn] public function doDataBackup(): void
+    public function doDataBackup(): void
     {
         $srcFile = Config::makePath('/src-'.\Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE).'-data.tgz');
         if (is_file($srcFile)) unlink($srcFile);
@@ -105,7 +105,7 @@ class Mirror
         exit;
     }
 
-    protected function _fileOutput($filename): void
+    protected function _fileOutput(string $filename): void
     {
         $filesize = filesize($filename);
         $chunksize = 4096;
