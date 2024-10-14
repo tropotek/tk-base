@@ -39,7 +39,7 @@ abstract class ControllerInterface
         return $this;
     }
 
-    public function getPage(): PageInterface|PageDomInterface
+    public function getPage(): PageDomInterface|PageInterface
     {
         $page = Factory::instance()->getPage();
         if (is_null($page)) {
