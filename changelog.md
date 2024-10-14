@@ -1,5 +1,21 @@
 #CHANGELOG#
 
+Ver 8.0.60 [2024-10-14]:
+-------------------------------
+  - phpstan lvl 6
+  - main src cleanup
+  - phpstan lvl6 updates
+  - phpstan lvl6 compliance
+  - fix mirror file management
+  - refactor Auth classes
+  - Finished adding generators
+  - Added manager generator
+  - refactored model generator command
+  - Added browser notification system
+  - update mirror command
+  - Added microsoft and google SSO OAuth
+
+
 Ver 8.0.58 [2024-09-25]:
 -------------------------------
   - cleanup config methods
