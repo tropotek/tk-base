@@ -6,12 +6,12 @@ namespace Bs\Console\Generator;
  */
 class ModelProperty extends \Tk\Collection
 {
-    const TYPE_ARRAY   = 'array';
-    const TYPE_STRING  = 'string';
-    const TYPE_INT     = 'int';
-    const TYPE_FLOAT   = 'float';
-    const TYPE_DATE    = '\DateTime';
-    const TYPE_BOOL    = 'bool';
+    const string TYPE_ARRAY   = 'array';
+    const string TYPE_STRING  = 'string';
+    const string TYPE_INT     = 'int';
+    const string TYPE_FLOAT   = 'float';
+    const string TYPE_DATE    = '\DateTime';
+    const string TYPE_BOOL    = 'bool';
 
     /**
      * The new class property name
@@ -80,11 +80,11 @@ class ModelProperty extends \Tk\Collection
         }
 
         return match ($this->getType()) {
-            self::TYPE_BOOL => boolval($def ?? false) ? 'true' : 'false',
-            self::TYPE_INT => intval($def ?? 0),
-            self::TYPE_FLOAT => floatval($def ?? 0.0),
-            self::TYPE_STRING => $this->quote($def ?? ''),
-            self::TYPE_DATE => null,
+            self::TYPE_BOOL   => boolval($def ?? false) ? 'true' : 'false',
+            self::TYPE_INT    => intval($def ?? 0),
+            self::TYPE_FLOAT  => floatval($def ?? 0.0),
+            self::TYPE_STRING => $this->quote(strval($def ?? '')),      // @phpstan-ignore-line
+            self::TYPE_DATE   => null,
             default => 'null',
         };
     }

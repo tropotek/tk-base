@@ -63,8 +63,10 @@ class Mirror extends Console
                 if (is_file($newSqlFile)) {
                     // Delete cached mirror files
                     $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
-                    foreach ($list as $file) {
-                        if (is_file($file)) unlink($file);
+                    if (is_array($list)) {
+                        foreach ($list as $file) {
+                            if (is_file($file)) unlink($file);
+                        }
                     }
                 }
 
@@ -139,7 +141,16 @@ class Mirror extends Console
         }
 
         $fp = fopen($filename, "w");
+        if ($fp === false) {
+            Log::error("Cannot open filename: $filename");
+            return false;
+        }
         $curl = curl_init($srcUrl->toString());
+        if ($curl === false) {
+            Log::error("Cannot open Url: $srcUrl");
+            return false;
+        }
+
 		curl_setopt_array($curl, [
             CURLOPT_CUSTOMREQUEST  => 'POST',
             CURLOPT_RETURNTRANSFER => true,

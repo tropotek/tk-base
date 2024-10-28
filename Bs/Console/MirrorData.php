@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tk\Config;
 use Tk\FileUtil;
+use Tk\Log;
 use Tk\Uri;
 
 /**
@@ -146,7 +147,16 @@ class MirrorData extends Console
         }
 
         $fp = fopen($filename, "w");
+        if ($fp === false) {
+            Log::error("Cannot open filename: $filename");
+            return false;
+        }
         $curl = curl_init($srcUrl->toString());
+        if ($curl === false) {
+            Log::error("Cannot open Url: $srcUrl");
+            return false;
+        }
+
         curl_setopt_array($curl, [
             CURLOPT_CUSTOMREQUEST  => 'POST',
             CURLOPT_RETURNTRANSFER => true,

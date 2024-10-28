@@ -22,6 +22,6 @@ class PhpController
         //extract($request->attributes->all(), EXTR_SKIP);
         ob_start();
         include $path;
-        return ob_get_clean();
+        return strval(ob_get_clean());
     }
 }

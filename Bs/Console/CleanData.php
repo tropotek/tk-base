@@ -47,7 +47,7 @@ class CleanData extends Console
             $path = rtrim($path, '/');
             $this->write('   - Removing Empty Folders: ' . $path);
             \Tk\FileUtil::removeEmptyFolders($path, function ($pth) {
-                $date = \Tk\Date::create(filemtime($pth));
+                $date = \Tk\Date::create(intval(filemtime($pth)));
                 $now = \Tk\Date::create()->sub(new \DateInterval('PT1H'));
                 if ($date < $now) {
                     $this->write('     Deleting: [' . $date->format(\Tk\Date::FORMAT_ISO_DATETIME) . '] - ' . $pth);
@@ -70,7 +70,7 @@ class CleanData extends Console
             /** @var \SplFileInfo $file */
             foreach ($files as $file) {
                 if ($file->isDir()) continue;
-                $date = \Tk\Date::create(filemtime($file));
+                $date = \Tk\Date::create(intval(filemtime($file)));
                 if ($date < $validDate) {
                     $this->write('     Deleting: [' . $date->format(\Tk\Date::FORMAT_ISO_DATETIME) . '] ' . $file->__toString());
                     unlink($file);

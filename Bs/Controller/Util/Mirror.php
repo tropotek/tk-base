@@ -4,6 +4,7 @@ namespace Bs\Controller\Util;
 use Bs\Auth;
 use JetBrains\PhpStorm\NoReturn;
 use Tk\Config;
+use Tk\Log;
 use Tk\Uri;
 use Tk\Db;
 
@@ -111,7 +112,15 @@ class Mirror
         $chunksize = 4096;
         if($filesize > $chunksize) {
             $srcStream = fopen($filename, 'rb');
+            if ($srcStream === false) {
+                Log::error("Cannot open file: $filename");
+                return;
+            }
             $dstStream = fopen('php://output', 'wb');
+            if ($dstStream === false) {
+                Log::error("Cannot open default output stream");
+                return;
+            }
             $offset = 0;
             while(!feof($srcStream)) {
                 $offset += stream_copy_to_stream($srcStream, $dstStream, $chunksize, $offset);

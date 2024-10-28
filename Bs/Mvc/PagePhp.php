@@ -13,7 +13,7 @@ class PagePhp extends PageInterface
         ob_start();
         if (is_file($this->getTemplatePath())) {
             include $this->getTemplatePath();
-            return trim(ob_get_clean());
+            return trim(strval(ob_get_clean()));
         }
         return '';
     }

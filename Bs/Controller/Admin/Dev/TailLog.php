@@ -16,7 +16,7 @@ class TailLog extends ControllerAdmin
         $this->getPage()->setTitle('Tail Log');
         $this->setAccess(Auth::PERM_ADMIN);
 
-        $this->logPath = ini_get('error_log');
+        $this->logPath = strval(ini_get('error_log'));
 
 
         if (isset($_GET['seek'])) {
@@ -38,14 +38,18 @@ class TailLog extends ControllerAdmin
         }
 
         $handle = fopen($this->logPath, 'r');
-        if (isset($_SESSION['tail-offset'])) {
-            $pos = $_SESSION['tail-offset'];
-            $data = stream_get_contents($handle, -1, $pos);
-            echo htmlentities($data);
-            $pos = ftell($handle);
-            $_SESSION['tail-offset'] = $pos;
-        } else {
-            $this->doSeek(-1000);
+        if ($handle !== false) {
+            if (isset($_SESSION['tail-offset'])) {
+                $pos = $_SESSION['tail-offset'];
+                $data = stream_get_contents($handle, -1, $pos);
+                if ($data !== false) {
+                    echo htmlentities($data);
+                }
+                $pos = ftell($handle);
+                $_SESSION['tail-offset'] = $pos;
+            } else {
+                $this->doSeek(-1000);
+            }
         }
         exit();
     }
@@ -53,13 +57,15 @@ class TailLog extends ControllerAdmin
     public function doSeek(int $seekAdjust = 0): void
     {
         $handle = fopen($this->logPath, 'r');
-        fseek($handle, 0, \SEEK_END);
-        $pos = ftell($handle);
-        if ($seekAdjust > 0) {
-            $pos += $seekAdjust;
+        if ($handle !== false) {
+            fseek($handle, 0, \SEEK_END);
+            $pos = ftell($handle);
+            if ($seekAdjust > 0) {
+                $pos += $seekAdjust;
+            }
+            if ($pos < 0) $pos = 0;
+            $_SESSION['tail-offset'] = $pos;
         }
-        if ($pos < 0) $pos = 0;
-        $_SESSION['tail-offset'] = $pos;
     }
 
     public function show(): ?Template

@@ -22,8 +22,9 @@ class Info extends ControllerAdmin
         ob_start();
         phpinfo();
         $ob = ob_get_clean();
-        $ob1 = tidy_repair_string($ob, ['output-xhtml' => true, 'show-body-only' => true], 'utf8');
-        $template->appendHtml('content', $ob1);
+        $ob1 = tidy_repair_string(strval($ob), ['output-xhtml' => true, 'show-body-only' => true], 'utf8');
+        $template->appendHtml('content', strval($ob1));
+
 
         $js = <<<JS
 jQuery(function($) {

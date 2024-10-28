@@ -149,7 +149,7 @@ class SqlMigrate
                 return true;
             } else {  // is sql
                 // replace any table prefix
-                $sql = file_get_contents($file);
+                $sql = strval(file_get_contents($file));
                 if (!strlen(trim($sql))) return false;
 
                 $stm = Db::getPdo()->prepare($sql);
@@ -245,6 +245,7 @@ SQL;
         if (!Db::tableExists($this->getTable())) return true;
         $sql = "SELECT * FROM `{$this->getTable()}` LIMIT 1";
         $res = Db::getPdo()->query($sql);
+        if ($res === false) return false;
         if (!$res->rowCount()) return true;
         return false;
     }

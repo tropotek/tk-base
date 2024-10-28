@@ -24,7 +24,7 @@ class Form extends \Tk\Form implements DisplayInterface
 
     public function __construct(?Model $model = null)
     {
-        $formId = \Tk\ObjectUtil::basename(static::class);
+        $formId = strval(\Tk\ObjectUtil::basename(static::class));
         $formId = strtolower(preg_replace('/[A-Z]/', '_$0', $formId));
         $formId = trim($formId, '_');
         parent::__construct($formId);
