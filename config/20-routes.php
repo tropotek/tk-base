@@ -17,6 +17,12 @@ return function (CollectionConfigurator $routes) {
             ->controller([\Bs\Controller\Util\Mirror::class, 'doDefault']);
     }
 
+    $routes->add('util-inline-image', '/util/inlineImage')
+        ->controller([\Bs\Controller\Util\InlineImage::class, 'doDefault']);
+    $routes->add('util-db-search', '/util/dbSearch')
+        ->controller([\Bs\Controller\Util\DbSearch::class, 'doDefault']);
+
+
     // Example php route
     // $routes->add('widget-test', '/widgetTest')
     //     ->defaults(['path' => '/page/widgetManager.php'])
