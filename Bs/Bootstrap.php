@@ -13,6 +13,7 @@ use Tk\Log;
 use Tk\System;
 use Tk\Db;
 use Tk\Uri;
+use Tk\Url;
 
 class Bootstrap
 {
@@ -89,8 +90,8 @@ class Bootstrap
          */
         chdir(Config::getBasePath());
 
-        Uri::$SITE_HOSTNAME = Config::getHostname();
-        Uri::$BASE_URL = Config::getBaseUrl();
+        Uri::$SITE_HOST = Config::getHostname();
+        Uri::$BASE_PATH = Config::getBaseUrl();
 
         if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;
