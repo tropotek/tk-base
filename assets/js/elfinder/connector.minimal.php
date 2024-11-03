@@ -22,7 +22,7 @@ define('ELFINDER_UNZIP_PATH',    $bin.'/unzip');
 // define('ELFINDER_JPEGTRAN_PATH', $bin.'/jpegtran');
 // define('ELFINDER_FFMPEG_PATH',   $bin.'/ffmpeg');
 
-define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek.tk-base/assets/js/elfinder/connector.minimal.php');  // see elFinder::getConnectorUrl()
+define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php');  // see elFinder::getConnectorUrl()
 
 // define('ELFINDER_DEBUG_ERRORLEVEL', -1); // Error reporting level of debug mode
 
@@ -151,25 +151,23 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 // ========== Setup data-elfinder-path =============
 function getElfinderPath(string $customDataPath = '/media'): array
 {
-    $config = \Tk\Config::instance();
-    $dataPath = \Tk\Config::makePath(\Tk\Config::getDataPath() . $customDataPath);
-    $dataUrl = \Tk\Config::makeUrl(\Tk\Config::getDataPath() . $customDataPath);
+    global $sitePath, $siteUrl;
+    $dataPath = $sitePath . \Tk\Config::getDataPath() . $customDataPath;
+    $dataUrl = $siteUrl . \Tk\Config::getDataPath() . $customDataPath;
     if (!is_dir($dataPath)) {
         mkdir($dataPath, 0777, true);
     }
     if (!is_dir($dataPath . '/.trash/')) {
         mkdir($dataPath . '/.trash/', 0777, true);
     }
-    return array($dataPath, $dataUrl);
+    return [$dataPath, $dataUrl];
 }
 
-$config = \Tk\Config::instance();
 $customDataPath = '/media';
 if (isset($_REQUEST['path'])) {
     $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
 }
 list($dataPath, $dataUrl) = getElfinderPath($customDataPath);
-
 // ===============================================
 
 
