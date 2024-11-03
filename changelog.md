@@ -1,5 +1,13 @@
 #CHANGELOG#
 
+Ver 8.0.62 [2024-11-03]:
+-------------------------------
+  - Fix elFinder
+  - Update Uri to extend Psr\Http\Message\UriInterface
+  - Add util pages
+  - phpstan lvl7
+
+
 Ver 8.0.60 [2024-10-14]:
 -------------------------------
   - phpstan lvl 6
