@@ -3,7 +3,7 @@ namespace Bs\Traits;
 
 use Bs\Ui\Crumbs;
 use Tk\Config;
-use Tk\Http\Cookie;
+use Tk\Cookie;
 use Bs\Factory;
 use Bs\Registry;
 use Tk\Uri;

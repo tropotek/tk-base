@@ -31,7 +31,7 @@ use Tk\Cache\Cache;
 use Tk\Collection;
 use Tk\Config;
 use Tk\ConfigLoader;
-use Tk\Http\Cookie;
+use Tk\Cookie;
 use Tk\Log;
 use Tk\Logger\ErrorLog;
 use Tk\Logger\SessionLog;
