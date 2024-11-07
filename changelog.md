@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.66 [2024-11-08]:
+-------------------------------
+  - Update date fields for objects
+  - Updated Model to handle DateTimeImmutable
+
+
 Ver 8.0.64 [2024-11-04]:
 -------------------------------
 
