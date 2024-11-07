@@ -17,7 +17,7 @@ class Mirror
 
     public function doDefault(): string
     {
-        if (strtolower($_SERVER['REQUEST_SCHEME']) != Uri::SCHEME_HTTP_SSL) {
+        if (strtolower($_SERVER['REQUEST_SCHEME']) != 'https') {
             throw new \Tk\Exception('invalid SSL connection');
         }
         if (!Config::instance()->get('db.mirror.secret', false)) {
