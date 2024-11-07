@@ -167,7 +167,8 @@ $customDataPath = '/media';
 if (isset($_REQUEST['path'])) {
     $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
 }
-list($dataPath, $dataUrl) = getElfinderPath($customDataPath);
+[$dataPath, $dataUrl] = getElfinderPath($customDataPath);
+vd($customDataPath, $dataPath, $dataUrl);
 // ===============================================
 
 
