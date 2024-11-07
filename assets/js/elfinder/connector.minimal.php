@@ -2,6 +2,7 @@
 $sitePath = dirname(__FILE__, 7);
 $siteUrl = dirname($_SERVER['PHP_SELF'], 7);
 if (str_ends_with($siteUrl, '/')) $siteUrl = substr($siteUrl, 0, -1);
+if (str_ends_with($sitePath, '/')) $sitePath = substr($sitePath, 0, -1);
 require $sitePath . '/_prepend.php';
 
 error_reporting(0); // Set E_ALL for debugging
@@ -169,7 +170,6 @@ if (isset($_REQUEST['path'])) {
     $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
 }
 [$dataPath, $dataUrl] = getElfinderPath($customDataPath);
-vd($customDataPath, $dataPath, $dataUrl);
 // ===============================================
 
 
