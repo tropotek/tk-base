@@ -42,9 +42,9 @@ class GuestToken extends Model
     use SystemTrait;
 
     // session ID
-    const TOKEN_SID = '_guest_token';
+    const string TOKEN_SID = '_guest_token';
     // request ID
-    const TOKEN_RID = '__gt';
+    const string TOKEN_RID = '__gt';
 
     public string     $token   = '';
     public array      $pages   = [];

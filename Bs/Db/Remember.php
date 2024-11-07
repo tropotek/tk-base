@@ -15,10 +15,10 @@ class Remember
     /**
      * The remember me cookie name
      */
-    const REMEMBER_CID = '__rmb';
+    const string REMEMBER_CID = '__rmb';
 
 
-    public static function rememberMe(int $authId, int $days = 5): void
+    public static function rememberMe(int $authId, int $days = 30): void
     {
         [$selector, $validator, $token] = self::generateToken();
 

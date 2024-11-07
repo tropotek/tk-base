@@ -10,12 +10,12 @@ class Masquerade
     /**
      * Session ID
      */
-    const SID = '__msq__';
+    const string SID = '__msq__';
 
     /**
      * Query string to initiate masquerading
      */
-    const QUERY_MSQ = 'msq';
+    const string QUERY_MSQ = 'msq';
 
     /**
      * Add a callable function to check if a user can masquerade as another user

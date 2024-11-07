@@ -119,7 +119,7 @@ class Auth extends Model
     }
 
     /**
-     * @param bool $cookie If true any stored login cookies will also be removed
+     * @param bool $cookie If true any stored remember me login cookies will also be removed
      */
     public static function logout(Auth $authUser = null, bool $cookie = true): void
     {
