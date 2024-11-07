@@ -1,20 +1,10 @@
 <?php
 namespace Bs\Traits;
 
-use DateTime;
-
 trait CreatedTrait
 {
-    /**
-     * TimestampTrait constructor
-     * Call this in parent object constructor
-     */
-    protected function _CreatedTrait(): void
-    {
-        $this->created = new \DateTime();
-    }
 
-    public function getCreated(string $format = ''): DateTime|string
+    public function getCreated(string $format = ''): string|\DateTimeInterface
     {
         if (!empty($format)) {
             return $this->created->format($format);
@@ -22,7 +12,7 @@ trait CreatedTrait
         return $this->created;
     }
 
-    public function setCreated(DateTime $created): static
+    public function setCreated(\DateTimeInterface $created): static
     {
         $this->created = $created;
         return $this;

@@ -385,7 +385,7 @@ class Manager extends ControllerAdmin
         \$this->table->setOrderBy('{primary-col}');
         \$this->table->setLimit(25);
 
-        \$rowSelect = RowSelect::create('id', 'userId');
+        \$rowSelect = RowSelect::create('id', '{primary-prop}');
         \$this->table->appendCell(\$rowSelect);
 
         \$this->table->appendCell('actions')
@@ -455,7 +455,7 @@ class Manager extends ControllerAdmin
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-cogs"></i> </div>
+    <div class="card-header"><i class="fa fa-cogs"></i> <span var="title"></span></div>
     <div class="card-body" var="content"></div>
   </div>
 </div>
@@ -719,7 +719,7 @@ class Edit extends ControllerAdmin
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-users"></i> </div>
+    <div class="card-header"><i class="fa fa-edit"></i> <span var="title"></span></div>
     <div class="card-body" var="content"></div>
   </div>
 </div>

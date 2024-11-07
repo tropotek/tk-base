@@ -55,14 +55,16 @@ class Auth extends Model
     public string     $sessionId     = '';
     public string     $hash          = '';
     public ?\DateTime $lastLogin     = null;
-    public \DateTime  $modified;
-    public \DateTime  $created;
+
+    public \DateTimeImmutable $modified;
+    public \DateTimeImmutable $created;
 
 
     public function __construct()
     {
-        $this->_TimestampTrait();
         $this->timezone = Config::instance()->get('php.date.timezone');
+        $this->modified = new \DateTimeImmutable();
+        $this->created  = new \DateTimeImmutable();
     }
 
     public function save(): void

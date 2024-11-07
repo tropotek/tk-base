@@ -1,26 +1,15 @@
 <?php
 namespace Bs\Traits;
 
-use DateTime;
 
 trait TimestampTrait
 {
     use CreatedTrait;
 
     /**
-     * TimestampTrait constructor
-     * Call this in parent object constructor
+     * @param string $format If supplied then a string of the formatted date is returned
      */
-    protected function _TimestampTrait(): void
-    {
-        $this->modified = new \DateTime();
-        $this->_CreatedTrait();
-    }
-
-    /**
-     * @param string $format   If supplied then a string of the formatted date is returned
-     */
-    public function getModified(string $format = ''): string|DateTime
+    public function getModified(string $format = ''): string|\DateTimeInterface
     {
         if (!empty($format)) {
             return $this->modified->format($format);
@@ -28,7 +17,7 @@ trait TimestampTrait
         return $this->modified;
     }
 
-    public function setModified(DateTime $modified): static
+    public function setModified(\DateTimeInterface $modified): static
     {
         $this->modified = $modified;
         return $this;
