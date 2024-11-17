@@ -137,7 +137,7 @@ class MirrorData extends Console
     protected function postRequest(Uri|string $srcUrl, string $filename): bool
     {
         $ok     = true;
-        $srcUrl = Uri::create($srcUrl)->setScheme(Uri::SCHEME_HTTP_SSL);
+        $srcUrl = Uri::create($srcUrl)->withScheme('https');
         $query  = $srcUrl->getQuery();
         $srcUrl->reset();
         $secret = $this->getConfig()->get('db.mirror.secret', '');
