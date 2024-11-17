@@ -327,8 +327,7 @@ class ModelProperty extends \Tk\Collection
 
         $filterValid = sprintf("!empty(\$filter['%s'])", $this->getName());
         if ($this->getType() == self::TYPE_BOOL) {
-            $filterValid = sprintf("isset(\$filter['%s']) && is_bool(\$filter['%s'])",
-                $this->getName(),
+            $filterValid = sprintf("is_bool(\$filter['%s'] ?? '')",
                 $this->getName()
             );
         }

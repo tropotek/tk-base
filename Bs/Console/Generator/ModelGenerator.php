@@ -390,8 +390,8 @@ class Manager extends ControllerAdmin
 
         \$this->table->appendCell('actions')
             ->addCss('text-nowrap text-center')
-            ->addOnValue(function({classname} \${name}, Cell \$cell) {
-                \$url = Uri::create('/{namespace-url}Edit')->set('{primary-prop}', \${name}->{primary-prop});
+            ->addOnValue(function({classname} \$obj, Cell \$cell) {
+                \$url = Uri::create('/{namespace-url}Edit')->set('{primary-prop}', \$obj->{primary-prop});
                 return <<<HTML
                     <a class="btn btn-outline-success" href="\$url" title="Edit"><i class="fa fa-fw fa-edit"></i></a>
                 HTML;
@@ -712,7 +712,7 @@ class Edit extends ControllerAdmin
     {
         \$html = <<<HTML
 <div>
-  <div class="page-actions card mb-3">7
+  <div class="page-actions card mb-3">
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>

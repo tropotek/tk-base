@@ -118,7 +118,7 @@ function clearForm(form) {
  * After you have replaced an element you can then call tkInit(element) to
  * call the init functions that have been registered.
  *
- * Note: callint tkInit() with no arguments uses the `document` by default.
+ * Note: tkInit() with no arguments uses the `document` element by default.
  */
 let tkInits = [];
 /**
