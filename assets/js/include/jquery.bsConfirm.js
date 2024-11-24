@@ -7,73 +7,81 @@
  * that defaults to a standard javascript dialog if the plugin is not available.
  *
  * ```
- *   if ($.fn.bsConfirm === undefined) {
- *     $('[data-confirm]').on('click', document, function () {
- *       return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
- *     });
- *   } else {
+ *   if (typeof $.fn.bsConfirm !== 'undefined') {
  *     $('[data-confirm]').bsConfirm();
  *   }
  * ```
  *
- * Now all elements containing the data-confirm attribute will have a confirm dialog on the click event.
+ * All elements containing the data-confirm attribute will have a confirm dialog on the click event.
  *
  * ```
  *   <a href="/home/page/action" title="Action Confirmation Title"
  *      data-confirm="Are you sure you want to complete this action?"
- *      data-ok="Yep" data-cancel="Nuh">Action</a>
+ *      data-confirm-btn="Yep" data-cancel-btn="Nuh">Action</a>
  * ```
  *
- *
  * @author Tropotek <http://www.tropotek.com/>
- * @date 31/10/2022
- * @version 1.2
+ * @date 2024-11-20
+ * @version 1.3
  */
 
 ;(function($) {
   let bsConfirm = function(element, options) {
 
-    // plugin settings
-    const defaults = {
+    const templateList = {
       // BS3-BS4 modal template
-//       template: /*html*/`
-// <div class="modal fade bsConfirm-modal" tabindex="-1" role="dialog" aria-labelledby="bsConfirmModalLabel" aria-hidden="true">
-//   <div class="modal-dialog" role="document">
-//     <div class="modal-content">
-//       <div class="modal-header">
-//         <h5 class="modal-title" id="bsConfirmModalLabel"></h5>
-//         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-//       </div>
-//       <div class="modal-body"></div>
-//       <div class="modal-footer">
-//         <button class="btn btn-danger btn-cancel" data-dismiss="modal">Cancel</button>
-//         <button class="btn btn-success btn-ok">OK</button>
-//       </div>
-//     </div>
-//   </div>
-// </div>`,
-      // BS5+ modal template
-      template: /*html*/`
+      template4: /*html*/`
 <div class="modal fade bsConfirm-modal" tabindex="-1" role="dialog" aria-labelledby="bsConfirmModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="bsConfirmModalLabel"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="bsConfirmModalLabel">Confirm</h4>
       </div>
       <div class="modal-body"></div>
       <div class="modal-footer">
-        <button class="btn btn-danger btn-cancel" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success btn-ok">OK</button>
+        <button class="btn btn-default btn-cancel" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary btn-confirm">Confirm</button>
       </div>
     </div>
   </div>
 </div>`,
-      ok: 'Ok',
-      cancel: 'Cancel'
+      // BS5+ modal template
+      template5: /*html*/`
+<div class="modal fade bsConfirm-modal" tabindex="-1" role="dialog" aria-labelledby="bsConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bsConfirmModalLabel">Confirm</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-light btn-cancel" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary btn-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>`,
+    }
+
+    // plugin settings
+    const defaults = {
+      template:    '',
+      dataConfirm: 'confirm',
+      confirmBtn:  'Confirm',
+      cancelBtn:   'Cancel',
+      color:       '',
+      headerColorMap: {
+        primary: 'modal-header-primary',
+        success: 'modal-header-success',
+        warning: 'modal-header-warning',
+        info:    'modal-header-info',
+        danger:  'modal-header-danger',
+      },
     };
 
-	  // Plugin private params
+    // Plugin private params
     let plugin = this;
     plugin.settings = {};
     let el = $(element);
@@ -82,35 +90,82 @@
     plugin.init = function() {
       plugin.settings = $.extend({}, defaults, el.data(), options);
 
-      el.on('click', function (e) {
-        $('.confirm-modal').remove();
-        let modal = $(plugin.settings.template);
-        $('.modal-title', modal).text(el.attr('title'));
-        $('.modal-body', modal).html(el.data('confirm'));
-        $('.btn-cancel', modal).html(plugin.settings.cancel);
-        $('.btn-ok', modal).html(plugin.settings.ok);
+      // only available for links and submit buttons
+      if (!el.is('a, [type=submit]')) return;
+      if (typeof $.fn.tooltip === 'undefined') {
+        console.warn('Bootstrap is required for this plugin');
+        return;
+      }
 
+      // select boostrap modal template if not defined by user
+      if (plugin.settings.template === '' && parseInt($.fn.tooltip.Constructor.VERSION.charAt(0)) < 5) {
+        plugin.settings.template = templateList.template4;
+      } else {
+        plugin.settings.template = templateList.template5;
+      }
+
+      el.on('click', function (e) {
+        // remove any active confirm dialogs
+        $('.confirm-modal').remove();
+
+        // create modal element
+        let modal = $(plugin.settings.template);
+
+        // set modal markup values
+        if ((el.attr('title') ?? '') !== '') {
+          $('.modal-title', modal).text(el.attr('title'));
+        }
+        $('.modal-body', modal).html(el.data(plugin.settings.dataConfirm));
+        $('.btn-cancel', modal).text(plugin.settings.cancelBtn);
+        $('.btn-confirm', modal).text(plugin.settings.confirmBtn);
+
+        let regs = /(primary|success|warning|info|danger)/.exec(el.attr('class'));
+        let color = plugin.settings.color;
+        if (regs !== null && regs.length) {
+          color = regs[0];
+        }
+        if (el.data('color')) {
+          color = el.data('color');
+        }
+
+        if (color) {
+          $('.modal-header', modal).addClass(plugin.settings.headerColorMap[color] ?? '');
+          $('.btn-confirm', modal).addClass('btn-' + color);
+        }
+
+
+        // close modal on cancel
         $('.btn-cancel', modal).on('click', function () {
           modal.modal('hide');
-          return false;
+          if (el.is('a, [type=submit]')) {
+            return false;
+          }
         });
-        $('.btn-ok', modal).on('click', function () {
+
+        // on confirm, follow link or submit form
+        $('.btn-confirm', modal).on('click', function (e) {
           modal.modal('hide');
-          if (el.attr('href')) {  // Url submit
+          if (el.is('a')) {
             document.location = el.attr('href');
-          } else if (el.attr('type') === 'submit') {  // Form submit
-            el.off('click');
-            el.trigger('click');
+          } else if (el.is('[type=submit]')) {
+            let form = el.closest('form');
+            // add the submit button name/value
+            if (el.attr('name')) {
+              form.append(`<input type="hidden" name="${el.attr('name')}" value="${el.attr('value')}">`);
+            }
+            form.submit();
           }
           return true;
         });
 
+        // Append modal to dom and show
         $('body').append(modal);
-        modal.modal();
         modal.on('hidden.bs.modal', function (e) {
           modal.remove();
         })
         modal.modal('show');
+
+        // disable default click action
         return false;
       });
 

@@ -380,8 +380,10 @@ class Manager extends ControllerAdmin
     {
         \$this->getPage()->setTitle('{name} Manager');
 
+        // todo: \$this->setAccess(...);
+
         // init table
-        \$this->table = new \Bs\Mvc\Table();
+        \$this->table = new Table();
         \$this->table->setOrderBy('{primary-col}');
         \$this->table->setLimit(25);
 
@@ -396,23 +398,37 @@ class Manager extends ControllerAdmin
                     <a class="btn btn-outline-success" href="\$url" title="Edit"><i class="fa fa-fw fa-edit"></i></a>
                 HTML;
             });
+
 {cell-list}
         // Add Filter Fields
         \$this->table->getForm()->appendField(new Input('search'))
             ->setAttr('placeholder', 'Search');
 
-        // init filter fields for actions to access to the filter values
-        \$this->table->initForm();
 
         // Add Table actions
-        \$this->table->appendAction(Delete::create(\$rowSelect))
+        \$this->table->appendAction(Delete::create()
+            ->addOnGetSelected([\$rowSelect, 'getSelected'])
             ->addOnDelete(function(Delete \$action, array \$selected) {
                 foreach (\$selected as \${primary-col}) {
                     Db::delete('{table}', compact('{primary-col}'));
                 }
-            });
+            }));
 
-        \$this->table->appendAction(Csv::create(\$rowSelect))
+        $this->table->appendAction(\Tk\Table\Action\Select::create('Active Status', 'fa fa-fw fa-times')
+            ->setActions(['Active' => 'active', 'Disable' => 'disable'])
+            ->setConfirmStr('Toggle active/disable on the selected rows?')
+            ->addOnGetSelected([\$rowSelect, 'getSelected'])
+            ->addOnSelect(function(\Tk\Table\Action\Select \$action, array \$selected, string \$value) {
+                foreach (\$selected as \$id) {
+                    \$obj = {classname}::find(\$id);
+                    \$obj->active = (strtolower(\$value) == 'active');
+                    \$obj->save();
+                }
+            })
+        );
+
+        \$this->table->appendAction(Csv::create()
+            ->addOnGetSelected([\$rowSelect, 'getSelected'])
             ->addOnCsv(function(Csv \$action, array \$selected) {
                 \$action->setExcluded(['id', 'actions']);
                 \$filter = \$this->table->getDbFilter();
@@ -422,8 +438,9 @@ class Manager extends ControllerAdmin
                     \$rows = {classname}::findFiltered(\$filter->resetLimits());
                 }
                 return \$rows;
-            });
+            }));
 
+        // execute table
         \$this->table->execute();
 
         // Set the table rows
@@ -551,14 +568,16 @@ class {classname} extends Table
         \$this->initForm();
 
         // Add Table actions
-        \$this->appendAction(Delete::create(\$rowSelect))
+        \$this->appendAction(Delete::create())
+            ->addOnGetSelected([\$rowSelect, 'getSelected'])
             ->addOnDelete(function(Delete \$action, array \$selected) {
                 foreach (\$selected as \${primary-col}) {
                     Db::delete('{table}', compact('{primary-col}'));
                 }
             });
 
-        \$this->appendAction(Csv::create(\$rowSelect))
+        \$this->appendAction(Csv::create())
+            ->addOnGetSelected([\$rowSelect, 'getSelected'])
             ->addOnCsv(function(Csv \$action, array \$selected) {
                 \$action->setExcluded(['id', 'actions']);
                 \$filter = \$this->getDbFilter();
@@ -649,6 +668,8 @@ class Edit extends ControllerAdmin
     {
         \$this->getPage()->setTitle('Edit {name}');
 
+        // todo: \$this->setAccess(...);
+
         \${primary-prop} = intval(\$_GET['{primary-prop}'] ?? 0);
 
         \$this->{property-name} = new {classname}();
@@ -658,8 +679,6 @@ class Edit extends ControllerAdmin
                 throw new Exception("invalid {primary-prop} \${primary-prop}");
             }
         }
-
-        // todo: \$this->setAccess(...);
 
         // Get the form template
         \$this->form = new Form();

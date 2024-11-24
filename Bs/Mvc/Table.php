@@ -25,12 +25,13 @@ class Table extends \Tk\Table
 
     public function __construct(string $tableId = 'tbl', string $orderBy = '', int $limit = 10, int $page = 1)
     {
-        parent::__construct($tableId);
         $this->setOrderBy($orderBy);
         $this->setLimit($limit);
         $this->setPage($page);
-        $this->sid = $this->makeRequestKey('filter');
 
+        parent::__construct($tableId);
+
+        $this->sid = $this->makeRequestKey('filter');
         $this->renderer = new DomRenderer($this);
 
         // add reset table session action
@@ -47,19 +48,18 @@ class Table extends \Tk\Table
         return $this;
     }
 
+    /**
+     * The execute method should be called after all cells and filters have been added
+     */
     public function execute(): static
     {
-        $this->setLimit($_GET[$this->makeRequestKey(\Tk\Table::PARAM_LIMIT)] ?? $this->getLimit());
-        $this->setPage($_GET[$this->makeRequestKey(\Tk\Table::PARAM_PAGE)] ?? $this->getPage());
-        $this->setOrderBy($_GET[$this->makeRequestKey(\Tk\Table::PARAM_ORDERBY)] ?? $this->getOrderBy());
-
         // init cells, filters and actions
         $this->init();
 
         // init filter from request if not already done
         $this->initForm();
 
-        // execute actions and get orderby from request
+        // execute parent table actions
         parent::execute();
 
         return $this;
