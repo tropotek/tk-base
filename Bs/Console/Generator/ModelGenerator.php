@@ -362,10 +362,11 @@ use Bs\Mvc\ControllerAdmin;
 use Bs\Mvc\Table;
 use Dom\Template;
 use Tk\Form\Field\Input;
-use Tk\Table\Action\Csv;
 use Tk\Table\Cell;
 use Tk\Table\Cell\RowSelect;
+use Tk\Table\Action\Csv;
 use Tk\Table\Action\Delete;
+use Tk\Table\Action\Select;
 use Tk\Uri;
 use Tk\Db;
 
@@ -414,11 +415,11 @@ class Manager extends ControllerAdmin
                 }
             }));
 
-        $this->table->appendAction(\Tk\Table\Action\Select::create('Active Status', 'fa fa-fw fa-times')
+        $this->table->appendAction(Select::create('Active Status', 'fa fa-fw fa-times')
             ->setActions(['Active' => 'active', 'Disable' => 'disable'])
             ->setConfirmStr('Toggle active/disable on the selected rows?')
             ->addOnGetSelected([\$rowSelect, 'getSelected'])
-            ->addOnSelect(function(\Tk\Table\Action\Select \$action, array \$selected, string \$value) {
+            ->addOnSelect(function(Select \$action, array \$selected, string \$value) {
                 foreach (\$selected as \$id) {
                     \$obj = {classname}::find(\$id);
                     \$obj->active = (strtolower(\$value) == 'active');
@@ -432,6 +433,7 @@ class Manager extends ControllerAdmin
             ->addOnCsv(function(Csv \$action, array \$selected) {
                 \$action->setExcluded(['id', 'actions']);
                 \$filter = \$this->table->getDbFilter();
+                //\$this->table->getCell('name')->getOnValue()->reset();
                 if (\$selected) {
                     \$rows = {classname}::findFiltered(\$filter);
                 } else {
