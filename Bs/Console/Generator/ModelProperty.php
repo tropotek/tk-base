@@ -326,19 +326,26 @@ class ModelProperty extends \Tk\Collection
         if ($this->isPrimaryKey()) return '';
 
         $filterValid = sprintf("!empty(\$filter['%s'])", $this->getName());
+        $validate = '';
         if ($this->getType() == self::TYPE_BOOL) {
-            $filterValid = sprintf("is_bool(\$filter['%s'] ?? '')",
+            $filterValid = sprintf("is_bool(truefalse(\$filter['%s'] ?? null))",
+                $this->getName()
+            );
+            $validate = sprintf("
+                    \$filter['%s'] = truefalse(\$filter['%s']);",
+                $this->getName(),
                 $this->getName()
             );
         }
 
         $tpl = <<<TPL
-                if (%s) {
+                if (%s) {%s
                     \$filter->appendWhere('a.%s = :%s AND ');
                 }
         TPL;
         return sprintf($tpl,
             $filterValid,
+            $validate,
             $this->get('Field'),
             $this->getName()
         );

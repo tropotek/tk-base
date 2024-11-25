@@ -35,7 +35,7 @@ class DbSearch extends ControllerAdmin
         $this->form->appendField(new Input('value'))
             ->setNotes('(optional) Restrict search to column containing the value');
 
-        $this->form->appendField(new Checkbox('views', ['Yes' => 'y']))
+        $this->form->appendField(new Checkbox('views', ['y' => 'Yes']))
             ->setValue('y')
             ->setNotes('(optional) Restrict search to column containing the value');
 
