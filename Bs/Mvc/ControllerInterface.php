@@ -21,7 +21,7 @@ abstract class ControllerInterface
     {
         $auth = Auth::getAuthUser();
         if (!$auth || !$auth->hasPermission($access)) {
-            Alert::addWarning('You do not have permission to access the page: <b>' . Uri::create()->getRelativePath() . '</b>');
+            Alert::addWarning('You do not have permission to access the requested page');
             $auth?->getHomeUrl()->redirect();
             Uri::create('/')->redirect();
         }

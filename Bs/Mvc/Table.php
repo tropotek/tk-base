@@ -56,19 +56,27 @@ class Table extends \Tk\Table
         // init cells, filters and actions
         $this->init();
 
-        // init filter from request if not already done
+        // init/execute filter form request
         $this->initForm();
 
         // execute parent table actions
         parent::execute();
+
+        $filterValues = [];
+        if ($this->form) {
+            $filterValues = $this->form->getFieldValues();
+        }
+
+        if (is_null($this->dbFilter)) {
+            $this->dbFilter = Filter::createFromTable($filterValues, $this);
+        }
 
         return $this;
     }
 
     public function initForm(): static
     {
-        $values = [];
-        if (!is_null($this->form) && !$this->form->getField('filter')) {
+        if ($this->form && !$this->form->getField('filter')) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
                 $_SESSION[$this->sid] = $values;
@@ -84,11 +92,6 @@ class Table extends \Tk\Table
             if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid])) {
                 $this->form->setFieldValues($_SESSION[$this->sid]);
             }
-            $values = $this->form->getFieldValues();
-        }
-
-        if (is_null($this->dbFilter)) {
-            $this->dbFilter = Filter::createFromTable($values, $this);
         }
 
         return $this;

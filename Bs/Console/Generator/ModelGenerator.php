@@ -325,10 +325,6 @@ STR;
         return \Tk\CurlyTemplate::create($classTpl);
     }
 
-
-    /**
-     *
-     */
     public function makeManager(array $params = []): string
     {
         $tpl = $this->createTableManagerTemplate();
@@ -370,9 +366,6 @@ use Tk\Table\Action\Select;
 use Tk\Uri;
 use Tk\Db;
 
-/**
- *
- */
 class Manager extends ControllerAdmin
 {
     protected ?Table \$table = null;
@@ -415,7 +408,7 @@ class Manager extends ControllerAdmin
                 }
             }));
 
-        $this->table->appendAction(Select::create('Active Status', 'fa fa-fw fa-times')
+        \$this->table->appendAction(Select::create('Active Status', 'fa fa-fw fa-times')
             ->setActions(['Active' => 'active', 'Disable' => 'disable'])
             ->setConfirmStr('Toggle active/disable on the selected rows?')
             ->addOnGetSelected([\$rowSelect, 'getSelected'])

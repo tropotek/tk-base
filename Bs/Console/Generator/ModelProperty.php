@@ -332,7 +332,7 @@ class ModelProperty extends \Tk\Collection
                 $this->getName()
             );
             $validate = sprintf("
-                    \$filter['%s'] = truefalse(\$filter['%s']);",
+            \$filter['%s'] = truefalse(\$filter['%s']);",
                 $this->getName(),
                 $this->getName()
             );
