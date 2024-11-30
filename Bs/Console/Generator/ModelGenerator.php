@@ -710,7 +710,7 @@ class Edit extends ControllerAdmin
     public function show(): ?Template
     {
         // Setup field group widths with bootstrap classes
-        //\$this->form->getField('username')->addFieldCss('col-6');
+        //\$this->form->getField('name')->addFieldCss('col-6');
         //\$this->form->getField('email')->addFieldCss('col-6');
 
         \$template = \$this->getTemplate();
@@ -835,11 +835,10 @@ class {classname} extends Form
     public function show(): ?Template
     {
         // Setup field group widths with bootstrap classes
-        //\$this->getField('username')->addFieldCss('col-6');
+        //\$this->getField('name')->addFieldCss('col-6');
         //\$this->getField('email')->addFieldCss('col-6');
 
         \$renderer = \$this->getRenderer();
-        \$renderer?->addFieldCss('mb-3');
 
         return \$renderer->show();
     }
