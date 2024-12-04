@@ -59,17 +59,16 @@ class Table extends \Tk\Table
         // init/execute filter form request
         $this->initForm();
 
-        // execute parent table actions
-        parent::execute();
-
         $filterValues = [];
         if ($this->form) {
             $filterValues = $this->form->getFieldValues();
         }
-
         if (is_null($this->dbFilter)) {
             $this->dbFilter = Filter::createFromTable($filterValues, $this);
         }
+
+        // execute parent table actions
+        parent::execute();
 
         return $this;
     }

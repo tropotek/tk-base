@@ -329,9 +329,7 @@ let tkbase = function () {
       ],
       content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
       //contextmenu: 'link image template inserttable | cell row column deletetable',
-      contextmenu: false,
       extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
-      statusbar: false,
       image_advtab: true,
       //content_security_policy: "default-src 'self'",
 
@@ -345,16 +343,30 @@ let tkbase = function () {
     };
 
     tkRegisterInit(function () {
-      // Tiny MCE with only the default editing no upload
-      //   functionality with elfinder
-      $('textarea.mce-min', this).tinymce({});
-
-      // Full tinymce with elfinder file manager
-      $('textarea.mce', this).each(function () {
+      $('textarea.mce, textarea.mce-min', this).each(function () {
         let el = $(this);
-        el.tinymce($.extend(mceDefaults, {
-          file_picker_callback : getMceElf(el.data()).browser,
-        }));
+        let cfg = {
+          contextmenu: false,
+          statusbar: false,
+          extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+        };
+
+        if (el.is('[readonly]') || el.is('[disabled]')) {
+          cfg.readonly = true;
+          cfg.body_class = 'text-bg-light';
+        }
+
+        if (el.is('.mce-min')) {
+          // Tiny MCE with only the default editing no upload
+          //   functionality with elfinder
+          el.tinymce(cfg);
+        } else {
+          // Full tinymce with elfinder file manager
+          if (!el.is('.mce-no-fm')) {   // disable the elFinder file manager
+            cfg.file_picker_callback = getMceElf(el.data()).browser;
+          }
+          el.tinymce($.extend(mceDefaults, cfg));
+        }
       });
     });
 
