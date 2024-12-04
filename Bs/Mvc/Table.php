@@ -78,6 +78,7 @@ class Table extends \Tk\Table
         if ($this->form && !$this->form->getField('filter')) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
+                vd($values);
                 $_SESSION[$this->sid] = $values;
                 Uri::create()->redirect();
             }))->setLabel('Search');
@@ -126,6 +127,7 @@ HTML;
     {
         if (!$this->form) {
             $this->form = new Form($this->getId().'f');
+            $this->form->setCsrfTtl(0);
             $this->form->addCss('tk-table-filter');
             // Inline Dom Form Renderer
             $tplFile = Config::makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
