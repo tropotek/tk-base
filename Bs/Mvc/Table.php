@@ -6,6 +6,7 @@ use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
 use Tk\Config;
 use Tk\Form;
+use Tk\Table\Cell;
 use Tk\Uri;
 use Tk\Db\Filter;
 use Tk\Table\Action;
@@ -59,6 +60,11 @@ class Table extends \Tk\Table
         // init/execute filter form request
         $this->initForm();
 
+        // get the pager values from the request (if any)
+        $this->setLimit(intval($_REQUEST[$this->makeRequestKey(self::PARAM_LIMIT)] ?? $this->getLimit()));
+        $this->setPage(intval($_REQUEST[$this->makeRequestKey(self::PARAM_PAGE)] ?? $this->getPage()));
+        $this->setOrderBy(trim($_REQUEST[$this->makeRequestKey(self::PARAM_ORDERBY)] ?? $this->getOrderBy()));
+
         $filterValues = [];
         if ($this->form) {
             $filterValues = $this->form->getFieldValues();
@@ -67,8 +73,15 @@ class Table extends \Tk\Table
             $this->dbFilter = Filter::createFromTable($filterValues, $this);
         }
 
-        // execute parent table actions
-        parent::execute();
+        /* @var Cell $action */
+        foreach ($this->getCells() as $cells) {
+            $cells->execute();
+        }
+
+        /* @var Action $action */
+        foreach ($this->getActions() as $action) {
+            $action->execute();
+        }
 
         return $this;
     }
@@ -78,7 +91,6 @@ class Table extends \Tk\Table
         if ($this->form && !$this->form->getField('filter')) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
                 $values = $form->getFieldValues();
-                vd($values);
                 $_SESSION[$this->sid] = $values;
                 Uri::create()->redirect();
             }))->setLabel('Search');
