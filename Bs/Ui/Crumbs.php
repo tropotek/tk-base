@@ -17,12 +17,12 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
     /**
      * Request param: Reset the crumb stack
      */
-    const CRUMB_RESET = 'crumb_reset';
+    const string CRUMB_RESET = 'crumb_reset';
 
     /**
      * Request param: Do not add the current URI to the crumb stack
      */
-    const CRUMB_IGNORE = 'crumb_ignore';
+    const string CRUMB_IGNORE = 'crumb_ignore';
 
 
     protected bool   $visible       = true;
@@ -130,17 +130,6 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         return $this;
     }
 
-    public function getBackUrl(): string
-    {
-        if (!count($this->getCrumbStack())) return '';
-        $copy = array_keys($this->getCrumbStack());
-        $currentUrl = Uri::create()->getRelativePath();
-        do {
-            $bUrl = array_pop($copy);
-        } while (count($copy) && $currentUrl == $bUrl);
-        return $bUrl;
-    }
-
     /**
      * Reset the crumb stack with the homepage as the first crumb
      */
@@ -159,6 +148,17 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
         if (!$title) $title = basename($url);
         $this->crumbStack[$url] = $title;
         return $this;
+    }
+
+    public function getBackUrl(): string
+    {
+        if (!count($this->getCrumbStack())) return '';
+        $copy = array_keys($this->getCrumbStack());
+        $currentUrl = Uri::create()->getRelativePath();
+        do {
+            $bUrl = array_pop($copy);
+        } while (count($copy) && $currentUrl == $bUrl);
+        return $bUrl;
     }
 
     /**

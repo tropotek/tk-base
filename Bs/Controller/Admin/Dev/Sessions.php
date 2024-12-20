@@ -173,7 +173,7 @@ CSS;
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-calendar"></i> </div>
+    <div class="card-header" var="title"><i class="fa fa-fw fa-server"></i> </div>
     <div class="card-body" var="content"></div>
   </div>
 </div>

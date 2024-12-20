@@ -136,6 +136,7 @@ function tkRegisterInit(func, execute = true) {
  * @param obj (optional) doument is used if not supplied
  */
 function tkInit(obj) {
+  obj = $(obj).get(0) ?? null;
   if (!obj) obj = document;
   for (var i in tkInits) {
     tkInits[i].apply(obj);
@@ -345,6 +346,12 @@ let tkbase = function () {
     tkRegisterInit(function () {
       $('textarea.mce, textarea.mce-min', this).each(function () {
         let el = $(this);
+
+        // remove any existing tinymce instance
+        if (typeof el.tinymce == 'function') {
+          tinymce.remove('#' + el.prop('id'));
+        }
+
         let cfg = {
           contextmenu: false,
           statusbar: false,

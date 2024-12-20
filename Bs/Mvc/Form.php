@@ -22,11 +22,19 @@ class Form extends \Tk\Form implements DisplayInterface
     protected ?Model  $model    = null;
 
 
-    public function __construct(?Model $model = null)
+    public function __construct(?Model $model = null, ?string $formId = null)
     {
-        $formId = strval(\Tk\ObjectUtil::basename(static::class));
-        $formId = strtolower(preg_replace('/[A-Z]/', '_$0', $formId));
-        $formId = trim($formId, '_');
+        // generate form ID
+        if (is_null($formId)) {
+            $formId = static::class;
+            if (($model instanceof Model)) {
+                $formId = $model::class;
+            }
+            $formId = strval(\Tk\ObjectUtil::basename($formId));
+            $formId = strtolower(preg_replace('/[A-Z]/', '-$0', $formId));
+            $formId = trim($formId, '_-');
+        }
+
         parent::__construct($formId);
 
         $this->renderer = new Renderer($this);
