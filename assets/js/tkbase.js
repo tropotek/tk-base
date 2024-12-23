@@ -348,7 +348,7 @@ let tkbase = function () {
         let el = $(this);
 
         // remove any existing tinymce instance
-        if (typeof el.tinymce == 'function') {
+        if (typeof el.tinymce == 'function' && el.tinymce() !== null) {
           tinymce.remove('#' + el.prop('id'));
         }
 
