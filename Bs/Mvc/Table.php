@@ -22,6 +22,7 @@ class Table extends \Tk\Table
     protected ?DomRenderer $renderer     = null;
     protected ?Renderer    $formRenderer = null;
     protected string       $sid          = 'filter';
+    protected bool         $hideReset    = false;
 
 
     public function __construct(string $tableId = 'tbl', string $orderBy = '', int $limit = 10, int $page = 1)
@@ -34,11 +35,6 @@ class Table extends \Tk\Table
 
         $this->sid = $this->makeRequestKey('filter');
         $this->renderer = new DomRenderer($this);
-
-        // add reset table session action
-        if (Config::isDev()) {
-            $this->addResetAction();
-        }
     }
 
     /**
@@ -94,6 +90,7 @@ class Table extends \Tk\Table
                 $_SESSION[$this->sid] = $values;
                 Uri::create()->redirect();
             }))->setLabel('Search');
+
             $this->form->appendField(new Form\Action\Submit('clear', function (Form $form, Form\Action\ActionInterface $action) {
                 unset($_SESSION[$this->sid]);
                 Uri::create()->redirect();
@@ -112,6 +109,11 @@ class Table extends \Tk\Table
     public function show(): ?Template
     {
         $template = $this->getTemplate();
+
+        // add reset table session action
+        if (Config::isDev()) {
+            $this->addResetAction();
+        }
 
         // Render filter form
         if ($this->formRenderer) {
@@ -174,9 +176,16 @@ HTML;
         return $this->renderer;
     }
 
-    public function addResetAction(): Action
+    public function hideReset(bool $hideReset = true): static
     {
-        return $this->appendAction('__reset')
+        $this->hideReset = $hideReset;
+        return $this;
+    }
+
+    public function addResetAction(): ?Action
+    {
+        if ($this->hideReset) return null;
+        return $this->prependAction('__reset')
             ->addOnExecute(function (Action $action) {
                 $val = $action->getTable()->makeRequestKey($action->getName());
                 $active = ($_POST[$action->getName()] ?? '') == $val;
