@@ -28,7 +28,8 @@ class Page extends PageDomInterface
             ],
         ];
         $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        $template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
+        //$template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
+        $template->appendJs($js);
 
         $template->setTitleText($this->getTitle());
         if (Config::isDebug()) {
