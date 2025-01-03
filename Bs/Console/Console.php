@@ -24,7 +24,7 @@ abstract class Console extends Command
     {
         $this->input = $input;
         $this->output = $output;
-        $this->writeInfo($this->getName());
+        //$this->writeInfo($this->getName());
 
     }
 
