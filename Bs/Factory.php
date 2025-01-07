@@ -5,6 +5,7 @@ use Bs\Mvc\Page;
 use Bs\Mvc\PageDomInterface;
 use Bs\Mvc\PageInterface;
 use Bs\Mvc\PagePhp;
+use Bs\Ui\Breadcrumbs;
 use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;
@@ -330,10 +331,6 @@ class Factory extends Collection
             Modifier\UrlPath::$IS_DEBUG = Config::isDebug();
             $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
 
-            // TODO: see if we can live without this, would rather leave it to the template
-            //       we will lose control over where we add scripts but it may not matter.
-            //$dm->addFilter('jsLast', new Modifier\JsLast());
-
             if (Config::isDebug()) {
                 $dm->addFilter('pageBytes', new Modifier\PageBytes(Config::getBasePath()));
             }
@@ -370,7 +367,7 @@ class Factory extends Collection
     /**
      * get the mail gateway to send emails
      *
-     * @todo Look into making the gateway send method static with an init function to be called in the Bootstrap
+     * @todo make the gateway send method static with an init function to be called in the Bootstrap object
      */
     public function getMailGateway(): ?Gateway
     {
@@ -391,6 +388,7 @@ class Factory extends Collection
 
     /**
      * Get a breadcrumb object by page type
+     * @deprecated use \Bs\Ui\Breadcrumbs, delete this as crumbs are now inited in the Bootstrap.php object
      */
     public function getCrumbs(): ?Crumbs
     {
@@ -416,6 +414,20 @@ class Factory extends Collection
         return $this->get($id);
     }
 
+    public function initBreadcrumbs(): Breadcrumbs
+    {
+        $crumbs = Breadcrumbs::init();
+        if (\Bs\Auth::getAuthUser()) {
+            Breadcrumbs::setHome('/dashboard', '<i class="fa fa-home"></i>');
+        } else {
+            Breadcrumbs::setHome('/', '<i class="fa fa-home"></i>');
+        }
+        return $crumbs;
+    }
+
+    /**
+     * @deprecated use \Bs\Ui\Breadcrumbs::previous()
+     */
     public function getBackUrl(): Uri
     {
         $thisUrl = Uri::create();

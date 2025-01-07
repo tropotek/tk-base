@@ -11,6 +11,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tk\Uri;
 
+/**
+ *
+ * @deprecated use \Bs\Ui\Breadcrumbs
+ */
 class CrumbsHandler implements EventSubscriberInterface
 {
 

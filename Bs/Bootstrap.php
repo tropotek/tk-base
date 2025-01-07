@@ -2,8 +2,8 @@
 namespace Bs;
 
 use Bs\Listener\StartupHandler;
+use Bs\Ui\Breadcrumbs;
 use Dom\Template;
-use http\Exception\InvalidArgumentException;
 use Tk\Config;
 use Tk\DataMap\Db\TextEncrypt;
 use Tk\Debug\VarDump;
@@ -13,7 +13,6 @@ use Tk\Log;
 use Tk\System;
 use Tk\Db;
 use Tk\Uri;
-use Tk\Url;
 
 class Bootstrap
 {
@@ -102,6 +101,9 @@ class Bootstrap
 
         // init the Request
         Factory::instance()->getRequest();
+
+        // init breadcrumbs
+        Factory::instance()->initBreadcrumbs();
 
     }
 

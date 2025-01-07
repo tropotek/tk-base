@@ -9,6 +9,8 @@ use Tk\Uri;
 /**
  * Use this object to track and render a crumb stack.
  * All url's used should be relative to the site.
+ *
+ * @deprecated use \Bs\Ui\Breadcrumbs
  */
 class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInterface
 {
@@ -28,9 +30,9 @@ class Crumbs extends \Dom\Renderer\Renderer implements \Dom\Renderer\DisplayInte
     protected bool   $visible       = true;
     protected bool   $showActiveUrl = false;
     protected array  $crumbStack    = [];
+    protected int    $trim          = 8;
     protected string $homeTitle     = '';
     protected string $homeUrl       = '';
-    protected int    $trim          = 8;
 
 
     protected function __construct()

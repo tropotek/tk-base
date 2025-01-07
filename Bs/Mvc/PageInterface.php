@@ -2,6 +2,8 @@
 namespace Bs\Mvc;
 
 use Bs\Traits\SystemTrait;
+use Bs\Ui\Breadcrumbs;
+use Tk\Uri;
 
 abstract class PageInterface
 {
@@ -57,6 +59,9 @@ abstract class PageInterface
     public function setTitle(string $title): PageInterface
     {
         $this->title = $title;
+
+        Breadcrumbs::setTitle(Uri::create(), $title);
+
         return $this;
     }
 
