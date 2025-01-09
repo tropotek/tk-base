@@ -3,6 +3,7 @@ namespace Bs\Controller;
 
 use Bs\Mvc\ControllerDomInterface;
 use Bs\Registry;
+use Bs\Ui\Breadcrumbs;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,10 +20,10 @@ class Maintenance extends ControllerDomInterface
 
     public function doDefault(): ?Response
     {
+        Breadcrumbs::reset();
         $registry = Registry::instance();
 
         $this->getPage()->setTitle('Maintenance');
-        $this->getCrumbs()->reset();
 
         if ($registry->get('system.maintenance.message')) {
             $this->message = $registry->get('system.maintenance.message');

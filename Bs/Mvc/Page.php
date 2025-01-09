@@ -9,7 +9,6 @@ use Bs\Registry;
 
 class Page extends PageDomInterface
 {
-    protected bool $crumbsEnabled = true;
 
     public function show(): ?Template
     {
@@ -44,17 +43,6 @@ class Page extends PageDomInterface
     public function getBackUrl(): Uri
     {
         return $this->getFactory()->getBackUrl();
-    }
-
-    public function isCrumbsEnabled(): bool
-    {
-        return $this->crumbsEnabled;
-    }
-
-    public function setCrumbsEnabled(bool $crumbsEnabled): static
-    {
-        $this->crumbsEnabled = $crumbsEnabled;
-        return $this;
     }
 
 }
