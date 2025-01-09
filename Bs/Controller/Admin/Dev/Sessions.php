@@ -26,26 +26,37 @@ class Sessions extends ControllerAdmin
 
         $this->table->appendCell('authId')
             ->addCss('text-center');
+
         $this->table->appendCell('username');
+
         $this->table->appendCell('name')
             ->addCss('text-nowrap');
+
         $this->table->appendCell('breadcrumbs')
             ->addCss('max-width text-nowrap');
+
         $this->table->appendCell('ip')
             ->addCss('text-nowrap');
+
         // $this->table->appendCell('sessionId')
         //     ->addCss('text-nowrap');
+
         // $this->table->appendCell('agent')
         //     ->addCss('text-nowrap');
+
         $this->table->appendCell('type')
             ->addCss('text-nowrap');
+
         $this->table->appendCell('sso')
             ->setHeader('SSO')
             ->addCss('text-nowrap');
+
         $this->table->appendCell('activity')
             ->addCss('text-nowrap');
+
         $this->table->appendCell('lifetime')
             ->addCss('text-nowrap');
+
         $this->table->appendCell('expires')
             ->addHeaderCss('text-center')
             ->addCss('text-nowrap')
