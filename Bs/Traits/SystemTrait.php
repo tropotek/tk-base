@@ -31,11 +31,6 @@ trait SystemTrait
         return $this->getFactory()->getCookie();
     }
 
-    public function getCrumbs(): ?Crumbs
-    {
-        return Factory::instance()->getCrumbs();
-    }
-
     public function getBackUrl(): Uri
     {
         return Factory::instance()->getBackUrl();

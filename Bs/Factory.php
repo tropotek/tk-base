@@ -386,34 +386,6 @@ class Factory extends Collection
         return $this->get('mailGateway');
     }
 
-    /**
-     * Get a breadcrumb object by page type
-     * @deprecated use \Bs\Ui\Breadcrumbs, delete this as crumbs are now inited in the Bootstrap.php object
-     */
-    public function getCrumbs(): ?Crumbs
-    {
-        $id = 'breadcrumbs.public';
-        if (\Bs\Auth::getAuthUser()) {
-            $id = sprintf('breadcrumbs.%s', \Bs\Auth::getAuthUser()->username);
-        }
-
-        if (!$this->has($id)) {
-            $crumbs = $_SESSION[$id] ?? null;
-            if (!($crumbs instanceof Crumbs)) {
-                $crumbs = Crumbs::create();
-                $crumbs->setHomeTitle('<i class="fa fa-home"></i>');
-                if (\Bs\Auth::getAuthUser()) {
-                    $crumbs->setHomeUrl('/dashboard');
-                }
-                $crumbs->reset();
-                $_SESSION[$id] = $crumbs;
-            }
-            $this->set($id, $crumbs);
-        }
-
-        return $this->get($id);
-    }
-
     public function initBreadcrumbs(): Breadcrumbs
     {
         $crumbs = Breadcrumbs::init();
@@ -425,20 +397,9 @@ class Factory extends Collection
         return $crumbs;
     }
 
-    /**
-     * @deprecated use \Bs\Ui\Breadcrumbs::previous()
-     */
     public function getBackUrl(): Uri
     {
-        $thisUrl = Uri::create();
-        $crumbUrl = Uri::create($this->getCrumbs()->getBackUrl());
-        if ($crumbUrl->toString() != $thisUrl->toString()) {
-            return $crumbUrl;
-        }
-        if (\Bs\Auth::getAuthUser()) {
-            return \Bs\Auth::getAuthUser()->getHomeUrl();
-        }
-        return Uri::create('/');
+        return Breadcrumbs::previous();
     }
 
     public function getConsole(): Application

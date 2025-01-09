@@ -2,8 +2,6 @@
 namespace Bs\Mvc;
 
 use Bs\Auth;
-use Bs\Ui\Crumbs;
-use Dom\Modifier\JsLast;
 use Dom\Template;
 use Tk\Config;
 use Tk\Uri;
@@ -28,7 +26,6 @@ class Page extends PageDomInterface
             ],
         ];
         $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        //$template->appendJs($js, [JsLast::$ATTR_PRIORITY => -9999]);
         $template->appendJs($js);
 
         $template->setTitleText($this->getTitle());
@@ -41,15 +38,7 @@ class Page extends PageDomInterface
         $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
 
-        // Default crumbs css (probably not the best place for this...
-        $this->getCrumbs()->addCss('p-2 bg-body-tertiary rounded-2');
-
         return parent::show();
-    }
-
-    public function getCrumbs(): ?Crumbs
-    {
-        return $this->getFactory()->getCrumbs();
     }
 
     public function getBackUrl(): Uri
