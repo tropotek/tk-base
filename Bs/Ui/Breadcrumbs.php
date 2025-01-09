@@ -148,7 +148,7 @@ class Breadcrumbs
         $rel = $url->toRelativeString();
 
         if ($rel == $crumbs->current()->toRelativeString()) return $crumbs;
-        if ($rel == $crumbs->homeUrl) return $crumbs;
+        if ($crumbs->isHomeUrl($rel)) return $crumbs;
 
         if (is_null($title)) $title = basename($rel);
 
@@ -176,7 +176,7 @@ class Breadcrumbs
     {
         $crumbs = self::instance();
 
-        if ($url->toRelativeString() == $crumbs->homeUrl) return $crumbs;
+        if ($crumbs->isHomeUrl($url->toRelativeString())) return $crumbs;
         $i = self::getIndex($url);
         if ($i !== false) {
             $crumbs->titleStack[$i] = trim($title);
@@ -269,6 +269,13 @@ class Breadcrumbs
     {
         $this->visible = $v;
         return $this;
+    }
+
+    public function isHomeUrl(string|Uri $url): bool
+    {
+        $url = Uri::create($url);
+        if (in_array($url->toRelativeString(), [$this->homeUrl, '/'])) return true;
+        return false;
     }
 
 }

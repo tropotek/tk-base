@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Traits;
 
-use Bs\Ui\Crumbs;
 use Tk\Config;
 use Tk\Cookie;
 use Bs\Factory;

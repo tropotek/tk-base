@@ -6,7 +6,6 @@ use Bs\Mvc\PageDomInterface;
 use Bs\Mvc\PageInterface;
 use Bs\Mvc\PagePhp;
 use Bs\Ui\Breadcrumbs;
-use Bs\Ui\Crumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;
 use Psr\Log\LogLevel;

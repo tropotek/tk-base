@@ -4,7 +4,7 @@ namespace Bs\Controller\Admin\Dev;
 use Bs\Auth;
 use Bs\Mvc\ControllerAdmin;
 use Bs\Mvc\Table;
-use Bs\Ui\Crumbs;
+use Bs\Ui\Breadcrumbs;
 use Bs\Db\Masquerade;
 use Dom\Template;
 use Tk\Auth\Storage\SessionStorage;
@@ -101,10 +101,13 @@ CSS;
 
             $breadcrumbs = '';
             foreach ($_SESSION as $itm) {
-                if ($itm instanceof Crumbs) {
-                    $itm->setShowActiveUrl(true);
-                    $breadcrumbs = $itm->show()->toString();
-                    $itm->setShowActiveUrl(false);
+                if ($itm instanceof Breadcrumbs) {
+                    $crumbs = array_combine($itm->getCrumbStack(), $itm->getTitleStack());
+                    $breadcrumbs = '<ol class="breadcrumb">';
+                    foreach ($crumbs as $url => $title) {
+                        $breadcrumbs .= sprintf('<li class="breadcrumb-item"><a href="%s">%s</a>', $url, $title);
+                    }
+                    $breadcrumbs .= '</ol>';
                     break;
                 }
             }
