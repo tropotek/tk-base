@@ -168,6 +168,16 @@ class Breadcrumbs
         return $crumbs;
     }
 
+    public static function popCrumb(): array
+    {
+        $crumbs = self::instance();
+
+        $url = array_pop($crumbs->crumbStack);
+        $title = array_pop($crumbs->titleStack);
+
+        return compact('url', 'title');
+    }
+
     /**
      * Set/update the title of an existing crumb if it exists
      * The position of the crumb is not changed
