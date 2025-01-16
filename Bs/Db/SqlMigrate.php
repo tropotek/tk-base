@@ -122,8 +122,6 @@ class SqlMigrate
         foreach ($list as $k => $path) {
             if (is_file($path)) {
                 if (!$this->migrateFile($path, $log)) {
-                    // todo Should revert the DB at this stage...
-
                     if (is_callable($log)) call_user_func_array($log, ["Failed to execute $path"]);
                     return false;
                 }
@@ -149,10 +147,12 @@ class SqlMigrate
 
             if (!$this->backupFile) {   // only run once per session.
                 $options = Db::parseDsn(Config::instance()->get('db.mysql'));
-                $this->backupFile = Db\DbBackup::save(Config::makePath(Config::getTempPath()), $options);
+                $this->backupFile = $options['dbName'] . "_" . date("Y-m-d-H-i-s").".sql";
+                Db\DbBackup::save($this->backupFile, $options);
             }
 
             if (is_callable($log)) call_user_func_array($log, ['Migrating ' . $file]);
+
             if (preg_match('/\.php$/i', basename($file))) {  // Include .php files
                 $callback = include $file;
                 if (is_callable($callback)) {
@@ -171,8 +171,8 @@ class SqlMigrate
                 $this->insertPath($file);
             }
         } catch (\Exception $e){
-            //vd($sql);
             Log::error($e->getMessage());
+            $this->restoreBackup();
             return false;
         }
         return true;
@@ -215,7 +215,7 @@ class SqlMigrate
 
     protected function deleteBackup(): void
     {
-        if (is_writable($this->backupFile)) {
+        if (is_file($this->backupFile)) {
             unlink($this->backupFile);
             $this->backupFile = '';
         }
