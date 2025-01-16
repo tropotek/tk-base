@@ -17,11 +17,6 @@ return function (Config $config) {
     $config->set('path.template.error',       '/html/login.html');
 
     /**
-     * Script to execute in dev mode after update/migrate
-     */
-    $config['debug.script'] = $config->get('path.config') . '/dev.php';
-
-    /**
      * Validate user passwords on input
      * - Must include at least one number
      * - Must include at least one letter
@@ -35,7 +30,7 @@ return function (Config $config) {
     $config['auth.password.strict'] = true;
 
     /**
-     * These files are execute on site upgrade/migrate if they exist
+     * These files are execute on site install/upgrade/migrate if they exist
      */
     $config['db.migrate.static'] = [
         '/vendor/ttek/tk-base/config/sql/events.sql',
@@ -47,6 +42,11 @@ return function (Config $config) {
         '/src/config/sql/procedures.sql',
         '/src/config/sql/views.sql',
     ];
+
+    /**
+     * Script to execute in dev mode after install/upgrade/migrate
+     */
+    $config['dev.setup.script'] = $config->get('path.config') . '/dev.php';
 
     /**
      * DB mirror command secret API key and URI

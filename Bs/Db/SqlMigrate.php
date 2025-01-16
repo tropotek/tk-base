@@ -102,9 +102,9 @@ class SqlMigrate
         if (!Config::isDev()) {
             return false;
         }
-        $devFile = Config::makePath(Config::instance()->get('debug.script'));
+        $devFile = Config::makePath(Config::instance()->get('dev.setup.script'));
         if (is_file($devFile)) {
-            if (is_callable($log)) call_user_func_array($log, ['Setup dev environment: ' . Config::instance()->get('debug.script')]);
+            if (is_callable($log)) call_user_func_array($log, ['Setup dev environment: ' . Config::instance()->get('dev.setup.script')]);
             include($devFile);
         }
         return true;
