@@ -100,7 +100,7 @@ class SqlMigrate
     public static function migrateDev(?callable $log = null) :bool
     {
         if (!Config::isDev()) {
-            return false;
+            return true;
         }
         $devFile = Config::makePath(Config::instance()->get('dev.setup.script'));
         if (is_file($devFile)) {
