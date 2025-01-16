@@ -99,7 +99,7 @@ class Auth extends Model
     }
 
     /**
-     * Get the currently logged in user
+     * Get the currently logged-in user
      */
     public static function getAuthUser(): ?self
     {

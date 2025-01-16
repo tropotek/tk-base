@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Bs\Db\SqlMigrate;
 use Tk\Config;
 use Tk\Db;
+use Tk\Exception;
 
 /**
  * Migrate the sites DB files
@@ -56,13 +57,19 @@ class Migrate extends Console
             $this->write('Migration Starting.');
 
             // migrate site sql files
-            SqlMigrate::migrateSite([$this, 'write']);
+            if (!SqlMigrate::migrateSite([$this, 'write'])) {
+                throw new Exception("Failed to migrate DB files");
+            }
 
             // Execute static files
-            SqlMigrate::migrateStatic([$this, 'writeGreen']);
+            if (!SqlMigrate::migrateStatic([$this, 'writeGreen'])) {
+                throw new Exception("Failed to migrate static files");
+            }
 
             // setup dev environment if site in dev mode
-            SqlMigrate::migrateDev([$this, 'writeBlue']);
+            if (!SqlMigrate::migrateDev([$this, 'writeBlue'])) {
+                throw new Exception("Failed to migrate dev files");
+            }
 
             $this->write('Migration Complete.');
         } catch (\Exception $e) {

@@ -35,17 +35,17 @@ return function (Config $config) {
     $config['auth.password.strict'] = true;
 
     /**
-     * These files are execute on update/migrate if they exist
+     * These files are execute on site upgrade/migrate if they exist
      */
     $config['db.migrate.static'] = [
-        '/vendor/ttek/tk-base/config/sql/views.sql',
-        '/vendor/ttek/tk-base/config/sql/procedures.sql',
         '/vendor/ttek/tk-base/config/sql/events.sql',
         '/vendor/ttek/tk-base/config/sql/triggers.sql',
-        '/src/config/sql/views.sql',
-        '/src/config/sql/procedures.sql',
+        '/vendor/ttek/tk-base/config/sql/procedures.sql',
+        '/vendor/ttek/tk-base/config/sql/views.sql',
         '/src/config/sql/events.sql',
-        '/src/config/sql/triggers.sql'
+        '/src/config/sql/triggers.sql',
+        '/src/config/sql/procedures.sql',
+        '/src/config/sql/views.sql',
     ];
 
     /**

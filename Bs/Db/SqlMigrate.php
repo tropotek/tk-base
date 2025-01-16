@@ -53,32 +53,43 @@ class SqlMigrate
     /**
      * execute new site/lib sql files that have not been migrated yet
      */
-    public static function migrateSite(?callable $write = null) :bool
+    public static function migrateSite(?callable $log = null) :bool
     {
-        $migrateList = Config::instance()->get('db.migrate.paths', []);
-        $processed = self::instance()->migrateList($migrateList);
-        foreach ($processed as $file) {
-            if (is_callable($write)) {
-                call_user_func_array($write, ['Migrated ' . $file]);
-            }
+        // find default migration paths
+        $vendorPath   = Config::makePath(Config::instance()->get('path.vendor.org'));
+        $migratePaths = [];
+        $libPaths     = scandir($vendorPath);
+
+        if (is_array($libPaths)) {
+            array_shift($libPaths);
+            array_shift($libPaths);
+            $migratePaths = array_map(fn($path) => $vendorPath . '/' . $path . '/config/sql', $libPaths);
+            array_unshift($migratePaths, Config::makePath('/src/config/sql'));
+        } else {
+            Log::warning("Vendor path not found: $vendorPath");
         }
-        return true;
+
+        // migrate found files
+        return self::instance()->migrateList($migratePaths, $log);
     }
 
     /**
      * execute static sql file listed in the config setting 'db.migrate.static'
      */
-    public static function migrateStatic(?callable $write = null) :bool
+    public static function migrateStatic(?callable $log = null) :bool
     {
         $config = Config::instance();
+
         foreach ($config->get('db.migrate.static') as $file) {
             $path = Config::makePath($file);
             if (is_file($path)) {
-                call_user_func_array($write, ['Applying ' . $file]);
+                // write to log file
+                if (is_callable($log)) call_user_func_array($log, ['Applying ' . $file]);
                 $options = Db::parseDsn($config->get('db.mysql'));
                 Db\DbBackup::restore($path, $options);
             }
         }
+
         return true;
     }
 
@@ -86,14 +97,14 @@ class SqlMigrate
      * Execute the dev php file to allow configuration of a dev environment.
      * Cannot be executed in a production environment.
      */
-    public static function migrateDev(?callable $write = null) :bool
+    public static function migrateDev(?callable $log = null) :bool
     {
         if (!Config::isDev()) {
             return false;
         }
         $devFile = Config::makePath(Config::instance()->get('debug.script'));
         if (is_file($devFile)) {
-            call_user_func_array($write, ['Setup dev environment: ' . Config::instance()->get('debug.script')]);
+            if (is_callable($log)) call_user_func_array($log, ['Setup dev environment: ' . Config::instance()->get('debug.script')]);
             include($devFile);
         }
         return true;
@@ -104,22 +115,21 @@ class SqlMigrate
      * in order they are supplied in the array
      * Returns an array of processed migrate files
      */
-    public function migrateList(array $migrateList): array
+    public function migrateList(array $migrateList, ?callable $log = null): bool
     {
-        $processed = [];
         $this->install();
-
         $list = $this->search($migrateList);
-
         foreach ($list as $k => $path) {
             if (is_file($path)) {
-                if ($this->migrateFile($path)) {
-                    $processed[$k] = $path;
+                if (!$this->migrateFile($path, $log)) {
+                    // todo Should revert the DB at this stage...
+
+                    if (is_callable($log)) call_user_func_array($log, ["Failed to execute $path"]);
+                    return false;
                 }
             }
         }
-
-        return $processed;
+        return true;
     }
 
     /**
@@ -127,12 +137,13 @@ class SqlMigrate
      * the file is then added to the db and cannot be executed again.
      * Ignore any files starting with an underscore '_'
      */
-    public function migrateFile(string $file): bool
+    public function migrateFile(string $file, ?callable $log = null): bool
     {
         try {
             $this->install();
 
             $file = Config::makePath($this->toRelative($file));
+            if (str_starts_with(basename($file), '_')) return false;
             if (!is_readable($file)) return false;
             if ($this->hasPath($this->toRelative($file))) return false;
 
@@ -140,13 +151,14 @@ class SqlMigrate
                 $options = Db::parseDsn(Config::instance()->get('db.mysql'));
                 $this->backupFile = Db\DbBackup::save(Config::makePath(Config::getTempPath()), $options);
             }
+
+            if (is_callable($log)) call_user_func_array($log, ['Migrating ' . $file]);
             if (preg_match('/\.php$/i', basename($file))) {  // Include .php files
                 $callback = include $file;
                 if (is_callable($callback)) {
                     $callback();
                 }
                 $this->insertPath($file);
-                return true;
             } else {  // is sql
                 // replace any table prefix
                 $sql = strval(file_get_contents($file));
@@ -154,26 +166,16 @@ class SqlMigrate
 
                 $stm = Db::getPdo()->prepare($sql);
                 $stm->execute();
+                $stm->closeCursor();
 
-                // Bugger of a way to get the error:
-                // https://stackoverflow.com/questions/23247553/how-can-i-get-an-error-when-running-multiple-queries-with-pdo
-                $i = 0;
-                do {
-                    $i++;
-                } while ($stm->nextRowset());
-
-                $error = $stm->errorInfo();
-                if ($error[0] != "00000") {
-                    throw new \Tk\Db\Exception("Query $i failed: " . $error[2], 0, $sql);
-                }
                 $this->insertPath($file);
-                return true;
             }
-
         } catch (\Exception $e){
-            Log::debug($e->__toString());
+            //vd($sql);
+            Log::error($e->getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
