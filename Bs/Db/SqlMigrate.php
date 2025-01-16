@@ -261,7 +261,6 @@ SQL;
 
     protected function insertPath(string $path): int
     {
-        Log::info("Migrating file: {$this->toRelative($path)}");
         $path = $this->toRelative($path);
         $rev = $this->toRev($path);
         $stm = Db::getPdo()->prepare("INSERT INTO `{$this->getTable()}` (path, rev, created) VALUES (:path, :rev, NOW())");
