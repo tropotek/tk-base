@@ -141,9 +141,12 @@ class SqlMigrate
             $this->install();
 
             $file = Config::makePath($this->toRelative($file));
+
             if (str_starts_with(basename($file), '_')) return false;
             if (!is_readable($file)) return false;
-            if ($this->hasPath($this->toRelative($file))) return false;
+
+            // return true if file already migrated
+            if ($this->hasPath($this->toRelative($file))) return true;
 
             if (!$this->backupFile) {   // only run once per session.
                 $options = Db::parseDsn(Config::instance()->get('db.mysql'));
