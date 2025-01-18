@@ -7,7 +7,7 @@ use Tk\Config;
 return function (Config $config) {
 
     /**
-     * Set the default template paths
+     * Set the default templates
      */
     $config->set('path.template.public',      '/html/public.html');
     $config->set('path.template.admin',       '/html/public.html');
