@@ -154,6 +154,7 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 function getElfinderPath(string $customDataPath = '/media'): array
 {
     global $sitePath, $siteUrl;
+    $customDataPath = rtrim($customDataPath, '/');
     $dataPath = $sitePath . \Tk\Config::getDataPath() . $customDataPath;
     $dataUrl = $siteUrl . \Tk\Config::getDataPath() . $customDataPath;
     if (!is_dir($dataPath)) {
@@ -162,7 +163,7 @@ function getElfinderPath(string $customDataPath = '/media'): array
     if (!is_dir($dataPath . '/.trash/')) {
         mkdir($dataPath . '/.trash/', 0777, true);
     }
-    return [$dataPath, $dataUrl];
+    return [rtrim($dataPath, '/'), rtrim($dataUrl, '/')];
 }
 
 // NOTE: The custom path sent to the GET request should be relative to the `/data` path
@@ -173,6 +174,7 @@ if (isset($_REQUEST['path'])) {
 [$dataPath, $dataUrl] = getElfinderPath($customDataPath);
 // ===============================================
 
+//vd($dataPath, $dataUrl);
 
 // Documentation for connector options:
 // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options

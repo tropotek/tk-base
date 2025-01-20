@@ -373,7 +373,9 @@ let tkbase = function () {
         } else {
           // Full tinymce with elfinder file manager
           if (!el.is('.mce-no-fm')) {   // disable the elFinder file manager
-            cfg.file_picker_callback = getMceElf(el.data()).browser;
+            let elf = getMceElf(el.data());
+            cfg.file_picker_callback  = elf.browser;
+            cfg.images_upload_handler = elf.uploadHandler;
           }
           el.tinymce($.extend(mceDefaults, cfg));
         }
