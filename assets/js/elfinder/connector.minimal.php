@@ -165,12 +165,12 @@ function getElfinderPath(string $customDataPath = '/media'): array
     return [$dataPath, $dataUrl];
 }
 
+// NOTE: The custom path sent to the GET request should be relative to the `/data` path
 $customDataPath = '/media';
 if (isset($_REQUEST['path'])) {
     $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
 }
 [$dataPath, $dataUrl] = getElfinderPath($customDataPath);
-var_dump($dataPath, $dataUrl, $customDataPath);
 // ===============================================
 
 

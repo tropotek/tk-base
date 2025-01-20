@@ -303,6 +303,7 @@ let tkbase = function () {
     }
 
     function getMceElf(data) {
+      // NOTE: The custom path sent to the GET request should be relative to the `/data` path
       let path = data.elfinderPath ?? '/media';
       return new tinymceElfinder({
         // connector URL (Use elFinder Demo site's connector for this demo)
