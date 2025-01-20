@@ -38,7 +38,7 @@ define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek/tk-base/assets/js/elfi
 // // load composer autoload before load elFinder autoload If you need composer
 // // You need to run the composer command in the php directory.
 //is_readable('./vendor/autoload.php') && require './vendor/autoload.php';
-is_readable(dirname(__FILE__,6) . '/autoload.php') && require dirname(__FILE__,6)  . '/autoload.php';
+is_readable(dirname(__FILE__,6) . '/autoload.php') && require dirname(__FILE__, 6)  . '/autoload.php';
 
 
 // // elFinder autoload
@@ -170,6 +170,7 @@ if (isset($_REQUEST['path'])) {
     $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
 }
 [$dataPath, $dataUrl] = getElfinderPath($customDataPath);
+var_dump($dataPath, $dataUrl, $customDataPath);
 // ===============================================
 
 
