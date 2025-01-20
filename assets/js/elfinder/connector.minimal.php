@@ -1,11 +1,9 @@
 <?php
-$sitePath = dirname(__FILE__, 7);
-$siteUrl = dirname($_SERVER['PHP_SELF'], 7);
-if (str_ends_with($siteUrl, '/')) $siteUrl = substr($siteUrl, 0, -1);
-if (str_ends_with($sitePath, '/')) $sitePath = substr($sitePath, 0, -1);
+$sitePath = rtrim(dirname(__FILE__, 7), '/');
+$siteUrl = rtrim(dirname($_SERVER['PHP_SELF'], 7), '/');
 require $sitePath . '/_prepend.php';
 
-error_reporting(0); // Set E_ALL for debugging
+//error_reporting(0); // Set E_ALL for debugging
 
 // // Optional exec path settings (Default is called with command name only)
 $bin = '/bin';
@@ -26,7 +24,9 @@ define('ELFINDER_UNZIP_PATH',    $bin.'/unzip');
 
 define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php');  // see elFinder::getConnectorUrl()
 
-// define('ELFINDER_DEBUG_ERRORLEVEL', -1); // Error reporting level of debug mode
+if (\Tk\Config::isDebug()) {
+    define('ELFINDER_DEBUG_ERRORLEVEL', -1); // Error reporting level of debug mode
+}
 
 // // To Enable(true) handling of PostScript files by ImageMagick
 // // It is disabled by default as a countermeasure
@@ -41,8 +41,7 @@ define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek/tk-base/assets/js/elfi
 is_readable(dirname(__FILE__,6) . '/autoload.php') && require dirname(__FILE__, 6)  . '/autoload.php';
 
 
-// // elFinder autoload
-//require './autoload.php';
+// elFinder autoload
 require dirname(__FILE__,6) . '/studio-42/elfinder/php/autoload.php';
 // ===============================================
 
@@ -141,7 +140,7 @@ require dirname(__FILE__,6) . '/studio-42/elfinder/php/autoload.php';
  * @param  bool|null $isDir   path is directory (true: directory, false: file, null: unknown)
  * @param  string    $relpath file path relative to volume root directory started with directory separator
  * @return bool|null
- **/
+ */
 function access($attr, $path, $data, $volume, $isDir, $relpath) {
 	$basename = basename($path);
 	return $basename[0] === '.'                  // if file/folder begins with '.' (dot)
@@ -184,8 +183,8 @@ $opts = array(
 		// Items volume
 		array(
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-            'path'          => $dataPath . '/',                  // path to files (REQUIRED)
-            'URL'           => $dataUrl  . '/',                  // URL to files (REQUIRED)
+            'path'          => $dataPath . '/',             // path to files (REQUIRED)
+            'URL'           => $dataUrl  . '/',             // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -213,4 +212,3 @@ $opts = array(
 // run elFinder
 $connector = new elFinderConnector(new elFinder($opts));
 $connector->run();
-
