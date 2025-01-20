@@ -307,7 +307,6 @@ let tkbase = function () {
       return new tinymceElfinder({
         // connector URL (Use elFinder Demo site's connector for this demo)
         url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path='+ path,
-        //url: tkConfig.vendorOrgUrl + '/tk-base/assets/js/elfinder/connector.minimal.php?path='+ path,
         // upload target folder hash for this tinyMCE
         uploadTargetHash: 'l1_lw',
         // elFinder dialog node id
@@ -331,8 +330,10 @@ let tkbase = function () {
       ],
       content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
       //contextmenu: 'link image template inserttable | cell row column deletetable',
+      contextmenu: false,
       extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
       image_advtab: true,
+      statusbar: false,
       //content_security_policy: "default-src 'self'",
 
       urlconverter_callback : function (url, node, on_save) {
