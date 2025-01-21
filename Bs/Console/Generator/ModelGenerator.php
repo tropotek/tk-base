@@ -709,14 +709,15 @@ class Edit extends ControllerAdmin
 
     public function show(): ?Template
     {
+        \$template = \$this->getTemplate();
+
         // Setup field group widths with bootstrap classes
         //\$this->form->getField('name')->addFieldCss('col-6');
         //\$this->form->getField('email')->addFieldCss('col-6');
-
-        \$template = \$this->getTemplate();
+        
         \$template->setText('title', \$this->getPage()->getTitle());
         \$template->setAttr('back', 'href', Factory::instance()->getBackUrl());
-
+        
         \$template->appendTemplate('content', \$this->form->show());
 
         return \$template;
