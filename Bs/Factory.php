@@ -37,7 +37,7 @@ use Tk\Logger\ErrorLog;
 use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
-use Tk\Mail\Gateway;
+use Tk\Mail\Mailer;
 use Tk\System;
 use Tk\Uri;
 
@@ -364,25 +364,22 @@ class Factory extends Collection
     }
 
     /**
-     * get the mail gateway to send emails
-     *
-     * @todo make the gateway send method static with an init function to be called in the Bootstrap object
+     * @deprecated use \Tk\Mail\Mailer::instance()
      */
-    public function getMailGateway(): ?Gateway
+    public function getMailGateway(): ?Mailer
     {
-        // move init to bootstrap keep method
-        if (!$this->has('mailGateway')) {
-            $params = $this->getConfig()->all();
-            if (!System::isCli()) {
-                $params['clientIp'] = System::getClientIp();
-                $params['hostname'] = Config::getHostname();
-                $params['referer']  = $_SERVER['HTTP_REFERER'] ?? '';
-            }
-            $gateway = new \Tk\Mail\Gateway($params);
-            //$gateway->setDispatcher($this->getEventDispatcher());
-            $this->set('mailGateway', $gateway);
+        return \Tk\Mail\Mailer::instance();
+    }
+
+    public function initMailGateway(): ?Mailer
+    {
+        $params = $this->getConfig()->all();
+        if (!System::isCli()) {
+            $params['clientIp'] = System::getClientIp();
+            $params['hostname'] = Config::getHostname();
+            $params['referer']  = $_SERVER['HTTP_REFERER'] ?? '';
         }
-        return $this->get('mailGateway');
+        return \Tk\Mail\Mailer::instance($params);
     }
 
     public function initBreadcrumbs(): Breadcrumbs

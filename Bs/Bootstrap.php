@@ -30,7 +30,6 @@ class Bootstrap
         FileUtil::mkdir(Config::makePath(Config::getTempPath()));
         FileUtil::mkdir(Config::makePath(Config::getCachePath()));
 
-
         if ($config->has('db.mysql')) {
             Db::connect(
                 $config->get('db.mysql', ''),
@@ -42,6 +41,7 @@ class Bootstrap
         }
 
         StartupHandler::$PARAMS = $config->get('site.log.params', StartupHandler::LOG_ALL);
+
         Factory::instance()->initLogger();
 
         // Init tk error handler
@@ -59,8 +59,8 @@ class Bootstrap
             ]]);
         }
 
-        // Setup EventDispatcher and subscribe events, loads routes
         Factory::instance()->initEventDispatcher();
+        Factory::instance()->initMailGateway();
 
         if (System::isCli()) {
             $this->cliInit();
@@ -84,13 +84,8 @@ class Bootstrap
             Template::$ENABLE_TRACER = true;
         }
 
-        // init session
         Factory::instance()->initSession();
-
-        // init the Request
         Factory::instance()->getRequest();
-
-        // init breadcrumbs
         Factory::instance()->initBreadcrumbs();
 
     }

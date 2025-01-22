@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Throwable;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Log;
+use Tk\Mail\Mailer;
 
 
 class ExceptionEmailListener implements EventSubscriberInterface
@@ -64,7 +65,10 @@ class ExceptionEmailListener implements EventSubscriberInterface
                     $message->setContent($this->getExceptionHtml($e));
                     $message->addHeader('X-Exception', get_class($e));
                     $message->set('sig', '');
-                    Factory::instance()->getMailGateway()->send($message);
+
+                    if (!Mailer::instance()->send($message)) {
+                        Log::error("failed to send exception email to: {$email}");
+                    }
                 }
             }
         } catch (Exception $ee) { Log::notice($ee->__toString()); }

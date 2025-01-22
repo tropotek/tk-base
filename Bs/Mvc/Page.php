@@ -33,7 +33,9 @@ class Page extends PageDomInterface
         }
 
         $template->setText('site-name', Registry::instance()->getSiteName());
+        $template->setAttr('site-short-name', 'title', Registry::instance()->getSiteName());
         $template->setText('site-short-name', Registry::instance()->getSiteShortName());
+        $template->setAttr('site-name-letter', 'title', Registry::instance()->getSiteName());
         $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
 
