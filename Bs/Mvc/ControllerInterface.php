@@ -23,13 +23,17 @@ abstract class ControllerInterface
     protected function setUserAccess(?int $access = null): static
     {
         $auth = Auth::getAuthUser();
-
         $has_access = ($auth instanceof Auth);
         if ($has_access && !is_null($access)) {
             $has_access = $auth->hasPermission($access);
         }
+        return $this->validateAccess($has_access);
+    }
 
-        if (!$has_access) {
+    protected function validateAccess(bool $valid): static
+    {
+        if (!$valid) {
+            $auth = Auth::getAuthUser();
             Alert::addWarning('You do not have permission to access the requested page');
             $url = $auth?->getHomeUrl() ?? Uri::create('/');
             $url->redirect();
