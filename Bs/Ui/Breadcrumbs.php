@@ -87,9 +87,6 @@ class Breadcrumbs
             $crumbs->titleStack[] = $crumbs->homeTitle;
         }
 
-        // add new crumb when retrieving initial instance
-        self::pushCrumb(Uri::create());
-
         return $crumbs;
     }
 
@@ -115,8 +112,6 @@ class Breadcrumbs
             $crumbs->titleStack[] = $crumbs->homeTitle;
         }
 
-        Breadcrumbs::pushCrumb(Uri::create());
-
         return $crumbs;
     }
 
@@ -138,10 +133,9 @@ class Breadcrumbs
         return $crumbs;
     }
 
-    public static function pushCrumb(Uri|string $url, ?string $title = null): static
+    public static function pushCrumb(Uri|string $url, string $title): static
     {
         $crumbs = self::instance();
-
         if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') return $crumbs;
 
         $url = Uri::create($url);
@@ -150,10 +144,9 @@ class Breadcrumbs
         if ($rel == $crumbs->current()->toRelativeString()) return $crumbs;
         if ($crumbs->isHomeUrl($rel)) return $crumbs;
 
-        if (is_null($title)) $title = basename($rel);
-
-        // trim stack to url if already set
-        $i = self::getIndex($url);
+        // trim stack to url if already set (excludes current url)
+        //$i = self::getIndex($url);    // created multiple crumbs for same page with diff query string
+        $i = self::getTitleIndex($title);
         if ($i !== false) {
             $crumbs->crumbStack = array_slice($crumbs->crumbStack, 0, $i);
             $crumbs->titleStack = array_slice($crumbs->titleStack, 0, $i);
@@ -171,36 +164,26 @@ class Breadcrumbs
     public static function popCrumb(): array
     {
         $crumbs = self::instance();
-
         $url = array_pop($crumbs->crumbStack);
         $title = array_pop($crumbs->titleStack);
-
         return compact('url', 'title');
-    }
-
-    /**
-     * Set/update the title of an existing crumb if it exists
-     * The position of the crumb is not changed
-     */
-    public static function setTitle(Uri|string $url, string $title): static
-    {
-        $crumbs = self::instance();
-
-        if ($crumbs->isHomeUrl($url->toRelativeString())) return $crumbs;
-        $i = self::getIndex($url);
-        if ($i !== false) {
-            $crumbs->titleStack[$i] = trim($title);
-        }
-
-        return $crumbs;
     }
 
     public static function getIndex(Uri|String $url): int|false
     {
         $crumbs = self::instance();
-
         $url = Uri::create($url);
         $i = array_search($url->toRelativeString(), $crumbs->crumbStack);
+        if (!is_numeric($i)) {
+            return false;
+        }
+        return intval($i);
+    }
+
+    public static function getTitleIndex(String $title): int|false
+    {
+        $crumbs = self::instance();
+        $i = array_search($title, $crumbs->titleStack);
         if (!is_numeric($i)) {
             return false;
         }
@@ -210,7 +193,6 @@ class Breadcrumbs
     public static function current(): Uri
     {
         $crumbs = self::instance();
-
         $i = self::count() - 1;
         if ($i < 0) return Uri::create($crumbs->homeUrl);
         return Uri::create($crumbs->crumbStack[$i]);
@@ -225,6 +207,19 @@ class Breadcrumbs
             $url = array_pop($stack);
         } while (count($stack) && $curr == $url);
         return Uri::create($url);
+    }
+
+    /**
+     * return the previous crumb if current url on the end of the stack
+     * return current crumb if current url not on the end of the stack
+     */
+    public static function getBackUrl(): Uri
+    {
+        $url = Uri::create()->toRelativeString();
+        if ($url == self::current()->toRelativeString()) {
+            return self::previous();
+        }
+        return self::current();
     }
 
     public static function count(): int

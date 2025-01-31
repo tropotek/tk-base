@@ -59,9 +59,7 @@ abstract class PageInterface
     public function setTitle(string $title): PageInterface
     {
         $this->title = $title;
-
-        Breadcrumbs::setTitle(Uri::create(), $title);
-
+        Breadcrumbs::pushCrumb(Uri::create(), $title);
         return $this;
     }
 

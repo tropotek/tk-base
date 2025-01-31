@@ -384,6 +384,7 @@ class Factory extends Collection
 
     public function initBreadcrumbs(): Breadcrumbs
     {
+        //Breadcrumbs::destroy();
         $crumbs = Breadcrumbs::init();
         if (\Bs\Auth::getAuthUser()) {
             Breadcrumbs::setHome('/dashboard', '<i class="fa fa-home"></i>');
@@ -395,7 +396,7 @@ class Factory extends Collection
 
     public function getBackUrl(): Uri
     {
-        return Breadcrumbs::previous();
+        return Breadcrumbs::getBackUrl();
     }
 
     public function getConsole(): Application
