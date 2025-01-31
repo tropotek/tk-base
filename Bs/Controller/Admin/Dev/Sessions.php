@@ -19,7 +19,7 @@ class Sessions extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Current Sessions');
-        $this->setAccess(Auth::PERM_ADMIN);
+        $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->table = new Table('sessions');
         $this->table->removeAction('__reset');

@@ -14,7 +14,7 @@ class TailLog extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Tail Log');
-        $this->setAccess(Auth::PERM_ADMIN);
+        $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->logPath = strval(ini_get('error_log'));
 

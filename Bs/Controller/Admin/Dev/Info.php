@@ -11,7 +11,7 @@ class Info extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('PHP Info');
-        $this->setAccess(Auth::PERM_ADMIN);
+        $this->setUserAccess(Auth::PERM_ADMIN);
     }
 
     public function show(): ?Template

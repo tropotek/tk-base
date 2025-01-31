@@ -17,13 +17,22 @@ abstract class ControllerInterface
     protected string $pageTemplate = '';
 
 
-    protected function setAccess(int $access): static
+    /**
+     * To only check if a user is logged in use null for the $access property
+     */
+    protected function setUserAccess(?int $access = null): static
     {
         $auth = Auth::getAuthUser();
-        if (!$auth || !$auth->hasPermission($access)) {
+
+        $has_access = ($auth instanceof Auth);
+        if ($has_access && !is_null($access)) {
+            $has_access = $auth->hasPermission($access);
+        }
+
+        if (!$has_access) {
             Alert::addWarning('You do not have permission to access the requested page');
-            $auth?->getHomeUrl()->redirect();
-            Uri::create('/')->redirect();
+            $url = $auth?->getHomeUrl() ?? Uri::create('/');
+            $url->redirect();
         }
         return $this;
     }

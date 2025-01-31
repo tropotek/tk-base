@@ -17,7 +17,7 @@ class InlineImage extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Image 2 Base64 inline');
-        $this->setAccess(Auth::PERM_ADMIN);
+        $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->form = new Form();
         $this->form->appendField((new File('file')))->setLabel('Convert File');

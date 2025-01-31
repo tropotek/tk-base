@@ -21,7 +21,7 @@ class DbSearch extends ControllerAdmin
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Database Column Search');
-        $this->setAccess(Auth::PERM_ADMIN);
+        $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->form = new Form();
 
