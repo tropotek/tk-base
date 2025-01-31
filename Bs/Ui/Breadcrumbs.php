@@ -4,7 +4,6 @@ namespace Bs\Ui;
 
 use Tk\Uri;
 
-
 /**
  * Manage a sites breadcrumb trail
  *
