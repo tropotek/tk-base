@@ -23,11 +23,10 @@ abstract class ControllerInterface
     protected function setUserAccess(?int $access = null): static
     {
         $auth = Auth::getAuthUser();
-        $has_access = ($auth instanceof Auth);
-        if ($has_access && !is_null($access)) {
-            $has_access = $auth->hasPermission($access);
+        if (is_null($access)) {
+            return $this->validateAccess($auth instanceof Auth);
         }
-        return $this->validateAccess($has_access);
+        return $this->validateAccess(($auth instanceof Auth) && $auth->hasPermission($access));
     }
 
     protected function validateAccess(bool $valid): static
