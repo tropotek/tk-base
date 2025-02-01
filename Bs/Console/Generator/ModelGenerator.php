@@ -374,7 +374,7 @@ class Manager extends ControllerAdmin
     {
         \$this->getPage()->setTitle('{name} Manager');
 
-        // todo: \$this->setAccess(...);
+        // todo: \$this->setUserAccess(...);
 
         // init table
         \$this->table = new Table();
@@ -424,8 +424,11 @@ class Manager extends ControllerAdmin
         \$this->table->appendAction(Csv::create()
             ->addOnGetSelected([\$rowSelect, 'getSelected'])
             ->addOnCsv(function(Csv \$action, array \$selected) {
-                \$action->setExcluded(['id', 'actions']);
+                \$action->setExcluded(['actions']);
                 \$filter = \$this->table->getDbFilter();
+                if (!\$this->table->getCell({classname}::getPrimaryProperty())) {
+                    \$this->table->prependCell({classname}::getPrimaryProperty())->setHeader('id');
+                }
                 //\$this->table->getCell('name')->getOnValue()->reset();
                 if (\$selected) {
                     \$rows = {classname}::findFiltered(\$filter);
@@ -663,7 +666,7 @@ class Edit extends ControllerAdmin
     {
         \$this->getPage()->setTitle('Edit {name}');
 
-        // todo: \$this->setAccess(...);
+        // todo: \$this->setUserAccess(...);
 
         \${primary-prop} = intval(\$_GET['{primary-prop}'] ?? 0);
 
