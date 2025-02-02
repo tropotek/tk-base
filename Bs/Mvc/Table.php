@@ -25,15 +25,21 @@ class Table extends \Tk\Table
     protected bool         $hideReset    = false;
 
 
-    public function __construct(string $tableId = 'tbl', string $orderBy = '', int $limit = 10, int $page = 1)
+    public function __construct(string $tableId = '', string $orderBy = '', int $limit = 10, int $page = 1)
     {
+        // create a unique table id if none supplied
+        if (empty($tableId)) {
+            $trace = debug_backtrace()[0] ?? ['file' => '/tbl', 'line' => 1];
+            $tableId = hash('md5', $trace['file'].$trace['line']);
+        }
+
         $this->setOrderBy($orderBy);
         $this->setLimit($limit);
         $this->setPage($page);
 
         parent::__construct($tableId);
 
-        $this->sid = $this->makeRequestKey('filter');
+        $this->sid = $this->makeRequestKey('tbl-ses');
         $this->renderer = new DomRenderer($this);
     }
 
@@ -56,15 +62,40 @@ class Table extends \Tk\Table
         // init/execute filter form request
         $this->initForm();
 
-        // get the pager values from the request (if any)
-        $this->setLimit(intval($_REQUEST[$this->makeRequestKey(self::PARAM_LIMIT)] ?? $this->getLimit()));
-        $this->setPage(intval($_REQUEST[$this->makeRequestKey(self::PARAM_PAGE)] ?? $this->getPage()));
-        $this->setOrderBy(trim($_REQUEST[$this->makeRequestKey(self::PARAM_ORDERBY)] ?? $this->getOrderBy()));
+        //unset($_SESSION[$this->sid]);
 
+        // get the pager values from the request (if any)
+        $pager = $_SESSION[$this->sid]['pager'] ?? [];
+
+        // setup pager values
+        $kLimit = $this->makeRequestKey(self::PARAM_LIMIT);
+        $kPage = $this->makeRequestKey(self::PARAM_PAGE);
+        $kOrderBy = $this->makeRequestKey(self::PARAM_ORDERBY);
+        $pager = [
+            $kLimit => intval($_REQUEST[$kLimit] ?? $pager[$kLimit] ?? $this->getLimit()),
+            $kPage => intval($_REQUEST[$kPage] ?? $pager[$kPage] ?? $this->getPage()),
+            $kOrderBy => trim($_REQUEST[$kOrderBy] ?? $pager[$kOrderBy] ?? $this->getOrderBy()),
+        ];
+
+        // reset page on limit change
+        if (isset($_REQUEST[$kLimit])) {
+            $pager[$kPage] = 1;
+        }
+
+        $this->setLimit($pager[$kLimit]);
+        $this->setPage($pager[$kPage]);
+        $this->setOrderBy($pager[$kOrderBy]);
+
+        // save pager to session
+        $_SESSION[$this->sid]['pager'] = $pager;
+
+
+        // setup filter values
         $filterValues = [];
         if ($this->form) {
             $filterValues = $this->form->getFieldValues();
         }
+
         if (is_null($this->dbFilter)) {
             $this->dbFilter = Filter::createFromTable($filterValues, $this);
         }
@@ -86,20 +117,38 @@ class Table extends \Tk\Table
     {
         if ($this->form && !$this->form->getField('filter')) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
+                $url = Uri::create();
                 $values = $form->getFieldValues();
-                $_SESSION[$this->sid] = $values;
-                Uri::create()->redirect();
+                $_SESSION[$this->sid]['filter'] = $values;
+
+                // reset page on submit
+                $kPage = $this->makeRequestKey(self::PARAM_PAGE);
+                if (isset($_SESSION[$this->sid]['pager'][$kPage])) {
+                    $_SESSION[$this->sid]['pager'][$kPage] = 1;
+                    $url->remove($kPage);
+                }
+
+                $url->redirect();
             }))->setLabel('Search');
 
             $this->form->appendField(new Form\Action\Submit('clear', function (Form $form, Form\Action\ActionInterface $action) {
-                unset($_SESSION[$this->sid]);
-                Uri::create()->redirect();
+                $url = Uri::create();
+                unset($_SESSION[$this->sid]['filter']);
+
+                // reset page on clear
+                $kPage = $this->makeRequestKey(self::PARAM_PAGE);
+                if (isset($_SESSION[$this->sid]['pager'][$kPage])) {
+                    $_SESSION[$this->sid]['pager'][$kPage] = 1;
+                    $url->remove($kPage);
+                }
+
+                $url->redirect();
             }))->addCss('btn-outline-secondary');
 
             $this->form->execute($_POST);
 
-            if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid])) {
-                $this->form->setFieldValues($_SESSION[$this->sid]);
+            if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid]['filter'])) {
+                $this->form->setFieldValues($_SESSION[$this->sid]['filter']);
             }
         }
 
@@ -109,6 +158,8 @@ class Table extends \Tk\Table
     public function show(): ?Template
     {
         $template = $this->getTemplate();
+
+        $template->setAttr('table', 'id', $this->getWrapId());
 
         // add reset table session action
         if (Config::isDev()) {
@@ -132,6 +183,11 @@ class Table extends \Tk\Table
 <div class="bs-table-wrap" var="table"></div>
 HTML;
         return Template::load($html);
+    }
+
+    public function getWrapId(): string
+    {
+        return str_replace('_', '-', $this->makeRequestKey('wrap'));
     }
 
     /**
@@ -208,6 +264,72 @@ HTML;
                         </button>
                     HTML;
             });
+    }
+
+    /**
+     * Change the main table template to
+     */
+    public static function toHtmxTable(Table $table, Uri $baseUrl): ?Template
+    {
+        // setup table for hx
+        $ttpl = $table->getRenderer()->getTemplate();
+        $ftpl = $table->getFormRenderer()->getTemplate();
+
+        // setup hx on all links and elements in the template
+        $wrapId = $table->getWrapId();
+
+        if ($ftpl instanceof Template) {
+            $ftpl->setAttr('form', 'hx-post', $baseUrl);
+            $ftpl->removeAttr('form', 'action');
+            $ftpl->setAttr('form', 'hx-swap', 'outerHTML');
+            $ftpl->setAttr('form', 'hx-target', "#$wrapId");
+            $ftpl->setAttr('form', 'hx-select', "#$wrapId");
+        }
+
+        if ($ttpl instanceof Template) {
+            $ttpl->setAttr('form', 'hx-post', $baseUrl);
+            $ttpl->removeAttr('form', 'action');
+            $ttpl->setAttr('form', 'hx-swap', 'outerHTML');
+            $ttpl->setAttr('form', 'hx-target', "#$wrapId");
+            $ttpl->setAttr('form', 'hx-select', "#$wrapId");
+            $ttpl->setAttr('limit-select', 'hx-post', $baseUrl);
+
+            $html = <<<HTML
+<script>
+  jQuery(function($) {
+    // detatch change table js, to stop page reload
+    $('.tk-limit select', '#{$wrapId}').off('change.tkTable');
+  });
+</script>
+HTML;
+            $ttpl->appendHtml('table', $html);
+
+            $ttpl = $table->show();
+
+            // Hack to get all pager buttons to submit via hx
+            $xpath = new \DOMXPath($ttpl->getDocument());
+
+            // convert all header sort links
+            $links = $xpath->query("//th/a[contains(@href, '_orderBy=')]");
+            for ($i = $links->length - 1; $i > -1; $i--) {
+                $node = $links->item($i)->firstChild->parentElement;
+                if (!($node instanceof \DOMElement)) continue;
+                $url = $node->getAttribute('href');
+                $node->setAttribute('hx-get', $url);
+            }
+
+            // convert all pager links
+            $spans = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' page-link ')]");
+            for ($i = $spans->length - 1; $i > -1; $i--) {
+                $node = $spans->item($i)->firstChild->parentElement;
+                if (!($node instanceof \DOMElement)) continue;
+                $url = $node->getAttribute('href');
+                $node->setAttribute('hx-get', $url);
+            }
+
+        }
+
+        return $ttpl;
     }
 
 }
