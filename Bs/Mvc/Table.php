@@ -62,8 +62,6 @@ class Table extends \Tk\Table
         // init/execute filter form request
         $this->initForm();
 
-        //unset($_SESSION[$this->sid]);
-
         // get the pager values from the request (if any)
         $pager = $_SESSION[$this->sid]['pager'] ?? [];
 
@@ -71,12 +69,12 @@ class Table extends \Tk\Table
         $kLimit = $this->makeRequestKey(self::PARAM_LIMIT);
         $kPage = $this->makeRequestKey(self::PARAM_PAGE);
         $kOrderBy = $this->makeRequestKey(self::PARAM_ORDERBY);
+
         $pager = [
             $kLimit => intval($_REQUEST[$kLimit] ?? $pager[$kLimit] ?? $this->getLimit()),
             $kPage => intval($_REQUEST[$kPage] ?? $pager[$kPage] ?? $this->getPage()),
             $kOrderBy => trim($_REQUEST[$kOrderBy] ?? $pager[$kOrderBy] ?? $this->getOrderBy()),
         ];
-
         // reset page on limit change
         if (isset($_REQUEST[$kLimit])) {
             $pager[$kPage] = 1;
@@ -136,13 +134,14 @@ class Table extends \Tk\Table
                 unset($_SESSION[$this->sid]['filter']);
 
                 // reset page on clear
+                $kLimit = $this->makeRequestKey(self::PARAM_LIMIT);
                 $kPage = $this->makeRequestKey(self::PARAM_PAGE);
+                $kOrderBy = $this->makeRequestKey(self::PARAM_ORDERBY);
                 if (isset($_SESSION[$this->sid]['pager'][$kPage])) {
                     $_SESSION[$this->sid]['pager'][$kPage] = 1;
-                    $url->remove($kPage);
                 }
 
-                $url->redirect();
+                $url->remove($kLimit)->remove($kPage)->remove($kOrderBy)->redirect();
             }))->addCss('btn-outline-secondary');
 
             $this->form->execute($_POST);
@@ -232,6 +231,12 @@ HTML;
         return $this->renderer;
     }
 
+    public function resetTableSession(): static
+    {
+        unset($_SESSION[$this->sid]);
+        return $this;
+    }
+
     public function hideReset(bool $hideReset = true): static
     {
         $this->hideReset = $hideReset;
@@ -246,7 +251,9 @@ HTML;
                 $val = $action->getTable()->makeRequestKey($action->getName());
                 $active = ($_POST[$action->getName()] ?? '') == $val;
                 if (!$active) return;
-                unset($_SESSION[$this->sid]);
+
+                $this->resetTableSession();
+
                 Uri::create()
                     ->remove($action->getTable()->makeRequestKey(\Tk\Table::PARAM_PAGE))
                     ->remove($this->makeRequestKey(\Tk\Table::PARAM_LIMIT))
