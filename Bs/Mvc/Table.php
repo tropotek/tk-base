@@ -31,7 +31,7 @@ class Table extends \Tk\Table
         // create a unique table id if none supplied
         if (empty($tableId)) {
             $trace = debug_backtrace()[0] ?? ['file' => '/tbl', 'line' => 1];
-            $tableId = hash('md5', $trace['file'].$trace['line']);
+            $tableId = hash('crc32', $trace['file'].$trace['line']);
         }
         parent::__construct($tableId);
 
@@ -39,7 +39,6 @@ class Table extends \Tk\Table
         $this->setLimit($limit);
         $this->setPage($page);
 
-        //$this->sid = $this->makeRequestKey('tbl-ses');
         $this->renderer = new DomRenderer($this);
     }
 
@@ -246,8 +245,10 @@ HTML;
     /**
      * Change the main table template to
      */
-    public static function toHtmxTable(Table $table, Uri $baseUrl): ?Template
+    public static function toHtmxTable(Table $table, ?Uri $baseUrl = null): ?Template
     {
+        $baseUrl = $baseUrl ?? Uri::create();
+
         // setup table for hx
         $ttpl = $table->getRenderer()->getTemplate();
 
