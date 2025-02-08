@@ -5,7 +5,9 @@ namespace Bs\Mvc;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
 use Tk\Config;
+use Tk\DataMap\DataMap;
 use Tk\Form;
+use Tk\Log;
 use Tk\Table\Cell;
 use Tk\Uri;
 use Tk\Db\Filter;
@@ -21,7 +23,6 @@ class Table extends \Tk\Table
     protected ?Filter      $dbFilter     = null;
     protected ?DomRenderer $renderer     = null;
     protected ?Renderer    $formRenderer = null;
-    protected string       $sid          = 'filter';
     protected bool         $hideReset    = false;
 
 
@@ -32,14 +33,13 @@ class Table extends \Tk\Table
             $trace = debug_backtrace()[0] ?? ['file' => '/tbl', 'line' => 1];
             $tableId = hash('md5', $trace['file'].$trace['line']);
         }
+        parent::__construct($tableId);
 
         $this->setOrderBy($orderBy);
         $this->setLimit($limit);
         $this->setPage($page);
 
-        parent::__construct($tableId);
-
-        $this->sid = $this->makeRequestKey('tbl-ses');
+        //$this->sid = $this->makeRequestKey('tbl-ses');
         $this->renderer = new DomRenderer($this);
     }
 
@@ -62,31 +62,8 @@ class Table extends \Tk\Table
         // init/execute filter form request
         $this->initForm();
 
-        // get the pager values from the request (if any)
-        $pager = $_SESSION[$this->sid]['pager'] ?? [];
-
-        // setup pager values
-        $kLimit = $this->makeRequestKey(self::PARAM_LIMIT);
-        $kPage = $this->makeRequestKey(self::PARAM_PAGE);
-        $kOrderBy = $this->makeRequestKey(self::PARAM_ORDERBY);
-
-        $pager = [
-            $kLimit => intval($_REQUEST[$kLimit] ?? $pager[$kLimit] ?? $this->getLimit()),
-            $kPage => intval($_REQUEST[$kPage] ?? $pager[$kPage] ?? $this->getPage()),
-            $kOrderBy => trim($_REQUEST[$kOrderBy] ?? $pager[$kOrderBy] ?? $this->getOrderBy()),
-        ];
-        // reset page on limit change
-        if (isset($_REQUEST[$kLimit])) {
-            $pager[$kPage] = 1;
-        }
-
-        $this->setLimit($pager[$kLimit]);
-        $this->setPage($pager[$kPage]);
-        $this->setOrderBy($pager[$kOrderBy]);
-
-        // save pager to session
-        $_SESSION[$this->sid]['pager'] = $pager;
-
+        // init the pager properties limit, page, orderBy
+        $this->initPager();
 
         // setup filter values
         $filterValues = [];
@@ -115,39 +92,25 @@ class Table extends \Tk\Table
     {
         if ($this->form && !$this->form->getField('filter')) {
             $this->form->appendField(new Form\Action\Submit('filter', function (Form $form, Form\Action\ActionInterface $action) {
-                $url = Uri::create();
                 $values = $form->getFieldValues();
-                $_SESSION[$this->sid]['filter'] = $values;
-
-                // reset page on submit
-                $kPage = $this->makeRequestKey(self::PARAM_PAGE);
-                if (isset($_SESSION[$this->sid]['pager'][$kPage])) {
-                    $_SESSION[$this->sid]['pager'][$kPage] = 1;
-                    $url->remove($kPage);
-                }
-
-                $url->redirect();
+                $ses = $this->getTableSession();
+                $ses->set('filter', $values);
+                $ses->set($this->makeRequestKey(self::PARAM_PAGE), 1);
+                Uri::create()->redirect();
             }))->setLabel('Search');
 
             $this->form->appendField(new Form\Action\Submit('clear', function (Form $form, Form\Action\ActionInterface $action) {
-                $url = Uri::create();
-                unset($_SESSION[$this->sid]['filter']);
-
-                // reset page on clear
-                $kLimit = $this->makeRequestKey(self::PARAM_LIMIT);
-                $kPage = $this->makeRequestKey(self::PARAM_PAGE);
-                $kOrderBy = $this->makeRequestKey(self::PARAM_ORDERBY);
-                if (isset($_SESSION[$this->sid]['pager'][$kPage])) {
-                    $_SESSION[$this->sid]['pager'][$kPage] = 1;
-                }
-
-                $url->remove($kLimit)->remove($kPage)->remove($kOrderBy)->redirect();
+                $ses = $this->getTableSession();
+                $ses->remove('filter');
+                $ses->set($this->makeRequestKey(self::PARAM_PAGE), 1);
+                Uri::create()->redirect();
             }))->addCss('btn-outline-secondary');
 
             $this->form->execute($_POST);
 
-            if (!$this->form->isSubmitted() && isset($_SESSION[$this->sid]['filter'])) {
-                $this->form->setFieldValues($_SESSION[$this->sid]['filter']);
+            $ses = $this->getTableSession();
+            if (!$this->form->isSubmitted() && is_array($ses->get('filter'))) {
+                $this->form->setFieldValues($ses['filter']);
             }
         }
 
@@ -231,16 +194,23 @@ HTML;
         return $this->renderer;
     }
 
-    public function resetTableSession(): static
-    {
-        unset($_SESSION[$this->sid]);
-        return $this;
-    }
-
     public function hideReset(bool $hideReset = true): static
     {
         $this->hideReset = $hideReset;
         return $this;
+    }
+
+    public function validateCells(DataMap $map): bool
+    {
+        /** @var Cell $cell */
+        foreach ($this->getCells() as $cell) {
+            if (!$cell->isSortable()) continue;
+            if (!in_array($cell->getOrderBy(), $map->getColumnNames())) {
+                Log::error("invalid order by property for cell: {$cell->getName()} ({$cell->getOrderBy()})");
+                return false;
+            }
+        }
+        return true;
     }
 
     public function addResetAction(): ?Action
@@ -280,12 +250,12 @@ HTML;
     {
         // setup table for hx
         $ttpl = $table->getRenderer()->getTemplate();
-        $ftpl = $table->getFormRenderer()->getTemplate();
 
         // setup hx on all links and elements in the template
         $wrapId = $table->getWrapId();
 
-        if ($ftpl instanceof Template) {
+        if ($table->getFormRenderer()) {
+            $ftpl = $table->getFormRenderer()->getTemplate();
             $ftpl->setAttr('form', 'hx-post', $baseUrl);
             $ftpl->removeAttr('form', 'action');
             $ftpl->setAttr('form', 'hx-swap', 'outerHTML');

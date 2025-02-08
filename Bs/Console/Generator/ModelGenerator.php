@@ -91,7 +91,7 @@ class ModelGenerator
             'form-namespace'       => $this->getFormNamespace(),
             'controller-namespace' => $this->getControllerNamespace(),
             'property-name'        => lcfirst($this->getClassName()),
-            'namespace-url'        => str_replace('_', '/', $this->getTable()),
+            'namespace-url'        => lcfirst($this->getClassName()),
             'table-id'             => str_replace('_', '-', $this->getTable()),
             'primary-col'          => $primaryKey,
             'primary-prop'         => $this->makePropertyName($primaryKey),
@@ -214,6 +214,7 @@ class ModelGenerator
 
     protected function createModelTemplate(): \Tk\CurlyTemplate
     {
+        // ------ TEMPLATE ------
         $classTpl = <<<STR
 <?php
 namespace {db-namespace};
@@ -225,7 +226,6 @@ use Tk\Db\Filter;
 class {classname} extends Model
 {
 {properties}
-
 
     public function __construct()
     {
@@ -291,6 +291,11 @@ class {classname} extends Model
             if (\$w) \$filter->appendWhere('(%s) AND ', substr(\$w, 0, -3));
         }
 
+        if (!empty(\$filter['always'])) {
+            if (!is_array(\$filter['always'])) \$filter['always'] = [\$filter['always']];
+            \$filter->appendWhere('(a.{primary-col} IN :always) OR ', \$filter['always']);
+        }
+        
         if (!empty(\$filter['id'])) {
             \$filter['{primary-prop}'] = \$filter['id'];
         }
@@ -349,6 +354,7 @@ STR;
 
     protected function createTableManagerTemplate(): \Tk\CurlyTemplate
     {
+        // ------ TEMPLATE ------
         $classTpl = <<<PHP
 <?php
 namespace {controller-namespace}\{classname};
@@ -377,7 +383,7 @@ class Manager extends ControllerAdmin
         // todo: \$this->setUserAccess(...);
 
         // init table
-        \$this->table = new Table();
+        \$this->table = new Table('{table-id}');
         \$this->table->setOrderBy('{primary-col}');
         \$this->table->setLimit(25);
 
@@ -440,6 +446,11 @@ class Manager extends ControllerAdmin
 
         // execute table
         \$this->table->execute();
+        
+        // todo: remove orderBy validation before release
+        if (!\$this->table->validateCells({classname}::getDataMap())) {
+            \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
+        }
 
         // Set the table rows
         \$filter = \$this->table->getDbFilter();
@@ -466,7 +477,7 @@ class Manager extends ControllerAdmin
     <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
     <div class="card-body" var="actions">
       <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-      <a href="#" title="Create {name}" class="btn btn-outline-secondary" var="create"><i class="fa fa-plus"></i> Create {name}</a>
+      <a href="/{namespace-url}Edit" title="Create {name}" class="btn btn-outline-secondary" var="create"><i class="fa fa-plus"></i> Create {name}</a>
     </div>
   </div>
   <div class="card mb-3">
@@ -496,6 +507,7 @@ PHP;
 
     protected function createTableTemplate(): \Tk\CurlyTemplate
     {
+        // ------ TEMPLATE ------
         $classTpl = <<<PHP
 <?php
 namespace {table-namespace};
@@ -635,6 +647,7 @@ PHP;
 
     protected function createFormEditTemplate(): \Tk\CurlyTemplate
     {
+        // ------ TEMPLATE ------
         $classTpl = <<<STR
 <?php
 namespace {controller-namespace}\{classname};
@@ -752,6 +765,7 @@ STR;
 
     protected function createFormTemplate(): \Tk\CurlyTemplate
     {
+        // ------ TEMPLATE ------
         $classTpl = <<<PHP
 <?php
 namespace {form-namespace};

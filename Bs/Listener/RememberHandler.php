@@ -18,7 +18,7 @@ class RememberHandler implements EventSubscriberInterface
         if (!Auth::getAuthUser()) {
             $auth = Remember::retrieveMe();
             if ($auth) {
-                Log::info('user auto logged in via cookie');
+                Log::debug('Auth Remember Handler: user auto logged in via cookie');
                 Uri::create()->redirect();
             }
         }
