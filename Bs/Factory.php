@@ -8,6 +8,7 @@ use Bs\Mvc\PagePhp;
 use Bs\Ui\Breadcrumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;
+use Dom\Template;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -221,10 +222,11 @@ class Factory extends Collection
         Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
         $logfile = $this->getConfig()->get('php.error_log', ini_get('error_log'));
         if (is_writable($logfile)) {
-            Log::addLogger(new StreamLog($logfile, $logLevel));
+            $logger = Log::addLogger(new StreamLog($logfile, $logLevel));
         } else {
-            Log::addLogger(new ErrorLog($logLevel));
+            $logger = Log::addLogger(new ErrorLog($logLevel));
         }
+        Template::$LOGGER = $logger;
     }
 
     /**
