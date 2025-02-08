@@ -219,6 +219,7 @@ class Factory extends Collection
     {
         // Init \Tk\Log
         $logLevel = $this->getConfig()->get('log.logLevel', LogLevel::DEBUG);
+        // allow uri query string with no_log to stop logging
         Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
         $logfile = $this->getConfig()->get('php.error_log', ini_get('error_log'));
         if (is_writable($logfile)) {
