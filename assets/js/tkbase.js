@@ -290,7 +290,6 @@ let tkbase = function () {
 
   };
 
-
   /**
    * Setup bsconfirm dialog for HTMX buttons
    */
