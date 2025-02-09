@@ -164,7 +164,7 @@ let tkbase = function () {
    * Creates bootstrap 5 tabs around the \Tk\Form renderer groups (.tk-form-group) output
    */
   let initTkFormTabs = function () {
-    if ($.fn.tktabs === undefined) {
+    if (typeof $.fn.tktabs === 'undefined') {
       console.warn('jquery.tktabs.js is not installed.');
       return;
     }
@@ -180,7 +180,7 @@ let tkbase = function () {
    *    <a href="#" class="btn" data-confirm="Are you sure you want to do this?">Delete</a>
    */
   let initDialogConfirm = function () {
-    if ($.fn.bsConfirm === undefined) {
+    if (typeof $.fn.bsConfirm === 'undefined') {
       $(document).on('click', '[data-confirm]', function () {
         return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
       });
@@ -194,7 +194,7 @@ let tkbase = function () {
    * Setup the jquery datepicker UI
    */
   let initDatepicker = function () {
-    if ($.fn.datepicker === undefined) {
+    if (typeof $.fn.datepicker === 'undefined') {
       console.warn('jquery-ui.js is not installed.');
       return;
     }
@@ -275,13 +275,12 @@ let tkbase = function () {
 
   };
 
-
   /**
    * Add an edit lock button to text fields
    * So the user has to click the unlock button b4 editing
    */
   let initTkInputLock = function () {
-    if ($.fn.tkInputLock === undefined) {
+    if (typeof $.fn.tkInputLock === 'undefined') {
       console.warn('Plugin not loaded: tkInputLock');
       return;
     }
@@ -290,6 +289,31 @@ let tkbase = function () {
     });
 
   };
+
+
+  /**
+   * Setup bsconfirm dialog for HTMX buttons
+   */
+  let initHtmxConfirmDialog = function () {
+    if (typeof $.fn.bsConfirm === 'undefined') {
+      console.warn('Plugin not loaded: bsConfirm');
+      return;
+    }
+
+    $(document).on('htmx:confirm', function(e) {
+      if (e.defaultPrevented) return;
+      if (!e.detail.elt.hasAttribute('hx-confirm')) return;
+      e.preventDefault();
+      $.fn.bsConfirm({
+        onConfirm: function() { e.detail.issueRequest(true); }
+      }, e.detail.elt);
+    });
+
+  };
+
+
+
+
 
   /**
    * Tiny MCE setup
@@ -393,5 +417,6 @@ let tkbase = function () {
     initTkInputLock: initTkInputLock,
     initTinymce: initTinymce,
     initTkFormTabs: initTkFormTabs,
+    initHtmxConfirmDialog: initHtmxConfirmDialog,
   }
 }();
