@@ -99,47 +99,59 @@ function clearForm(form) {
   });
 };
 
-
 /**
  * tkRegisterInit() and tkInit()
  *
  * These functions are used to allow us to re-init elements
- * after an AJAX call and HTML has been replaced.
- * Register an init function:
+ * after an AJAX call and HTML elements have been replaced removing
+ * any initalised plugins.
+ */
+let tkInits = [];
+
+/**
+ * Register and execute an init function to the tkInit queue.
+ *
+ * To register and execute an init function:
  * ```
  *  tkRegisterInit(function() {
- *    // this = documnet or supplied element from tkInit(...)
- *    let forms = $('forms', this);
- *    forms.each(function() {
+ *    $('forms', this).each(function() {
  *      // init form elements, etc..
  *    });
  *  });
  * ```
- * After you have replaced an element you can then call tkInit(element) to
+ * After you have replaced an element you can then call `tkInit(element)` to
  * call the init functions that have been registered.
  *
- * Note: tkInit() with no arguments uses the `document` element by default.
- */
-let tkInits = [];
-/**
- * register and execute an init function
  * @param func
- * @param execute (optional) default true
+ * @param elm (optional) document is used by default
+ * @param execute (optional) If false the function will not be executed only added
  * @returns {*}
  */
-function tkRegisterInit(func, execute = true) {
+function tkRegisterInit(func, elm, execute = true) {
   tkInits.push(func);
-  if (execute) return func.apply(document);
+  if (execute) {
+    elm = $(elm).get(0) ?? null;
+    if (!elm) elm = document;
+    return func.apply(elm);
+  }
 }
+
 /**
- * execute registered init functions on an object/documnet
- * @param obj (optional) doument is used if not supplied
+ * Execute registered init functions on an element or document.
+ * Call this function to execute the tkInit queue on an element.
+ *
+ * ```
+ * tkInit(form);
+ * tkInit(table);
+ * ```
+ *
+ * @param elm (optional) document is used by default
  */
-function tkInit(obj) {
-  obj = $(obj).get(0) ?? null;
-  if (!obj) obj = document;
+function tkInit(elm) {
+  elm = $(elm).get(0) ?? null;
+  if (!elm) elm = document;
   for (var i in tkInits) {
-    tkInits[i].apply(obj);
+    tkInits[i].apply(elm);
   }
 }
 
