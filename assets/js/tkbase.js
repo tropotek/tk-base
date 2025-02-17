@@ -179,6 +179,7 @@ let tkbase = function () {
       console.warn('jquery.tktabs.js is not installed.');
       return;
     }
+
     tkRegisterInit(function () {
       $('.tk-form', this).tktabs();
     });
