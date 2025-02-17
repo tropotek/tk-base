@@ -365,7 +365,7 @@ class ModelProperty extends \Tk\Collection
         }
 
         $propertyName = $this->getName();
-        $classLower = strtolower($className);
+        $classLower = lcfirst($className);
         if ($this->getName() == 'name' || $this->getName() == 'title') {
             $append .= "\n            ->addHeaderCss('max-width')";
             $append .= "\n            ->addOnValue(function(\\$namespace\\$className \$obj, Cell \$cell) {

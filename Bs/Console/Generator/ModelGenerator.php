@@ -209,6 +209,7 @@ class ModelGenerator
                 $data['prepared-filter-queries'] .= $mp->getPreparedFilterQuery() . "\n";
             }
         }
+        $data['construct'] = rtrim($data['construct'], "\n");
         return $data;
     }
 
@@ -332,7 +333,8 @@ STR;
 
     public function makeManager(array $params = []): string
     {
-        $tpl = $this->createTableManagerTemplate();
+        $tpl = $this->createManagerTemplate();
+        vd($this->getDefaultData());
         $data = $this->arrayMerge($this->getDefaultData(), $this->processTable('table'), $params);
         return $tpl->parse($data);
     }
@@ -352,7 +354,7 @@ STR;
         return $data;
     }
 
-    protected function createTableManagerTemplate(): \Tk\CurlyTemplate
+    protected function createManagerTemplate(): \Tk\CurlyTemplate
     {
         // ------ TEMPLATE ------
         $classTpl = <<<PHP
@@ -360,6 +362,7 @@ STR;
 namespace {controller-namespace}\{classname};
 
 use {db-namespace}\{classname};
+use App\Db\User;
 use Bs\Mvc\ControllerAdmin;
 use Bs\Mvc\Table;
 use Dom\Template;
@@ -379,8 +382,7 @@ class Manager extends ControllerAdmin
     public function doDefault(): void
     {
         \$this->getPage()->setTitle('{name} Manager');
-
-        // todo: \$this->setUserAccess(...);
+        //\$this->setUserAccess(User::PERM_SYSADMIN);
 
         // init table
         \$this->table = new Table('{table-id}');
@@ -441,7 +443,7 @@ class Manager extends ControllerAdmin
         // execute table
         \$this->table->execute();
         
-        // todo: remove orderBy validation before release
+        // todo: remove cell orderBy validation before release
         if (!\$this->table->validateCells({classname}::getDataMap())) {
             \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
         }
@@ -647,6 +649,7 @@ PHP;
 namespace {controller-namespace}\{classname};
 
 use {db-namespace}\{classname};
+use App\Db\User;
 use Bs\Mvc\ControllerAdmin;
 use Bs\Factory;
 use Bs\Mvc\Form;
@@ -672,8 +675,7 @@ class Edit extends ControllerAdmin
     public function doDefault(): void
     {
         \$this->getPage()->setTitle('Edit {name}');
-
-        // todo: \$this->setUserAccess(...);
+        //\$this->setUserAccess(User::PERM_SYSADMIN);
 
         \${primary-prop} = intval(\$_GET['{primary-prop}'] ?? 0);
 
@@ -689,7 +691,7 @@ class Edit extends ControllerAdmin
         \$this->form = new Form();
 {field-list}
         \$this->form->appendField(new SubmitExit('save', [\$this, 'onSubmit']));
-        \$this->form->appendField(new Link('cancel', Uri::create('/{property-name}Manager')));
+        \$this->form->appendField(new Link('cancel', Uri::create('/{namespace-url}Manager')));
 
         \$load = \$this->form->unmapModel(\$this->{property-name});
         \$this->form->setFieldValues(\$load);

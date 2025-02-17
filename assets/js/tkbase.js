@@ -165,7 +165,6 @@ let tkbase = function () {
    */
   let initSugar = function () {
     if (typeof Sugar === 'undefined') {
-      console.warn('Plugin not loaded: Sugar');
       return;
     }
     Sugar.extend();
@@ -352,6 +351,7 @@ let tkbase = function () {
 
     // Default base tinymce options
     let mceDefaults = {
+      license_key: 'gpl',
       height: 500,
       plugins: [
         'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
@@ -391,6 +391,8 @@ let tkbase = function () {
         }
 
         let cfg = {
+          license_key: 'gpl',
+          plugins: ['link', 'image', 'code', 'fullscreen'],
           contextmenu: false,
           statusbar: false,
           extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
@@ -412,7 +414,7 @@ let tkbase = function () {
             cfg.file_picker_callback  = elf.browser;
             cfg.images_upload_handler = elf.uploadHandler;
           }
-          el.tinymce($.extend(mceDefaults, cfg));
+          el.tinymce($.extend(cfg, mceDefaults));
         }
       });
     });
