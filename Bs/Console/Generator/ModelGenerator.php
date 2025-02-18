@@ -651,7 +651,6 @@ namespace {controller-namespace}\{classname};
 use {db-namespace}\{classname};
 use App\Db\User;
 use Bs\Mvc\ControllerAdmin;
-use Bs\Factory;
 use Bs\Mvc\Form;
 use Dom\Template;
 use Tk\Alert;
@@ -697,7 +696,6 @@ class Edit extends ControllerAdmin
         \$this->form->setFieldValues(\$load);
 
         \$this->form->execute(\$_POST);
-
     }
 
     public function onSubmit(Form \$form, Submit \$action): void
@@ -715,7 +713,7 @@ class Edit extends ControllerAdmin
         Alert::addSuccess('Form save successfully.');
         \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->{property-name}->{primary-prop}));
         if (\$form->getTriggeredAction()->isExit()) {
-            \$action->setRedirect(Factory::instance()->getBackUrl());
+            \$action->setRedirect(\$this->getBackUrl());
         }
     }
 
@@ -728,7 +726,7 @@ class Edit extends ControllerAdmin
         //\$this->form->getField('email')->addFieldCss('col-6');
         
         \$template->setText('title', \$this->getPage()->getTitle());
-        \$template->setAttr('back', 'href', Factory::instance()->getBackUrl());
+        \$template->setAttr('back', 'href', \$this->getBackUrl());
         
         \$template->appendTemplate('content', \$this->form->show());
 
@@ -767,7 +765,6 @@ STR;
 namespace {form-namespace};
 
 use Bs\Mvc\ControllerAdmin;
-use Bs\Factory;
 use Bs\Mvc\Form;
 use Dom\Template;
 use Tk\Alert;
@@ -810,7 +807,7 @@ class {classname} extends Form
     {
 {field-list}
         \$this->appendField(new SubmitExit('save', [\$this, 'onSubmit']));
-        \$this->appendField(new Link('cancel', Factory::instance()->getBackUrl()));
+        \$this->appendField(new Link('cancel', \$this->getBackUrl()));
 
         return \$this;
     }
@@ -842,7 +839,7 @@ class {classname} extends Form
         Alert::addSuccess('Form save successfully.');
         \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->get{classname}()->{primary-prop}));
         if (\$form->getTriggeredAction()->isExit()) {
-            \$action->setRedirect(Factory::instance()->getBackUrl());
+            \$action->setRedirect(\$this->getBackUrl());
         }
     }
 
