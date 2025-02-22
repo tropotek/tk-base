@@ -379,6 +379,10 @@ class Auth extends Model
             $filter->appendWhere('a.email = :email AND ');
         }
 
+        if (!empty($filter['permission'])) {
+            $filter->appendWhere('(a.permissions & :permission) != 0 AND ');
+        }
+
         if (!empty($filter['active'])) {
             $filter['active'] = truefalse($filter['active']);
             $filter->appendWhere('active = :active AND ');

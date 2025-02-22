@@ -94,23 +94,23 @@
       // search events
       if (!plugin.settings.search) {
         $('li.search', checkEl).remove();
+      } else {
+        $('.btn-clear', checkEl).on('click', function () {   // clear search
+          $('.input-search', checkEl).val('').trigger('keyup');
+        });
+        $('.input-search', checkEl).on('keyup', function () {   // search input
+          var terms = $(this).val();
+          var list = $('.option', checkEl);
+          if (!terms) {
+            list.show();
+            return;
+          }
+          list.hide();
+          list.filter(function () {
+            return $(this).text().toLowerCase().indexOf(terms.toLowerCase()) >= 0;
+          }).show();
+        });
       }
-      $('.btn-clear', checkEl).on('click', function () {   // clear search
-        $('.input-search', checkEl).val('').trigger('keyup');
-      });
-      $('.input-search', checkEl).on('keyup', function () {   // search input
-        var terms = $(this).val();
-        var list = $('.option', checkEl);
-        if (!terms) {
-          list.show();
-          return;
-        }
-        list.hide();
-        list.filter(function () {
-          return $(this).text().toLowerCase().indexOf(terms.toLowerCase()) >= 0;
-        }).show();
-
-      });
 
       // select all events
       if (!plugin.settings.selectAll) {
