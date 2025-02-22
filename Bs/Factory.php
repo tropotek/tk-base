@@ -345,7 +345,7 @@ class Factory extends Collection
     /**
      * @param string $template (optional) If no param supplied then the system default template is used
      */
-    public function createMessage(string $template = ''): CurlyMessage
+    public function createMailMessage(string $template = ''): CurlyMessage
     {
         if (empty($template)) {
             $tplPath = Config::makePath($this->getConfig()->get('system.mail.template'));

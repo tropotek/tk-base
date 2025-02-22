@@ -181,7 +181,7 @@ $opts = array(
 	// 'debug' => true,
 	'roots' => array(
 		// Items volume
-		array(
+		'Media' => array(
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
             'path'          => $dataPath . '/',             // path to files (REQUIRED)
             'URL'           => $dataUrl  . '/',             // URL to files (REQUIRED)
@@ -193,8 +193,18 @@ $opts = array(
 			'uploadOrder'   => array('deny', 'allow'),      //
 			'accessControl' => 'access'                     //
 		),
+//        'Data' => array(
+//            'driver'      => 'MySQL',
+//            'host'        => 'localhost',
+//            'user'        => 'dev',
+//            'pass'        => 'dev007',
+//            'db'          => 'dev_tkapd_elfinder',
+//            'files_table' => 'elfinder_file',
+//            'path'        => 1,
+//            'tmpPath'     => $sitePath . '/data/private/tmp',
+//        ),
 		// Trash volume
-		array(
+		'Trash' => array(
 			'id'            => '1',
 			'driver'        => 'Trash',
             'path'          => $dataPath . '/.trash/',
@@ -206,6 +216,13 @@ $opts = array(
 			'uploadOrder'   => array('deny', 'allow'),      //
 			'accessControl' => 'access',                    //
 		),
+//        array(
+//            'driver' => 'FTP',
+//            'host'   => '192.168.1.1',
+//            'user'   => 'eluser',
+//            'pass'   => 'elpass',
+//            'path'   => '/'
+//        ),
 	)
 );
 

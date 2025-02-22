@@ -57,7 +57,7 @@ class ExceptionEmailListener implements EventSubscriberInterface
         try {
             if (count($this->emailList)) {
                 foreach ($this->emailList as $email) {
-                    $message = Factory::instance()->createMessage();
+                    $message = Factory::instance()->createMailMessage();
                     $message->setFrom($email);
                     $message->addTo($email);
                     $subject = "{$this->siteTitle} Error: '{$e->getMessage()}'";
