@@ -296,7 +296,7 @@ class {classname} extends Model
             if (!is_array(\$filter['always'])) \$filter['always'] = [\$filter['always']];
             \$filter->appendWhere('(a.{primary-col} IN :always) OR ', \$filter['always']);
         }
-        
+
         if (!empty(\$filter['id'])) {
             \$filter['{primary-prop}'] = \$filter['id'];
         }
@@ -334,7 +334,6 @@ STR;
     public function makeManager(array $params = []): string
     {
         $tpl = $this->createManagerTemplate();
-        vd($this->getDefaultData());
         $data = $this->arrayMerge($this->getDefaultData(), $this->processTable('table'), $params);
         return $tpl->parse($data);
     }
@@ -442,7 +441,7 @@ class Manager extends ControllerAdmin
 
         // execute table
         \$this->table->execute();
-        
+
         // todo: remove cell orderBy validation before release
         if (!\$this->table->validateCells({classname}::getDataMap())) {
             \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
@@ -724,10 +723,10 @@ class Edit extends ControllerAdmin
         // Setup field group widths with bootstrap classes
         //\$this->form->getField('name')->addFieldCss('col-6');
         //\$this->form->getField('email')->addFieldCss('col-6');
-        
+
         \$template->setText('title', \$this->getPage()->getTitle());
         \$template->setAttr('back', 'href', \$this->getBackUrl());
-        
+
         \$template->appendTemplate('content', \$this->form->show());
 
         return \$template;
