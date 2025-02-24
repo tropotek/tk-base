@@ -20,6 +20,7 @@ class Table extends \Tk\Table
     use RendererTrait;
 
     protected ?Form        $form         = null;
+    protected ?Table       $table        = null;
     protected ?Filter      $dbFilter     = null;
     protected ?DomRenderer $renderer     = null;
     protected ?Renderer    $formRenderer = null;
@@ -39,6 +40,7 @@ class Table extends \Tk\Table
         $this->setLimit($limit);
         $this->setPage($page);
 
+        $this->table = $this;
         $this->renderer = new DomRenderer($this);
     }
 

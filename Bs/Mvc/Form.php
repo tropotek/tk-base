@@ -18,9 +18,8 @@ class Form extends \Tk\Form implements DisplayInterface
 {
     use SystemTrait;
 
-    protected ?Renderer $renderer = null;
-    protected ?Model  $model    = null;
-
+    protected ?Model    $model    = null;
+    protected Renderer $renderer;
 
     public function __construct(?Model $model = null, ?string $formId = null)
     {
@@ -37,6 +36,7 @@ class Form extends \Tk\Form implements DisplayInterface
 
         parent::__construct($formId);
 
+        $this->form = $this;
         $this->renderer = new Renderer($this);
         $this->setModel($model);
     }
