@@ -55,11 +55,11 @@
 // Var dump function for debugging
 function vd() {
   if (!tkConfig.debug) return;
-  for(let k in arguments) console.log(arguments[k]);
+  for (let k in arguments) console.log(arguments[k]);
 }
 
 function copyToClipboard(text) {
-  if(navigator.clipboard) {
+  if (navigator.clipboard) {
     // Modern versions of Chromium browsers, Firefox, etc.
     navigator.clipboard.writeText(text);
   } else if (window.clipboardData) {
@@ -68,10 +68,10 @@ function copyToClipboard(text) {
   } else {
     // Fallback method using Textarea.
     var textArea = document.createElement('textarea');
-    textArea.value          = text;
+    textArea.value = text;
     textArea.style.position = 'fixed';
-    textArea.style.top      = '-999999px';
-    textArea.style.left     = '-999999px';
+    textArea.style.top = '-999999px';
+    textArea.style.left = '-999999px';
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -156,8 +156,13 @@ function tkInit(elm) {
 }
 
 
+/**
+ * tkbase is the javascript object to init the tkBase script
+ * In your app.js call the init functions that you will be using
+ */
 let tkbase = function () {
   "use strict";
+
 
   /**
    * Enable the sugar utils, date formatting, object exetion functions, etc
@@ -212,7 +217,7 @@ let tkbase = function () {
     }
 
     tkRegisterInit(function () {
-      let defaults = { dateFormat: tkConfig.dateFormat.jqDatepicker };
+      let defaults = {dateFormat: tkConfig.dateFormat.jqDatepicker};
       $('input.date', this).each(function () {
         let settings = $.extend({}, defaults, $(this).data());
         $(this).datepicker(settings);
@@ -311,19 +316,18 @@ let tkbase = function () {
       return;
     }
 
-    $(document).on('htmx:confirm', function(e) {
+    $(document).on('htmx:confirm', function (e) {
       if (e.defaultPrevented) return;
       if (!e.detail.elt.hasAttribute('hx-confirm')) return;
       e.preventDefault();
       $.fn.bsConfirm({
-        onConfirm: function() { e.detail.issueRequest(true); }
+        onConfirm: function () {
+          e.detail.issueRequest(true);
+        }
       }, e.detail.elt);
     });
 
   };
-
-
-
 
 
   /**
@@ -332,7 +336,7 @@ let tkbase = function () {
    *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
    */
   let initTinymce = function () {
-    if (typeof(tinymce) === 'undefined') {
+    if (typeof (tinymce) === 'undefined') {
       console.warn('Plugin not loaded: jquery.tinymce');
       return;
     }
@@ -342,7 +346,7 @@ let tkbase = function () {
       let path = data.elfinderPath ?? '/media';
       return new tinymceElfinder({
         // connector URL (Use elFinder Demo site's connector for this demo)
-        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path='+ path,
+        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
         // upload target folder hash for this tinyMCE
         uploadTargetHash: 'l1_lw',
         // elFinder dialog node id
@@ -373,7 +377,7 @@ let tkbase = function () {
       statusbar: false,
       //content_security_policy: "default-src 'self'",
 
-      urlconverter_callback : function (url, node, on_save) {
+      urlconverter_callback: function (url, node, on_save) {
         let parts = url.split(tkConfig.baseUrl);
         if (parts.length > 1) {
           url = tkConfig.baseUrl + parts[1];
@@ -412,7 +416,7 @@ let tkbase = function () {
           // Full tinymce with elfinder file manager
           if (!el.is('.mce-no-fm')) {   // disable the elFinder file manager
             let elf = getMceElf(el.data());
-            cfg.file_picker_callback  = elf.browser;
+            cfg.file_picker_callback = elf.browser;
             cfg.images_upload_handler = elf.uploadHandler;
           }
           el.tinymce($.extend(cfg, mceDefaults));
@@ -426,7 +430,7 @@ let tkbase = function () {
     initSugar: initSugar,
     initDialogConfirm: initDialogConfirm,
     initDatepicker: initDatepicker,
-    initPasswordToggle:initPasswordToggle,
+    initPasswordToggle: initPasswordToggle,
     initDataToggle: initDataToggle,
     initTkInputLock: initTkInputLock,
     initTinymce: initTinymce,
