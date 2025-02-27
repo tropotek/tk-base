@@ -18,11 +18,12 @@ class Page extends PageDomInterface
             'baseUrl' => Config::getBaseUrl(),
             'isProd'  => Config::isProd(),
             'isAuth'  => !is_null(Auth::getAuthUser()),
-//            'dateFormat' => [
-//                'jqDatepicker' => 'dd/mm/yy',
-//                'bsDatepicker' => 'dd/mm/yyyy',
-//                'sugarjs' => '%d/%m/%Y',
-//            ],
+            // todo: refactor, all dates should be returned in yyy-mm-dd format
+            'dateFormat' => [
+                'jqDatepicker' => 'dd/mm/yy',
+                'bsDatepicker' => 'dd/mm/yyyy',
+                'sugarjs' => '%d/%m/%Y',
+            ],
         ];
         $js = sprintf('let tkConfig = %s;', json_encode($jsConfig, JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $template->appendHeadJs($js);
