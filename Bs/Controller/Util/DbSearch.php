@@ -15,36 +15,66 @@ use Tk\Uri;
 
 class DbSearch extends ControllerAdmin
 {
-    protected Form $form;
+    protected Form $dbSearch;
+    protected Form $dbValue;
     protected string $results = '';
+    protected string $valResults = '';
 
     public function doDefault(): void
     {
         $this->getPage()->setTitle('Database Column Search');
         $this->setUserAccess(Auth::PERM_ADMIN);
 
-        $this->form = new Form();
-
-        $this->form->appendField(new Input('table'))
+        $this->dbSearch = new Form();
+        $this->dbSearch->appendField(new Input('table'))
             ->setNotes('(optional) Restrict search to one table');
-
-        $this->form->appendField(new Input('column'))
+        $this->dbSearch->appendField(new Input('column'))
             ->setRequired()
             ->setNotes('(required) Column name to search for');
-
-        $this->form->appendField(new Input('value'))
+        $this->dbSearch->appendField(new Input('value'))
             ->setNotes('(optional) Restrict search to column containing the value');
-
-        $this->form->appendField(new Checkbox('views', ['y' => 'Yes']))
+        $this->dbSearch->appendField(new Checkbox('views', ['y' => 'Yes']))
             ->setValue('y')
-            ->setNotes('(optional) Restrict search to column containing the value');
+            ->setSwitch(true);
+        $this->dbSearch->appendField(new Submit('search', [$this, 'onDbSearch']));
+        $this->dbSearch->execute($_POST);
 
-        $this->form->appendField(new Submit('search', [$this, 'onSubmit']));
-        $this->form->execute($_POST);
+
+        $this->dbValue = new Form();
+        $this->dbValue->appendField(new Input('value'))
+            ->setNotes('Search tables containing this value');
+        $this->dbValue->appendField(new Submit('search', [$this, 'onDbValue']));
+        $this->dbValue->execute($_POST);
 
     }
 
-    public function onSubmit(Form $form, Submit $action): void
+    public function onDbValue(Form $form, Submit $action): void
+    {
+        if (empty($form->getFieldValue('value'))) {
+            $form->addFieldError('value', "Please provide a valid value to search for");
+        }
+
+        if ($form->hasErrors()) {
+            Alert::addError('Form contains errors.');
+            return;
+        }
+
+        $results = Db::query('CALL findAll(:value)', ['value' =>  $form->getFieldValue('value')]);
+
+        $this->valResults = '';
+        if (!count($results)) return;
+
+        $this->valResults = sprintf('<p class="float-end">Results: %d</p>', count($results));
+        $this->valResults .= '<table class="table table-striped table-bordered">';
+        $this->valResults .= '<tr><th>Table</th><th>Column</th><th>ID</th></tr>';
+        foreach ($results as $result) {
+            $this->valResults .= sprintf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>', $result->table, $result->column, $result->pri);
+        }
+        $this->valResults .= '</table>';
+    }
+
+
+    public function onDbSearch(Form $form, Submit $action): void
     {
         if (empty($form->getFieldValue('column'))) {
             $form->addFieldError('column', "Please provide a valid column name");
@@ -55,7 +85,7 @@ class DbSearch extends ControllerAdmin
             return;
         }
 
-        $this->results = $this->DbSearchColumn(
+        $this->results = $this->dbSearchColumn(
             $form->getFieldValue('column'),
             $form->getFieldValue('value'),
             $form->getFieldValue('table'),
@@ -64,7 +94,7 @@ class DbSearch extends ControllerAdmin
 
     }
 
-    function DbSearchColumn(string $column, string $value = '', string $table = '', bool $views = false): string
+    private function dbSearchColumn(string $column, string $value = '', string $table = '', bool $views = false): string
     {
         $html = '';
 
@@ -104,11 +134,17 @@ class DbSearch extends ControllerAdmin
         $template = $this->getTemplate();
         $template->setAttr('back', 'href', $this->getBackUrl());
 
-        $template->appendTemplate('content', $this->form->show());
+        $template->appendTemplate('dbSearch', $this->dbSearch->show());
+        $template->appendTemplate('dbValue', $this->dbValue->show());
 
         if (!empty($this->results)) {
             $template->setVisible('has-results');
             $template->setHtml('results', $this->results);
+        }
+
+        if (!empty($this->valResults)) {
+            $template->setVisible('val-has-results');
+            $template->setHtml('val-results', $this->valResults);
         }
 
         $css = <<<CSS
@@ -128,28 +164,48 @@ CSS;
     public function __makeTemplate(): ?Template
     {
         $html = <<<HTML
-<div class="file-convert">
-  <div class="page-actions card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-    <div class="card-body" var="actions">
-      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
+<div class="db-search">
+
+  <div class="row">
+    <div class="page-actions card mb-3 col-12">
+      <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
+      <div class="card-body" var="actions">
+        <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
+      </div>
     </div>
   </div>
-  <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fas fa-database"></i> Database Column Search</div>
 
-    <div class="card-body php-info">
-
-        <h3>DB Table Search</h3>
-        <p>Use this form to search all tables for a column name or column name containing a specific value.</p>
-        <div var="content"></div>
-
-        <div class="" choice="has-results">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header"><i class="fas fa-database"></i> Database Column Search</div>
+        <div class="card-body php-info">
+          <h3>DB Table Search</h3>
+          <p>Use this form to search all tables for a column name or column name containing a specific value.</p>
+          <div var="dbSearch"></div>
+          <div choice="has-results">
             <hr>
             <div var="results"></div>
             <p>&nbsp;</p>
+          </div>
         </div>
+      </div>
+    </div>
 
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header"><i class="fas fa-database"></i> Database Value Search</div>
+        <div class="card-body php-info">
+          <h3>DB Value Search</h3>
+          <p>Use this form to search all tables and columns for a specific value.</p>
+          <div var="dbValue"></div>
+          <div choice="val-has-results">
+            <hr>
+            <div var="val-results"></div>
+            <p>&nbsp;</p>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>

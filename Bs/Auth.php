@@ -5,9 +5,7 @@ use Bs\Db\Masquerade;
 use Bs\Db\Remember;
 use Bs\Db\UserInterface;
 use Bs\Traits\ForeignModelTrait;
-use Bs\Traits\TimestampTrait;
 use Tk\Config;
-use Tk\ObjectUtil;
 use Tk\Uri;
 use Tk\Db;
 use Tk\Db\Filter;
@@ -25,7 +23,6 @@ use Tk\Db\Model;
 class Auth extends Model
 {
     use ForeignModelTrait;
-    use TimestampTrait;
 
     const int PERM_NONE             = 0;
     const int PERM_ADMIN            = 0x1;

@@ -19,6 +19,29 @@ BEGIN
 END //
 DELIMITER ;
 
+-- Search all tables/columns for a value (not for production use)
+DROP PROCEDURE IF EXISTS findAll;
+DELIMITER //
+CREATE PROCEDURE findAll( IN `search` TEXT )
+BEGIN
+  SET SESSION group_concat_max_len := @@max_allowed_packet;
+
+  SELECT GROUP_CONCAT(
+    "SELECT '", c1.TABLE_NAME, "' AS `table`, '", c1.COLUMN_NAME, "' AS `column`, ",
+    "CONCAT_WS(',', ",  (SELECT GROUP_CONCAT('`', c2.column_name, '`') FROM `information_schema`.`columns` c2 WHERE c1.TABLE_SCHEMA=c2.TABLE_SCHEMA AND c1.TABLE_NAME=c2.TABLE_NAME AND c2.COLUMN_KEY='PRI' LIMIT 1) ,") AS pri,",
+    "`", c1.COLUMN_NAME, "` AS value FROM `", c1.TABLE_NAME, "`",
+    " WHERE `",c1.COLUMN_NAME,"` LIKE '%", search, "%'" SEPARATOR "\nUNION\n") AS col
+  INTO @sql
+  FROM information_schema.columns c1
+  WHERE c1.TABLE_SCHEMA = DATABASE();
+
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
+
+
 -- compares two date ranges and checks for overlap (inclusive)
 -- start dates must be before end date
 # DROP FUNCTION IF EXISTS dates_overlap;
@@ -69,4 +92,6 @@ DELIMITER ;
 #   end while;
 #   set x = CONCAT(x, y);
 #   return x;
-# END;
+#
+
+
