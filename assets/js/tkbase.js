@@ -52,6 +52,18 @@
  * ```
  */
 
+let tkConfig = {
+  baseUrl: '',
+  isProd: false,
+  isAuth: false,
+  // todo: refactor, all dates should be returned in yyy-mm-dd format
+  dateFormat: {
+    jqDatepicker: 'dd/mm/yy',
+    bsDatepicker: 'dd/mm/yyyy',
+    sugarjs: '%d/%m/%Y',
+  },
+};
+
 // Var dump function for debugging
 function vd() {
   if (!tkConfig.debug) return;
