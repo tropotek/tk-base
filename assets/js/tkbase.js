@@ -60,7 +60,6 @@ let tkConfig = {
   dateFormat: {
     jqDatepicker: 'dd/mm/yy',
     bsDatepicker: 'dd/mm/yyyy',
-    sugarjs: '%d/%m/%Y',
   },
 };
 
@@ -174,18 +173,6 @@ function tkInit(elm) {
  */
 let tkbase = function () {
   "use strict";
-
-
-  /**
-   * Enable the sugar utils, date formatting, object exetion functions, etc
-   * @link https://sugarjs.com/
-   */
-  let initSugar = function () {
-    if (typeof Sugar === 'undefined') {
-      return;
-    }
-    Sugar.extend();
-  };
 
 
   /**
