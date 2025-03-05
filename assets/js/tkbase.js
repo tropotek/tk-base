@@ -5,51 +5,11 @@
  * you app.js or similar:
  * ```javascript
  *   $(function () {
- *     tkbase.initSugar();
  *     tkbase.initDialogConfirm();
  *     // ...
  *   });
  * ```
  *
- * NOTE: Requires the tk lib config defined in the site, something like this:
- * ```javascript
- * let config = {
- *   baseUrl        : '/Projects/tk8base',
- *   dateFormat: {
- *     jqDatepicker : 'dd/mm/yy',
- *     bsDatepicker : 'dd/mm/yyyy',
- *     sugarjs      : '%d/%m/%Y',
- *   }
- * }
- * ```
- *
- * To enable these functions include the following JS and CSS:
- *
- * CSS:
- * ```html
- *   <link rel="stylesheet" href="/vendor/ttek/tk-base/assets/css/fontawesome/css/fontawesome.min.css" />
- *   <link rel="stylesheet" href="/vendor/ttek/tk-base/assets/js/include/jquery-ui/jquery-ui.min.css" />
- *   <link rel="stylesheet" href="/vendor/studio-42/elfinder/css/elfinder.full.css" />
- * ```
- *
- * Javascript:
- * ```html
- *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery-ui/external/jquery/jquery.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery-ui/jquery-ui.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/htmx.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/sugar.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery.bsConfirm.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/sugar.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery.tkInputLock.js"></script>
- *
- *   <script src="/vendor/tinymce/tinymce/tinymce.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/elfinder/tinymceElfinder.js"></script>
- *   <script src="/vendor/studio-42/elfinder/js/elfinder.min.js"></script>
- *   <script src="/vendor/ttek/tk-base/assets/js/include/jquery.tinymce.min.js"></script>
- *
- *   <script src="/vendor/ttek/tk-base/assets/js/tkbase.js"></script>
- *   <script src="/html/assets/app.js"></script>
- * ```
  */
 
 let tkConfig = {
