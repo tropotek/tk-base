@@ -18,8 +18,14 @@ class Form extends \Tk\Form implements DisplayInterface
 {
     use SystemTrait;
 
-    protected ?Model    $model    = null;
+    const string MODE_CREATE = 'create';
+    const string MODE_EDIT   = 'edit';
+    const string MODE_VIEW   = 'view';  // todo: implement a view form renderer ??
+
+    protected string   $mode   = self::MODE_CREATE;
+    protected ?Model   $model  = null;
     protected Renderer $renderer;
+
 
     public function __construct(?Model $model = null, ?string $formId = null)
     {
@@ -38,6 +44,7 @@ class Form extends \Tk\Form implements DisplayInterface
 
         $this->form = $this;
         $this->renderer = new Renderer($this);
+
         $this->setModel($model);
     }
 
@@ -64,12 +71,41 @@ class Form extends \Tk\Form implements DisplayInterface
     public function setModel(?Model $model): static
     {
         $this->model = $model;
+        if ($this->model?->getId()) {
+            $this->setMode(self::MODE_EDIT);
+        }
         return $this;
     }
 
     public function getBackUrl(): Uri
     {
         return Factory::instance()->getBackUrl();
+    }
+
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+
+    public function setMode(string $mode): static
+    {
+        $this->mode = $mode;
+        return $this;
+    }
+
+    public function isCreate(): bool
+    {
+        return $this->mode === self::MODE_CREATE;
+    }
+
+    public function isEdit(): bool
+    {
+        return $this->mode === self::MODE_EDIT;
+    }
+
+    public function isView(): bool
+    {
+        return $this->mode === self::MODE_VIEW;
     }
 
 }
