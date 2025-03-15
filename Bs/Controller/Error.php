@@ -2,6 +2,7 @@
 namespace Bs\Controller;
 
 use Tk\Config;
+use Tk\Str;
 
 class Error
 {
@@ -21,10 +22,10 @@ class Error
         $logHtml = '';
 
         if ($withTrace) {
-            $toString = trim($e->__toString());
-            $str = str_replace(["&lt;?php&nbsp;<br />", 'color: #FF8000'], ['', 'color: #666'],
-                highlight_string("<?php \n" . $toString, true));
-            $extra = sprintf('<br/>in <em>%s:%s</em>',  $e->getFile(), $e->getLine());
+            $str = trim($e->__toString());
+            $str = highlight_string("<?php \n" . $str, true);
+            $str = str_replace(["&lt;?php", 'color: #FF8000'], ['', 'color: #666'], $str);
+            $extra = sprintf("<br> in <em>%s:%s</em><br>",  $e->getFile(), $e->getLine());
         }
 
         $html = <<<HTML
@@ -32,17 +33,18 @@ class Error
     <head>
       <title>$class</title>
     <style>
-    code, pre {
-      line-height: 1.4em;
-      padding: 0;margin: 0;
-      overflow: auto;
-    }
+        code,pre {
+            line-height: 1.5em;
+            padding: 0;
+            margin: 0;
+            word-wrap: normal;
+        }
     </style>
     </head>
     <body style="padding: 10px;">
     <h1>$class</h1>
     <p><strong>$msg $extra</strong></p>
-    <pre style="">$str</pre>
+    <code>$str</code>
     $logHtml
     </body>
 </html>

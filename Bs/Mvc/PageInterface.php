@@ -10,6 +10,7 @@ abstract class PageInterface
     use SystemTrait;
 
     private string $title        = '';
+    private string $icon         = '';
     private array  $contentList  = [];
     private array  $options      = [];
     private bool   $enabled      = true;
@@ -56,9 +57,12 @@ abstract class PageInterface
         return $this->title;
     }
 
-    public function setTitle(string $title): PageInterface
+    public function setTitle(string $title, ?string $icon = null): static
     {
         $this->title = $title;
+        if (!is_null($icon)) {
+            $this->setIcon($icon);
+        }
         Breadcrumbs::pushCrumb(Uri::create(), $title);
         return $this;
     }
@@ -68,7 +72,7 @@ abstract class PageInterface
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): PageInterface
+    public function setEnabled(bool $enabled): static
     {
         $this->enabled = $enabled;
         return $this;
@@ -82,6 +86,17 @@ abstract class PageInterface
     public function getOption(string $name, mixed $default = null): mixed
     {
         return $this->options[$name] ?? $default;
+    }
+
+    public function getIcon(): string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(string $icon): static
+    {
+        $this->icon = $icon;
+        return $this;
     }
 
 }

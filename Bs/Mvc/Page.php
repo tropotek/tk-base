@@ -14,7 +14,9 @@ class Page extends PageDomInterface
     {
         $template = $this->getTemplate();
 
+        $url = Uri::create();
         $jsConfig = [
+            'hostUrl' => $url->getScheme() . '://' . $url->getHost(),
             'baseUrl' => Config::getBaseUrl(),
             'isProd'  => Config::isProd(),
             'isAuth'  => !is_null(Auth::getAuthUser()),
@@ -33,6 +35,9 @@ class Page extends PageDomInterface
         $template->setAttr('site-name-letter', 'title', Registry::instance()->getSiteName());
         $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
+        if (!is_null($this->getIcon())) {
+            $template->addCss('page-icon', $this->getIcon());
+        }
 
         return parent::show();
     }

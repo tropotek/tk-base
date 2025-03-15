@@ -10,14 +10,15 @@ class Info extends ControllerAdmin
 
     public function doDefault(): void
     {
-        $this->getPage()->setTitle('PHP Info');
+        $this->getPage()->setTitle('PHP Info', 'fab fa-php');
         $this->setUserAccess(Auth::PERM_ADMIN);
     }
 
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        $template->setAttr('back', 'href', $this->getBackUrl());
+        $template->appendText('title', $this->getPage()->getTitle());
+        $template->addCss('icon', $this->getPage()->getIcon());
 
         ob_start();
         phpinfo();
@@ -41,17 +42,9 @@ JS;
     public function __makeTemplate(): ?Template
     {
         $html = <<<HTML
-<div>
-  <div class="page-actions card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-    <div class="card-body" var="actions">
-      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-    </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-cogs"></i> PHP Info</div>
-    <div class="card-body php-info" var="content"></div>
-  </div>
+<div class="card mb-3">
+  <div class="card-header"><i var="icon"></i> <span var="title"></span></div>
+  <div class="card-body php-info" var="content"></div>
 </div>
 HTML;
         return $this->loadTemplate($html);

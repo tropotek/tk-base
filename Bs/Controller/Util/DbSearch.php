@@ -22,7 +22,7 @@ class DbSearch extends ControllerAdmin
 
     public function doDefault(): void
     {
-        $this->getPage()->setTitle('Database Column Search');
+        $this->getPage()->setTitle('Database Utils', 'fas fa-database');
         $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->dbSearch = new Form();
@@ -132,7 +132,8 @@ class DbSearch extends ControllerAdmin
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        $template->setAttr('back', 'href', $this->getBackUrl());
+        $template->appendText('title', $this->getPage()->getTitle());
+        $template->addCss('icon', $this->getPage()->getIcon());
 
         $template->appendTemplate('dbSearch', $this->dbSearch->show());
         $template->appendTemplate('dbValue', $this->dbValue->show());
@@ -167,20 +168,10 @@ CSS;
 <div class="db-search">
 
   <div class="row">
-    <div class="page-actions card mb-3 col-12">
-      <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-      <div class="card-body" var="actions">
-        <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
     <div class="col-md-6">
       <div class="card mb-3">
-        <div class="card-header"><i class="fas fa-database"></i> Database Column Search</div>
+        <div class="card-header"><i var="icon"></i> <span>DB Table Search</span></div>
         <div class="card-body php-info">
-          <h3>DB Table Search</h3>
           <p>Use this form to search all tables for a column name or column name containing a specific value.</p>
           <div var="dbSearch"></div>
           <div choice="has-results">
@@ -194,9 +185,8 @@ CSS;
 
     <div class="col-md-6">
       <div class="card mb-3">
-        <div class="card-header"><i class="fas fa-database"></i> Database Value Search</div>
+        <div class="card-header"><i var="icon"></i> <span>Database Value Search</span></div>
         <div class="card-body php-info">
-          <h3>DB Value Search</h3>
           <p>Use this form to search all tables and columns for a specific value.</p>
           <div var="dbValue"></div>
           <div choice="val-has-results">

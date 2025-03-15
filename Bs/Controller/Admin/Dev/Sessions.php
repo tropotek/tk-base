@@ -18,7 +18,7 @@ class Sessions extends ControllerAdmin
 
     public function doDefault(): void
     {
-        $this->getPage()->setTitle('Current Sessions');
+        $this->getPage()->setTitle('Current Sessions', 'fa fa-server');
         $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->table = new Table('sessions');
@@ -76,7 +76,8 @@ class Sessions extends ControllerAdmin
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        $template->setAttr('back', 'href', $this->getBackUrl());
+        $template->appendText('title', $this->getPage()->getTitle());
+        $template->addCss('icon', $this->getPage()->getIcon());
 
         $this->table->getRenderer()->setFooterEnabled(false);
         $this->table->addCss('table-hover');
@@ -179,16 +180,10 @@ CSS;
     public function __makeTemplate(): ?Template
     {
         $html = <<<HTML
-<div>
-  <div class="page-actions card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-    <div class="card-body" var="actions">
-      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-    </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-fw fa-server"></i> </div>
-    <div class="card-body" var="content"></div>
+<div class="card mb-3">
+    <div class="card-header"><i var="icon"></i> <span var="title"></span></div>
+  <div class="card-body" var="content">
+      <p>Current user sessions.</p>
   </div>
 </div>
 HTML;

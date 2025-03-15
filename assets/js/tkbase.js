@@ -13,6 +13,7 @@
  */
 
 let tkConfig = {
+  hostUrl: '',
   baseUrl: '',
   isProd: false,
   isAuth: false,
@@ -335,11 +336,11 @@ let tkbase = function () {
       image_advtab: true,
       statusbar: false,
       //content_security_policy: "default-src 'self'",
+      skin: 'tinymce-5',
 
       urlconverter_callback: function (url, node, on_save) {
-        let parts = url.split(tkConfig.baseUrl);
-        if (parts.length > 1) {
-          url = tkConfig.baseUrl + parts[1];
+        if (url.startsWith(tkConfig.hostUrl)) {
+          url = url.replace(tkConfig.hostUrl, '')
         }
         return url;
       }
@@ -361,6 +362,8 @@ let tkbase = function () {
           statusbar: false,
           extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
         };
+
+        console.log(cfg);
 
         if (el.is('[readonly]') || el.is('[disabled]')) {
           cfg.readonly = true;

@@ -380,8 +380,8 @@ class Manager extends ControllerAdmin
 
     public function doDefault(): void
     {
-        \$this->getPage()->setTitle('{name} Manager');
         //\$this->setUserAccess(User::PERM_SYSADMIN);
+        \$this->getPage()->setTitle('{name} Manager', 'fa fa-cogs');
 
         // init table
         \$this->table = new Table('{table-id}');
@@ -457,7 +457,7 @@ class Manager extends ControllerAdmin
     {
         \$template = \$this->getTemplate();
         \$template->setText('title', \$this->getPage()->getTitle());
-        \$template->setAttr('back', 'href', \$this->getBackUrl());
+        \$template->addCss('icon', \$this->getPage()->getIcon());
 
         \$template->appendTemplate('content', \$this->table->show());
 
@@ -469,14 +469,12 @@ class Manager extends ControllerAdmin
         \$html = <<<HTML
 <div>
   <div class="page-actions card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-    <div class="card-body" var="actions">
-      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
+    <div class="card-body">
       <a href="/{namespace-url}Edit" title="Create {name}" class="btn btn-outline-secondary" var="create"><i class="fa fa-plus"></i> Create {name}</a>
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> <span var="title"></span></div>
+    <div class="card-header"><i var="icon"></i> <span var="title"></span></div>
     <div class="card-body" var="content"></div>
   </div>
 </div>
@@ -673,8 +671,8 @@ class Edit extends ControllerAdmin
 
     public function doDefault(): void
     {
-        \$this->getPage()->setTitle('Edit {name}');
         //\$this->setUserAccess(User::PERM_SYSADMIN);
+        \$this->getPage()->setTitle('Edit {name}', 'fa fa-edit');
 
         \${primary-prop} = intval(\$_GET['{primary-prop}'] ?? 0);
 
@@ -721,17 +719,13 @@ class Edit extends ControllerAdmin
     {
         \$template = \$this->getTemplate();
 
-        // Setup field group widths with bootstrap classes
-        //\$this->form->getField('name')->addFieldCss('col-6');
-        //\$this->form->getField('email')->addFieldCss('col-6');
-
         \$template->setText('title', \$this->getPage()->getTitle());
-        \$template->setAttr('back', 'href', \$this->getBackUrl());
+        \$template->addCss('icon', \$this->getPage()->getIcon());
 
         if (\$this->{property-name}->{primary-prop}) {
-            \$template->setVisible('edit');
             \$template->setText('modified', \$this->{property-name}->modified->format(Date::FORMAT_LONG_DATETIME));
             \$template->setText('created', \$this->{property-name}->created->format(Date::FORMAT_LONG_DATETIME));
+            \$template->setVisible('edit');
         }
 
         \$template->appendTemplate('content', \$this->form->show());
@@ -744,23 +738,22 @@ class Edit extends ControllerAdmin
         \$html = <<<HTML
 <div>
   <div class="page-actions card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-    <div class="card-body" var="actions">
+    <div class="card-body">
       <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header">
-      <div class="info-dropdown dropdown float-end" title="Details" choice="edit">
+    <div class="card-header"><i var="icon"></i> <span var="title"></span>s</div>
+    <div class="card-body" var="content">
+      <div class="info-dropdown dropdown" title="Details" choice="edit">
         <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
         <div class="dropdown-menu dropdown-menu-end">
           <p class="dropdown-item"><span class="d-inline-block">Modified:</span> <span var="modified">...</span></p>
           <p class="dropdown-item"><span class="d-inline-block">Created:</span> <span var="created">...</span></p>
         </div>
       </div>
-      <i class="fa fa-edit"></i> <span var="title"></span>
+
     </div>
-    <div class="card-body" var="content"></div>
   </div>
 </div>
 HTML;

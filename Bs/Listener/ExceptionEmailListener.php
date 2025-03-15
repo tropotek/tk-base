@@ -13,6 +13,7 @@ use Throwable;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Log;
 use Tk\Mail\Mailer;
+use Tk\Str;
 
 
 class ExceptionEmailListener implements EventSubscriberInterface
@@ -61,7 +62,7 @@ class ExceptionEmailListener implements EventSubscriberInterface
                     $message->setFrom($email);
                     $message->addTo($email);
                     $subject = "{$this->siteTitle} Error: '{$e->getMessage()}'";
-                    $message->setSubject($subject);
+                    $message->setSubject(Str::strcat($subject, 80));
                     $message->setContent($this->getExceptionHtml($e));
                     $message->addHeader('X-Exception', get_class($e));
                     $message->set('sig', '');
@@ -83,10 +84,10 @@ class ExceptionEmailListener implements EventSubscriberInterface
         $logHtml = '';
 
         if ($withTrace) {
-            $toString = trim($e->__toString());
-            $str = str_replace(["&lt;?php&nbsp;<br />", 'color: #FF8000'], ['', 'color: #666'],
-                highlight_string("<?php \n" . $toString, true));
-            $extra = sprintf('<br/>in <em>%s:%s</em>',  $e->getFile(), $e->getLine());
+            $str = trim($e->__toString());
+            $str = highlight_string("<?php \n" . $str, true);
+            $str = str_replace(["&lt;?php", 'color: #FF8000'], ['', 'color: #666'], $str);
+            $extra = sprintf('<br/> in <em>%s:%s</em>',  $e->getFile(), $e->getLine());
         }
 
         return <<<HTML
@@ -100,7 +101,7 @@ class ExceptionEmailListener implements EventSubscriberInterface
     </style>
     <h2>{$this->siteTitle} Error: $class</h2>
     <p><strong>$msg $extra</strong></p>
-    <pre style="">$str</pre>
+    <pre>$str</pre>
     $logHtml
 </div>
 HTML;

@@ -60,6 +60,11 @@ class Table extends \Tk\Table
         // init cells, filters and actions
         $this->init();
 
+        // add reset table session action
+        if (Config::isDev()) {
+            $this->addResetAction();
+        }
+
         // init/execute filter form request
         $this->initForm();
 
@@ -123,11 +128,6 @@ class Table extends \Tk\Table
         $template = $this->getTemplate();
 
         $template->setAttr('table', 'id', $this->getWrapId());
-
-        // add reset table session action
-        if (Config::isDev()) {
-            $this->addResetAction();
-        }
 
         // Render filter form
         if ($this->formRenderer) {
@@ -217,6 +217,7 @@ HTML;
     public function addResetAction(): ?Action
     {
         if ($this->hideReset) return null;
+
         return $this->prependAction('__reset')
             ->addOnExecute(function (Action $action) {
                 $val = $action->getTable()->makeRequestKey($action->getName());

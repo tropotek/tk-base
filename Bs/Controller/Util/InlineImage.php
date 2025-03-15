@@ -16,7 +16,7 @@ class InlineImage extends ControllerAdmin
 
     public function doDefault(): void
     {
-        $this->getPage()->setTitle('Image 2 Base64 inline');
+        $this->getPage()->setTitle('Image 2 Base64 inline', 'fa fa-image');
         $this->setUserAccess(Auth::PERM_ADMIN);
 
         $this->form = new Form();
@@ -51,7 +51,8 @@ class InlineImage extends ControllerAdmin
     public function show(): ?Template
     {
         $template = $this->getTemplate();
-        $template->setAttr('back', 'href', $this->getBackUrl());
+        $template->appendText('title', $this->getPage()->getTitle());
+        $template->addCss('icon', $this->getPage()->getIcon());
 
         $template->appendTemplate('content', $this->form->show());
 
@@ -79,15 +80,10 @@ CSS;
     {
         $html = <<<HTML
 <div class="file-convert">
-  <div class="page-actions card mb-3">
-    <div class="card-header"><i class="fa fa-cogs"></i> Actions</div>
-    <div class="card-body" var="actions">
-      <a href="/" title="Back" class="btn btn-outline-secondary" var="back"><i class="fa fa-arrow-left"></i> Back</a>
-    </div>
-  </div>
   <div class="card mb-3">
-    <div class="card-header" var="title"><i class="fa fa-image"></i> Image 2 Base64 inline</div>
+    <div class="card-header"><i var="icon"></i> <span var="title"></span></div>
     <div class="card-body php-info">
+        <p>Upload an image to be converted into a Base64 inline image string.</p>
         <div var="content"></div>
         <div class="text-center" choice="has-img">
             <hr>
