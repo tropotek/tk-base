@@ -690,7 +690,7 @@ class Edit extends ControllerAdmin
         \$this->form->appendField(new SubmitExit('save', [\$this, 'onSubmit']));
         \$this->form->appendField(new Link('cancel', Uri::create('/{namespace-url}Manager')));
 
-        \$load = \$this->form->unmapModel(\$this->{property-name});
+        \$load = \$this->{property-name}->unmapForm();
         \$this->form->setFieldValues(\$load);
 
         \$this->form->execute(\$_POST);
@@ -698,7 +698,8 @@ class Edit extends ControllerAdmin
 
     public function onSubmit(Form \$form, Submit \$action): void
     {
-        \$form->mapModel(\$this->{property-name});
+        \$values = \$form->getFieldValues();
+        \$this->{property-name}->mapForm(\$values);
 
         \$form->addFieldErrors(\$this->{property-name}->validate());
         if (\$form->hasErrors()) {
@@ -825,7 +826,7 @@ class {classname} extends Form
         \$this->init();
 
         // Load form with object values
-        \$load = \$this->unmapModel(\$this->get{classname}());
+        \$load = \$this->get{classname}()->unmapForm();
         \$this->setFieldValues(\$load);
 
         parent::execute(\$values);
@@ -834,7 +835,8 @@ class {classname} extends Form
 
     public function onSubmit(Form \$form, Submit \$action): void
     {
-        \$form->mapModel(\$this->get{classname}());
+        \$values = \$form->getFieldValues();
+        \$this->get{classname}()->mapForm(\$values);
 
         \$form->addFieldErrors(\$this->get{classname}()->validate());
         if (\$form->hasErrors()) {
