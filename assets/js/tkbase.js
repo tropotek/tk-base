@@ -363,8 +363,6 @@ let tkbase = function () {
           extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
         };
 
-        console.log(cfg);
-
         if (el.is('[readonly]') || el.is('[disabled]')) {
           cfg.readonly = true;
           cfg.body_class = 'text-bg-light';
