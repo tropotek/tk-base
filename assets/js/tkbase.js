@@ -162,10 +162,31 @@ let tkbase = function () {
         return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
       });
     } else {
-      $('[data-confirm]').bsConfirm({});
+      $('[data-confirm]').bsConfirm();
     }
   };
 
+  /**
+   * Setup bsconfirm dialog for htmx:confirm
+   */
+  let initHtmxConfirmDialog = function () {
+    if (typeof $.fn.bsConfirm === 'undefined') {
+      console.warn('Plugin not loaded: bsConfirm');
+      return;
+    }
+
+    $(document).on('htmx:confirm', function (e) {
+      if (e.defaultPrevented) return;
+      if (!e.detail.elt.hasAttribute('hx-confirm')) return;
+      e.preventDefault();
+      $.fn.bsConfirm({
+        onConfirm: function () {
+          e.detail.issueRequest(true);
+        }
+      }, e.detail.elt);
+    });
+
+  };
 
   /**
    * Setup the jquery datepicker UI
@@ -263,28 +284,6 @@ let tkbase = function () {
     }
     tkRegisterInit(function () {
       $('input.tk-input-lock', this).tkInputLock();
-    });
-
-  };
-
-  /**
-   * Setup bsconfirm dialog for HTMX buttons
-   */
-  let initHtmxConfirmDialog = function () {
-    if (typeof $.fn.bsConfirm === 'undefined') {
-      console.warn('Plugin not loaded: bsConfirm');
-      return;
-    }
-
-    $(document).on('htmx:confirm', function (e) {
-      if (e.defaultPrevented) return;
-      if (!e.detail.elt.hasAttribute('hx-confirm')) return;
-      e.preventDefault();
-      $.fn.bsConfirm({
-        onConfirm: function () {
-          e.detail.issueRequest(true);
-        }
-      }, e.detail.elt);
     });
 
   };
