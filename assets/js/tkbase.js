@@ -338,6 +338,7 @@ let tkbase = function () {
       skin: 'tinymce-5',
 
       urlconverter_callback: function (url, node, on_save) {
+        if (!(url.startsWith('http://') && url.startsWith('https://'))) return url;
         if (url.startsWith(tkConfig.hostUrl)) {
           url = url.replace(tkConfig.hostUrl, '')
         }
