@@ -247,19 +247,20 @@ HTML;
 
     /**
      * Change the main table template to
+     * Call this in place of $table->show(); for htmx components
      */
-    public static function toHtmxTable(Table $table, ?Uri $baseUrl = null): ?Template
+    public function htmxShow(): ?Template
     {
-        $baseUrl = $baseUrl ?? Uri::create();
+        $baseUrl = Uri::create();
 
         // setup table for hx
-        $ttpl = $table->getRenderer()->getTemplate();
+        $ttpl = $this->getRenderer()->getTemplate();
 
         // setup hx on all links and elements in the template
-        $wrapId = $table->getWrapId();
+        $wrapId = $this->getWrapId();
 
-        if ($table->getFormRenderer()) {
-            $ftpl = $table->getFormRenderer()->getTemplate();
+        if ($this->getFormRenderer()) {
+            $ftpl = $this->getFormRenderer()->getTemplate();
             $ftpl->setAttr('form', 'hx-post', $baseUrl);
             $ftpl->removeAttr('form', 'action');
             $ftpl->setAttr('form', 'hx-swap', 'outerHTML');
@@ -275,17 +276,7 @@ HTML;
             $ttpl->setAttr('form', 'hx-select', "#$wrapId");
             $ttpl->setAttr('limit-select', 'hx-post', $baseUrl);
 
-            $html = <<<HTML
-<script>
-  jQuery(function($) {
-    // detatch change table js, to stop page reload
-    $('.tk-limit select', '#{$wrapId}').off('change.tkTable');
-  });
-</script>
-HTML;
-            $ttpl->appendHtml('table', $html);
-
-            $ttpl = $table->show();
+            $ttpl = $this->show();
 
             // Hack to get all pager buttons to submit via hx
             $xpath = new \DOMXPath($ttpl->getDocument());
@@ -300,9 +291,18 @@ HTML;
             }
 
             // convert all pager links
-            $spans = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' page-link ')]");
-            for ($i = $spans->length - 1; $i > -1; $i--) {
-                $node = $spans->item($i)->firstChild->parentElement;
+            $links = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' page-link ')]");
+            for ($i = $links->length - 1; $i > -1; $i--) {
+                $node = $links->item($i)->firstChild->parentElement;
+                if (!($node instanceof \DOMElement)) continue;
+                $url = $node->getAttribute('href');
+                $node->setAttribute('hx-get', $url);
+            }
+
+            // convert all limit links
+            $links = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' limit-link ')]");
+            for ($i = $links->length - 1; $i > -1; $i--) {
+                $node = $links->item($i)->firstChild->parentElement;
                 if (!($node instanceof \DOMElement)) continue;
                 $url = $node->getAttribute('href');
                 $node->setAttribute('hx-get', $url);
