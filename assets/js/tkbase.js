@@ -166,6 +166,7 @@ let tkbase = function () {
     }
   };
 
+
   /**
    * Setup bsconfirm dialog for htmx:confirm
    */
@@ -187,6 +188,7 @@ let tkbase = function () {
     });
 
   };
+
 
   /**
    * Setup the jquery datepicker UI
@@ -273,6 +275,7 @@ let tkbase = function () {
 
   };
 
+
   /**
    * Add an edit lock button to text fields
    * So the user has to click the unlock button b4 editing
@@ -294,17 +297,18 @@ let tkbase = function () {
    *   See this article for how to create plugins in custom paths and see if it works
    *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
    */
-  let initTinymce = function () {
+  let initTinymce = function (cfg = {}) {
     if (typeof (tinymce) === 'undefined') {
       console.warn('Plugin not loaded: jquery.tinymce');
       return;
     }
 
+    // get the elfinder for mce
     function getMceElf(data) {
       // NOTE: The custom path sent to the GET request should be relative to the `/data` path
       let path = data.elfinderPath ?? '/media';
       return new tinymceElfinder({
-        // connector URL (Use elFinder Demo site's connector for this demo)
+        // connector URL
         url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
         // upload target folder hash for this tinyMCE
         uploadTargetHash: 'l1_lw',
@@ -313,8 +317,8 @@ let tkbase = function () {
       });
     }
 
-    // Default base tinymce options
-    let mceDefaults = {
+    // full mce default config
+    let mceFull = {
       license_key: 'gpl',
       height: 500,
       plugins: [
@@ -338,48 +342,64 @@ let tkbase = function () {
       skin: 'tinymce-5',
 
       urlconverter_callback: function (url, node, on_save) {
-        if (!(url.startsWith('http://') && url.startsWith('https://'))) return url;
+        if (!(url.startsWith('http://') || url.startsWith('https://'))) return url;
         if (url.startsWith(tkConfig.hostUrl)) {
           url = url.replace(tkConfig.hostUrl, '')
         }
         return url;
-      }
+      },
+      // file_picker_callback: elf.browser,
+      // images_upload_handler: elf.uploadHandler,
+      file_picker_callback: function (callback, value, meta) {
+        let data = $(tinymce.activeEditor.targetElm).data();
+        return getMceElf(data).browser(callback, value, meta);
+      },
+      images_upload_handler: function (blobInfo, progress) {
+        let data = $(tinymce.activeEditor.targetElm).data();
+        return getMceElf(data).uploadHandler(blobInfo, progress);
+      },
     };
+    $.extend(mceFull, cfg);
 
+    // min mce default config
+    let mceMin = {
+      license_key: 'gpl',
+      plugins: ['link', 'image', 'code', 'fullscreen'],
+      contextmenu: false,
+      statusbar: false,
+      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+    };
+    $.extend(mceMin, cfg);
+
+    // Register the init function
     tkRegisterInit(function () {
       $('textarea.mce, textarea.mce-min', this).each(function () {
         let el = $(this);
+        let cfg = mceFull;
+        if (el.is('.mce-min')) {
+          cfg = mceMin;
+        }
+        if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
+          delete cfg.file_picker_callback;
+          delete cfg.images_upload_handler;
+        }
 
         // remove any existing tinymce instance
         if (typeof el.tinymce == 'function' && el.tinymce() !== null) {
           tinymce.remove('#' + el.prop('id'));
         }
 
-        let cfg = {
-          license_key: 'gpl',
-          plugins: ['link', 'image', 'code', 'fullscreen'],
-          contextmenu: false,
-          statusbar: false,
-          extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
-        };
-
+        // set readonly
         if (el.is('[readonly]') || el.is('[disabled]')) {
           cfg.readonly = true;
           cfg.body_class = 'text-bg-light';
         }
 
+        // init mce
         if (el.is('.mce-min')) {
-          // Tiny MCE with only the default editing no upload
-          //   functionality with elfinder
-          el.tinymce(cfg);
+          el.tinymce(cfg);  // Minimum timymce
         } else {
-          // Full tinymce with elfinder file manager
-          if (!el.is('.mce-no-fm')) {   // disable the elFinder file manager
-            let elf = getMceElf(el.data());
-            cfg.file_picker_callback = elf.browser;
-            cfg.images_upload_handler = elf.uploadHandler;
-          }
-          el.tinymce($.extend(cfg, mceDefaults));
+          el.tinymce(cfg); // Full tinymce
         }
       });
     });
