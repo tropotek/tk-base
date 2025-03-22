@@ -127,13 +127,126 @@ function tkInit(elm) {
   }
 }
 
-
 /**
  * tkbase is the javascript object to init the tkBase script
  * In your app.js call the init functions that you will be using
  */
 let tkbase = function () {
   "use strict";
+
+  /**
+   * Tiny MCE setup
+   *   See this article for how to create plugins in custom paths and see if it works
+   *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
+   */
+  let initTinymce = function (cfg = {}) {
+    if (typeof (tinymce) === 'undefined') {
+      console.warn('Plugin not loaded: jquery.tinymce');
+      return;
+    }
+
+    // get the elfinder for mce
+    function getMceElf(data) {
+      // NOTE: The custom path sent to the GET request should be relative to the `/data` path
+      let path = data.elfinderPath ?? '/media';
+      return new tinymceElfinder({
+        // connector URL
+        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
+        // upload target folder hash for this tinyMCE
+        uploadTargetHash: 'l1_lw',
+        // elFinder dialog node id
+        nodeId: 'elfinder'
+      });
+    }
+
+    // full mce default config
+    let mceFull = {
+      license_key: 'gpl',
+      height: 500,
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+      ],
+      toolbar1:
+        'bold italic strikethrough | blocks | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen',
+      content_css: [
+        '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
+      ],
+      content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
+      //contextmenu: 'link image template inserttable | cell row column deletetable',
+      contextmenu: false,
+      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+      image_advtab: true,
+      statusbar: false,
+      //content_security_policy: "default-src 'self'",
+      skin: 'tinymce-5',
+
+      urlconverter_callback: function (url, node, on_save) {
+        if (!(url.startsWith('http://') || url.startsWith('https://'))) return url;
+        if (url.startsWith(tkConfig.hostUrl)) {
+          url = url.replace(tkConfig.hostUrl, '')
+        }
+        return url;
+      },
+      // file_picker_callback: elf.browser,
+      // images_upload_handler: elf.uploadHandler,
+      file_picker_callback: function (callback, value, meta) {
+        let data = $(tinymce.activeEditor.targetElm).data();
+        return getMceElf(data).browser(callback, value, meta);
+      },
+      images_upload_handler: function (blobInfo, progress) {
+        let data = $(tinymce.activeEditor.targetElm).data();
+        return getMceElf(data).uploadHandler(blobInfo, progress);
+      },
+    };
+    $.extend(mceFull, cfg);
+
+    // min mce default config
+    let mceMin = {
+      license_key: 'gpl',
+      plugins: ['link', 'image', 'code', 'fullscreen'],
+      contextmenu: false,
+      statusbar: false,
+      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+    };
+    $.extend(mceMin, cfg);
+
+    // Register the init function
+    tkRegisterInit(function () {
+      $('textarea.mce, textarea.mce-min', this).each(function () {
+        let el = $(this);
+        let cfg = mceFull;
+        if (el.is('.mce-min')) {
+          cfg = mceMin;
+        }
+        if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
+          delete cfg.file_picker_callback;
+          delete cfg.images_upload_handler;
+        }
+
+        // remove any existing tinymce instance
+        if (typeof el.tinymce == 'function' && el.tinymce() !== null) {
+          tinymce.remove('#' + el.prop('id'));
+        }
+
+        // set readonly
+        if (el.is('[readonly]') || el.is('[disabled]')) {
+          cfg.readonly = true;
+          cfg.body_class = 'text-bg-light';
+        }
+
+        // init mce
+        if (el.is('.mce-min')) {
+          el.tinymce(cfg);  // Minimum timymce
+        } else {
+          el.tinymce(cfg); // Full tinymce
+        }
+      });
+    });
+
+  };  // end initTinymce()
 
 
   /**
@@ -285,10 +398,10 @@ let tkbase = function () {
       console.warn('Plugin not loaded: tkInputLock');
       return;
     }
+
     tkRegisterInit(function () {
       $('input.tk-input-lock', this).tkInputLock();
     });
-
   };
 
 
@@ -321,132 +434,49 @@ let tkbase = function () {
         }
       });
     });
-  }; // end initAutocomplete()
+  };
 
 
   /**
-   * Tiny MCE setup
-   *   See this article for how to create plugins in custom paths and see if it works
-   *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
+   * Add beforeunload event message for forms that have changed
+   * To enable on a form add the class `tk-protect`
    */
-  let initTinymce = function (cfg = {}) {
-    if (typeof (tinymce) === 'undefined') {
-      console.warn('Plugin not loaded: jquery.tinymce');
-      return;
-    }
-
-    // get the elfinder for mce
-    function getMceElf(data) {
-      // NOTE: The custom path sent to the GET request should be relative to the `/data` path
-      let path = data.elfinderPath ?? '/media';
-      return new tinymceElfinder({
-        // connector URL
-        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
-        // upload target folder hash for this tinyMCE
-        uploadTargetHash: 'l1_lw',
-        // elFinder dialog node id
-        nodeId: 'elfinder'
-      });
-    }
-
-    // full mce default config
-    let mceFull = {
-      license_key: 'gpl',
-      height: 500,
-      plugins: [
-        'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
-        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'help', 'wordcount'
-      ],
-      toolbar1:
-        'bold italic strikethrough | blocks | alignleft aligncenter ' +
-        'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen',
-      content_css: [
-        '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
-      ],
-      content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
-      //contextmenu: 'link image template inserttable | cell row column deletetable',
-      contextmenu: false,
-      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
-      image_advtab: true,
-      statusbar: false,
-      //content_security_policy: "default-src 'self'",
-      skin: 'tinymce-5',
-
-      urlconverter_callback: function (url, node, on_save) {
-        if (!(url.startsWith('http://') || url.startsWith('https://'))) return url;
-        if (url.startsWith(tkConfig.hostUrl)) {
-          url = url.replace(tkConfig.hostUrl, '')
-        }
-        return url;
-      },
-      // file_picker_callback: elf.browser,
-      // images_upload_handler: elf.uploadHandler,
-      file_picker_callback: function (callback, value, meta) {
-        let data = $(tinymce.activeEditor.targetElm).data();
-        return getMceElf(data).browser(callback, value, meta);
-      },
-      images_upload_handler: function (blobInfo, progress) {
-        let data = $(tinymce.activeEditor.targetElm).data();
-        return getMceElf(data).uploadHandler(blobInfo, progress);
-      },
-    };
-    $.extend(mceFull, cfg);
-
-    // min mce default config
-    let mceMin = {
-      license_key: 'gpl',
-      plugins: ['link', 'image', 'code', 'fullscreen'],
-      contextmenu: false,
-      statusbar: false,
-      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
-    };
-    $.extend(mceMin, cfg);
-
-    // Register the init function
+  let initTkProtectInput = function () {
     tkRegisterInit(function () {
-      $('textarea.mce, textarea.mce-min', this).each(function () {
-        let el = $(this);
-        let cfg = mceFull;
-        if (el.is('.mce-min')) {
-          cfg = mceMin;
-        }
-        if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
-          delete cfg.file_picker_callback;
-          delete cfg.images_upload_handler;
-        }
-
-        // remove any existing tinymce instance
-        if (typeof el.tinymce == 'function' && el.tinymce() !== null) {
-          tinymce.remove('#' + el.prop('id'));
-        }
-
-        // set readonly
-        if (el.is('[readonly]') || el.is('[disabled]')) {
-          cfg.readonly = true;
-          cfg.body_class = 'text-bg-light';
-        }
-
-        // init mce
-        if (el.is('.mce-min')) {
-          el.tinymce(cfg);  // Minimum timymce
-        } else {
-          el.tinymce(cfg); // Full tinymce
-        }
-      });
+      let el = $(this);
+      // use timeout to avoid plugins from triggering
+      // the `change` event before any changes are actually made
+      setTimeout(function() {
+        $('form.tk-protect', el).each(function () {
+          $('input,select,textarea', this).on('change', function() {
+            $(document).data('changed', true);
+          });
+          $('.tk-actions button, .tk-actions a', this).on('click', function () {
+            $(document).data('changed', false);
+          });
+        });
+      }, 2000);
     });
 
-  };  // end initTinymce()
+    window.addEventListener('beforeunload', function (e) {
+      if ($(document).data('changed')) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave this page?';
+      }
+    });
+  };
+
 
   return {
+    initTinymce: initTinymce,
+    initTkFormTabs: initTkFormTabs,
     initDialogConfirm: initDialogConfirm,
+    initHtmxConfirmDialog: initHtmxConfirmDialog,
     initDatepicker: initDatepicker,
     initPasswordToggle: initPasswordToggle,
     initDataToggle: initDataToggle,
     initTkInputLock: initTkInputLock,
-    initTinymce: initTinymce,
-    initTkFormTabs: initTkFormTabs,
-    initHtmxConfirmDialog: initHtmxConfirmDialog,
     initAutocomplete: initAutocomplete,
+    initTkProtectInput: initTkProtectInput,
   }
 }();
