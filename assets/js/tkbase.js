@@ -290,6 +290,38 @@ let tkbase = function () {
 
 
   /**
+   * jQuery UI autocomplete field
+   *
+   * Note for modal forms you need to add .ui-front to the parent field div:
+   *     $field->addFieldCss('ui-front');
+   */
+  let initAutocomplete = function () {
+    if (typeof $.fn.autocomplete === 'undefined') return;
+
+    tkRegisterInit(function () {
+      $('.tk-autocomplete[type=text]', this).autocomplete({
+        minLength: 2,
+        source: function (request, response) {
+          let el = $(this.element);
+          let cache = el.data('cache') ?? {};
+          let term = request.term;
+          if (term in cache) {
+            response(cache[term]);
+            return;
+          }
+          let url = el.data('src');
+          $.getJSON(url, request, function (data, status, xhr) {
+            cache[term] = data;
+            el.data('cache', cache);
+            response(data);
+          });
+        }
+      });
+    });
+  }; // end initAutocomplete()
+
+
+  /**
    * Tiny MCE setup
    *   See this article for how to create plugins in custom paths and see if it works
    *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
@@ -395,5 +427,6 @@ let tkbase = function () {
     initTinymce: initTinymce,
     initTkFormTabs: initTkFormTabs,
     initHtmxConfirmDialog: initHtmxConfirmDialog,
+    initAutocomplete: initAutocomplete,
   }
 }();
