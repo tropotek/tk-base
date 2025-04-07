@@ -271,6 +271,7 @@ HTML;
         if ($ttpl instanceof Template) {
             $ttpl->setAttr('form', 'hx-post', $baseUrl);
             $ttpl->removeAttr('form', 'action');
+            $ttpl->removeAttr('form', 'method');
             $ttpl->setAttr('form', 'hx-swap', 'outerHTML');
             $ttpl->setAttr('form', 'hx-target', "#$wrapId");
             $ttpl->setAttr('form', 'hx-select', "#$wrapId");
