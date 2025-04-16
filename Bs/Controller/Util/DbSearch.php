@@ -59,7 +59,7 @@ class DbSearch extends ControllerAdmin
             return;
         }
 
-        $results = Db::query('CALL findAll(:value)', ['value' =>  $form->getFieldValue('value')]);
+        $results = Db::query('CALL dbSearchAll(:value)', ['value' =>  $form->getFieldValue('value')]);
 
         $this->valResults = '';
         if (!count($results)) return;

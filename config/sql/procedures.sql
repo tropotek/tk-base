@@ -19,10 +19,11 @@ BEGIN
 END //
 DELIMITER ;
 
--- Search all tables/columns for a value (not for production use)
+-- DB Search all tables/columns for a value (not for production use)
 DROP PROCEDURE IF EXISTS findAll;
+DROP PROCEDURE IF EXISTS dbSearchAll;
 DELIMITER //
-CREATE PROCEDURE findAll( IN `search` TEXT )
+CREATE PROCEDURE dbSearchAll( IN `search` TEXT )
 BEGIN
   SET SESSION group_concat_max_len := @@max_allowed_packet;
 
