@@ -143,12 +143,13 @@ class Factory extends Collection
         return $this->get('requestStack');
     }
 
-    public function getCompiledRoutes(): array
+    public function getCompiledRoutes(bool $refresh = false): array
     {
         // Setup Routes and cache results.
         // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
         $systemCache = new Cache(new Filesystem(Config::makePath($this->getConfig()->get('path.cache'))));
-        if (!($compiledRoutes = $systemCache->fetch('compiledRoutes')) || System::isRefreshCacheRequest()) {
+        $compiledRoutes = $systemCache->fetch('compiledRoutes');
+        if ($refresh || !empty($compiledRoutes) || System::isRefreshCacheRequest()) {
             ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
             $compiledRoutes = (new CompiledUrlMatcherDumper($this->getRouteCollection()))->getCompiledRoutes();
             $systemCache->store('compiledRoutes', $compiledRoutes, 60*60*24*5);
