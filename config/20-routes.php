@@ -12,6 +12,8 @@ return function (CollectionConfigurator $routes) {
         ->controller([\Bs\Controller\Admin\Dev\TailLog::class, 'doDefault']);
     $routes->add('util-inline-image', '/util/inlineImage')
         ->controller([\Bs\Controller\Util\InlineImage::class, 'doDefault']);
+    $routes->add('util-tk-ping', '/tkping')
+        ->controller([\Bs\Controller\Util\Ping::class, 'doDefault']);
     $routes->add('util-db-search', '/util/dbSearch')
         ->controller([\Bs\Controller\Util\DbSearch::class, 'doDefault']);
 
