@@ -36,6 +36,8 @@ class Password extends Console
                 $this->writeError("Invalid Password: \n  - " . implode("\n  - ", $errors));
             }
             $q = new Question('Enter the new password: ', '');
+            $q->setHidden(true);
+            $q->setTrimmable(true);
 
             /** @phpstan-ignore-next-line */
             $pass = $this->getHelper('question')->ask($input, $output, $q);
@@ -46,6 +48,9 @@ class Password extends Console
                 $this->writeError("Passwords do not match.\n");
             }
             $q = new Question('Confirm new password: ', '');
+            $q->setHidden(true);
+            $q->setTrimmable(true);
+
             /** @phpstan-ignore-next-line */
             $passConf = $this->getHelper('question')->ask($input, $output, $q);
         } while($pass != $passConf);

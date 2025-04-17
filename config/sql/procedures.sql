@@ -20,7 +20,7 @@ END //
 DELIMITER ;
 
 -- DB Search all tables/columns for a value (not for production use)
-DROP PROCEDURE IF EXISTS findAll;
+DROP PROCEDURE IF EXISTS findAll; -- TODO remove this after all site have migrated procedure
 DROP PROCEDURE IF EXISTS dbSearchAll;
 DELIMITER //
 CREATE PROCEDURE dbSearchAll( IN `search` TEXT )

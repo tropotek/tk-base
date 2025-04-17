@@ -5,7 +5,9 @@ use Bs\Registry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Tk\Config;
 use Tk\FileUtil;
 use Tk\Log;
@@ -31,6 +33,7 @@ class MirrorData extends Console
             ->setAliases(['md'])
             ->setDescription('Copy remote `/data` folder to specified location')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
+            ->addOption('all', 'a', InputOption::VALUE_NONE, 'download all data files (including /private)')
         ;
     }
 
@@ -55,6 +58,24 @@ class MirrorData extends Console
             return Command::FAILURE;
         }
 
+        if ($input->getOption('all')) {
+            $confirm = $this->askConfirmation("Warning: Replace the '/data' folder, existing data files will be lost, continue? [N]: ", false);
+            if (!$confirm) {
+                $this->output->writeln("Mirror terminated.");
+                return self::SUCCESS;
+            }
+        }
+
+        $q = new Question('Enter the new password: ', '');
+        $q->setHidden(true);
+        $q->setTrimmable(true);
+        /** @phpstan-ignore-next-line */
+        $password = $this->getHelper('question')->ask($input, $output, $q);
+        if (empty($password)) {
+            $this->writeError('Password cannot be empty.');
+            return Command::FAILURE;
+        }
+
         $username     = trim($input->getArgument('username'));
         $dstDataFile = Config::makePath('/dst-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
 
@@ -63,8 +84,11 @@ class MirrorData extends Console
 
         $mirrorUrl = Uri::create($this->getConfig()->get('db.mirror.url') . '/util/mirror')
             ->set('a', 'file')
-            ->set('u', $username);
-
+            ->set('u', $username)
+            ->set('p', $password);
+        if ($input->getOption('all')) {
+            $mirrorUrl->set('all', '1');
+        }
 
         if (!$this->postRequest($mirrorUrl, $dstDataFile)) {
             $this->writeError('Error requesting mirror archive');
@@ -96,11 +120,15 @@ class MirrorData extends Console
         }
 
         $dest = '/data';
+        $bak  = '';
         if (is_dir(Config::makePath($dest))) {
             // move existing dir to bak dest
             $bak = $this->uniqueDir($dest);
             $this->write('Move current data files to backup location: ' . $bak);
-            $cmd = sprintf('mv %s %s ', escapeshellarg(Config::makePath($dest)), escapeshellarg(Config::makePath($bak)));
+            $cmd = sprintf('mv %s %s ',
+                escapeshellarg(Config::makePath($dest)),
+                escapeshellarg(Config::makePath($bak))
+            );
             exec($cmd, $out, $ret);
             if ($ret != self::SUCCESS) {
                 $this->writeError('Error moving old data directory');
@@ -109,15 +137,32 @@ class MirrorData extends Console
         }
 
         $this->write('Move extracted data files to: ' . Config::makePath($dest));
-        $cmd = sprintf('mv %s %s ', escapeshellarg($tmpgz.'/data'), escapeshellarg(Config::makePath($dest)));
+        $cmd = sprintf('mv %s %s ',
+            escapeshellarg($tmpgz.'/data'),
+            escapeshellarg(Config::makePath($dest))
+        );
         exec($cmd, $out, $ret);
         if ($ret != self::SUCCESS) {
             $this->writeError('Error moving old data directory');
             return Command::FAILURE;
         }
 
+        if (!$input->getOption('all') && is_dir(Config::makePath($bak.'/private'))) {
+            $this->write('Restoring private files');
+            $cmd = sprintf('cp %s %s -R',
+                escapeshellarg(Config::makePath($bak . '/private')),
+                escapeshellarg(Config::makePath($dest) . '/private')
+            );
+            exec($cmd, $out, $ret);
+            if ($ret != self::SUCCESS) {
+                $this->writeError('Error restoring /private files');
+                return Command::FAILURE;
+            }
+        }
+
         FileUtil::rmdir($dstDataFile);
         FileUtil::rmdir($tmpgz);
+        FileUtil::rmdir(Config::makePath($bak));
 
         $this->write('Complete!!!');
         return Command::SUCCESS;

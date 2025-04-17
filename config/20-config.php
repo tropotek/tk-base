@@ -49,6 +49,20 @@ return function (Config $config) {
     $config['dev.setup.script'] = $config->get('path.config') . '/dev.php';
 
     /**
+     * // customise request log info
+     * $config['site.log.params'] = 0
+     * // | StartupHandler::SITE_NAME
+     * // | StartupHandler::REQUEST_URI
+     * // | StartupHandler::CLIENT_IP
+     * // | StartupHandler::CLIENT_AGENT
+     * // | StartupHandler::SESSION_ID
+     * // | StartupHandler::PHP_VER
+     * // | StartupHandler::CONTROLLER
+     * // | StartupHandler::METRICS
+     */
+    $config['site.log.params'] = 0;
+
+    /**
      * DB mirror command secret API key and URI
      * Ensure the Secret Key is on both the dev and prod sites
      * The url is only required for the client dev site accessing the prod site

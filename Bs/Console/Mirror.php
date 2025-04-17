@@ -1,12 +1,14 @@
 <?php
 namespace Bs\Console;
 
+use Bs\Auth;
 use Bs\Db\SqlMigrate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Question\Question;
 use Tk\Config;
 use Tk\Log;
 use Tk\Uri;
@@ -23,7 +25,7 @@ class Mirror extends Console
     {
         $this->setName('mirror')
             ->setAliases(['mi'])
-            ->setDescription('Mirror the data and files from the Live site')
+            ->setDescription('Mirror the data and files from the Live site. [Admins Only]')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
             ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
             ->addOption('no-sql', 'S', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
@@ -45,6 +47,16 @@ class Mirror extends Console
             }
             if (!$config->get('db.mirror.url', false)) {
                 $this->writeError('Invalid source mirror URL: ' . $config->get('db.mirror.url'));
+                return Command::FAILURE;
+            }
+
+            $q = new Question('Enter the new password: ', '');
+            $q->setHidden(true);
+            $q->setTrimmable(true);
+            /** @phpstan-ignore-next-line */
+            $password = $this->getHelper('question')->ask($input, $output, $q);
+            if (empty($password)) {
+                $this->writeError('Password cannot be empty.');
                 return Command::FAILURE;
             }
 
@@ -73,7 +85,8 @@ class Mirror extends Console
                 // get a copy of the remote DB to be mirrored
                 $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
                     ->set('a', 'db')
-                    ->set('u', $username);
+                    ->set('u', $username)
+                    ->set('p', $password);
                 Log::debug("Requesting Data: {$mirrorUrl}");
 
                 if (!$this->postRequest($mirrorUrl, $newZipFile)) {
@@ -132,8 +145,11 @@ class Mirror extends Console
     {
         $ok     = true;
         $srcUrl = Uri::create($srcUrl)->withScheme('https');
+
+        // convert query vals to post vals
         $query  = $srcUrl->getQuery();
         $srcUrl->reset();
+
         $secret = $this->getConfig()->get('db.mirror.secret', '');
         if (empty($secret)) {
             $this->error = "Invalid API secret";
