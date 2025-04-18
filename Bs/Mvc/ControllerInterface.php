@@ -67,7 +67,7 @@ abstract class ControllerInterface
      *
      * @param callable|string|array $controller The controller name (a string like Bundle\BlogBundle\Controller\PostController::indexAction)
      */
-    protected function forward(callable|string|array $controller, array $path = null, array $query = null, array $request = null): Response
+    protected function forward(callable|string|array $controller, ?array $path = null, ?array $query = null, ?array $request = null): Response
     {
         $requestObj = Factory::instance()->getRequest();
         $path['_controller'] = $controller;

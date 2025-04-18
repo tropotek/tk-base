@@ -190,7 +190,7 @@ class TestDataInterface extends Console
         return $names[rand(0, count($names)-1)];
     }
 
-    public function createRandomDate(\DateTime $from = null, \DateTime $to = null): \DateTime
+    public function createRandomDate(?\DateTime $from = null, ?\DateTime $to = null): \DateTime
     {
         if (!$from) {
             $from = \Tk\Date::create(strtotime('10 September 2000'));
