@@ -744,8 +744,8 @@ class Edit extends ControllerAdmin
     </div>
   </div>
   <div class="card mb-3">
-    <div class="card-header"><i var="icon"></i> <span var="title"></span>s</div>
-    <div class="card-body" var="content">
+    <div class="card-header">
+      <i var="icon"></i> <span var="title"></span>
       <div class="info-dropdown dropdown" title="Details" choice="edit">
         <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
         <div class="dropdown-menu dropdown-menu-end">
@@ -753,8 +753,8 @@ class Edit extends ControllerAdmin
           <p class="dropdown-item"><span class="d-inline-block">Created:</span> <span var="created">...</span></p>
         </div>
       </div>
-
     </div>
+    <div class="card-body" var="content"></div>
   </div>
 </div>
 HTML;
