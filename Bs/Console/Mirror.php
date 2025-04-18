@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Console;
 
-use Bs\Auth;
 use Bs\Db\SqlMigrate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,9 +13,6 @@ use Tk\Log;
 use Tk\Uri;
 use Tk\Db;
 
-/**
- *
- */
 class Mirror extends Console
 {
     protected string $error = '';
@@ -28,7 +24,8 @@ class Mirror extends Console
             ->setDescription('Mirror the data and files from the Live site. [Admins Only]')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
             ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
-            ->addOption('no-sql', 'S', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
+            ->addOption('no-sql', 'N', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
+            ->addOption('save', 'S', InputOption::VALUE_NONE, 'Do not delete temp sql files')
             //->addOption('no-dev', 'f', InputOption::VALUE_NONE, 'Do not execute the dev sql file')
         ;
     }
@@ -127,15 +124,17 @@ class Mirror extends Console
 
                 // setup dev environment if site in dev mode
                 SqlMigrate::migrateDev([$this, 'writeBlue']);
+            }
 
-                //unlink($dstBakFile);
+            if (!$input->getOption('save')) {
+                if (is_file($dstBakFile)) unlink($dstBakFile);
+                if (is_file($newSqlFile)) unlink($newSqlFile);
             }
 
         } catch(\Exception $e) {
             $this->writeError($e->getMessage());
             return Command::FAILURE;
         }
-
 
         $this->write('Complete!!!');
         return  Command::SUCCESS;
