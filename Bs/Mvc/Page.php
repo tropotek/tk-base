@@ -35,7 +35,7 @@ class Page extends PageDomInterface
         $template->setAttr('site-name-letter', 'title', Registry::instance()->getSiteName());
         $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
-        if (!is_null($this->getIcon())) {
+        if (!empty($this->getIcon())) {
             $template->addCss('page-icon', $this->getIcon());
         }
 

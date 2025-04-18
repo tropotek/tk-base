@@ -1,6 +1,9 @@
 <?php
 namespace Bs\Traits;
 
+/**
+ * @phpstan-ignore OrderByTrait
+ */
 trait OrderByTrait
 {
 
@@ -16,14 +19,12 @@ trait OrderByTrait
      * @param int $orderBy
      * @return $this
      */
-    public function setOrderBy($orderBy): static
+    public function setOrderBy(int $orderBy): static
     {
         $this->orderBy = $orderBy;
         return $this;
     }
 
     // TODO: add any helper methods that may be needed.
-
-
 
 }

@@ -284,31 +284,36 @@ HTML;
 
             // convert all header sort links
             $links = $xpath->query("//th/a[contains(@href, '_orderBy=')]");
-            for ($i = $links->length - 1; $i > -1; $i--) {
-                $node = $links->item($i)->firstChild->parentElement;
-                if (!($node instanceof \DOMElement)) continue;
-                $url = $node->getAttribute('href');
-                $node->setAttribute('hx-get', $url);
+            if ($links instanceof \DOMNodeList) {
+                for ($i = $links->length - 1; $i > -1; $i--) {
+                    $node = $links->item($i)->firstChild->parentElement;
+                    if (!($node instanceof \DOMElement)) continue;
+                    $url = $node->getAttribute('href');
+                    $node->setAttribute('hx-get', $url);
+                }
             }
 
             // convert all pager links
             $links = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' page-link ')]");
-            for ($i = $links->length - 1; $i > -1; $i--) {
-                $node = $links->item($i)->firstChild->parentElement;
-                if (!($node instanceof \DOMElement)) continue;
-                $url = $node->getAttribute('href');
-                $node->setAttribute('hx-get', $url);
+            if ($links instanceof \DOMNodeList) {
+                for ($i = $links->length - 1; $i > -1; $i--) {
+                    $node = $links->item($i)->firstChild->parentElement;
+                    if (!($node instanceof \DOMElement)) continue;
+                    $url = $node->getAttribute('href');
+                    $node->setAttribute('hx-get', $url);
+                }
             }
 
             // convert all limit links
             $links = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' limit-link ')]");
-            for ($i = $links->length - 1; $i > -1; $i--) {
-                $node = $links->item($i)->firstChild->parentElement;
-                if (!($node instanceof \DOMElement)) continue;
-                $url = $node->getAttribute('href');
-                $node->setAttribute('hx-get', $url);
+            if ($links instanceof \DOMNodeList) {
+                for ($i = $links->length - 1; $i > -1; $i--) {
+                    $node = $links->item($i)->firstChild->parentElement;
+                    if (!($node instanceof \DOMElement)) continue;
+                    $url = $node->getAttribute('href');
+                    $node->setAttribute('hx-get', $url);
+                }
             }
-
         }
 
         return $ttpl;

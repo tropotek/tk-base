@@ -32,7 +32,7 @@ trait ForeignModelTrait
     {
         $map = $model->getDataMap();
         $priKey = $map->getPrimaryKey()?->getProperty();
-        return intval($model?->$priKey ?? 0);
+        return intval($model->$priKey ?? 0);
     }
 
 }

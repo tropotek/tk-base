@@ -52,7 +52,7 @@ class Mirror
 
     public function doDataBackup(bool $all = false): void
     {
-        $srcFile = tempnam(Config::makePath('', true), '_mifl');
+        $srcFile = tempnam(Config::makePath(''), '_mifl');
         if (is_file($srcFile)) unlink($srcFile);
         if ($all) {
             $cmd = sprintf('cd %s && tar -zcf %s %s',
@@ -89,11 +89,12 @@ class Mirror
         // must exclude _migrate table for migrate cmd to work in mirror cmd
         $options['exclude'] = ['_session', '_migrate'];
 
-        $srcBak = tempnam(Config::makePath(Config::getTempPath(), true), 'midb');
+        $srcBak = tempnam(Config::makePath(Config::getTempPath()), 'midb');
         Db\DbBackup::save($srcBak, $options);
 
-        if (is_file($srcBak . '.gz'))
+        if (is_file($srcBak . '.gz')) {
             @unlink($srcBak . '.gz');
+        }
 
         $command = sprintf('gzip ' . $srcBak);
         exec($command, $out, $ret);

@@ -33,9 +33,10 @@ class DbSearch extends ControllerAdmin
             ->setNotes('(required) Column name to search for');
         $this->dbSearch->appendField(new Input('value'))
             ->setNotes('(optional) Restrict search to column containing the value');
-        $this->dbSearch->appendField(new Checkbox('views', ['y' => 'Yes']))
+        $this->dbSearch->appendField((new Checkbox('views', ['y' => 'Yes']))
             ->setValue('y')
-            ->setSwitch(true);
+            ->setSwitch(true)
+        );
         $this->dbSearch->appendField(new Submit('search', [$this, 'onDbSearch']));
         $this->dbSearch->execute($_POST);
 

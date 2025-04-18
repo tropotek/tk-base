@@ -74,7 +74,7 @@ class Breadcrumbs
         return self::$_instance;
     }
 
-    public static function init(): static
+    public static function init(): self
     {
         if (!is_null(self::$_instance)) return self::$_instance;
         $crumbs = self::instance();
@@ -114,7 +114,7 @@ class Breadcrumbs
         return $crumbs;
     }
 
-    public static function setHome(string|Uri $homeUrl, string $homeTitle): static
+    public static function setHome(string|Uri $homeUrl, string $homeTitle): self
     {
         $crumbs = self::instance();
 
@@ -132,7 +132,7 @@ class Breadcrumbs
         return $crumbs;
     }
 
-    public static function pushCrumb(Uri|string $url, string $title): static
+    public static function pushCrumb(Uri|string $url, string $title): self
     {
         $crumbs = self::instance();
         if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') return $crumbs;
@@ -237,7 +237,7 @@ class Breadcrumbs
      * trim the stack to the max allowable length
      * the oldest crumbs will be removed first, the home URL will always be the first crumb
      */
-    protected function trim(): static
+    protected function trim(): self
     {
         if ($this->count() <= $this->maxLength) return $this;
 
@@ -269,7 +269,7 @@ class Breadcrumbs
         return $this->visible;
     }
 
-    public function setVisible(bool $v): static
+    public function setVisible(bool $v): self
     {
         $this->visible = $v;
         return $this;

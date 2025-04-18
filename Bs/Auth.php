@@ -143,8 +143,8 @@ class Auth extends Model
 
     public function getHomeUrl(): Uri
     {
-        /** @var UserInterface $user */
         $user = $this->getDbModel();
+        if (!($user instanceof UserInterface)) return Uri::create('/');
         return $user->getHomeUrl();
     }
 

@@ -127,7 +127,7 @@ class Mirror extends Console
             }
 
             if (!$input->getOption('save')) {
-                if (is_file($dstBakFile)) unlink($dstBakFile);
+                unlink($dstBakFile);
                 if (is_file($newSqlFile)) unlink($newSqlFile);
             }
 
