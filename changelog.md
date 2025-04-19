@@ -1,5 +1,34 @@
 #CHANGELOG#
 
+Ver 8.0.74 [2025-04-20]:
+-------------------------------
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Added hx files componenet
+  - Update all form submits
+  - import template updates
+  - Add search and create new to nav
+  - Added path case manager and filters
+  - Added the bloody TOC code
+  - Added students and updated settings
+  - update bsConfirm to be used with HTMX
+  - update csv export action
+  - fix template logging
+  - Added products
+  - Implement htmx table UI
+  - Added storage locations
+  - Added controller access validation
+  - Fix breadcrumbs
+  - Added mail log system
+  - Fix migration error messages
+  - Add create invoice dialog
+  - remove old Crumbs object
+  - Added new breadcrumbs object
+  - Add checkSelect field and persistand form fields
+  - update form select options
+  - Updated table and action classes
+  - Added orderBy table cell
+
+
 Ver 8.0.72 [2024-11-08]:
 -------------------------------
 
