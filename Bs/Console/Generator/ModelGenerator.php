@@ -855,10 +855,6 @@ class {classname} extends Form
 
     public function show(): ?Template
     {
-        // Setup field group widths with bootstrap classes
-        //\$this->getField('name')->addFieldCss('col-6');
-        //\$this->getField('email')->addFieldCss('col-6');
-
         \$renderer = \$this->getRenderer();
 
         return \$renderer->show();
