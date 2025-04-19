@@ -35,8 +35,8 @@ class Mirror
             throw new \Tk\Exception('Invalid access permission');
         }
 
-        $headers  = getallheaders();
-        $secret   = trim($headers['Authorization-Key'] ?? '');
+        $headers = getallheaders();
+        $secret  = trim($headers['authorization-key'] ?? $headers['Authorization-Key'] ?? '');
         if (Config::instance()->get('db.mirror.secret', null) !== $secret) {
             throw new \Tk\Exception('invalid access key');
         }
