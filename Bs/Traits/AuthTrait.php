@@ -9,9 +9,9 @@ trait AuthTrait
 
     public function getAuth(): Auth
     {
-        if (!$this->_auth) {
+        if (is_null($this->_auth)) {
             $this->_auth = Auth::findByModel($this);
-            if (!$this->_auth) {
+            if (is_null($this->_auth)) {
                 $this->_auth = Auth::create($this);
             }
         }
