@@ -68,7 +68,7 @@ class Mirror extends Console
             $username = trim($input->getArgument('username'));
 
             if (!is_file($newSqlFile) || $input->getOption('no-cache')) {
-                $this->writeComment('Download fresh mirror file: ' . $newZipFile);
+                $this->writeComment('Downloading fresh mirror file');
                 if (is_file($newSqlFile)) {
                     // Delete cached mirror files
                     $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
@@ -84,7 +84,7 @@ class Mirror extends Console
                     ->set('a', 'db')
                     ->set('u', $username)
                     ->set('p', $password);
-                Log::debug("Requesting Data: {$mirrorUrl}");
+                $this->writeComment("Requesting Data");
 
                 if (!$this->postRequest($mirrorUrl, $newZipFile)) {
                     $this->writeError("Error requesting mirror: " . $this->error);
@@ -95,7 +95,7 @@ class Mirror extends Console
                     return Command::FAILURE;
                 }
             } else {
-                $this->writeComment('Using existing mirror file: ' . $newSqlFile);
+                $this->writeComment('Using existing mirror file');
             }
 
             // Prevent accidental writing to live DB
@@ -157,12 +157,12 @@ class Mirror extends Console
 
         $fp = fopen($filename, "w");
         if ($fp === false) {
-            Log::error("Cannot open filename: $filename");
+            Log::error("Cannot save filename");
             return false;
         }
         $curl = curl_init($srcUrl->toString());
         if ($curl === false) {
-            Log::error("Cannot open Url: $srcUrl");
+            Log::error("Cannot open mirror Url");
             return false;
         }
 
@@ -174,7 +174,7 @@ class Mirror extends Console
 			CURLOPT_POSTFIELDS     => $query,
             CURLOPT_FILE           => $fp,
 			CURLOPT_HTTPHEADER     => [
-				"Authorization-Key: " . $secret,
+				"authorization-key: " . $secret,
 			],
 		]);
 
