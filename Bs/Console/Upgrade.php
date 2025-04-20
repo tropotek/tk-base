@@ -75,7 +75,8 @@ class Upgrade extends Console
                     }
                     $this->writeInfo($cmd);
                     if (str_starts_with($cmd, 'composer ')) {
-                        system($cmd);
+                        //system($cmd);
+                        passthru($cmd);
                     } else {
                         exec($cmd . ' 2>&1', $output, $ret);
                         if ($cmd == 'ci') {
