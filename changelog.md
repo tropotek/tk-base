@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 8.0.80 [2025-04-20]:
+-------------------------------
+  - Added qr-code reader/scanner
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Tagging and releasing branch `8.0` with version `8.0.78`.
+
+
 Ver 8.0.78 [2025-04-20]:
 -------------------------------
 
