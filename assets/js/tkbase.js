@@ -26,7 +26,7 @@ let tkConfig = {
 
 // Var dump function for debugging
 function vd() {
-  if (!tkConfig.debug) return;
+  if (tkConfig.isProd) return;
   for (let k in arguments) console.log(arguments[k]);
 }
 
