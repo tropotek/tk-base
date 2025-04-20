@@ -166,7 +166,7 @@ let tkbase = function () {
       plugins: [
         'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
         'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        'insertdatetime', 'media', 'table', 'help', 'wordcount', 'save'
       ],
       toolbar1:
         'bold italic strikethrough | blocks | alignleft aligncenter ' +
