@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.84 [2025-04-21]:
+-------------------------------
+  - Tagging and releasing branch `8.0` with version `8.0.82`.
+
+
 Ver 8.0.80 [2025-04-20]:
 -------------------------------
   - Added qr-code reader/scanner
