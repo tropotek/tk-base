@@ -2,7 +2,6 @@
 
 __Project:__ [ttek/tk-base](http://packagist.org/packages/ttek/tk-base)
 __Web:__ <http://www.tropotek.com/>  
-__Authors:__ Michael Mifsud <http://www.tropotek.com/>  
 __Reference:__ <https://getcomposer.org/doc/articles/custom-installers.md>  
   
 This lib is used to contain the most common objects when creating a new tk site
