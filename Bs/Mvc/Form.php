@@ -58,6 +58,30 @@ class Form extends \Tk\Form implements DisplayInterface
         return $this->getRenderer()->show();
     }
 
+    /**
+     * Change the main table template to
+     * Call this in place of $table->show(); for htmx components
+     */
+    public function htmxShow(): ?Template
+    {
+        // setup table for hx requests
+        $this->form->setAction('');
+        if(!$this->form->hasAttr('hx-post')) {
+            $this->form->setAttr('hx-post', Uri::create());
+        }
+        if(!$this->form->hasAttr('hx-swap')) {
+            $this->form->setAttr('hx-swap', 'outerHTML');
+        }
+        if(!$this->form->hasAttr('hx-target')) {
+            $this->form->setAttr('hx-target', "#{$this->form->getId()}");
+        }
+        if(!$this->form->hasAttr('hx-select')) {
+            $this->form->setAttr('hx-select', "#{$this->form->getId()}");
+        }
+
+        return $this->show();
+    }
+
     public function getRenderer(): ?Renderer
     {
         return $this->renderer;

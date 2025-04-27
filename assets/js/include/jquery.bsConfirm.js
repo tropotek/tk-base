@@ -149,7 +149,32 @@ let bsConfirm = function (options, element, withOnClick = false) {
                         if (btn.attr('name')) {
                             form.append(`<input type="hidden" name="${btn.attr('name')}" value="${btn.attr('value')}">`);
                         }
-                        form.submit();
+
+                        if (form.is('[hx-post]')) { // is HTMX form
+                            var formDataArray = form.serializeArray();
+                            var formDataObject = {};
+                            $.each(formDataArray, function(i, field){
+                                if (field.name.endsWith('[]')) {    // is an array type
+                                    if (typeof formDataObject[field.name] === 'undefined') {
+                                        formDataObject[field.name] = [];
+                                    }
+                                    formDataObject[field.name].push(field.value);
+                                } else {
+                                    formDataObject[field.name] = field.value;
+                                }
+                            });
+                            let params = {
+                                values: formDataObject
+                            };
+                            if (form.attr('hx-target')) params.target = form.attr('hx-target');
+                            if (form.attr('hx-select')) params.select = form.attr('hx-select');
+                            if (form.attr('hx-swap')) params.swap = form.attr('hx-swap');
+
+                            // submit htmx request
+                            htmx.ajax('post', form.attr('hx-post'), params);
+                        } else {
+                            form.submit();
+                        }
                     }
                 };
 

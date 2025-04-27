@@ -13,62 +13,62 @@
  */
 
 let tkConfig = {
-  hostUrl: '',
-  baseUrl: '',
-  isProd: false,
-  isAuth: false,
-  // todo: refactor, all dates should be returned in yyy-mm-dd format
-  dateFormat: {
-    jqDatepicker: 'dd/mm/yy',
-    bsDatepicker: 'dd/mm/yyyy',
-  },
+    hostUrl: '',
+    baseUrl: '',
+    isProd: false,
+    isAuth: false,
+    // todo: refactor, all dates should be returned in yyy-mm-dd format
+    dateFormat: {
+        jqDatepicker: 'dd/mm/yy',
+        bsDatepicker: 'dd/mm/yyyy',
+    },
 };
 
 // Var dump function for debugging
 function vd() {
-  if (tkConfig.isProd) return;
-  for (let k in arguments) console.log(arguments[k]);
+    if (tkConfig.isProd) return;
+    for (let k in arguments) console.log(arguments[k]);
 }
 
 function copyToClipboard(text) {
-  if (navigator.clipboard) {
-    // Modern versions of Chromium browsers, Firefox, etc.
-    navigator.clipboard.writeText(text);
-  } else if (window.clipboardData) {
-    // Internet Explorer.
-    window.clipboardData.setData('Text', text);
-  } else {
-    // Fallback method using Textarea.
-    var textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.top = '-999999px';
-    textArea.style.left = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      if (!document.execCommand('copy')) {
-        console.warn('Could not copy text to clipboard');
-      }
-    } catch (error) {
-      console.warn('Could not copy text to clipboard');
+    if (navigator.clipboard) {
+        // Modern versions of Chromium browsers, Firefox, etc.
+        navigator.clipboard.writeText(text);
+    } else if (window.clipboardData) {
+        // Internet Explorer.
+        window.clipboardData.setData('Text', text);
+    } else {
+        // Fallback method using Textarea.
+        var textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '-999999px';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            if (!document.execCommand('copy')) {
+                console.warn('Could not copy text to clipboard');
+            }
+        } catch (error) {
+            console.warn('Could not copy text to clipboard');
+        }
+        document.body.removeChild(textArea);
     }
-    document.body.removeChild(textArea);
-  }
 }
 
 function clearForm(form) {
-  $(':input', form).each(function () {
-    var type = this.type;
-    var tag = this.tagName.toLowerCase(); // normalize case
-    if (type == 'text' || type == 'password' || tag == 'textarea')
-      this.value = "";
-    else if (type == 'checkbox' || type == 'radio')
-      this.checked = false;
-    else if (tag == 'select')
-      this.selectedIndex = 1;
-  });
+    $(':input', form).each(function () {
+        var type = this.type;
+        var tag = this.tagName.toLowerCase(); // normalize case
+        if (type == 'text' || type == 'password' || tag == 'textarea')
+            this.value = "";
+        else if (type == 'checkbox' || type == 'radio')
+            this.checked = false;
+        else if (tag == 'select')
+            this.selectedIndex = 1;
+    });
 };
 
 /**
@@ -100,12 +100,17 @@ let tkInits = [];
  * @returns {*}
  */
 function tkRegisterInit(func, elm, execute = true) {
-  tkInits.push(func);
-  if (execute) {
-    elm = $(elm).get(0) ?? null;
-    if (!elm) elm = document;
-    return func.apply(elm);
-  }
+    tkInits.push(func);
+    if (execute) {
+        elm = $(elm).get(0) ?? null;
+        if (elm) {
+            // get the parent element so we can use $('.tkTable', this) in init methods
+            elm = $(elm).parent().get(0);
+        } else {
+            elm = document;
+        }
+        return func.apply(elm);
+    }
 }
 
 /**
@@ -120,11 +125,16 @@ function tkRegisterInit(func, elm, execute = true) {
  * @param elm (optional) document is used by default
  */
 function tkInit(elm) {
-  elm = $(elm).get(0) ?? null;
-  if (!elm) elm = document;
-  for (var i in tkInits) {
-    tkInits[i].apply(elm);
-  }
+    elm = $(elm).get(0) ?? null;
+    if (elm) {
+        // get the parent element so we can use $('.tkTable', this) in init methods
+        elm = $(elm).parent().get(0);
+    } else {
+        elm = document;
+    }
+    for (var i in tkInits) {
+        tkInits[i].apply(elm);
+    }
 }
 
 /**
@@ -132,351 +142,354 @@ function tkInit(elm) {
  * In your app.js call the init functions that you will be using
  */
 let tkbase = function () {
-  "use strict";
+    "use strict";
 
-  /**
-   * Tiny MCE setup
-   *   See this article for how to create plugins in custom paths and see if it works
-   *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
-   */
-  let initTinymce = function (cfg = {}) {
-    if (typeof (tinymce) === 'undefined') {
-      console.warn('Plugin not loaded: jquery.tinymce');
-      return;
-    }
-
-    // get the elfinder for mce
-    function getMceElf(data) {
-      // NOTE: The custom path sent to the GET request should be relative to the `/data` path
-      let path = data.elfinderPath ?? '/media';
-      return new tinymceElfinder({
-        // connector URL
-        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
-        // upload target folder hash for this tinyMCE
-        uploadTargetHash: 'l1_lw',
-        // elFinder dialog node id
-        nodeId: 'elfinder'
-      });
-    }
-
-    // full mce default config
-    let mceFull = {
-      license_key: 'gpl',
-      height: 500,
-      plugins: [
-        'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
-        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'help', 'wordcount', 'save'
-      ],
-      toolbar1:
-        'bold italic strikethrough | blocks | alignleft aligncenter ' +
-        'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen',
-      content_css: [
-        '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
-      ],
-      content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
-      //contextmenu: 'link image template inserttable | cell row column deletetable',
-      contextmenu: false,
-      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
-      image_advtab: true,
-      statusbar: false,
-      //content_security_policy: "default-src 'self'",
-      skin: 'tinymce-5',
-
-      urlconverter_callback: function (url, node, on_save) {
-        if (!(url.startsWith('http://') || url.startsWith('https://'))) return url;
-        if (url.startsWith(tkConfig.hostUrl)) {
-          url = url.replace(tkConfig.hostUrl, '')
+    /**
+     * Tiny MCE setup
+     *   See this article for how to create plugins in custom paths and see if it works
+     *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
+     */
+    let initTinymce = function (cfg = {}) {
+        if (typeof (tinymce) === 'undefined') {
+            console.warn('Plugin not loaded: jquery.tinymce');
+            return;
         }
-        return url;
-      },
-      // file_picker_callback: elf.browser,
-      // images_upload_handler: elf.uploadHandler,
-      file_picker_callback: function (callback, value, meta) {
-        let data = $(tinymce.activeEditor.targetElm).data();
-        return getMceElf(data).browser(callback, value, meta);
-      },
-      images_upload_handler: function (blobInfo, progress) {
-        let data = $(tinymce.activeEditor.targetElm).data();
-        return getMceElf(data).uploadHandler(blobInfo, progress);
-      },
+
+        // get the elfinder for mce
+        function getMceElf(data) {
+            // NOTE: The custom path sent to the GET request should be relative to the `/data` path
+            let path = data.elfinderPath ?? '/media';
+            return new tinymceElfinder({
+                // connector URL
+                url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
+                // upload target folder hash for this tinyMCE
+                uploadTargetHash: 'l1_lw',
+                // elFinder dialog node id
+                nodeId: 'elfinder'
+            });
+        }
+
+        // full mce default config
+        let mceFull = {
+            license_key: 'gpl',
+            height: 500,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'help', 'wordcount', 'save'
+            ],
+            toolbar1:
+                'bold italic strikethrough | blocks | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen',
+            content_css: [
+                '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
+            ],
+            content_style: 'body {padding: 15px; font-family:Helvetica,Arial,sans-serif; font-size:16px; }',
+            //contextmenu: 'link image template inserttable | cell row column deletetable',
+            contextmenu: false,
+            extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+            image_advtab: true,
+            statusbar: false,
+            //content_security_policy: "default-src 'self'",
+            skin: 'tinymce-5',
+
+            urlconverter_callback: function (url, node, on_save) {
+                if (!(url.startsWith('http://') || url.startsWith('https://'))) return url;
+                if (url.startsWith(tkConfig.hostUrl)) {
+                    url = url.replace(tkConfig.hostUrl, '')
+                }
+                return url;
+            },
+            // file_picker_callback: elf.browser,
+            // images_upload_handler: elf.uploadHandler,
+            file_picker_callback: function (callback, value, meta) {
+                let data = $(tinymce.activeEditor.targetElm).data();
+                return getMceElf(data).browser(callback, value, meta);
+            },
+            images_upload_handler: function (blobInfo, progress) {
+                let data = $(tinymce.activeEditor.targetElm).data();
+                return getMceElf(data).uploadHandler(blobInfo, progress);
+            },
+        };
+        $.extend(mceFull, cfg);
+
+        // min mce default config
+        let mceMin = {
+            license_key: 'gpl',
+            plugins: ['link', 'image', 'code', 'fullscreen'],
+            contextmenu: false,
+            statusbar: false,
+            extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
+        };
+        $.extend(mceMin, cfg);
+
+        // Register the init function
+        tkRegisterInit(function () {
+            $('textarea.mce, textarea.mce-min', this).each(function () {
+                let el = $(this);
+                let cfg = mceFull;
+                if (el.is('.mce-min')) {
+                    cfg = mceMin;
+                }
+                if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
+                    delete cfg.file_picker_callback;
+                    delete cfg.images_upload_handler;
+                }
+
+                // remove any existing tinymce instance
+                if (typeof el.tinymce == 'function' && el.tinymce() !== null) {
+                    tinymce.remove('#' + el.prop('id'));
+                }
+
+                // set readonly
+                if (el.is('[readonly]') || el.is('[disabled]')) {
+                    cfg.readonly = true;
+                    cfg.body_class = 'text-bg-light';
+                }
+
+                // init mce
+                if (el.is('.mce-min')) {
+                    el.tinymce(cfg);  // Minimum timymce
+                } else {
+                    el.tinymce(cfg); // Full tinymce
+                }
+            });
+        });
+
+    };  // end initTinymce()
+
+
+    /**
+     * Creates bootstrap 5 tabs around the \Tk\Form renderer groups (.tk-form-group) output
+     */
+    let initTkFormTabs = function () {
+        if (typeof $.fn.tktabs === 'undefined') {
+            console.warn('jquery.tktabs.js is not installed.');
+            return;
+        }
+
+        tkRegisterInit(function () {
+            $('.tk-form', this).tktabs();
+        });
     };
-    $.extend(mceFull, cfg);
 
-    // min mce default config
-    let mceMin = {
-      license_key: 'gpl',
-      plugins: ['link', 'image', 'code', 'fullscreen'],
-      contextmenu: false,
-      statusbar: false,
-      extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
-    };
-    $.extend(mceMin, cfg);
 
-    // Register the init function
-    tkRegisterInit(function () {
-      $('textarea.mce, textarea.mce-min', this).each(function () {
-        let el = $(this);
-        let cfg = mceFull;
-        if (el.is('.mce-min')) {
-          cfg = mceMin;
-        }
-        if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
-          delete cfg.file_picker_callback;
-          delete cfg.images_upload_handler;
-        }
-
-        // remove any existing tinymce instance
-        if (typeof el.tinymce == 'function' && el.tinymce() !== null) {
-          tinymce.remove('#' + el.prop('id'));
-        }
-
-        // set readonly
-        if (el.is('[readonly]') || el.is('[disabled]')) {
-          cfg.readonly = true;
-          cfg.body_class = 'text-bg-light';
-        }
-
-        // init mce
-        if (el.is('.mce-min')) {
-          el.tinymce(cfg);  // Minimum timymce
+    /**
+     * Now we can have a button confirmation just by adding an attribute
+     *  Eg:
+     *    <a href="#" class="btn" data-confirm="Are you sure you want to do this?">Delete</a>
+     */
+    let initDialogConfirm = function () {
+        if (typeof $.fn.bsConfirm === 'undefined') {
+            $(document).on('click', '[data-confirm]', function () {
+                return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
+            });
         } else {
-          el.tinymce(cfg); // Full tinymce
+            tkRegisterInit(function () {
+                $('[data-confirm]', this).bsConfirm();
+            });
+            //$('[data-confirm]').bsConfirm();
         }
-      });
-    });
-
-  };  // end initTinymce()
+    };
 
 
-  /**
-   * Creates bootstrap 5 tabs around the \Tk\Form renderer groups (.tk-form-group) output
-   */
-  let initTkFormTabs = function () {
-    if (typeof $.fn.tktabs === 'undefined') {
-      console.warn('jquery.tktabs.js is not installed.');
-      return;
-    }
-
-    tkRegisterInit(function () {
-      $('.tk-form', this).tktabs();
-    });
-  };
-
-
-  /**
-   * Now we can have a button confirmation just by adding an attribute
-   *  Eg:
-   *    <a href="#" class="btn" data-confirm="Are you sure you want to do this?">Delete</a>
-   */
-  let initDialogConfirm = function () {
-    if (typeof $.fn.bsConfirm === 'undefined') {
-      $(document).on('click', '[data-confirm]', function () {
-        return confirm($('<p>' + $(this).data('confirm') + '</p>').text());
-      });
-    } else {
-      $('[data-confirm]').bsConfirm();
-    }
-  };
-
-
-  /**
-   * Setup bsconfirm dialog for htmx:confirm
-   */
-  let initHtmxConfirmDialog = function () {
-    if (typeof $.fn.bsConfirm === 'undefined') {
-      console.warn('Plugin not loaded: bsConfirm');
-      return;
-    }
-
-    $(document).on('htmx:confirm', function (e) {
-      if (e.defaultPrevented) return;
-      if (!e.detail.elt.hasAttribute('hx-confirm')) return;
-      e.preventDefault();
-      $.fn.bsConfirm({
-        onConfirm: function () {
-          e.detail.issueRequest(true);
+    /**
+     * Setup bsconfirm dialog for htmx:confirm
+     */
+    let initHtmxConfirmDialog = function () {
+        if (typeof $.fn.bsConfirm === 'undefined') {
+            console.warn('Plugin not loaded: bsConfirm');
+            return;
         }
-      }, e.detail.elt);
-    });
 
-  };
+        $(document).on('htmx:confirm', function (e) {
+            if (e.defaultPrevented) return;
+            if (!e.detail.elt.hasAttribute('hx-confirm')) return;
+            e.preventDefault();
+            $.fn.bsConfirm({
+                onConfirm: function () {
+                    e.detail.issueRequest(true);
+                }
+            }, e.detail.elt);
+        });
 
-
-  /**
-   * Setup the jquery datepicker UI
-   */
-  let initDatepicker = function () {
-    if (typeof $.fn.datepicker === 'undefined') {
-      console.warn('jquery-ui.js is not installed.');
-      return;
-    }
-
-    tkRegisterInit(function () {
-      let defaults = {dateFormat: tkConfig.dateFormat.jqDatepicker};
-      $('input.date', this).each(function () {
-        let settings = $.extend({}, defaults, $(this).data());
-        $(this).datepicker(settings);
-      });
-    });
-  };
+    };
 
 
-  /**
-   * Add a view/hide toggle button to a password field for touch screen access
-   */
-  let initPasswordToggle = function () {
+    /**
+     * Setup the jquery datepicker UI
+     */
+    let initDatepicker = function () {
+        if (typeof $.fn.datepicker === 'undefined') {
+            console.warn('jquery-ui.js is not installed.');
+            return;
+        }
 
-    tkRegisterInit(function () {
-      $('[type=password]', this).each(function () {
-        let input = $(this);
-        let feedback = $(this).parent().find('.invalid-feedback');
-        let tpl = $(`<div class="input-group" var="is-error input-group">
+        tkRegisterInit(function () {
+            let defaults = {dateFormat: tkConfig.dateFormat.jqDatepicker};
+            $('input.date', this).each(function () {
+                let settings = $.extend({}, defaults, $(this).data());
+                $(this).datepicker(settings);
+            });
+        });
+    };
+
+
+    /**
+     * Add a view/hide toggle button to a password field for touch screen access
+     */
+    let initPasswordToggle = function () {
+
+        tkRegisterInit(function () {
+            $('[type=password]', this).each(function () {
+                let input = $(this);
+                let feedback = $(this).parent().find('.invalid-feedback');
+                let tpl = $(`<div class="input-group" var="is-error input-group">
           <button class="btn btn-outline-secondary border-light-subtle" type="button" var="button" tabindex="-1"><i class="fa fa-fw fa-eye"></i></button>
         </div>`);
-        input.before(tpl);
+                input.before(tpl);
 
-        input.detach();
-        feedback.detach();
-        $('button', tpl).before(input);
-        $('button', tpl).after(feedback);
+                input.detach();
+                feedback.detach();
+                $('button', tpl).before(input);
+                $('button', tpl).after(feedback);
 
-        $('button', tpl).on('click', function () {
-          let icon = $('.fa', this);
-          if (icon.is('.fa-eye')) {
-            icon.removeClass('fa-eye');
-            icon.addClass('fa-eye-slash')
-            input.attr('type', 'text');
-          } else {
-            icon.removeClass('fa-eye-slash');
-            icon.addClass('fa-eye')
-            input.attr('type', 'password');
-          }
+                $('button', tpl).on('click', function () {
+                    let icon = $('.fa', this);
+                    if (icon.is('.fa-eye')) {
+                        icon.removeClass('fa-eye');
+                        icon.addClass('fa-eye-slash')
+                        input.attr('type', 'text');
+                    } else {
+                        icon.removeClass('fa-eye-slash');
+                        icon.addClass('fa-eye')
+                        input.attr('type', 'password');
+                    }
+                });
+            });
         });
-      });
-    });
 
-  };
+    };
 
 
-  /**
-   * This is handy for showing and hiding elements for checkboxes:
-   *   <input type="checkbox" data-toggle="hide" data-target=".children" />
-   */
-  let initDataToggle = function () {
+    /**
+     * This is handy for showing and hiding elements for checkboxes:
+     *   <input type="checkbox" data-toggle="hide" data-target=".children" />
+     */
+    let initDataToggle = function () {
 
-    tkRegisterInit(function () {
-      $('[data-toggle="hide"]', this).each(function () {
-        let target = $($(this).data('target'));
-        target.each(function () {
-          $(this).hide();
+        tkRegisterInit(function () {
+            $('[data-toggle="hide"]', this).each(function () {
+                let target = $($(this).data('target'));
+                target.each(function () {
+                    $(this).hide();
+                });
+                $(this).on('click', function () {
+                    target.toggle();
+                })
+            });
+            $('[data-toggle="show"]').each(function () {
+                let target = $($(this).data('target'));
+                target.each(function () {
+                    $(this).show();
+                });
+                $(this).on('click', function () {
+                    target.toggle();
+                })
+            });
         });
-        $(this).on('click', function () {
-          target.toggle();
-        })
-      });
-      $('[data-toggle="show"]').each(function () {
-        let target = $($(this).data('target'));
-        target.each(function () {
-          $(this).show();
-        });
-        $(this).on('click', function () {
-          target.toggle();
-        })
-      });
-    });
 
-  };
+    };
 
 
-  /**
-   * Add an edit lock button to text fields
-   * So the user has to click the unlock button b4 editing
-   */
-  let initTkInputLock = function () {
-    if (typeof $.fn.tkInputLock === 'undefined') {
-      console.warn('Plugin not loaded: tkInputLock');
-      return;
-    }
-
-    tkRegisterInit(function () {
-      $('input.tk-input-lock', this).tkInputLock();
-    });
-  };
-
-
-  /**
-   * jQuery UI autocomplete field
-   *
-   * Note for modal forms you need to add .ui-front to the parent field div:
-   *     $field->addFieldCss('ui-front');
-   */
-  let initAutocomplete = function () {
-    if (typeof $.fn.autocomplete === 'undefined') return;
-
-    tkRegisterInit(function () {
-      $('.tk-autocomplete[type=text]', this).autocomplete({
-        minLength: 2,
-        source: function (request, response) {
-          let el = $(this.element);
-          let cache = el.data('cache') ?? {};
-          let term = request.term;
-          if (term in cache) {
-            response(cache[term]);
+    /**
+     * Add an edit lock button to text fields
+     * So the user has to click the unlock button b4 editing
+     */
+    let initTkInputLock = function () {
+        if (typeof $.fn.tkInputLock === 'undefined') {
+            console.warn('Plugin not loaded: tkInputLock');
             return;
-          }
-          let url = el.data('src');
-          $.getJSON(url, request, function (data, status, xhr) {
-            cache[term] = data;
-            el.data('cache', cache);
-            response(data);
-          });
         }
-      });
-    });
-  };
 
-
-  /**
-   * Add beforeunload event message for forms that have changed
-   * To enable on a form add the class `tk-protect`
-   */
-  let initTkProtectInput = function () {
-    tkRegisterInit(function () {
-      let el = $(this);
-      // use timeout to avoid plugins from triggering
-      // the `change` event before any changes are actually made
-      setTimeout(function() {
-        $('form.tk-protect', el).each(function () {
-          $('input,select,textarea', this).on('change', function() {
-            $(document).data('changed', true);
-          });
-          $('.tk-actions button, .tk-actions a', this).on('click', function () {
-            $(document).data('changed', false);
-          });
+        tkRegisterInit(function () {
+            $('input.tk-input-lock', this).tkInputLock();
         });
-      }, 2000);
-    });
-
-    window.addEventListener('beforeunload', function (e) {
-      if ($(document).data('changed')) {
-        e.preventDefault();
-        e.returnValue = 'You have unsaved changes. Are you sure you want to leave this page?';
-      }
-    });
-  };
+    };
 
 
-  return {
-    initTinymce: initTinymce,
-    initTkFormTabs: initTkFormTabs,
-    initDialogConfirm: initDialogConfirm,
-    initHtmxConfirmDialog: initHtmxConfirmDialog,
-    initDatepicker: initDatepicker,
-    initPasswordToggle: initPasswordToggle,
-    initDataToggle: initDataToggle,
-    initTkInputLock: initTkInputLock,
-    initAutocomplete: initAutocomplete,
-    initTkProtectInput: initTkProtectInput,
-  }
+    /**
+     * jQuery UI autocomplete field
+     *
+     * Note for modal forms you need to add .ui-front to the parent field div:
+     *     $field->addFieldCss('ui-front');
+     */
+    let initAutocomplete = function () {
+        if (typeof $.fn.autocomplete === 'undefined') return;
+
+        tkRegisterInit(function () {
+            $('.tk-autocomplete[type=text]', this).autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    let el = $(this.element);
+                    let cache = el.data('cache') ?? {};
+                    let term = request.term;
+                    if (term in cache) {
+                        response(cache[term]);
+                        return;
+                    }
+                    let url = el.data('src');
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        cache[term] = data;
+                        el.data('cache', cache);
+                        response(data);
+                    });
+                }
+            });
+        });
+    };
+
+
+    /**
+     * Add beforeunload event message for forms that have changed
+     * To enable on a form add the class `tk-protect`
+     */
+    let initTkProtectInput = function () {
+        tkRegisterInit(function () {
+            let el = $(this);
+            // use timeout to avoid plugins from triggering
+            // the `change` event before any changes are actually made
+            setTimeout(function () {
+                $('form.tk-protect', el).each(function () {
+                    $('input,select,textarea', this).on('change', function () {
+                        $(document).data('changed', true);
+                    });
+                    $('.tk-actions button, .tk-actions a', this).on('click', function () {
+                        $(document).data('changed', false);
+                    });
+                });
+            }, 2000);
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if ($(document).data('changed')) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave this page?';
+            }
+        });
+    };
+
+
+    return {
+        initTinymce: initTinymce,
+        initTkFormTabs: initTkFormTabs,
+        initDialogConfirm: initDialogConfirm,
+        initHtmxConfirmDialog: initHtmxConfirmDialog,
+        initDatepicker: initDatepicker,
+        initPasswordToggle: initPasswordToggle,
+        initDataToggle: initDataToggle,
+        initTkInputLock: initTkInputLock,
+        initAutocomplete: initAutocomplete,
+        initTkProtectInput: initTkProtectInput,
+    }
 }();
