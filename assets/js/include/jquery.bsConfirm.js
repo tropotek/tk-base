@@ -171,7 +171,7 @@ let bsConfirm = function (options, element, withOnClick = false) {
                             if (form.attr('hx-swap')) params.swap = form.attr('hx-swap');
 
                             // submit htmx request
-                            htmx.ajax('post', form.attr('hx-post'), params);
+                            htmx.ajax('POST', form.attr('hx-post'), params);
                         } else {
                             form.submit();
                         }
