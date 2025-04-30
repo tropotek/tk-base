@@ -69,14 +69,14 @@ class Form extends \Tk\Form implements DisplayInterface
         if(!$this->form->hasAttr('hx-post')) {
             $this->form->setAttr('hx-post', Uri::create());
         }
-        if(!$this->form->hasAttr('hx-swap')) {
-            $this->form->setAttr('hx-swap', 'outerHTML');
-        }
         if(!$this->form->hasAttr('hx-target')) {
             $this->form->setAttr('hx-target', "#{$this->form->getId()}");
         }
         if(!$this->form->hasAttr('hx-select')) {
             $this->form->setAttr('hx-select', "#{$this->form->getId()}");
+        }
+        if(!$this->form->hasAttr('hx-swap')) {
+            $this->form->setAttr('hx-swap', 'outerHTML');
         }
 
         return $this->show();
