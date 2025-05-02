@@ -245,6 +245,9 @@ let tkbase = function () {
                 if (el.is('[readonly]') || el.is('[disabled]')) {
                     cfg.readonly = true;
                     cfg.body_class = 'text-bg-light';
+                } else {
+                    cfg.readonly = false;
+                    cfg.body_class = '';
                 }
 
                 // init mce
