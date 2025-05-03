@@ -346,7 +346,7 @@ class Factory extends Collection
     /**
      * @param string $template (optional) If no param supplied then the system default template is used
      */
-    public function createMailMessage(string $template = ''): CurlyMessage
+    public function createMailMessage(string $content = '', string $template = ''): CurlyMessage
     {
         if (empty($template)) {
             $tplPath = Config::makePath($this->getConfig()->get('system.mail.template'));
@@ -359,7 +359,10 @@ class Factory extends Collection
             }
         }
 
-        $message = \Tk\Mail\CurlyMessage::create($template);
+        // replace the {content} with the supplied content template
+        $template = str_replace('{content}', $content, $template);
+
+        $message = new \Tk\Mail\CurlyMessage($template);
         $message->setFrom($this->getRegistry()->getSiteEmail());
         $message->setReplyTo($this->getRegistry()->getSiteEmail());
         $message->set('sig', $this->getRegistry()->get('site.email.sig', ''));

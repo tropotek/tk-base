@@ -40,8 +40,6 @@ class ExceptionEmailListener implements EventSubscriberInterface
     }
 
     /**
-     *  TODO: log all errors and send a compiled message periodically (IE: daily, weekly, monthly)
-     *        This would stop mass emails on major system failures and DOS attacks...
      * @param Throwable $e
      */
     protected function emailException(Throwable $e): void
@@ -50,20 +48,19 @@ class ExceptionEmailListener implements EventSubscriberInterface
         if ($e instanceof ResourceNotFoundException ||
             $e instanceof NotFoundHttpException ||
             $e instanceof MethodNotAllowedHttpException)
+        {
             return;
-
-        // Stop console instance exists email errors they are not needed
-        //if ($e->getCode() == Console::ERROR_CODE_INSTANCE_EXISTS) return; ??
+        }
 
         try {
             if (count($this->emailList)) {
                 foreach ($this->emailList as $email) {
-                    $message = Factory::instance()->createMailMessage();
-                    $message->setFrom($email);
-                    $message->addTo($email);
+
+                    $message = Factory::instance()->createMailMessage($this->getExceptionHtml($e));
                     $subject = "{$this->siteTitle} Error: '{$e->getMessage()}'";
                     $message->setSubject(Str::strcat($subject, 80));
-                    $message->setContent($this->getExceptionHtml($e));
+                    $message->setFrom($email);
+                    $message->addTo($email);
                     $message->addHeader('X-Exception', get_class($e));
                     $message->set('sig', '');
 
