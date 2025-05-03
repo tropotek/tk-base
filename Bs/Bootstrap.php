@@ -62,6 +62,11 @@ class Bootstrap
         Factory::instance()->initEventDispatcher();
         Factory::instance()->initMailGateway();
 
+        Uri::$SITE_HOST = Config::getHostname();
+        Uri::$BASE_PATH = Config::getBaseUrl();
+
+        Factory::instance()->initSession();
+
         if (System::isCli()) {
             $this->cliInit();
         } else {
@@ -77,14 +82,9 @@ class Bootstrap
          */
         chdir(Config::getBasePath());
 
-        Uri::$SITE_HOST = Config::getHostname();
-        Uri::$BASE_PATH = Config::getBaseUrl();
-
         if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;
         }
-
-        Factory::instance()->initSession();
         Factory::instance()->getRequest();
         Factory::instance()->initBreadcrumbs();
 
@@ -92,6 +92,7 @@ class Bootstrap
 
     protected function cliInit(): void
     {
+
 
     }
 
