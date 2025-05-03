@@ -172,7 +172,7 @@ let tkbase = function () {
         // full mce default config
         let mceFull = {
             license_key: 'gpl',
-            height: 500,
+            height: 400,
             plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'image', 'media', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
@@ -219,17 +219,22 @@ let tkbase = function () {
             plugins: ['link', 'image', 'code', 'fullscreen'],
             contextmenu: false,
             statusbar: false,
+            height: 300,
             extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
         };
         $.extend(mceMin, cfg);
 
         // Register the init function
         tkRegisterInit(function () {
-            $('textarea.mce, textarea.mce-min', this).each(function () {
+            $('textarea.mce, textarea.mce-min, textarea.mce-xs', this).each(function () {
                 let el = $(this);
                 let cfg = mceFull;
-                if (el.is('.mce-min')) {
+                if (el.is('.mce-min, .mce-xs')) {
                     cfg = mceMin;
+                    if (el.is('.mce-min, .mce-xs')) {
+                        cfg.menubar = false;
+                        cfg.toolbar = true;
+                    }
                 }
                 if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
                     delete cfg.file_picker_callback;
