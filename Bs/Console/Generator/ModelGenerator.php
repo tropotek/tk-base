@@ -567,9 +567,6 @@ class {classname} extends Table
         \$this->getForm()->appendField(new Input('search'))
             ->setAttr('placeholder', 'Search');
 
-        // init filter fields for actions to access to the filter values
-        \$this->initForm();
-
         // Add Table actions
         \$this->appendAction(Delete::create())
             ->addOnGetSelected([\$rowSelect, 'getSelected'])
@@ -580,7 +577,6 @@ class {classname} extends Table
             });
 
         \$this->appendAction(Csv::create())
-            ->addOnGetSelected([\$rowSelect, 'getSelected'])
             ->addOnCsv(function(Csv \$action, array \$selected) {
                 \$action->setExcluded(['id', 'actions']);
                 \$filter = \$this->getDbFilter();
@@ -598,7 +594,8 @@ class {classname} extends Table
     public function show(): ?Template
     {
         \$renderer = \$this->getRenderer();
-        return \$renderer->show();
+
+        return parent::show();
     }
 }
 PHP;
