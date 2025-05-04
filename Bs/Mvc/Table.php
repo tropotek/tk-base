@@ -60,7 +60,9 @@ class Table extends \Tk\Table
     {
         // init cells, filters and actions
         $this->init();
-        $this->getForm()->setFieldValues($this->filterDefaults);
+        if (count($this->filterDefaults)) {
+            $this->getForm()->setFieldValues($this->filterDefaults);
+        }
 
         // add reset table session action
         if (Config::isDev()) {
