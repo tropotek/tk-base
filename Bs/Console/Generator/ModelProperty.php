@@ -286,40 +286,40 @@ class ModelProperty extends \Tk\Collection
         );
     }
 
-    public function getFilterQuery(): string
-    {
-        //if ($this->getName() == 'id' ) return '';
-        if ($this->isPrimaryKey()) return '';
-
-        $filterVal = sprintf("\$this->quote(\$filter['%s'])", $this->getName());
-        switch ($this->getType()) {
-            case self::TYPE_INT:
-            case self::TYPE_BOOL:
-                $filterVal = sprintf("(int)\$filter['%s']", $this->getName());
-                break;
-            case self::TYPE_FLOAT:
-                $filterVal = sprintf("(float)\$filter['%s']", $this->getName());
-                break;
-        }
-
-        $tpl = <<<TPL
-                if (!empty(\$filter['%s'])) {
-                    \$filter->appendWhere('a.%s = %%s AND ', %s);
-                }
-        TPL;
-        if (str_ends_with($this->getName(), 'Id') && $this->getType() == self::TYPE_INT) {
-            $tpl = <<<TPL
-                    if (!empty(\$filter['%s'])) {
-                        \$filter->appendWhere('a.%s = %%s AND ', %s);
-                    }
-            TPL;
-        }
-        return sprintf($tpl,
-            $this->getName(),
-            $this->get('Field'),
-            $filterVal
-        );
-    }
+//    public function getFilterQuery(): string
+//    {
+//        //if ($this->getName() == 'id' ) return '';
+//        if ($this->isPrimaryKey()) return '';
+//
+//        $filterVal = sprintf("\$this->quote(\$filter['%s'])", $this->getName());
+//        switch ($this->getType()) {
+//            case self::TYPE_INT:
+//            case self::TYPE_BOOL:
+//                $filterVal = sprintf("(int)\$filter['%s']", $this->getName());
+//                break;
+//            case self::TYPE_FLOAT:
+//                $filterVal = sprintf("(float)\$filter['%s']", $this->getName());
+//                break;
+//        }
+//
+//        $tpl = <<<TPL
+//                if (!empty(\$filter['%s'])) {
+//                    \$filter->appendWhere('AND a.%s = %%s', %s);
+//                }
+//        TPL;
+//        if (str_ends_with($this->getName(), 'Id') && $this->getType() == self::TYPE_INT) {
+//            $tpl = <<<TPL
+//                    if (!empty(\$filter['%s'])) {
+//                        \$filter->appendWhere('AND a.%s = %%s', %s);
+//                    }
+//            TPL;
+//        }
+//        return sprintf($tpl,
+//            $this->getName(),
+//            $this->get('Field'),
+//            $filterVal
+//        );
+//    }
 
     public function getPreparedFilterQuery(): string
     {
@@ -340,7 +340,7 @@ class ModelProperty extends \Tk\Collection
 
         $tpl = <<<TPL
                 if (%s) {%s
-                    \$filter->appendWhere('a.%s = :%s AND ');
+                    \$filter->appendWhere('AND a.%s = :%s');
                 }
         TPL;
         return sprintf($tpl,

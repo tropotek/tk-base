@@ -194,7 +194,9 @@ class ModelGenerator
             if ($mp->getType() == '\DateTime' && $mp->get('Null') == 'NO') {
                 $data['construct'] .= $mp->getInitaliser() . "\n";
             }
+
             if (
+                !$col->is_primary_key &&
                 $mp->get('Null') == 'NO' &&
                 $mp->get('Type') != 'text' &&
                 $mp->getType() != ModelProperty::TYPE_DATE &&
@@ -280,18 +282,13 @@ class {classname} extends Model
     public static function findFiltered(array|Filter \$filter): array
     {
         \$filter = Filter::create(\$filter);
+        \$filter->appendFrom('{view} a');
 
         if (!empty(\$filter['search'])) {
             \$filter['lSearch'] = '%' . \$filter['search'] . '%';
-            \$w = '';
-            //\$w .= 'LOWER(a.name) LIKE LOWER(:lSearch) OR ';
-            \$w .= 'a.{primary-col} = :search OR ';
-            if (\$w) \$filter->appendWhere('(%s) AND ', substr(\$w, 0, -3));
-        }
-
-        if (!empty(\$filter['always'])) {
-            if (!is_array(\$filter['always'])) \$filter['always'] = [\$filter['always']];
-            \$filter->appendWhere('(a.{primary-col} IN :always) OR ', \$filter['always']);
+            \$w  = 'a.{primary-col} = :search';
+            // \$w .= 'OR LOWER(a.name) LIKE LOWER(:lSearch)';
+            if (\$w) \$filter->appendWhere('AND (%s)', \$w);
         }
 
         if (!empty(\$filter['id'])) {
@@ -299,18 +296,17 @@ class {classname} extends Model
         }
         if (!empty(\$filter['{primary-prop}'])) {
             if (!is_array(\$filter['{primary-prop}'])) \$filter['{primary-prop}'] = [\$filter['{primary-prop}']];
-            \$filter->appendWhere('a.{primary-col} IN :{primary-prop} AND ');
+            \$filter->appendWhere('AND a.{primary-col} IN :{primary-prop}');
         }
 
         if (!empty(\$filter['exclude'])) {
             if (!is_array(\$filter['exclude'])) \$filter['exclude'] = [\$filter['exclude']];
-            \$filter->appendWhere('a.{primary-col} NOT IN :exclude AND ', \$filter['exclude']);
+            \$filter->appendWhere('AND a.{primary-col} NOT IN :exclude');
         }
 {prepared-filter-queries}
         return Db::query("
             SELECT *
-            FROM {view} a
-            {\$filter->getSql()}",
+            FROM {\$filter->getSql()}",
             \$filter->all(),
             self::class
         );
