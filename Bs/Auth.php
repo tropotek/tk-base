@@ -331,18 +331,12 @@ class Auth extends Model
 
     /**
      * @return array<int,Auth>
+     * @deprecated Should not have this function
      */
-    public static function findFiltered(array|Filter $filter): array
+    public static function findFiltered2(array|Filter $filter): array
     {
         $filter = Filter::create($filter);
-
-        if (!empty($filter['search'])) {
-            $filter['search'] = '%' . $filter['search'] . '%';
-            $w  = 'LOWER(a.email) LIKE LOWER(:search) OR ';
-            $w .= 'LOWER(a.uid) LIKE LOWER(:search) OR ';
-            $w .= 'LOWER(a.auth_id) LIKE LOWER(:search) OR ';
-            $filter->appendWhere('(%s) AND ', substr($w, 0, -3));
-        }
+        $filter->appendFrom('v_auth a');
 
         if (!empty($filter['authId'])) {
             if (!is_array($filter['authId'])) $filter['authId'] = [$filter['authId']];
