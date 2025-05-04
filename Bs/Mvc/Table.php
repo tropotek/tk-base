@@ -19,12 +19,13 @@ class Table extends \Tk\Table
 {
     use RendererTrait;
 
-    protected ?Form        $form         = null;
-    protected ?Table       $table        = null;
-    protected ?Filter      $dbFilter     = null;
-    protected ?DomRenderer $renderer     = null;
-    protected ?Renderer    $formRenderer = null;
-    protected bool         $hideReset    = false;
+    protected ?Form        $form           = null;
+    protected ?Table       $table          = null;
+    protected ?Filter      $dbFilter       = null;
+    protected ?DomRenderer $renderer       = null;
+    protected ?Renderer    $formRenderer   = null;
+    protected bool         $hideReset      = false;
+    protected array        $filterDefaults = [];
 
 
     public function __construct(string $tableId = '', string $orderBy = '', int $limit = 10, int $page = 1)
@@ -59,6 +60,7 @@ class Table extends \Tk\Table
     {
         // init cells, filters and actions
         $this->init();
+        $this->getForm()->setFieldValues($this->filterDefaults);
 
         // add reset table session action
         if (Config::isDev()) {
@@ -317,6 +319,17 @@ HTML;
         }
 
         return $ttpl;
+    }
+
+    public function getFilterDefaults(): array
+    {
+        return $this->filterDefaults;
+    }
+
+    public function setFilterDefaults(array $filterDefaults): self
+    {
+        $this->filterDefaults = $filterDefaults;
+        return $this;
     }
 
 }
