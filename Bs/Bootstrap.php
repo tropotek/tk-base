@@ -39,6 +39,7 @@ class Bootstrap
                 DB::setTimezone($config->get('php.date.timezone', 'Australia/Melbourne'));
             }
         }
+        TextEncrypt::$encryptKey = $config->get('system.encrypt', '');
 
         StartupHandler::$PARAMS = $config->get('site.log.params', StartupHandler::LOG_ALL);
 
@@ -48,8 +49,6 @@ class Bootstrap
         ErrorHandler::instance();
 
         VarDump::instance();
-
-        TextEncrypt::$encryptKey = $config->get('system.encrypt', '');
 
         if (Config::isDev()) {
             // Allow self-signed certs in file_get_contents in dev environment
@@ -65,6 +64,12 @@ class Bootstrap
         Uri::$SITE_HOST = Config::getHostname();
         Uri::$BASE_PATH = Config::getBaseUrl();
 
+        /**
+         * This makes our life easier when dealing with paths. Everything is relative
+         * to the application root now.
+         */
+        chdir(Config::getBasePath());
+
         Factory::instance()->initSession();
 
         if (System::isCli()) {
@@ -76,11 +81,6 @@ class Bootstrap
 
     protected function httpInit(): void
     {
-        /**
-         * This makes our life easier when dealing with paths. Everything is relative
-         * to the application root now.
-         */
-        chdir(Config::getBasePath());
 
         if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;

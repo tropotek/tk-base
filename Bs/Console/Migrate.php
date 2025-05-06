@@ -43,10 +43,7 @@ class Migrate extends Console
             }
 
             if ($drop) {
-                $exclude = [];
-                if (Config::isDev()) {
-                    $exclude = [$this->getConfig()->get('session.db_table')];
-                }
+                $exclude = [Db\Session::$DB_TABLE];
                 Db::dropAllTables(true, $exclude);
                 $this->write('Mode: Install');
             } else {
