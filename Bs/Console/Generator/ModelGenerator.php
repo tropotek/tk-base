@@ -436,9 +436,9 @@ class Manager extends ControllerAdmin
         \$this->table->execute();
 
         // todo: remove cell orderBy validation before release
-        if (!\$this->table->validateCells({classname}::getDataMap())) {
-            \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
-        }
+        // if (!\$this->table->validateCells({classname}::getDataMap())) {
+        //     \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
+        // }
 
         // Set the table rows
         \$filter = \$this->table->getDbFilter();
@@ -463,7 +463,7 @@ class Manager extends ControllerAdmin
 <div>
   <div class="page-actions card mb-3">
     <div class="card-body">
-      <a href="/{namespace-url}Edit" title="Create {name}" class="btn btn-outline-secondary" var="create"><i class="fa fa-plus"></i> Create {name}</a>
+      <a href="/{namespace-url}Edit" title="Create {name}" class="btn btn-outline-secondary"><i class="fa fa-plus"></i> Create {name}</a>
     </div>
   </div>
   <div class="card mb-3">
