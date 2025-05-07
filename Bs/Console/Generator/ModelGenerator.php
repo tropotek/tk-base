@@ -436,9 +436,9 @@ class Manager extends ControllerAdmin
         \$this->table->execute();
 
         // todo: remove cell orderBy validation before release
-        if (!\$this->table->validateCells({classname}::getDataMap())) {
-            \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
-        }
+        // if (!\$this->table->validateCells({classname}::getDataMap())) {
+        //     \$this->table->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
+        // }
 
         // Set the table rows
         \$filter = \$this->table->getDbFilter();
