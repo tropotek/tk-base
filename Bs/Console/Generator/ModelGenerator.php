@@ -542,8 +542,6 @@ class {classname} extends Table
 
     public function init(): static
     {
-        \$editUrl = Uri::create('/{namespace-url}Edit');
-
         \$rowSelect = RowSelect::create('id', '{primary-prop}');
         \$this->appendCell(\$rowSelect);
 
@@ -569,17 +567,16 @@ class {classname} extends Table
                 }
             });
 
-        \$this->appendAction(Csv::create())
-            ->addOnCsv(function(Csv \$action, array \$selected) {
-                \$action->setExcluded(['id', 'actions']);
-                \$filter = \$this->getDbFilter();
-                if (\$selected) {
-                    \$rows = \{db-namespace}\{classname}::findFiltered(\$filter);
-                } else {
-                    \$rows = \{db-namespace}\{classname}::findFiltered(\$filter->resetLimits());
+        \$this->appendAction(Csv::create()
+            ->addOnCsv(function(Csv \$action) {
+                \$action->setExcluded(['actions']);
+                if (!\$this->table->getCell({classname}::getPrimaryProperty())) {
+                    \$this->table->prependCell({classname}::getPrimaryProperty())->setHeader('id');
                 }
-                return \$rows;
-            });
+                //\$this->table->getCell('name')->getOnValue()->reset();
+                \$filter = \$this->table->getDbFilter()->resetLimits();
+                return {classname}::findFiltered(\$filter);
+            }));
 
         return \$this;
     }
