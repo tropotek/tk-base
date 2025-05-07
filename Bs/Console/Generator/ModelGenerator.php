@@ -463,7 +463,7 @@ class Manager extends ControllerAdmin
 <div>
   <div class="page-actions card mb-3">
     <div class="card-body">
-      <a href="/{namespace-url}Edit" title="Create {name}" class="btn btn-outline-secondary" var="create"><i class="fa fa-plus"></i> Create {name}</a>
+      <a href="/{namespace-url}Edit" title="Create {name}" class="btn btn-outline-secondary"><i class="fa fa-plus"></i> Create {name}</a>
     </div>
   </div>
   <div class="card mb-3">
