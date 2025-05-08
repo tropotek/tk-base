@@ -44,7 +44,8 @@ class Upgrade extends Console
                 'git pull',
                 'git log --tags --simplify-by-decoration --pretty="format:%ci %d %h"',
                 'git checkout {tag}',
-                'composer update'
+                'composer install',
+                //'composer update',
             ];
 
 //            if (Config::isDev()) {
