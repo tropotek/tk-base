@@ -45,15 +45,7 @@ class Upgrade extends Console
                 'git log --tags --simplify-by-decoration --pretty="format:%ci %d %h"',
                 'git checkout {tag}',
                 'composer install',
-                //'composer update',
             ];
-
-//            if (Config::isDev()) {
-//                array_unshift($cmdList, 'ci');
-//                $cmdList[] = 'git reset --hard';
-//                $cmdList[] = 'git checkout master';
-//                $cmdList[] = 'composer update';
-//            }
 
             $tag = '';
             $output = [];
