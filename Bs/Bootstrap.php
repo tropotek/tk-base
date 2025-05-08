@@ -64,12 +64,6 @@ class Bootstrap
         Uri::$SITE_HOST = Config::getHostname();
         Uri::$BASE_PATH = Config::getBaseUrl();
 
-        /**
-         * This makes our life easier when dealing with paths. Everything is relative
-         * to the application root now.
-         */
-        chdir(Config::getBasePath());
-
         Factory::instance()->initSession();
 
         if (System::isCli()) {
@@ -81,6 +75,11 @@ class Bootstrap
 
     protected function httpInit(): void
     {
+        /**
+         * This makes our life easier when dealing with paths. Everything is relative
+         * to the application root now.
+         */
+        chdir(Config::getBasePath());
 
         if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;
