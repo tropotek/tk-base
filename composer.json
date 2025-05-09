@@ -1,7 +1,7 @@
 {
     "name": "ttek/tk-base",
     "type": "library",
-    "description": "Tk8 Lib: Tk Lib base MVC framework the implements the base Symfony framework",
+    "description": "Tk8 Lib: Tk Lib MVC framework using low-level Symfony framework objects",
     "keywords":  [
         "tropotek",
         "MVC"
