@@ -1,9 +1,10 @@
 {
     "name": "ttek/tk-base",
     "type": "library",
-    "description": "Base site library for the Au lib",
+    "description": "Tk8 Lib: Tk Lib base MVC framework the implements the base Symfony framework",
     "keywords":  [
-        "tropotek"
+        "tropotek",
+        "MVC"
     ],
     "time": "2025-04-21",
     "license": "MIT",
