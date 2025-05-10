@@ -283,6 +283,15 @@ class Factory extends Collection
         return $this->get('authAdapter');
     }
 
+    public function getCache(): Cache
+    {
+        if (!$this->has('sysCache')) {
+            $cache = new Cache(new Filesystem(Config::makePath(Config::getCachePath())));
+            $this->set('sysCache', $cache);
+        }
+        return $this->get('sysCache');
+    }
+
     public function initPage(string $templatePath = ''): PageInterface
     {
         $page = $this->get('pageRenderer');
