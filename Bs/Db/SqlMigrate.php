@@ -94,17 +94,14 @@ class SqlMigrate
     }
 
     /**
-     * Execute the dev php file to allow configuration of a dev environment.
-     * Cannot be executed in a production environment.
+     * Execute the system migration dev.php file
+     * This allows developers to run scripts on each migration call
      */
     public static function migrateDev(?callable $log = null) :bool
     {
-        if (!Config::isDev()) {
-            return true;
-        }
         $devFile = Config::makePath(Config::instance()->get('dev.setup.script'));
         if (is_file($devFile)) {
-            if (is_callable($log)) call_user_func_array($log, ['Setup dev environment: ' . Config::instance()->get('dev.setup.script')]);
+            if (is_callable($log)) call_user_func_array($log, ['Finalise system migration: ' . Config::instance()->get('dev.setup.script')]);
             include($devFile);
         }
         return true;

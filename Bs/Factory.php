@@ -391,6 +391,7 @@ class Factory extends Collection
 
     public function initBreadcrumbs(): Breadcrumbs
     {
+        //Breadcrumbs::destroy();
         $crumbs = Breadcrumbs::init();
         if (\Bs\Auth::getAuthUser()) {
             Breadcrumbs::setHome('/dashboard', '<i class="fa fa-home"></i>');
