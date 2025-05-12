@@ -46,7 +46,6 @@ class Breadcrumbs
     public function __serialize()
     {
         return [
-            'visible'    => $this->visible,
             'crumbStack' => $this->crumbStack,
             'titleStack' => $this->titleStack,
             'homeTitle'  => $this->homeTitle,
@@ -57,7 +56,6 @@ class Breadcrumbs
 
     public function __unserialize(array $data)
     {
-        $this->visible    = $data['visible'];
         $this->crumbStack = $data['crumbStack'];
         $this->titleStack = $data['titleStack'];
         $this->homeTitle  = $data['homeTitle'];
