@@ -285,9 +285,9 @@ class {classname} extends Model
         \$filter->appendFrom('{view} a');
 
         if (!empty(\$filter['search'])) {
-            \$filter['lSearch'] = '%' . \$filter['search'] . '%';
-            \$w  = 'a.{primary-col} = :search';
-            // \$w .= 'OR LOWER(a.name) LIKE LOWER(:lSearch)';
+            \$filter['lSearch'] = '%' . strtolower(\$filter['search']) . '%';
+            \$w  = "a.{primary-col} = :search ";
+            //\$w  = "OR LOWER(CONCAT_WS(' ', a.name)) LIKE :lSearch ";
             if (\$w) \$filter->appendWhere('AND (%s)', \$w);
         }
 
