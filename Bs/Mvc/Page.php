@@ -2,6 +2,7 @@
 namespace Bs\Mvc;
 
 use Bs\Auth;
+use Bs\Ui\Breadcrumbs;
 use Dom\Template;
 use Tk\Config;
 use Tk\Uri;
@@ -25,15 +26,15 @@ class Page extends PageDomInterface
         $template->appendHeadJs($js);
 
         $template->setTitleText($this->getTitle());
-        if (Config::isDebug()) {
-            $template->setTitleText('DEBUG: ' . $template->getTitleText());
+        if (Config::isDev()) {
+            $template->setTitleText('DEV: ' . $template->getTitleText());
         }
 
-        $template->setText('site-name', Registry::instance()->getSiteName());
-        $template->setAttr('site-short-name', 'title', Registry::instance()->getSiteName());
-        $template->setText('site-short-name', Registry::instance()->getSiteShortName());
-        $template->setAttr('site-name-letter', 'title', Registry::instance()->getSiteName());
-        $template->setText('site-name-letter', Registry::instance()->getSitename()[0] ?? '');
+        $template->setText('site-name', Registry::getSiteName());
+        $template->setAttr('site-short-name', 'title', Registry::getSiteName());
+        $template->setText('site-short-name', Registry::getSiteShortName());
+        $template->setAttr('site-name-letter', 'title', Registry::getSiteName());
+        $template->setText('site-name-letter', Registry::getSitename()[0] ?? '');
         $template->setText('page-title', $this->getTitle());
         if (!empty($this->getIcon())) {
             $template->addCss('page-icon', $this->getIcon());
@@ -42,9 +43,12 @@ class Page extends PageDomInterface
         return parent::show();
     }
 
+    /**
+     * @deprecated use Breadcrumbs::getBackUrl()
+     */
     public function getBackUrl(): Uri
     {
-        return $this->getFactory()->getBackUrl();
+        return Breadcrumbs::getBackUrl();
     }
 
 }

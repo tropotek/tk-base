@@ -1,13 +1,11 @@
 <?php
 namespace Bs\Mvc;
 
-use Bs\Traits\SystemTrait;
 use Bs\Ui\Breadcrumbs;
 use Tk\Uri;
 
 abstract class PageInterface
 {
-    use SystemTrait;
 
     private string $title        = '';
     private string $icon         = '';

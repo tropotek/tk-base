@@ -15,18 +15,18 @@ use Tk\System;
 class StartupHandler implements EventSubscriberInterface
 {
 
-    const SITE_NAME             = 0x1;
-    const REQUEST_URI           = 0x2;
-    const CLIENT_IP             = 0x4;
-    const CLIENT_AGENT          = 0x8;
-    const SESSION_ID            = 0x10;
-    const PHP_VER               = 0x20;
-    const CONTROLLER            = 0x40;
-    const METRICS               = 0x80;
+    const int SITE_NAME             = 0x1;
+    const int REQUEST_URI           = 0x2;
+    const int CLIENT_IP             = 0x4;
+    const int CLIENT_AGENT          = 0x8;
+    const int SESSION_ID            = 0x10;
+    const int PHP_VER               = 0x20;
+    const int CONTROLLER            = 0x40;
+    const int METRICS               = 0x80;
 
-    const LOG_MIN = 0;
+    const int LOG_MIN = 0;
 
-    const LOG_ALL =
+    const int LOG_ALL =
         self::SITE_NAME |
         self::REQUEST_URI |
         self::CLIENT_IP |
@@ -67,8 +67,8 @@ class StartupHandler implements EventSubscriberInterface
 
         if(self::hasParam(self::SITE_NAME)) {
             $siteName = implode(' ', $_SERVER['argv'] ?? []);
-            if (!empty(Registry::instance()->getSiteName())) {
-                $siteName = Registry::instance()->getSiteName();
+            if (!empty(Registry::getSiteName())) {
+                $siteName = Registry::getSiteName();
             }
             if (System::getComposerJson()) {
                 $siteName .= sprintf(' [%s]', System::getComposerJson()['name']);

@@ -59,7 +59,7 @@ class Auth extends Model
 
     public function __construct()
     {
-        $this->timezone = Config::instance()->get('php.date.timezone');
+        $this->timezone = Config::getValue('php.date.timezone');
         $this->modified = new \DateTimeImmutable();
         $this->created  = new \DateTimeImmutable();
     }
@@ -91,7 +91,7 @@ class Auth extends Model
         $obj = new self();
         $obj->fkey     = $model::class;
         $obj->fid      = $id;
-        $obj->timezone = Config::instance()->get('php.date.timezone');
+        $obj->timezone = Config::getValue('php.date.timezone');
         return $obj;
     }
 
@@ -202,7 +202,7 @@ class Auth extends Model
 
     public static function validatePassword(string $pwd, array &$errors = []): array
     {
-        if (!Config::instance()->get('auth.password.strict', true)) return $errors;
+        if (!Config::getValue('auth.password.strict', true)) return $errors;
 
         if (strlen($pwd) < 8) {
             $errors[] = "Password too short";

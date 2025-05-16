@@ -31,10 +31,10 @@ class Upgrade extends Console
             $this->writeError('Error: Only run this command in a live environment.');
             return Command::FAILURE;
         }
-        $currentMode = Registry::instance()->isMaintenanceMode();
+        $currentMode = Registry::isMaintenanceMode();
 
         try {
-            Registry::instance()->setMaintenanceMode();
+            Registry::setMaintenanceMode();
 
             // TODO: create a backup of the database before executing this.....
 
@@ -84,7 +84,7 @@ class Upgrade extends Console
             $this->writeError($e->getMessage());
             return Command::FAILURE;
         } finally {
-            Registry::instance()->setMaintenanceMode($currentMode);
+            Registry::setMaintenanceMode($currentMode);
         }
 
         return Command::SUCCESS;

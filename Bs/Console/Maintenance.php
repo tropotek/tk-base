@@ -14,7 +14,7 @@ class Maintenance extends Console
 
     protected function configure(): void
     {
-        $enabled = Registry::instance()->isMaintenanceMode();
+        $enabled = Registry::isMaintenanceMode();
 
         $this->setName('maintenance')
             ->setAliases(['maint'])
@@ -30,7 +30,7 @@ class Maintenance extends Console
         } else {
             $this->writeInfo('Maintenance mode disabled.');
         }
-        Registry::instance()->setMaintenanceMode($mode);
+        Registry::setMaintenanceMode($mode);
 
         return Command::SUCCESS;
     }

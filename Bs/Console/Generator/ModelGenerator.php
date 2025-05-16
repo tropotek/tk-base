@@ -649,6 +649,7 @@ use Tk\Form\Field\Hidden;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Select;
 use Tk\Uri;
+use Bs\Ui\Breadcrumbs;
 
 class Edit extends ControllerAdmin
 {
@@ -699,7 +700,7 @@ class Edit extends ControllerAdmin
         Alert::addSuccess('Form save successfully.');
         \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->{property-name}->{primary-prop}));
         if (\$form->getTriggeredAction()->isExit()) {
-            \$action->setRedirect(\$this->getBackUrl());
+            \$action->setRedirect(Breadcrumbs::getBackUrl());
         }
     }
 
@@ -774,6 +775,7 @@ use Tk\Form\Field\Hidden;
 use Tk\Form\Field\Input;
 use Tk\Form\Field\Select;
 use Tk\Uri;
+use Bs\Ui\Breadcrumbs;
 
 /**
  * Example Controller:
@@ -803,7 +805,7 @@ class {classname} extends Form
     {
 {field-list}
         \$this->appendField(new SubmitExit('save', [\$this, 'onSubmit']));
-        \$this->appendField(new Link('cancel', \$this->getBackUrl()));
+        \$this->appendField(new Link('cancel', Breadcrumbs::getBackUrl()));
 
         return \$this;
     }
@@ -836,7 +838,7 @@ class {classname} extends Form
         Alert::addSuccess('Form save successfully.');
         \$action->setRedirect(Uri::create()->set('{primary-prop}', \$this->get{classname}()->{primary-prop}));
         if (\$form->getTriggeredAction()->isExit()) {
-            \$action->setRedirect(\$this->getBackUrl());
+            \$action->setRedirect(Breadcrumbs::getBackUrl());
         }
     }
 

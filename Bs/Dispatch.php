@@ -25,7 +25,7 @@ use Tk\System;
  * attaches all the listeners required for your application to run.
  *
  * Subclass this object in your App (to setup a Tk framework) and then override the Factory method
- * Factory::initDispatcher()
+ * Factory::instance()->initDispatcher()
  */
 class Dispatch
 {
@@ -54,7 +54,7 @@ class Dispatch
     {
         if (Config::isDev()) {
             $this->getDispatcher()->addSubscriber(new StartupHandler());
-            $this->getDispatcher()->addSubscriber(new ShutdownHandler(Config::instance()->get('script.start.time')));
+            $this->getDispatcher()->addSubscriber(new ShutdownHandler(Config::getValue('script.start.time')));
         }
     }
 
@@ -69,7 +69,7 @@ class Dispatch
         ));
 
         $this->getDispatcher()->addSubscriber(new LogExceptionListener(
-            Config::isDebug()
+            Config::isDev()
         ));
 
         $this->getDispatcher()->addSubscriber(new ViewHandler());
@@ -78,13 +78,13 @@ class Dispatch
 
         $this->getDispatcher()->addSubscriber(new ExceptionListener(
             'Bs\Controller\Error::doDefault',
-            Config::isDebug()
+            Config::isDev()
         ));
 
         if (Config::isProd()) {
             $this->getDispatcher()->addSubscriber(new ExceptionEmailListener(
-                Config::instance()->get('system.email.exception', []),
-                Registry::instance()->get('site.name')
+                Config::getValue('system.email.exception', []),
+                Registry::getSiteName()
             ));
         }
 

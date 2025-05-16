@@ -25,7 +25,7 @@ class MaintenanceHandler implements EventSubscriberInterface
 
         // Exit if not in maintenance mode
         if (
-            !Registry::instance()->get('system.maintenance.enabled') ||
+            !Registry::isMaintenanceMode() ||
             $controller[0] instanceof Maintenance
         ) {
             return;

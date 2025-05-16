@@ -18,7 +18,7 @@ return function (CollectionConfigurator $routes) {
         ->controller([\Bs\Controller\Util\DbSearch::class, 'doDefault']);
 
     // Site Mirror tool
-    if (\Tk\Config::instance()->get('db.mirror.secret', false)) {
+    if (\Tk\Config::getValue('db.mirror.secret', false)) {
         $routes->add('system-mirror', '/util/mirror')
             ->controller([\Bs\Controller\Util\Mirror::class, 'doDefault'])
             ->schemes(['https']);

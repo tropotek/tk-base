@@ -10,7 +10,7 @@ use Tk\Db;
  *
  * NOTE: Objects should not be saved in the Registry storage, only primitive types.
  */
-class Registry extends Db\Collection
+final class Registry extends Db\Collection
 {
     public static string   $DB_TABLE  = 'registry';
     protected static mixed $_instance = null;
@@ -30,31 +30,47 @@ class Registry extends Db\Collection
         return self::$_instance;
     }
 
-    public function getSiteName(): string
+    /**
+     * Static alias for self::instance()->get(...)
+     */
+    public static function getValue(string $key, mixed $default = null): mixed
     {
-        return $this->get('site.name', '');
+        return self::instance()->get($key, $default);
     }
 
-    public function getSiteShortName(): string
+    /**
+     * Static alias for self::instance()->set(...)
+     */
+    public static function setValue(string $key, mixed $value): static
     {
-        return $this->get('site.name.short', '');
+        return self::instance()->set($key, $value);
     }
 
-    public function getSiteEmail(): string
+    public static function getSiteName(): string
     {
-        return $this->get('site.email', '');
+        return self::instance()->get('site.name', '');
     }
 
-    public function isMaintenanceMode(): bool
+    public static function getSiteShortName(): string
     {
-        return (bool)$this->get('system.maintenance.enabled', false);
+        return self::instance()->get('site.name.short', '');
     }
 
-    public function setMaintenanceMode(bool $b = true): static
+    public static function getSiteEmail(): string
     {
-        $this->set('system.maintenance.enabled', $b);
-        $this->save();
-        return $this;
+        return self::instance()->get('site.email', '');
+    }
+
+    public static function isMaintenanceMode(): bool
+    {
+        return (bool)self::instance()->get('system.maintenance.enabled', false);
+    }
+
+    public static function setMaintenanceMode(bool $b = true): static
+    {
+        self::instance()->set('system.maintenance.enabled', $b);
+        self::instance()->save();
+        return self::instance();
     }
 
 }

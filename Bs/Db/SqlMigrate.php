@@ -5,6 +5,7 @@ use Tk\Config;
 use Tk\FileUtil;
 use Tk\Log;
 use Tk\Db;
+use Tk\Path;
 
 /**
  * DB migration tool
@@ -56,7 +57,7 @@ class SqlMigrate
     public static function migrateSite(?callable $log = null) :bool
     {
         // find default migration paths
-        $vendorPath   = Config::makePath(Config::instance()->get('path.vendor.org'));
+        $vendorPath   = Path::create(Config::getValue('path.vendor.org'));
         $migratePaths = [];
         $libPaths     = scandir($vendorPath);
 
@@ -64,7 +65,7 @@ class SqlMigrate
             array_shift($libPaths);
             array_shift($libPaths);
             $migratePaths = array_map(fn($path) => $vendorPath . '/' . $path . '/config/sql', $libPaths);
-            array_unshift($migratePaths, Config::makePath('/src/config/sql'));
+            array_unshift($migratePaths, Path::create('/src/config/sql'));
         } else {
             Log::warning("Vendor path not found: $vendorPath");
         }
@@ -81,7 +82,7 @@ class SqlMigrate
         $config = Config::instance();
 
         foreach ($config->get('db.migrate.static') as $file) {
-            $path = Config::makePath($file);
+            $path = Path::create($file);
             if (is_file($path)) {
                 // write to log file
                 if (is_callable($log)) call_user_func_array($log, ['Applying ' . $file]);
@@ -99,9 +100,10 @@ class SqlMigrate
      */
     public static function migrateDev(?callable $log = null) :bool
     {
-        $devFile = Config::makePath(Config::instance()->get('dev.setup.script'));
+        //$devFile = Config::makePath(Config::getValue('dev.setup.script'));
+        $devFile = Path::create(Config::getValue('dev.setup.script'));
         if (is_file($devFile)) {
-            if (is_callable($log)) call_user_func_array($log, ['Finalise system migration: ' . Config::instance()->get('dev.setup.script')]);
+            if (is_callable($log)) call_user_func_array($log, ['Finalise system migration: ' . Config::getValue('dev.setup.script')]);
             include($devFile);
         }
         return true;
@@ -137,7 +139,7 @@ class SqlMigrate
         try {
             $this->install();
 
-            $file = Config::makePath($this->toRelative($file));
+            $file = Path::create($this->toRelative($file));
 
             if (str_starts_with(basename($file), '_')) return false;
             if (!is_readable($file)) return false;
@@ -146,7 +148,7 @@ class SqlMigrate
             if ($this->hasPath($this->toRelative($file))) return true;
 
             if (!$this->backupFile) {   // only run once per session.
-                $options = Db::parseDsn(Config::instance()->get('db.mysql'));
+                $options = Db::parseDsn(Config::getValue('db.mysql'));
                 $this->backupFile = $options['dbName'] . "_" . date("Y-m-d-H-i-s").".sql";
                 Db\DbBackup::save($this->backupFile, $options);
             }
@@ -205,7 +207,7 @@ class SqlMigrate
     protected function restoreBackup(bool $deleteFile = true): void
     {
         if ($this->backupFile) {
-            $options = Db::parseDsn(Config::instance()->get('db.mysql'));
+            $options = Db::parseDsn(Config::getValue('db.mysql'));
             Db\DbBackup::restore($this->backupFile, $options);
             if ($deleteFile) {
                 $this->deleteBackup();

@@ -5,6 +5,7 @@ use Bs\Auth;
 use Tk\Config;
 use Tk\Log;
 use Tk\Db;
+use Tk\Path;
 
 /**
  * @todo Update the mirror command to encrypt the sql file before saving and after extracting.
@@ -18,7 +19,7 @@ class Mirror
         if (strtolower($_SERVER['REQUEST_SCHEME']) != 'https') {
             throw new \Tk\Exception('invalid SSL connection');
         }
-        if (!Config::instance()->get('db.mirror.secret', false)) {
+        if (!Config::getValue('db.mirror.secret', false)) {
             throw new \Tk\Exception('access disabled');
         }
 
@@ -37,7 +38,7 @@ class Mirror
 
         $headers = getallheaders();
         $secret  = trim($headers['authorization-key'] ?? $headers['Authorization-Key'] ?? '');
-        if (Config::instance()->get('db.mirror.secret', null) !== $secret) {
+        if (Config::getValue('db.mirror.secret') !== $secret) {
             throw new \Tk\Exception('invalid access key');
         }
 
@@ -52,20 +53,20 @@ class Mirror
 
     public function doDataBackup(bool $all = false): void
     {
-        $srcFile = tempnam(Config::makePath(''), '_mifl');
+        $srcFile = tempnam(Path::create('/'), '_mifl');
         if (is_file($srcFile)) unlink($srcFile);
         if ($all) {
             $cmd = sprintf('cd %s && tar -zcf %s %s',
                 escapeshellarg(Config::getBasePath()),
                 escapeshellarg(basename($srcFile)),
-                escapeshellarg(basename(Config::makePath(Config::getDataPath())))
+                escapeshellarg(basename(Path::createDataPath('/')))
             );
         } else {
             $cmd = sprintf('cd %s && tar --exclude=%s -zcf %s %s',
                 escapeshellarg(Config::getBasePath()),
                 escapeshellarg('private'),
                 escapeshellarg(basename($srcFile)),
-                escapeshellarg(basename(Config::makePath(Config::getDataPath())))
+                escapeshellarg(basename(Path::createDataPath('/')))
             );
         }
 
@@ -85,11 +86,11 @@ class Mirror
 
     public function doDbBackup(): void
     {
-        $options = Db::parseDsn(Config::instance()->get('db.mysql'));
+        $options = Db::parseDsn(Config::getValue('db.mysql'));
         // must exclude _migrate table for migrate cmd to work in mirror cmd
         $options['exclude'] = ['_session', '_migrate'];
 
-        $srcBak = tempnam(Config::makePath(Config::getTempPath()), 'midb');
+        $srcBak = tempnam(Path::createTempPath('/'), 'midb');
         Db\DbBackup::save($srcBak, $options);
 
         if (is_file($srcBak . '.gz')) {

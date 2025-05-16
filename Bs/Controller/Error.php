@@ -9,7 +9,7 @@ class Error
 
     public function doDefault(\Throwable $e): string
     {
-        return $this->getExceptionHtml($e, Config::isDebug());
+        return $this->getExceptionHtml($e, Config::isDev());
     }
 
     public function getExceptionHtml(\Throwable $e, bool $withTrace = false): string

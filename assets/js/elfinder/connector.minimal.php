@@ -24,7 +24,7 @@ define('ELFINDER_UNZIP_PATH',    $bin.'/unzip');
 
 define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php');  // see elFinder::getConnectorUrl()
 
-if (\Tk\Config::isDebug()) {
+if (\Tk\Config::isDev()) {
     define('ELFINDER_DEBUG_ERRORLEVEL', -1); // Error reporting level of debug mode
 }
 

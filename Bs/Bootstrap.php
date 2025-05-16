@@ -10,6 +10,7 @@ use Tk\Debug\VarDump;
 use Tk\ErrorHandler;
 use Tk\FileUtil;
 use Tk\Log;
+use Tk\Path;
 use Tk\System;
 use Tk\Db;
 use Tk\Uri;
@@ -27,8 +28,9 @@ class Bootstrap
         }
 
         // make app directories if not exists
-        FileUtil::mkdir(Config::makePath(Config::getTempPath()));
-        FileUtil::mkdir(Config::makePath(Config::getCachePath()));
+        FileUtil::mkdir(Path::createPrivatePath('/'));
+        FileUtil::mkdir(Path::createTempPath('/'));
+        FileUtil::mkdir(Path::createCachePath('/'));
 
         if ($config->has('db.mysql')) {
             Db::connect(

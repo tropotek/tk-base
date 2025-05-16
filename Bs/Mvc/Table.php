@@ -8,6 +8,7 @@ use Tk\Config;
 use Tk\DataMap\DataMap;
 use Tk\Form;
 use Tk\Log;
+use Tk\Path;
 use Tk\Table\Cell;
 use Tk\Uri;
 use Tk\Db\Filter;
@@ -167,7 +168,7 @@ HTML;
             $this->form->setCsrfTtl(0);
             $this->form->addCss('tk-table-filter');
             // Inline Dom Form Renderer
-            $tplFile = Config::makePath('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
+            $tplFile = Path::create('/vendor/ttek/tk-form/templates/bs5_dom_inline.html');
             $this->formRenderer = new Renderer($this->form, $tplFile);
         }
         return $this->form;

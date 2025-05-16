@@ -13,11 +13,11 @@ class Ping
     public function doDefault(): JsonResponse
     {
         $data = [
-            'hostname' => str_replace('www.', '', Config::instance()->get('hostname', 'localhost')),
-            'siteName' => Registry::instance()->get('site.name', 'unknown'),
+            'hostname' => str_replace('www.', '', Config::getValue('hostname', 'localhost')),
+            'siteName' => Registry::getValue('site.name', 'unknown'),
             'timestamp' => time(),
             'timezone' => date_default_timezone_get(),
-            'bytes' => FileUtil::diskSpace(Config::makePath()),
+            'bytes' => FileUtil::diskSpace(Config::getBasePath()),
         ];
 
         return new JsonResponse($data);

@@ -2,7 +2,6 @@
 namespace Bs\Mvc;
 
 use Bs\Auth;
-use Bs\Traits\SystemTrait;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Tk\Alert;
@@ -12,7 +11,6 @@ use Bs\Factory;
 
 abstract class ControllerInterface
 {
-    use SystemTrait;
 
     protected string $pageTemplate = '';
 

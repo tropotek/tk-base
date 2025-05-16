@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tk\Config;
+use Tk\Path;
 
 /**
  * Clean out empty folders in the /data dir
@@ -24,13 +25,13 @@ class CleanData extends Console
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->deleteEmptyFolders(Config::makePath(Config::getDataPath()));
+            $this->deleteEmptyFolders(Path::createDataPath('/data'));
             $this->deleteOldFiles(
-                Config::makePath(Config::getTempPath()),
+                Path::createTempPath('/'),
                 \Tk\Date::create()->sub(new \DateInterval('P7D'))
             );
             $this->deleteOldFiles(
-                Config::makePath(Config::getCachePath()),
+                Path::createCachePath('/'),
                 \Tk\Date::create()->sub(new \DateInterval('P7D'))
             );
         } catch (\Exception $e) {

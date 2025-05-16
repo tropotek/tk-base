@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Bs\Console\Console;
 use Tk\Config;
+use Tk\Path;
 
 class MakeInterface extends Console
 {
@@ -34,7 +35,7 @@ class MakeInterface extends Console
 
         $this->basePath = $input->getOption('basepath');
         if (!$this->getBasePath())
-            $this->basePath = Config::makePath($this->getConfig()->get('path.src'));
+            $this->basePath = Path::create($this->getConfig()->get('path.src'));
 
         $this->gen = ModelGenerator::create(
             $input->getArgument('table'),

@@ -27,7 +27,6 @@ use Symfony\Component\Routing\RouteCollection;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\DbTable;
 use Tk\Auth\Auth;
-use Tk\Cache\Adapter\Filesystem;
 use Tk\Cache\Cache;
 use Tk\Collection;
 use Tk\Config;
@@ -39,9 +38,18 @@ use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Mailer;
+use Tk\Path;
 use Tk\System;
 use Tk\Uri;
 
+/**
+ *
+ * NOTE: The methods in the factory must be called via `Factory::instance->...`
+ * when this Factory object is inherited by an App/Factory parent, those object methods are called first.
+ * This is the purpose of the Factory objects, to facilitate customisations of the base \Bs\Mvc libs.
+ *
+ *
+ */
 class Factory extends Collection
 {
     protected static mixed $_instance = null;
@@ -57,16 +65,6 @@ class Factory extends Collection
             self::$_instance = new static();
         }
         return self::$_instance;
-    }
-
-    public function getConfig(): Config
-    {
-        return Config::instance();
-    }
-
-    public function getRegistry(): Registry
-    {
-        return Registry::instance();
     }
 
     public function getBootstrap(): Bootstrap
@@ -100,7 +98,7 @@ class Factory extends Collection
         if (!$this->has('session')) {
             session_name('sn_' . md5(Config::getBaseUrl()));
             // init DB session if enabled
-            if ($this->getConfig()->get('session.db_enable', false)) {
+            if (Config::getValue('session.db_enable', false)) {
                 \Tk\Db\Session::instance();
             }
             session_start();
@@ -147,7 +145,7 @@ class Factory extends Collection
     {
         // Setup Routes and cache results.
         // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
-        $systemCache = new Cache(new Filesystem(Config::makePath($this->getConfig()->get('path.cache'))));
+        $systemCache = Cache::instance();
         $compiledRoutes = $systemCache->fetch('compiledRoutes');
         if ($refresh || !is_array($compiledRoutes) || System::isRefreshCacheRequest()) {
             ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
@@ -219,10 +217,10 @@ class Factory extends Collection
     public function initLogger(): void
     {
         // Init \Tk\Log
-        $logLevel = $this->getConfig()->get('log.logLevel', LogLevel::DEBUG);
+        $logLevel = Config::getValue('log.logLevel', LogLevel::DEBUG);
         // allow uri query string with no_log to stop logging
-        Log::setEnableNoLog($this->getConfig()->get('log.enableNoLog', true));
-        $logfile = $this->getConfig()->get('php.error_log', ini_get('error_log'));
+        Log::setEnableNoLog(Config::getValue('log.enableNoLog', true));
+        $logfile = Config::getValue('php.error_log', ini_get('error_log'));
         if (is_writable($logfile)) {
             $logger = Log::addLogger(new StreamLog($logfile, $logLevel));
         } else {
@@ -283,15 +281,6 @@ class Factory extends Collection
         return $this->get('authAdapter');
     }
 
-    public function getCache(): Cache
-    {
-        if (!$this->has('sysCache')) {
-            $cache = new Cache(new Filesystem(Config::makePath(Config::getCachePath())));
-            $this->set('sysCache', $cache);
-        }
-        return $this->get('sysCache');
-    }
-
     public function initPage(string $templatePath = ''): PageInterface
     {
         $page = $this->get('pageRenderer');
@@ -325,13 +314,12 @@ class Factory extends Collection
             if (class_exists('ScssPhp\ScssPhp\Compiler')) {
                 $vars = [
                     'baseUrl' => Config::getBaseUrl(),
-                    'dataUrl' => Config::makeUrl(Config::getDataPath())
+                    'dataUrl' => Uri::createDataUri('/')->getPath()
                 ];
-                Modifier\Scss::$IS_DEBUG = Config::isDebug();
+                Modifier\Scss::$IS_DEBUG = Config::isDev();
                 $scss = new Modifier\Scss(
                     Config::getBasePath(),
                     Config::getBaseUrl(),
-                    Config::makePath(Config::getCachePath()),
                     $vars
                 );
                 $scss->setCompress(true);
@@ -340,10 +328,10 @@ class Factory extends Collection
                 $dm->addFilter('scss', $scss);
             }
 
-            Modifier\UrlPath::$IS_DEBUG = Config::isDebug();
+            Modifier\UrlPath::$IS_DEBUG = Config::isDev();
             $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
 
-            if (Config::isDebug()) {
+            if (Config::isDev()) {
                 $dm->addFilter('pageBytes', new Modifier\PageBytes(Config::getBasePath()));
             }
 
@@ -358,13 +346,13 @@ class Factory extends Collection
     public function createMailMessage(string $content = '', string $template = ''): CurlyMessage
     {
         if (empty($template)) {
-            $tplPath = Config::makePath($this->getConfig()->get('system.mail.template'));
+            $tplPath = Path::create(Config::getValue('system.mail.template'));
             if (is_file($tplPath)) {
                 $template = file_get_contents($tplPath);
-                if (!$template) {
-                    \Tk\Log::warning('Template file not found, using default template: ' . $tplPath);
-                    $template = '{content}';
-                }
+            }
+            if (!$template) {
+                \Tk\Log::warning('Template file not found, using default template: ' . $tplPath);
+                $template = '{content}';
             }
         }
 
@@ -372,24 +360,16 @@ class Factory extends Collection
         $template = str_replace('{content}', $content, $template);
 
         $message = new \Tk\Mail\CurlyMessage($template);
-        $message->setFrom($this->getRegistry()->getSiteEmail());
-        $message->setReplyTo($this->getRegistry()->getSiteEmail());
-        $message->set('sig', $this->getRegistry()->get('site.email.sig', ''));
+        $message->setFrom(Registry::getSiteEmail());
+        $message->setReplyTo(Registry::getSiteEmail());
+        $message->set('sig', Registry::getValue('site.email.sig', ''));
 
         return $message;
     }
 
-    /**
-     * @deprecated use \Tk\Mail\Mailer::instance()
-     */
-    public function getMailGateway(): ?Mailer
-    {
-        return \Tk\Mail\Mailer::instance();
-    }
-
     public function initMailGateway(): ?Mailer
     {
-        $params = $this->getConfig()->all();
+        $params = Config::instance()->all();
         if (!System::isCli()) {
             $params['clientIp'] = System::getClientIp();
             $params['hostname'] = Config::getHostname();
@@ -408,11 +388,6 @@ class Factory extends Collection
             Breadcrumbs::setHome('/', '<i class="fa fa-home"></i>');
         }
         return $crumbs;
-    }
-
-    public function getBackUrl(): Uri
-    {
-        return Breadcrumbs::getBackUrl();
     }
 
     public function getConsole(): Application
@@ -448,5 +423,51 @@ class Factory extends Collection
             $this->set('console', $app);
         }
         return $this->get('console');
+    }
+
+
+
+    /**
+     * @deprecated use Config functions directly
+     */
+    public function getConfig(): Config
+    {
+        return Config::instance();
+    }
+
+    /**
+     * @deprecated use Registry static functions directly
+     */
+    public function getRegistry(): Registry
+    {
+        return Registry::instance();
+    }
+
+    /**
+     * @deprecated use \Tk\Mail\Mailer::instance()
+     */
+    public function getMailGateway(): ?Mailer
+    {
+        return \Tk\Mail\Mailer::instance();
+    }
+
+    /**
+     * @deprecated use Breadcrumbs::getBackUrl()
+     */
+    public function getBackUrl(): Uri
+    {
+        return Breadcrumbs::getBackUrl();
+    }
+
+    /**
+     * @deprecated use Cache::instance()
+     */
+    public function getCache(): Cache
+    {
+        if (!$this->has('sysCache')) {
+            $cache = Cache::instance();
+            $this->set('sysCache', $cache);
+        }
+        return $this->get('sysCache');
     }
 }

@@ -34,7 +34,6 @@ class Masquerade
     public static function masqueradeLogin(Auth $auth, Auth $msqAuth): bool
     {
         if (!self::canMasqueradeAs($auth, $msqAuth)) return false;
-        $factory = Factory::instance();
 
         // Get the masquerade queue from the session
         $msqArr = $_SESSION[static::SID] ?? [];
@@ -50,7 +49,7 @@ class Masquerade
         $_SESSION[static::SID] = $msqArr;
 
         // Simulates an AuthAdapter authenticate() method call
-        $factory->getAuthController()->getStorage()->write($msqAuth->username);
+        Factory::instance()->getAuthController()->getStorage()->write($msqAuth->username);
 
         return true;
     }
@@ -63,9 +62,8 @@ class Masquerade
      */
     public static function masqueradeLogout(): bool
     {
-        $factory = Factory::instance();
         if (!self::isMasquerading()) return false;
-        if (!$factory->getAuthController()->hasIdentity()) return false;
+        if (!Factory::instance()->getAuthController()->hasIdentity()) return false;
         $msqArr = $_SESSION[self::SID];
         if (!is_array($msqArr) || !count($msqArr)) return false;
 

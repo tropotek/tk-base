@@ -11,6 +11,7 @@ use Symfony\Component\Console\Question\Question;
 use Tk\Config;
 use Tk\FileUtil;
 use Tk\Log;
+use Tk\Path;
 use Tk\Uri;
 
 /**
@@ -77,7 +78,7 @@ class MirrorData extends Console
         }
 
         $username     = trim($input->getArgument('username'));
-        $dstDataFile = Config::makePath('/dst-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
+        $dstDataFile = Path::create('/dst-' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-data.tgz');
 
         $this->write('Downloading live data files...[Please wait]');
         if (is_file($dstDataFile)) unlink($dstDataFile);
@@ -101,7 +102,7 @@ class MirrorData extends Console
         }
         $this->write('Download Complete!');
 
-        $tmpgz = Config::makePath('/tmpData');
+        $tmpgz = Path::create('/tmpData');
         if (is_dir($tmpgz)) {
             FileUtil::rmdir($tmpgz);
         }
@@ -121,13 +122,13 @@ class MirrorData extends Console
 
         $dest = '/data';
         $bak  = '';
-        if (is_dir(Config::makePath($dest))) {
+        if (is_dir(Path::create($dest))) {
             // move existing dir to bak dest
             $bak = $this->uniqueDir($dest);
             $this->write('Move current data files to backup location: ' . $bak);
             $cmd = sprintf('mv %s %s ',
-                escapeshellarg(Config::makePath($dest)),
-                escapeshellarg(Config::makePath($bak))
+                escapeshellarg(Path::create($dest)),
+                escapeshellarg(Path::create($bak))
             );
             exec($cmd, $out, $ret);
             if ($ret != self::SUCCESS) {
@@ -136,10 +137,10 @@ class MirrorData extends Console
             }
         }
 
-        $this->write('Move extracted data files to: ' . Config::makePath($dest));
+        $this->write('Move extracted data files to: ' . Path::create($dest));
         $cmd = sprintf('mv %s %s ',
             escapeshellarg($tmpgz.'/data'),
-            escapeshellarg(Config::makePath($dest))
+            escapeshellarg(Path::create($dest))
         );
         exec($cmd, $out, $ret);
         if ($ret != self::SUCCESS) {
@@ -147,11 +148,11 @@ class MirrorData extends Console
             return Command::FAILURE;
         }
 
-        if (!$input->getOption('all') && is_dir(Config::makePath($bak.'/private'))) {
+        if (!$input->getOption('all') && is_dir(Path::create($bak.'/private'))) {
             $this->write('Restoring private files');
             $cmd = sprintf('cp %s %s -R',
-                escapeshellarg(Config::makePath($bak . '/private')),
-                escapeshellarg(Config::makePath($dest) . '/private')
+                escapeshellarg(Path::create($bak . '/private')),
+                escapeshellarg(Path::create($dest) . '/private')
             );
             exec($cmd, $out, $ret);
             if ($ret != self::SUCCESS) {
@@ -162,7 +163,7 @@ class MirrorData extends Console
 
         FileUtil::rmdir($dstDataFile);
         FileUtil::rmdir($tmpgz);
-        FileUtil::rmdir(Config::makePath($bak));
+        FileUtil::rmdir(Path::create($bak));
 
         $this->write('Complete!!!');
         return Command::SUCCESS;
@@ -172,7 +173,7 @@ class MirrorData extends Console
     {
         $num = 0;
         $path = $dir;
-        while(is_dir(Config::makePath($path))) {
+        while(is_dir(Path::create($path))) {
             $num++;
             $path = sprintf('%s%s%s%s', DIRECTORY_SEPARATOR, '_', trim($dir, DIRECTORY_SEPARATOR), $num);
         }

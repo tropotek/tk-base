@@ -5,6 +5,7 @@ namespace Bs\Mvc;
 use Symfony\Component\HttpFoundation\Request;
 use Tk\Config;
 use Tk\Exception;
+use Tk\Path;
 
 /**
  * This controller os used to execute a php route
@@ -14,7 +15,7 @@ class PhpController
 
     public function doDefault(Request $request): string
     {
-        $path = Config::makePath($request->attributes->get('path'));
+        $path = Path::create($request->attributes->get('path'));
         if (!is_file($path)) {
             throw new Exception("File not found {$path}");
         }

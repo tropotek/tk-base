@@ -2,7 +2,6 @@
 namespace Bs\Db;
 
 use Bs\Auth;
-use Bs\Traits\SystemTrait;
 use Tk\DataMap\DataMap;
 use Tk\DataMap\Db\DateTime;
 use Tk\DataMap\Db\Integer;
@@ -39,7 +38,6 @@ use Tk\Uri;
  */
 class GuestToken extends Model
 {
-    use SystemTrait;
 
     // session ID
     const string TOKEN_SID = '_guest_token';

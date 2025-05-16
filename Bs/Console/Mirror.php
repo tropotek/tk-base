@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\Question;
 use Tk\Config;
 use Tk\Log;
+use Tk\Path;
 use Tk\Uri;
 use Tk\Db;
 
@@ -57,9 +58,11 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            $dstBakFile = Config::makePath(Config::getTempPath() . '/dst-bak.sql');
-            $newZipFile = Config::makePath(Config::getTempPath() .
-                '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
+            //$dstBakFile = Config::makePath(Config::getTempPath() . '/dst-bak.sql');
+            $dstBakFile = Path::createTempPath('/dst-bak.sql');
+            $newZipFile = Path::createTempPath('/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
+//            $newZipFile = Config::makePath(Config::getTempPath() .
+//                '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
             $newSqlFile = substr($newZipFile, 0, -3);
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
@@ -71,7 +74,9 @@ class Mirror extends Console
                 $this->writeComment('Downloading fresh mirror file');
                 if (is_file($newSqlFile)) {
                     // Delete cached mirror files
-                    $list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
+                    //$list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
+                    $list = glob(Path::createTempPath('/*-tmpl.sql*'));
+                    vd($list);
                     if (is_array($list)) {
                         foreach ($list as $file) {
                             if (is_file($file)) unlink($file);

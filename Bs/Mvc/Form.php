@@ -2,13 +2,12 @@
 
 namespace Bs\Mvc;
 
-use Bs\Traits\SystemTrait;
+use Bs\Ui\Breadcrumbs;
 use Dom\Renderer\DisplayInterface;
 use Dom\Template;
 use Tk\Form\Renderer\Dom\Renderer;
 use Tk\Uri;
 use Tk\Db\Model;
-use Bs\Factory;
 
 /**
  * New form and renderer to replace \Bs\Form\EditInterface
@@ -16,7 +15,6 @@ use Bs\Factory;
  */
 class Form extends \Tk\Form implements DisplayInterface
 {
-    use SystemTrait;
 
     const string MODE_CREATE = 'create';
     const string MODE_EDIT   = 'edit';
@@ -101,9 +99,12 @@ class Form extends \Tk\Form implements DisplayInterface
         return $this;
     }
 
+    /**
+     * @deprecated use Breadcrumbs::getBackUrl()
+     */
     public function getBackUrl(): Uri
     {
-        return Factory::instance()->getBackUrl();
+        return Breadcrumbs::getBackUrl();
     }
 
     public function getMode(): string

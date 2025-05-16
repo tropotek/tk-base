@@ -35,6 +35,7 @@ use Tk\Ui\Traits\AttributesTrait;
  *    $template->setAttr('modelBtn', 'data-bs-toggle', 'modal');
  *    $template->setAttr('modelBtn', 'data-bs-target', '#'.$this->dialog->getId());
  *
+ * @deprecated Prefer to use HTMX components for dialogs now.
  */
 class Dialog extends \Dom\Renderer\Renderer implements DisplayInterface
 {
