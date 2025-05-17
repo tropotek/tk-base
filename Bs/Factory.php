@@ -43,11 +43,14 @@ use Tk\System;
 use Tk\Uri;
 
 /**
+ * NOTE: The methods in the factory must be called via `Factory::instance()->...` (avoid using static methods).
+ * Object methods can be overridden with a new Factory object inherited by a parent (eg: \App\Factory).
+ * This is the purpose of Factory objects is to facilitate customisations of
+ * the base default \Bs\Mvc lib behaviour.
  *
- * NOTE: The methods in the factory must be called via `Factory::instance->...`
- * when this Factory object is inherited by an App/Factory parent, those object methods are called first.
- * This is the purpose of the Factory objects, to facilitate customisations of the base \Bs\Mvc libs.
- *
+ * The initial call to the instance() method determines the Factory object used in preceding instance() calls.
+ * See the `/_prepend.php` file, using `\App\Factory::instance()` as the initial instance() call, ensures
+ * that further calls to `\Tk\Factory::instance()` will return/use the `\App\Factory` object instance.
  *
  */
 class Factory extends Collection
