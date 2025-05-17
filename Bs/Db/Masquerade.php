@@ -72,7 +72,7 @@ class Masquerade
 
         // Save the updated masquerade queue
         $_SESSION[self::SID] = $msqArr;
-        $factory->getAuthController()->getStorage()->write($userData['identity']);
+        Factory::instance()->getAuthController()->getStorage()->write($userData['identity']);
 
         \Tk\Uri::create($userData['url'])->remove(self::QUERY_MSQ)->redirect();
         return true;

@@ -9,9 +9,7 @@ use Tk\Alert;
 use Tk\Db;
 use Tk\Form\Action\Submit;
 use Tk\Form\Field\Checkbox;
-use Tk\Form\Field\File;
 use Tk\Form\Field\Input;
-use Tk\Uri;
 
 class DbSearch extends ControllerAdmin
 {

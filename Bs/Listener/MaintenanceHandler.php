@@ -16,7 +16,7 @@ class MaintenanceHandler implements EventSubscriberInterface
         $controller = $event->getController();
 
         if (!is_array($controller)) return;
-        $class = strval(get_class($controller[0]));
+        $class = get_class($controller[0]);
 
         // Allow admin users access
         if (Auth::getAuthUser()?->hasPermission(Auth::PERM_ADMIN)) {

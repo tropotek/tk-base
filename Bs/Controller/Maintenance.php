@@ -1,12 +1,14 @@
 <?php
 namespace Bs\Controller;
 
+use Bs\Factory;
 use Bs\Mvc\ControllerDomInterface;
 use Bs\Registry;
 use Bs\Ui\Breadcrumbs;
 use Dom\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tk\Config;
 
 class Maintenance extends ControllerDomInterface
 {
@@ -15,21 +17,20 @@ class Maintenance extends ControllerDomInterface
 
     public function __construct()
     {
-        $this->setPageTemplate($this->getConfig()->get('path.template.maintenance'));
+        $this->setPageTemplate(Config::getValue('path.template.maintenance'));
     }
 
     public function doDefault(): ?Response
     {
         Breadcrumbs::reset();
-        $registry = Registry::instance();
 
         $this->getPage()->setTitle('Maintenance');
 
-        if ($registry->get('system.maintenance.message')) {
-            $this->message = $registry->get('system.maintenance.message');
+        if (Registry::getValue('system.maintenance.message')) {
+            $this->message = Registry::getValue('system.maintenance.message');
         }
 
-        if (!$registry->get('system.maintenance.enabled')) {
+        if (!Registry::getValue('system.maintenance.enabled')) {
             return new Response('Invalid URL location', Response::HTTP_NOT_FOUND);
         }
         return null;
@@ -43,7 +44,7 @@ class Maintenance extends ControllerDomInterface
      */
     public function doApi(): ?Response
     {
-        $this->getFactory()->getPage()->setEnabled(false);
+        Factory::instance()->getPage()->setEnabled(false);
         $data = [
             'msg' => $this->message
         ];

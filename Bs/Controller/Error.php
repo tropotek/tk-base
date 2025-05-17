@@ -2,7 +2,6 @@
 namespace Bs\Controller;
 
 use Tk\Config;
-use Tk\Str;
 
 class Error
 {

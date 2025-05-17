@@ -4,7 +4,6 @@ namespace Bs\Mvc;
 use Dom\Renderer\RendererInterface;
 use Dom\Renderer\Traits\RendererTrait;
 use Dom\Template;
-use Tk\Config;
 
 abstract class ControllerDomInterface extends ControllerInterface implements RendererInterface
 {

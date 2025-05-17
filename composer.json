@@ -16,8 +16,7 @@
     ],
     "autoload":  {
         "psr-4":  {
-            "Bs\\": "Bs/",
-            "Au\\": "Au/"
+            "Bs\\": "Bs/"
         }
     },
     "require":  {

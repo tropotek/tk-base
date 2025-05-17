@@ -155,7 +155,7 @@ class SqlMigrate
 
             if (is_callable($log)) call_user_func_array($log, ['Migrating ' . $file]);
 
-            if (preg_match('/\.php$/i', basename($file))) {  // Include .php files
+            if (str_ends_with(basename($file), '.php')) {  // Include .php files
                 $callback = include $file;
                 if (is_callable($callback)) {
                     $callback();

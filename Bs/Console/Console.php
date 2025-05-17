@@ -113,8 +113,6 @@ abstract class Console extends Command
 
     public function write(string $str = '', int $options = OutputInterface::VERBOSITY_NORMAL): void
     {
-        if ($this->output) {
-            $this->output->writeln($str, $options);
-        }
+        $this->output?->writeln($str, $options);
     }
 }

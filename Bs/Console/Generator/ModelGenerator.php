@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Console\Generator;
 
-use Tk\Exception;
 use Tk\Db;
 
 /**

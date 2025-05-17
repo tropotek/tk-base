@@ -6,7 +6,6 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Dom\Modifier\PageBytes;
 use Tk\Log;
-use Bs\Listener\StartupHandler;
 
 class PageBytesHandler implements EventSubscriberInterface
 {

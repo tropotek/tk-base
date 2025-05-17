@@ -4,7 +4,7 @@ namespace Bs\Controller\Admin\Dev;
 use Bs\Auth;
 use Bs\Mvc\ControllerAdmin;
 use Dom\Template;
-use JetBrains\PhpStorm\NoReturn;
+use Tk\Config;
 use Tk\Uri;
 
 class TailLog extends ControllerAdmin
@@ -75,7 +75,7 @@ class TailLog extends ControllerAdmin
         $template->addCss('icon', $this->getPage()->getIcon());
 
         $template->setAttr('tail', 'data-src', Uri::create()->set(\Tk\Log::NO_LOG)->set('refresh'));
-        $template->appendJsUrl(Uri::create($this->getConfig()->get('path.vendor.org') . '/tk-base/Bs/Controller/Admin/Dev/jquery.tkTail.js'));
+        $template->appendJsUrl(Uri::create(Config::getValue('path.vendor.org') . '/tk-base/Bs/Controller/Admin/Dev/jquery.tkTail.js'));
         $js = <<<JS
 jQuery(function($) {
   $('#tail').tail({

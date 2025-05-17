@@ -3,7 +3,6 @@
 namespace Bs\Mvc;
 
 use Symfony\Component\HttpFoundation\Request;
-use Tk\Config;
 use Tk\Exception;
 use Tk\Path;
 
