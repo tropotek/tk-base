@@ -1,5 +1,15 @@
 #CHANGELOG#
 
+Ver 8.0.94 [2025-05-18]:
+-------------------------------
+  - Update to use static methods for Registry and Config
+  - base lib cleanup, Config/Registry/Cache
+  - Use global mintion stylesheet
+  - Update Model SQL search queries
+  - Started adding help page content
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+
+
 Ver 8.0.92 [2025-05-09]:
 -------------------------------
 
