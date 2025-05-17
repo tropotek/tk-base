@@ -288,7 +288,7 @@ class {classname} extends Model
             \$filter['lSearch'] = '%' . strtolower(\$filter['search']) . '%';
             \$w  = "a.{primary-col} = :search ";
             //\$w  = "OR LOWER(CONCAT_WS(' ', a.name)) LIKE :lSearch ";
-            if (\$w) \$filter->appendWhere('AND (%s)', \$w);
+            \$filter->appendWhere('AND (%s)', \$w);
         }
 
         if (!empty(\$filter['id'])) {
