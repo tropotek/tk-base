@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.96 [2025-05-19]:
+-------------------------------
+  - Added BCC to config to receive copy of system emails
+
+
 Ver 8.0.94 [2025-05-18]:
 -------------------------------
   - Update to use static methods for Registry and Config
