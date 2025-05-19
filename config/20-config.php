@@ -69,4 +69,10 @@ return function (Config $config) {
      */
     //$config['db.mirror.secret'] = '';
     //$config['db.mirror.url'] = '';
+
+    /*
+     * Send copies of all system emails to these recipients (not error emails)
+     */
+    //$config['mail.bcc'] = ['admin@example.org'];
+
 };
