@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Bs\Db\SqlMigrate;
+use Tk\Cache\Cache;
 use Tk\Db;
 use Tk\Exception;
 
@@ -66,6 +67,9 @@ class Migrate extends Console
             if (!SqlMigrate::migrateDev([$this, 'writeBlue'])) {
                 throw new Exception("Failed to migrate dev files");
             }
+
+            $this->write('Clearing filesystem cache');
+            Cache::instance()->purge();
 
             $this->write('Migration Complete.');
         } catch (\Exception $e) {

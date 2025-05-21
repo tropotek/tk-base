@@ -17,17 +17,9 @@ return function (Config $config) {
     $config->set('path.template.error',       '/html/login.html');
 
     /**
-     * Validate user passwords on input
-     * - Must include at least one number
-     * - Must include at least one letter
-     * - Must include at least one capital
-     * - Must include at least one symbol
-     * - must >= 8 characters
-     *
-     * Note: validation disabled in dev environments
-     * (default: true)
+     * mail template path
      */
-    $config['auth.password.strict'] = true;
+    $config['system.mail.template'] = '/html/templates/mail.default.html';
 
     /**
      * These files are execute on site install/upgrade/migrate if they exist
@@ -44,7 +36,7 @@ return function (Config $config) {
     ];
 
     /**
-     * Script to execute in dev mode after install/upgrade/migrate
+     * Script to execute after install/upgrade/migrate
      */
     $config['dev.setup.script'] = $config->get('path.config') . '/dev.php';
 
@@ -63,6 +55,42 @@ return function (Config $config) {
     $config['site.log.params'] = 0;
 
     /**
+     * The default log level
+     */
+    $config['log.logLevel'] = \Psr\Log\LogLevel::ERROR;
+
+    /**
+     * Set the site timezone for PHP and MySQL
+     */
+    $config['php.date.timezone'] = 'Australia/Melbourne';
+
+    /**
+     * Enable DB sessions
+     */
+    $config['session.db_enable'] = true;
+
+    /**
+     * The site developer information
+     * Use this for online support contact forms and copyright
+     */
+    $config['developer.name']  = 'Tropotek';
+    $config['developer.web']   = 'https://tropotek.com.au/';
+    $config['developer.email'] = 'info@tropotek.com.au';
+
+    /**
+     * Validate user passwords on input
+     * - Must include at least one number
+     * - Must include at least one letter
+     * - Must include at least one capital
+     * - Must include at least one symbol
+     * - must >= 8 characters
+     *
+     * Note: validation disabled in dev environments
+     * (default: true)
+     */
+    $config['auth.password.strict'] = true;
+
+    /**
      * DB mirror command secret API key and URI
      * Ensure the Secret Key is on both the dev and prod sites
      * The url is only required for the client dev site accessing the prod site
@@ -73,6 +101,13 @@ return function (Config $config) {
     /*
      * Send copies of all system emails to these recipients (not error emails)
      */
-    //$config['mail.bcc'] = ['admin@example.org'];
+    //$config['mail.bcc'] = ['user@example.org'];
+
+    /**
+     * System hostname, used for command line scripts (cron)
+     * If not set the system will auto-detect the hostname from an http request and cache it
+     * Remember to purge all caches if the hostname ever changes
+     */
+    //$config['hostname'] = '';
 
 };

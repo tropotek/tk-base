@@ -7,6 +7,7 @@ use Bs\Listener\PageBytesHandler;
 use Bs\Listener\DomViewHandler;
 use Bs\Listener\ExceptionEmailListener;
 use Dom\Modifier\PageBytes;
+use Tk\Cache\Cache;
 use Tk\Config;
 use Bs\Listener\ExceptionListener;
 use Bs\Listener\ContentLength;
@@ -39,6 +40,12 @@ class Dispatch
 
     private function init(): void
     {
+        // purge cache on <alt>+<ctrl>+R
+        if (System::isRefreshCacheRequest()) {
+            Cache::instance()->purge();
+            Config::SetValue('hostname', System::discoverHostname());
+        }
+
         $this->commonInit();
         if (System::isCli()) {
             $this->cliInit();
