@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Bs\Listener\ShutdownHandler;
 use Bs\Listener\StartupHandler;
 use Tk\System;
+use Tk\Uri;
 
 
 /**
@@ -41,7 +42,7 @@ class Dispatch
     private function init(): void
     {
         // purge cache on <alt>+<ctrl>+R
-        if (System::isRefreshCacheRequest()) {
+        if (System::isRefreshCacheRequest() && !str_starts_with(Uri::create()->toRelativeString(), '/component/')) {
             Cache::instance()->purge();
             Config::SetValue('hostname', System::discoverHostname());
         }
