@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.98 [2025-05-22]:
+-------------------------------
+  - Fix cache object and cache hostname on first http
+
+
 Ver 8.0.96 [2025-05-19]:
 -------------------------------
   - Added BCC to config to receive copy of system emails
