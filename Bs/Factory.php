@@ -150,7 +150,7 @@ class Factory extends Collection
         // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
         $systemCache = Cache::instance();
         $compiledRoutes = $systemCache->fetch('compiledRoutes');
-        if ($refresh || !is_array($compiledRoutes)) {
+        if ($refresh || !is_array($compiledRoutes) || System::isRefreshCacheRequest()) {
             ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
             $compiledRoutes = (new CompiledUrlMatcherDumper($this->getRouteCollection()))->getCompiledRoutes();
             $systemCache->store('compiledRoutes', $compiledRoutes, 60*60*24*5);

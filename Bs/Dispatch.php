@@ -41,12 +41,6 @@ class Dispatch
 
     private function init(): void
     {
-        // purge cache on <alt>+<ctrl>+R
-        if (System::isRefreshCacheRequest() && !str_starts_with(Uri::create()->toRelativeString(), '/component/')) {
-            Cache::instance()->purge();
-            Config::SetValue('hostname', System::discoverHostname());
-        }
-
         $this->commonInit();
         if (System::isCli()) {
             $this->cliInit();
