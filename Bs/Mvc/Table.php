@@ -16,6 +16,10 @@ use Tk\Table\Action;
 use Tk\Table\DomRenderer;
 use Tk\Form\Renderer\Dom\Renderer;
 
+/**
+ * Use this object to compile and render a Dom Template Table
+ *
+ */
 class Table extends \Tk\Table
 {
     use RendererTrait;
@@ -177,17 +181,6 @@ HTML;
     public function getFormRenderer(): ?Renderer
     {
         return $this->formRenderer;
-    }
-
-    public function getRows(): ?array
-    {
-        return $this->getRenderer()->getRows();
-    }
-
-    public function setRows(array $rows, ?int $totalRows = null): static
-    {
-        $this->getRenderer()->setRows($rows, $totalRows);
-        return $this;
     }
 
     public function getDbFilter(): ?Filter
