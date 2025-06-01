@@ -88,7 +88,8 @@ class Mirror
     {
         $options = Db::parseDsn(Config::getValue('db.mysql'));
         // must exclude _migrate table for migrate cmd to work in mirror cmd
-        $options['exclude'] = ['_session', '_migrate'];
+        //$options['exclude'] = ['_session', '_migrate'];
+        $options['exclude'] = ['_session'];
 
         $srcBak = tempnam(Path::createTempPath('/'), 'midb');
         Db\DbBackup::save($srcBak, $options);

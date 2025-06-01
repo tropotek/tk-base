@@ -67,7 +67,8 @@ class Mirror extends Console
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
             // must exclude _migrate table for below migrate cmd to work
-            $options['exclude'] = ['_session', '_migrate'];
+            //$options['exclude'] = ['_session', '_migrate'];
+            $options['exclude'] = ['_session'];
             $username = trim($input->getArgument('username'));
 
             if (!is_file($newSqlFile) || $input->getOption('no-cache')) {
@@ -123,6 +124,9 @@ class Mirror extends Console
                 }
                 $this->write('Import mirror file to this DB');
                 Db\DbBackup::restore($newZipFile, $options);
+
+                // Execute static files
+                SqlMigrate::migrateSite([$this, 'writeGreen']);
 
                 // Execute static files
                 SqlMigrate::migrateStatic([$this, 'writeGreen']);
