@@ -28,6 +28,21 @@ trait ForeignModelTrait
         return $this->_model;
     }
 
+    /**
+     * method tries to return an object from the fkey, fid values
+     * if no fkey is used the calling classname is used
+     */
+    public static function findDbModel(string $fkey, int $fid): ?Model
+    {
+        if (!class_exists($fkey)) {
+            throw new \Tk\Exception("Invalid model class");
+        }
+        if (method_exists($fkey, 'find')) {
+            return $fkey::find($fid);
+        }
+        return null;
+    }
+
     protected static function getDbModelId(Model $model): int
     {
         $map = $model->getDataMap();

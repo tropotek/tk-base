@@ -228,30 +228,6 @@ class Auth extends Model
     }
 
 
-    public static function find(int $authId): ?static
-    {
-        return Db::queryOne("
-            SELECT *
-            FROM v_auth
-            WHERE auth_id = :authId",
-            compact('authId'),
-            self::class
-        );
-    }
-
-    /**
-     * @return array<int,Auth>
-     */
-    public static function findAll(): array
-    {
-        return Db::query("
-            SELECT *
-            FROM v_auth",
-            [],
-            self::class
-        );
-    }
-
     public static function findByUsername(string $username): ?self
     {
         $username = trim($username);
