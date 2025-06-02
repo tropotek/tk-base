@@ -26,7 +26,7 @@ class GuestHandler implements EventSubscriberInterface
         // Init new guest access and save token to session
         if (isset($_GET[GuestToken::TOKEN_RID])) {
             $token = trim($_GET[GuestToken::TOKEN_RID]);
-            $this->gt = GuestToken::find($token);
+            $this->gt = GuestToken::findToken($token);
 
             if (is_null($this->gt)) Log::error("Invalid guest token {$token}");
 

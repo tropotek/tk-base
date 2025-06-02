@@ -228,7 +228,7 @@ class Auth extends Model
     }
 
 
-    public static function find(int $authId): ?self
+    public static function find(int $authId): ?static
     {
         return Db::queryOne("
             SELECT *

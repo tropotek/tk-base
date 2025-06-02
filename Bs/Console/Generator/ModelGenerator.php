@@ -200,7 +200,6 @@ class ModelGenerator
                 $mp->get('Type') != 'text' &&
                 $mp->getType() != ModelProperty::TYPE_DATE &&
                 $mp->getType() != ModelProperty::TYPE_BOOL &&
-                $mp->getName() != 'id' &&
                 $mp->getName() != 'orderBy'
             ) {
                 $data['validators'] .= "\n" . $mp->getValidation() . "\n";
@@ -251,32 +250,8 @@ class {classname} extends Model
         \$this->reload();
     }
 
-    public static function find(int \${primary-prop}): ?self
-    {
-        return Db::queryOne("
-            SELECT *
-            FROM {view}
-            WHERE {primary-col} = :{primary-prop}",
-            compact('{primary-prop}'),
-            self::class
-        );
-    }
-
     /**
-     * @return array<int,{classname}>
-     */
-    public static function findAll(): array
-    {
-        return Db::query("
-            SELECT *
-            FROM {view}",
-            [],
-            self::class
-        );
-    }
-
-    /**
-     * @return array<int,{classname}>
+     * @return array<int,self>
      */
     public static function findFiltered(array|Filter \$filter): array
     {

@@ -98,7 +98,7 @@ class GuestToken extends Model
 		}
 
 		$token = $gt->token;
-		$gt = self::find($token);
+		$gt = self::findToken($token);
 		assert(is_object($gt), "failed to get token {$token}");
         return $gt;
     }
@@ -134,7 +134,7 @@ class GuestToken extends Model
 
     public static function getSessionToken(): ?self
     {
-        return GuestToken::find($_SESSION[GuestToken::TOKEN_SID] ?? '');
+        return GuestToken::findToken($_SESSION[GuestToken::TOKEN_SID] ?? '');
     }
 
     /**
@@ -152,7 +152,7 @@ class GuestToken extends Model
 		);
 	}
 
-    public static function find(string $token): ?self
+    public static function findToken(string $token): ?self
     {
         $token = trim($token);
         if (empty($token)) return null;
