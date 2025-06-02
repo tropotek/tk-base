@@ -80,6 +80,11 @@ table.tk-table-sm tr.inactive {
     font-size: small;
 }
 
+/** fix session crumbs col */
+.tk-table td.mBreadcrumbs a {
+    display: inline-block !important;
+}
+
 /*********** B O O T S T R A P *************/
 .modal-header-success .modal-title,
 .modal-header-warning .modal-title,
