@@ -27,7 +27,6 @@ class Mirror extends Console
             ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
             ->addOption('no-sql', 'N', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
             ->addOption('save', 'S', InputOption::VALUE_NONE, 'Do not delete temp sql files')
-            //->addOption('no-dev', 'f', InputOption::VALUE_NONE, 'Do not execute the dev sql file')
         ;
     }
 
@@ -58,16 +57,12 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            //$dstBakFile = Config::makePath(Config::getTempPath() . '/dst-bak.sql');
             $dstBakFile = Path::createTempPath('/dst-bak.sql');
             $newZipFile = Path::createTempPath('/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
-//            $newZipFile = Config::makePath(Config::getTempPath() .
-//                '/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
             $newSqlFile = substr($newZipFile, 0, -3);
 
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
             // must exclude _migrate table for below migrate cmd to work
-            //$options['exclude'] = ['_session', '_migrate'];
             $options['exclude'] = ['_session'];
             $username = trim($input->getArgument('username'));
 
@@ -75,9 +70,7 @@ class Mirror extends Console
                 $this->writeComment('Downloading fresh mirror file');
                 if (is_file($newSqlFile)) {
                     // Delete cached mirror files
-                    //$list = glob(Config::makePath(Config::getTempPath() . '/*-tmpl.sql*'));
                     $list = glob(Path::createTempPath('/*-tmpl.sql*'));
-                    vd($list);
                     if (is_array($list)) {
                         foreach ($list as $file) {
                             if (is_file($file)) unlink($file);
