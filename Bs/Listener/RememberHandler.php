@@ -11,6 +11,12 @@ use Tk\Uri;
 
 class RememberHandler implements EventSubscriberInterface
 {
+    protected ?Uri $homeUrl = null;
+
+    public function __construct(?Uri $homeUrl = null)
+    {
+        $this->homeUrl = $homeUrl;
+    }
 
     public function onRequest(RequestEvent $event): void
     {
@@ -19,6 +25,9 @@ class RememberHandler implements EventSubscriberInterface
             $auth = Remember::retrieveMe();
             if ($auth) {
                 Log::debug('Auth Remember Handler: user auto logged in via cookie');
+                if ($this->homeUrl) {
+                    $this->homeUrl->redirect();
+                }
                 Uri::create()->redirect();
             }
         }
