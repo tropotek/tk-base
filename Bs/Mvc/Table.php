@@ -257,22 +257,26 @@ HTML;
         // setup hx on all links and elements in the template
         $wrapId = $this->getWrapId();
 
+        // filter renderer
         if ($this->getFormRenderer()) {
             $ftpl = $this->getFormRenderer()->getTemplate();
             $ftpl->setAttr('form', 'hx-post', $baseUrl);
             $ftpl->removeAttr('form', 'action');
+            $ttpl->removeAttr('form', 'method');
             $ftpl->setAttr('form', 'hx-swap', 'outerHTML');
             $ftpl->setAttr('form', 'hx-target', "#$wrapId");
             $ftpl->setAttr('form', 'hx-select', "#$wrapId");
         }
 
+        // table renderer
         if ($ttpl instanceof Template) {
             $ttpl->setAttr('form', 'hx-post', $baseUrl);
             $ttpl->removeAttr('form', 'action');
             $ttpl->removeAttr('form', 'method');
-            $ttpl->setAttr('form', 'hx-swap', 'outerHTML');
             $ttpl->setAttr('form', 'hx-target', "#$wrapId");
             $ttpl->setAttr('form', 'hx-select', "#$wrapId");
+            $ttpl->setAttr('form', 'hx-swap', 'outerHTML');
+            $ttpl->setAttr('form', 'hx-disinherit', '*');
             $ttpl->setAttr('limit-select', 'hx-post', $baseUrl);
 
             $ttpl = $this->show();
@@ -288,6 +292,10 @@ HTML;
                     if (!($node instanceof \DOMElement)) continue;
                     $url = $node->getAttribute('href');
                     $node->setAttribute('hx-get', $url);
+                    $node->setAttribute('hx-target', "#$wrapId");
+                    $node->setAttribute('hx-select', "#$wrapId");
+                    $node->setAttribute('hx-swap', 'outerHTML');
+                    $node->setAttribute('href', '#');
                 }
             }
 
@@ -299,6 +307,10 @@ HTML;
                     if (!($node instanceof \DOMElement)) continue;
                     $url = $node->getAttribute('href');
                     $node->setAttribute('hx-get', $url);
+                    $node->setAttribute('hx-target', "#$wrapId");
+                    $node->setAttribute('hx-select', "#$wrapId");
+                    $node->setAttribute('hx-swap', 'outerHTML');
+                    $node->setAttribute('href', '#');
                 }
             }
 
@@ -310,6 +322,10 @@ HTML;
                     if (!($node instanceof \DOMElement)) continue;
                     $url = $node->getAttribute('href');
                     $node->setAttribute('hx-get', $url);
+                    $node->setAttribute('hx-target', "#$wrapId");
+                    $node->setAttribute('hx-select', "#$wrapId");
+                    $node->setAttribute('hx-swap', 'outerHTML');
+                    $node->setAttribute('href', '#');
                 }
             }
         }
