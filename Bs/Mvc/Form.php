@@ -63,7 +63,8 @@ class Form extends \Tk\Form implements DisplayInterface
     public function htmxShow(): ?Template
     {
         // setup table for hx requests
-        $this->form->setAction('');
+        $this->form->removeAttr('action');
+        $this->form->setAttr('hx-disinherit', '*');
         if(!$this->form->hasAttr('hx-post')) {
             $this->form->setAttr('hx-post', Uri::create());
         }

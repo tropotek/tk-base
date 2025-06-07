@@ -266,6 +266,7 @@ HTML;
             $ftpl->setAttr('form', 'hx-swap', 'outerHTML');
             $ftpl->setAttr('form', 'hx-target', "#$wrapId");
             $ftpl->setAttr('form', 'hx-select', "#$wrapId");
+            $ftpl->setAttr('form', 'hx-disinherit', '*');
         }
 
         // table renderer
