@@ -33,6 +33,7 @@ class SqlMigrate
     protected static mixed $_instance = null;
 
     protected string $backupFile = '';
+    protected bool   $tracking   = true;
 
 
     /**
@@ -51,10 +52,43 @@ class SqlMigrate
         $this->deleteBackup();
     }
 
+    public static function migrateAll(?callable $log = null): bool
+    {
+
+        // migrate site sql files
+        if (!SqlMigrate::migrateSite($log)) {
+            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate site DB files"]);
+            return false;
+        }
+
+        // Execute static files
+        if (!SqlMigrate::migrateStatic($log)) {
+            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate static files"]);
+            return false;
+        }
+
+        // setup dev environment if site in dev mode
+        if (!SqlMigrate::migrateDev($log)) {
+            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate dev files"]);
+            return false;
+        }
+
+        // migrate any site specific files, do not log them in the migration table
+        $privatePath = Path::createPrivatePath('/migrate');
+        if (is_dir($privatePath)) {
+            if (is_callable($log)) call_user_func_array($log, ["Migrating private site files"]);
+            self::instance()->tracking = false;
+            self::instance()->migrateList([$privatePath], $log);
+            self::instance()->tracking = true;
+        }
+
+        return true;
+    }
+
     /**
      * execute new site/lib sql files that have not been migrated yet
      */
-    public static function migrateSite(?callable $log = null) :bool
+    public static function migrateSite(?callable $log = null): bool
     {
         // find default migration paths
         $vendorPath   = Path::create(Config::getValue('path.vendor.org'));
@@ -100,7 +134,6 @@ class SqlMigrate
      */
     public static function migrateDev(?callable $log = null) :bool
     {
-        //$devFile = Config::makePath(Config::getValue('dev.setup.script'));
         $devFile = Path::create(Config::getValue('dev.setup.script'));
         if (is_file($devFile)) {
             if (is_callable($log)) call_user_func_array($log, ['Finalise system migration: ' . Config::getValue('dev.setup.script')]);
@@ -188,12 +221,12 @@ class SqlMigrate
     {
         $found = [];
         foreach ($pathList as $path) {
-            if (is_file($path) && preg_match('/.+\/([0-9]+)\.(php|sql)$/', $path, $regs)) {
+            if (is_file($path) && preg_match('/.+\/([0-9]+)(.*)\.(php|sql)$/', $path, $regs)) {
                 $found[$regs[1]] = $path;
             } else if (is_dir($path)) {
                 $directory = new \RecursiveDirectoryIterator($path);
                 $it = new \RecursiveIteratorIterator($directory);
-                $regex = new \RegexIterator($it, '/.+\/([0-9]+)\.(php|sql)$/', \RegexIterator::GET_MATCH);
+                $regex = new \RegexIterator($it, '/.+\/([0-9]+)(.*)\.(php|sql)$/', \RegexIterator::GET_MATCH);
                 foreach ($regex as $file) {
                     $found[$file[1] ?? '000000'] = $file[0];
                 }
@@ -263,6 +296,7 @@ SQL;
 
     protected function insertPath(string $path): int
     {
+        if (!$this->tracking) return 0;
         $path = $this->toRelative($path);
         $rev = $this->toRev($path);
         $stm = Db::getPdo()->prepare("INSERT INTO `{$this->getTable()}` (path, rev, created) VALUES (:path, :rev, NOW())");
@@ -272,6 +306,7 @@ SQL;
 
     protected function deletePath(string $path): int
     {
+        if (!$this->tracking) return 0;
         $path = $this->toRelative($path);
         $stm = Db::getPdo()->prepare("DELETE FROM `{$this->getTable()}` WHERE path = :path LIMIT 1");
         $stm->execute(compact('path'));

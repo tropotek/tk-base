@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\Question;
 use Tk\Config;
+use Tk\Exception;
 use Tk\Log;
 use Tk\Path;
 use Tk\Uri;
@@ -118,14 +119,20 @@ class Mirror extends Console
                 $this->write('Import mirror file to this DB');
                 Db\DbBackup::restore($newZipFile, $options);
 
-                // Execute static files
-                SqlMigrate::migrateSite([$this, 'writeGreen']);
+                // migrate site sql files
+                if (!SqlMigrate::migrateAll([$this, 'write'])) {
+                    $this->writeError("Failed to migrate files");
+                    return Command::FAILURE;
+                }
 
-                // Execute static files
-                SqlMigrate::migrateStatic([$this, 'writeGreen']);
-
-                // setup dev environment if site in dev mode
-                SqlMigrate::migrateDev([$this, 'writeBlue']);
+//                // Execute static files
+//                SqlMigrate::migrateSite([$this, 'writeGreen']);
+//
+//                // Execute static files
+//                SqlMigrate::migrateStatic([$this, 'writeGreen']);
+//
+//                // setup dev environment if site in dev mode
+//                SqlMigrate::migrateDev([$this, 'writeBlue']);
             }
 
             if (!$input->getOption('save')) {
