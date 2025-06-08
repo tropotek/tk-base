@@ -25,14 +25,14 @@ return function (Config $config) {
      * These files are execute on site install/upgrade/migrate if they exist
      */
     $config['db.migrate.static'] = [
-        '/vendor/ttek/tk-base/config/sql/events.sql',
-        '/vendor/ttek/tk-base/config/sql/triggers.sql',
         '/vendor/ttek/tk-base/config/sql/procedures.sql',
         '/vendor/ttek/tk-base/config/sql/views.sql',
-        '/src/config/sql/events.sql',
-        '/src/config/sql/triggers.sql',
+        '/vendor/ttek/tk-base/config/sql/triggers.sql',
+        '/vendor/ttek/tk-base/config/sql/events.sql',
         '/src/config/sql/procedures.sql',
         '/src/config/sql/views.sql',
+        '/src/config/sql/events.sql',
+        '/src/config/sql/triggers.sql',
     ];
 
     /**
