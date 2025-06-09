@@ -38,6 +38,7 @@ use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Mailer;
+use Tk\Mail\Message;
 use Tk\Path;
 use Tk\System;
 use Tk\Uri;
@@ -363,8 +364,8 @@ class Factory extends Collection
         $template = str_replace('{content}', $content, $template);
 
         $message = new \Tk\Mail\CurlyMessage($template);
-        $message->setFrom(Registry::getSiteEmail());
-        $message->setReplyTo(Registry::getSiteEmail());
+        $message->setFrom(Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName()));
+        $message->setReplyTo(Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName()));
         $message->set('sig', Registry::getValue('site.email.sig', ''));
 
         return $message;
