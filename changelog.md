@@ -1,5 +1,15 @@
 #CHANGELOG#
 
+Ver 8.0.104 [2025-06-10]:
+-------------------------------
+  - convert all dialog components
+  - Add table exception class
+  - Update to use new Model object
+  - Update Model class with find functions
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Removed status log system
+
+
 Ver 8.0.102 [2025-05-26]:
 -------------------------------
 
