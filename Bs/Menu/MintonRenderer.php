@@ -50,14 +50,14 @@ HTML;
         $this->menu = $this->menu->convertHeaderToSubmenu();
 
         foreach ($this->menu->children as $child) {
-            $li = $template->getRepeat('li');
-
+            if (!$child->isVisible()) continue;
             if ($child->type == Item::TYPE_HEADER) continue;
+
+            $li = $template->getRepeat('li');
             switch ($child->type) {
                 case Item::TYPE_SEPARATOR:
                     $span = $li->getRepeat('span');
                     $span->addCss('span', 'dropdown-divider');
-                    //$span->setHtml('span', '<hr>');
                     $span->setVisible('span');
                     $span->appendRepeat();
                     break;
@@ -75,7 +75,9 @@ HTML;
                     }
                     if (is_callable($child->context['badge'] ?? null)) {
                         $badge = $child->context['badge']($link, $child);
-                        $link->appendHtml('link', $badge);
+                        if (is_string($badge)) {
+                            $link->appendHtml('link', $badge);
+                        }
                     }
                     $link->appendRepeat();
                     break;
@@ -111,16 +113,18 @@ HTML;
         }
         if (is_callable($item->context['badge'] ?? null)) {
             $badge = $item->context['badge']($li, $item);
-            $li->appendHtml('nav-link', $badge);
+            if (is_string($badge)) {
+                $li->appendHtml('nav-link', $badge);
+            }
         }
 
         foreach ($item->children as $child) {
+            if (!$child->isVisible()) continue;
             if ($child->type == Item::TYPE_HEADER) continue;
             switch ($child->type) {
                 case Item::TYPE_SEPARATOR:
                     $span = $li->getRepeat('span');
                     $span->addCss('span', 'dropdown-divider');
-                    //$span->setHtml('span', '<hr>');
                     $span->setVisible('span');
                     $span->appendRepeat('dropdown-menu');
                     break;
@@ -138,7 +142,9 @@ HTML;
                     }
                     if (is_callable($child->context['badge'] ?? null)) {
                         $badge = $child->context['badge']($link, $child);
-                        $link->appendHtml('link', $badge);
+                        if (is_string($badge)) {
+                            $link->appendHtml('link', $badge);
+                        }
                     }
                     $link->appendRepeat('dropdown-menu');
                     break;
@@ -184,6 +190,7 @@ HTML;
             $ul->addCss('ul', 'nav-second-level');
         }
         foreach ($item->children as $child) {
+            if (!$child->isVisible()) continue;
             $li = $ul->getRepeat('li');
             switch ($child->type) {
                 case Item::TYPE_HEADER:
@@ -209,7 +216,9 @@ HTML;
                     }
                     if (is_callable($child->context['badge'] ?? null)) {
                         $badge = $child->context['badge']($li, $child);
-                        $li->appendHtml('link', $badge);
+                        if (is_string($badge)) {
+                            $li->appendHtml('link', $badge);
+                        }
                     }
                     break;
                 case Item::TYPE_SUB_MENU:
@@ -232,7 +241,9 @@ HTML;
                     }
                     if (is_callable($child->context['badge'] ?? null)) {
                         $badge = $child->context['badge']($li, $child);
-                        $li->appendHtml('link', $badge);
+                        if (is_string($badge)) {
+                            $li->appendHtml('link', $badge);
+                        }
                     }
 
                     $sub = $this->iterateSideNav($template, $child);
@@ -257,6 +268,7 @@ HTML;
         $template = Template::load($html);
 
         foreach ($this->menu->children as $item) {
+            if (!$item->isVisible()) continue;
             $row = null;
             if ($item->type == 'separator') {
                 $row = $template->getRepeat('separator');
@@ -270,6 +282,12 @@ HTML;
                 }
                 if (isset($item->context['css'])) {
                     $row->addCss('link', $item->context['css']);
+                }
+                if (is_callable($item->context['badge'] ?? null)) {
+                    $badge = $item->context['badge']($row, $item);
+                    if (is_string($badge)) {
+                        $row->appendHtml('link', $badge);
+                    }
                 }
             }
 
