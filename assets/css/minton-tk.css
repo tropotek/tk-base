@@ -85,6 +85,14 @@ table.tk-table-sm tr.inactive {
     display: inline-block !important;
 }
 
+/** wider content area for top menu mode */
+@media (min-width: 1200px) {
+  html[data-layout-mode="horizontal"] .container-fluid {
+    max-width: 100%;
+  }
+}
+
+
 /*********** B O O T S T R A P *************/
 .modal-header-success .modal-title,
 .modal-header-warning .modal-title,

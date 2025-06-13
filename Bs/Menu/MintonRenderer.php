@@ -187,13 +187,13 @@ HTML;
             $li = $ul->getRepeat('li');
             switch ($child->type) {
                 case Item::TYPE_HEADER:
-                    $li->addCss('li', 'menu-title mt-2');
+                    $li->addCss('li', 'menu-title');
                     $li->setText('span', $child->name);
                     $li->setVisible('span');
                     break;
                 case Item::TYPE_SEPARATOR:
                     $li->addCss('span', 'menu-separator');
-                    $li->setHtml('span', '<hr class="m-2">');
+                    $li->setHtml('span', '<hr class="m-1">');
                     $li->setVisible('span');
                     break;
                 case Item::TYPE_LINK:
