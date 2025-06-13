@@ -148,7 +148,7 @@ class Factory extends Collection
     public function getCompiledRoutes(bool $refresh = false): array
     {
         // Setup Routes and cache results.
-        // Use `<Ctrl>+<Shift>+R` ro refresh the routing cache
+        // Use `<Ctrl>+<Shift>+R` to refresh the routing cache
         $systemCache = Cache::instance();
         $compiledRoutes = $systemCache->fetch('compiledRoutes');
         if ($refresh || !is_array($compiledRoutes) || System::isRefreshCacheRequest()) {
