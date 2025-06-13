@@ -67,6 +67,16 @@ HTML;
                     $link->addCss('icon', $child->icon);
                     $link->setAttr('link', 'href', $child->url);
                     $link->setVisible('link');
+                    if (isset($child->context['attrs'])) {
+                        $link->setAttr('link', $child->context['attrs']);
+                    }
+                    if (isset($child->context['css'])) {
+                        $link->addCss('link', $child->context['css']);
+                    }
+                    if (is_callable($child->context['badge'] ?? null)) {
+                        $badge = $child->context['badge']($link, $child);
+                        $link->appendHtml('link', $badge);
+                    }
                     $link->appendRepeat();
                     break;
                 case Item::TYPE_SUB_MENU:
@@ -93,6 +103,16 @@ HTML;
         } else {
             $li->addCss('nav-link', 'dropdown-item');
         }
+        if (isset($item->context['attrs'])) {
+            $li->setAttr('nav-link', $item->context['attrs']);
+        }
+        if (isset($item->context['css'])) {
+            $li->addCss('nav-link', $item->context['css']);
+        }
+        if (is_callable($item->context['badge'] ?? null)) {
+            $badge = $item->context['badge']($li, $item);
+            $li->appendHtml('nav-link', $badge);
+        }
 
         foreach ($item->children as $child) {
             if ($child->type == Item::TYPE_HEADER) continue;
@@ -110,6 +130,16 @@ HTML;
                     $link->addCss('icon', $child->icon);
                     $link->setAttr('link', 'href', $child->url);
                     $link->setVisible('link');
+                    if (isset($child->context['attrs'])) {
+                        $link->setAttr('link', $child->context['attrs']);
+                    }
+                    if (isset($child->context['css'])) {
+                        $link->addCss('link', $child->context['css']);
+                    }
+                    if (is_callable($child->context['badge'] ?? null)) {
+                        $badge = $child->context['badge']($link, $child);
+                        $link->appendHtml('link', $badge);
+                    }
                     $link->appendRepeat('dropdown-menu');
                     break;
                 case Item::TYPE_SUB_MENU:
@@ -171,6 +201,16 @@ HTML;
                     $li->addCss('icon', $child->icon);
                     $li->setAttr('link', 'href', $child->url);
                     $li->setVisible('link');
+                    if (isset($child->context['attrs'])) {
+                        $li->setAttr('link', $child->context['attrs']);
+                    }
+                    if (isset($child->context['css'])) {
+                        $li->addCss('link', $child->context['css']);
+                    }
+                    if (is_callable($child->context['badge'] ?? null)) {
+                        $badge = $child->context['badge']($li, $child);
+                        $li->appendHtml('link', $badge);
+                    }
                     break;
                 case Item::TYPE_SUB_MENU:
                     $li->addCss('link', 'waves-effect');
@@ -184,6 +224,16 @@ HTML;
                         'data-bs-toggle' => 'collapse',
                         'aria-expanded' => 'false',
                     ]);
+                    if (isset($child->context['attrs'])) {
+                        $li->setAttr('link', $child->context['attrs']);
+                    }
+                    if (isset($child->context['css'])) {
+                        $li->addCss('link', $child->context['css']);
+                    }
+                    if (is_callable($child->context['badge'] ?? null)) {
+                        $badge = $child->context['badge']($li, $child);
+                        $li->appendHtml('link', $badge);
+                    }
 
                     $sub = $this->iterateSideNav($template, $child);
                     $li->appendTemplate('dropdown-menu', $sub);
