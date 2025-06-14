@@ -67,12 +67,6 @@ class SqlMigrate
             return false;
         }
 
-//        // setup dev environment if site in dev mode
-//        if (!SqlMigrate::migrateDev($log)) {
-//            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate dev files"]);
-//            return false;
-//        }
-
         // migrate any site specific files, do not log them in the migration table
         $privatePath = Path::createPrivatePath('/migrate');
         if (is_dir($privatePath)) {
@@ -128,20 +122,6 @@ class SqlMigrate
         }
         self::instance()->tracking = true;
 
-        return true;
-    }
-
-    /**
-     * Execute the system migration dev.php file
-     * This allows developers to run scripts on each migration call
-     */
-    public static function migrateDev(?callable $log = null) :bool
-    {
-        $devFile = Path::create(Config::getValue('dev.setup.script'));
-        if (is_file($devFile)) {
-            if (is_callable($log)) call_user_func_array($log, ['Finalise system migration: ' . Config::getValue('dev.setup.script')]);
-            include($devFile);
-        }
         return true;
     }
 
