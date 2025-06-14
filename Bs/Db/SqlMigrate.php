@@ -52,7 +52,7 @@ class SqlMigrate
         $this->deleteBackup();
     }
 
-    public static function migrateAll(?callable $log = null): bool
+    public static function migrateAll(?callable $log = null, array $options = []): bool
     {
 
         // migrate site sql files
@@ -67,11 +67,11 @@ class SqlMigrate
             return false;
         }
 
-        // setup dev environment if site in dev mode
-        if (!SqlMigrate::migrateDev($log)) {
-            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate dev files"]);
-            return false;
-        }
+//        // setup dev environment if site in dev mode
+//        if (!SqlMigrate::migrateDev($log)) {
+//            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate dev files"]);
+//            return false;
+//        }
 
         // migrate any site specific files, do not log them in the migration table
         $privatePath = Path::createPrivatePath('/migrate');
@@ -115,15 +115,18 @@ class SqlMigrate
     {
         $config = Config::instance();
 
+        self::instance()->tracking = false;
         foreach ($config->get('db.migrate.static') as $file) {
             $path = Path::create($file);
             if (is_file($path)) {
                 // write to log file
-                if (is_callable($log)) call_user_func_array($log, ['Applying ' . $file]);
-                $options = Db::parseDsn($config->get('db.mysql'));
-                Db\DbBackup::restore($path, $options);
+                if (!self::instance()->migrateFile($path, $log)) {
+                    if (is_callable($log)) call_user_func_array($log, ["Failed to execute $path"]);
+                    return false;
+                }
             }
         }
+        self::instance()->tracking = true;
 
         return true;
     }
@@ -169,6 +172,7 @@ class SqlMigrate
      */
     public function migrateFile(string $file, ?callable $log = null): bool
     {
+        $options = Db::parseDsn(Config::getValue('db.mysql', []));
         try {
             $this->install();
 
@@ -181,7 +185,6 @@ class SqlMigrate
             if ($this->hasPath($this->toRelative($file))) return true;
 
             if (!$this->backupFile) {   // only run once per session.
-                $options = Db::parseDsn(Config::getValue('db.mysql'));
                 $this->backupFile = $options['dbName'] . "_" . date("Y-m-d-H-i-s").".sql";
                 Db\DbBackup::save($this->backupFile, $options);
             }
@@ -195,14 +198,10 @@ class SqlMigrate
                 }
                 $this->insertPath($file);
             } else {  // is sql
-                // replace any table prefix
-                $sql = strval(file_get_contents($file));
-                if (!strlen(trim($sql))) return false;
-
-                $stm = Db::getPdo()->prepare($sql);
-                $stm->execute();
-                $stm->closeCursor();
-
+                if (is_file($file)) {
+                    // using CLI `mysql` to import SQL so bulk actions can be performed. (ei: using `DELIMITER //`)
+                    Db\DbBackup::restore($file, $options);
+                }
                 $this->insertPath($file);
             }
         } catch (\Exception $e){

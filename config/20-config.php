@@ -33,6 +33,7 @@ return function (Config $config) {
         '/src/config/sql/views.sql',
         '/src/config/sql/events.sql',
         '/src/config/sql/triggers.sql',
+        '/src/config/sql/common.php',
     ];
 
     /**

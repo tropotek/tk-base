@@ -58,20 +58,6 @@ class Migrate extends Console
                 throw new Exception("Failed to migrate files");
             }
 
-//            if (!SqlMigrate::migrateSite([$this, 'write'])) {
-//                throw new Exception("Failed to migrate DB files");
-//            }
-//
-//            // Execute static files
-//            if (!SqlMigrate::migrateStatic([$this, 'writeGreen'])) {
-//                throw new Exception("Failed to migrate static files");
-//            }
-//
-//            // setup dev environment if site in dev mode
-//            if (!SqlMigrate::migrateDev([$this, 'writeBlue'])) {
-//                throw new Exception("Failed to migrate dev files");
-//            }
-
             $this->write('Clearing filesystem cache');
             Cache::instance()->purge();
 

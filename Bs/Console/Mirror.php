@@ -124,15 +124,6 @@ class Mirror extends Console
                     $this->writeError("Failed to migrate files");
                     return Command::FAILURE;
                 }
-
-//                // Execute static files
-//                SqlMigrate::migrateSite([$this, 'writeGreen']);
-//
-//                // Execute static files
-//                SqlMigrate::migrateStatic([$this, 'writeGreen']);
-//
-//                // setup dev environment if site in dev mode
-//                SqlMigrate::migrateDev([$this, 'writeBlue']);
             }
 
             if (!$input->getOption('save')) {
