@@ -1,6 +1,7 @@
 <?php
 namespace Bs\Listener;
 
+use Bs\Mvc\ComponentInterface;
 use Bs\Mvc\ControllerInterface;
 use Dom\Modifier;
 use Dom\Renderer\DisplayInterface;
@@ -16,6 +17,7 @@ class DomViewHandler implements EventSubscriberInterface
 
     protected ?Modifier $domModifier;
     protected ?ControllerInterface $controller = null;
+    protected ?ComponentInterface $component = null;
 
 
     public function __construct(?Modifier $domModifier = null)
@@ -29,8 +31,12 @@ class DomViewHandler implements EventSubscriberInterface
     public function onController(ControllerEvent $event): void
     {
         if (!is_array($event->getController())) return;
-        if (!($event->getController()[0] instanceof ControllerInterface)) return;
-        $this->controller = $event->getController()[0];
+        if ($event->getController()[0] instanceof ControllerInterface) {
+            $this->controller = $event->getController()[0];
+        }
+        if ($event->getController()[0] instanceof ComponentInterface) {
+            $this->component = $event->getController()[0];
+        }
     }
 
     /**
@@ -62,18 +68,18 @@ class DomViewHandler implements EventSubscriberInterface
      * make sure your handlers have a priority > -100 so this is run last
      *
      * Convert controller return types to a request
-     * Once this event is fired and a response is set it will stop propagation,
+     * Once this event is fired and a response is set, it will stop propagation,
      * so other events using this name must be run with a priority > -100
      *
      */
     public function onView(ViewEvent $event): void
     {
         $result = $event->getControllerResult();
-        if (is_null($result)) {
-            $result = $this->controller;
-        }
 
-        if ($result instanceof Template) {
+        if (is_null($result) && $this->component instanceof ComponentInterface) {
+            // allow null returns from components
+            $event->setResponse(new Response(''));
+        } else if ($result instanceof Template) {
             $event->setResponse(new Response($result->toString()));
         } else if ($result instanceof DisplayInterface) {
             $event->setResponse(new Response($result->show()->toString()));
