@@ -20,7 +20,7 @@ class RememberHandler implements EventSubscriberInterface
 
     public function onRequest(RequestEvent $event): void
     {
-        // Check user still logged in, if not use any remember me cookies to auto login and redirect to back to this URI
+        // Check user still logged in, if not, use any remember me cookies to auto login and redirect to back to this URI
         if (!Auth::getAuthUser()) {
             $auth = Remember::retrieveMe();
             if ($auth) {

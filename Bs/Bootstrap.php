@@ -61,9 +61,6 @@ class Bootstrap
         Factory::instance()->initEventDispatcher();
         Factory::instance()->initMailGateway();
 
-        Uri::$SITE_HOST = Config::getHostname();
-        Uri::$BASE_PATH = Config::getBaseUrl();
-
         Factory::instance()->initSession();
 
         if (System::isCli()) {
