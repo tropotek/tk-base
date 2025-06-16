@@ -363,9 +363,12 @@ class Factory extends Collection
         // replace the {content} with the supplied content template
         $template = str_replace('{content}', $content, $template);
 
+        $siteEmail = Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName());
+
         $message = new \Tk\Mail\CurlyMessage($template);
-        $message->setFrom(Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName()));
-        $message->setReplyTo(Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName()));
+        $message->setFrom($siteEmail);
+        $message->setReplyTo($siteEmail);
+        $message->addBcc($siteEmail);
         $message->set('sig', Registry::getValue('site.email.sig', ''));
 
         return $message;
