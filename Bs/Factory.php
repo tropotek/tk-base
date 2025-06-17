@@ -32,6 +32,7 @@ use Tk\Collection;
 use Tk\Config;
 use Tk\ConfigLoader;
 use Tk\Cookie;
+use Tk\Date;
 use Tk\Log;
 use Tk\Logger\ErrorLog;
 use Tk\Logger\SessionLog;
@@ -370,6 +371,11 @@ class Factory extends Collection
         $message->setReplyTo($siteEmail);
         $message->addBcc($siteEmail);
         $message->set('sig', Registry::getValue('site.email.sig', ''));
+
+        $message->set('siteName', Registry::getSiteName());
+        $message->set('siteEmail', Registry::getSiteEmail());
+        $message->set('date', Date::create()->format(Date::FORMAT_LONG_DATE));
+        $message->set('dateTime', Date::create()->format(Date::FORMAT_LONG_DATETIME));
 
         return $message;
     }
