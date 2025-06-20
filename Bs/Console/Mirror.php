@@ -25,9 +25,9 @@ class Mirror extends Console
             ->setAliases(['mi'])
             ->setDescription('Mirror the data and files from the Live site. [Admins Only]')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
-            ->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
+            //->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
             ->addOption('no-sql', 'N', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
-            ->addOption('save', 'S', InputOption::VALUE_NONE, 'Do not delete temp sql files')
+            ->addOption('save', 'S', InputOption::VALUE_OPTIONAL, 'path to save the downloaded sql file to.', getcwd())
         ;
     }
 
@@ -67,7 +67,7 @@ class Mirror extends Console
             $options['exclude'] = ['_session'];
             $username = trim($input->getArgument('username'));
 
-            if (!is_file($newSqlFile) || $input->getOption('no-cache')) {
+            if (!is_file($newSqlFile)) {
                 $this->writeComment('Downloading fresh mirror file');
                 if (is_file($newSqlFile)) {
                     // Delete cached mirror files
@@ -126,10 +126,15 @@ class Mirror extends Console
                 }
             }
 
-            if (!$input->getOption('save')) {
-                unlink($dstBakFile);
-                if (is_file($newSqlFile)) unlink($newSqlFile);
+            if ($input->hasOption('save')) {
+                $path = $input->getOption('save');
+                if (empty($path)) $path = getcwd();
+                if (!str_ends_with($path, '.sql')) $path = $path . '/' . basename($newSqlFile);
+                copy($newSqlFile, $path);
             }
+
+            if (is_file($newSqlFile)) unlink($newSqlFile);
+            unlink($dstBakFile);
 
         } catch(\Exception $e) {
             $this->writeError($e->getMessage());
