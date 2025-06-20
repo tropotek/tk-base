@@ -1,5 +1,15 @@
 #CHANGELOG#
 
+Ver 8.0.106 [2025-06-21]:
+-------------------------------
+  - update notifications and recipients
+  - Add component interface so they can return null content
+  - update migrate add common.php
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Add context callbacks to nav renderer
+  - Added new menu renderer for minton
+
+
 Ver 8.0.104 [2025-06-10]:
 -------------------------------
   - convert all dialog components
