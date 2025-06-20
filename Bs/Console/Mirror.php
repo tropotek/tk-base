@@ -25,9 +25,8 @@ class Mirror extends Console
             ->setAliases(['mi'])
             ->setDescription('Mirror the data and files from the Live site. [Admins Only]')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
-            //->addOption('no-cache', 'C', InputOption::VALUE_NONE, 'Force downloading of the live DB. (Cached for the day)')
-            ->addOption('no-sql', 'N', InputOption::VALUE_NONE, 'Do not execute the downloaded sql file')
-            ->addOption('save', 'S', InputOption::VALUE_OPTIONAL, 'path to save the downloaded sql file to.', getcwd())
+            ->addOption('no-migrate', 'x', InputOption::VALUE_NONE, 'Do not execute/migrate the downloaded sql file into the DB')
+            ->addOption('save', 's', InputOption::VALUE_OPTIONAL, 'path to save the downloaded sql file to.', getcwd())
         ;
     }
 
@@ -83,7 +82,8 @@ class Mirror extends Console
                 $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
                     ->set('a', 'db')
                     ->set('u', $username)
-                    ->set('p', $password);
+                    ->set('p', $password)
+                    ->withScheme('https');
                 $this->writeComment("Requesting Data");
 
                 if (!$this->postRequest($mirrorUrl, $newZipFile)) {
@@ -98,16 +98,17 @@ class Mirror extends Console
                 $this->writeComment('Using existing mirror file');
             }
 
-            // Prevent accidental writing to live DB
-            $this->writeComment('Backup this DB to file: ' . $dstBakFile);
-            Db\DbBackup::save($dstBakFile, $options);
-            if (!is_file($dstBakFile)) {
-                $this->writeError("Error backing up system DB");
-                return Command::FAILURE;
-            }
+            // dont execute if no-migrate flag set
+            if (!$input->getOption('no-migrate')) {
 
-            // dont execute if no-sql flag set
-            if (!$input->getOption('no-sql')) {
+                // Prevent accidental writing to live DB
+                $this->writeComment('Backup this DB to file: ' . $dstBakFile);
+                Db\DbBackup::save($dstBakFile, $options);
+                if (!is_file($dstBakFile)) {
+                    $this->writeError("Error backing up system DB");
+                    return Command::FAILURE;
+                }
+
                 $this->write('Drop this DB tables');
                 Db::dropAllTables(true, $options['exclude']);
 
@@ -126,6 +127,7 @@ class Mirror extends Console
                 }
             }
 
+            // save file if requested
             if ($input->hasOption('save')) {
                 $path = $input->getOption('save');
                 if (empty($path)) $path = getcwd();
