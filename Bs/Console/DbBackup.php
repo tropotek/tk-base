@@ -18,7 +18,7 @@ class DbBackup extends Console
     {
         $this->setName('dbbackup')
             ->setAliases(['dbb'])
-            ->setDescription('Call this to dump a copy of the Database sql to stdout or a file if an argument is given')
+            ->setDescription('Call this to dump a copy of the Database sql to stdout or file')
             ->addArgument('output', InputArgument::OPTIONAL, 'A file path to dump the SQL to.', null)
             ->addArgument('date_format', InputArgument::OPTIONAL, 'Auto filename generated based on date when a directory is supplied as the output. See http://php.net/manual/en/function.date.php', 'D')
         ;

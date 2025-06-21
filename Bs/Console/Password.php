@@ -13,7 +13,7 @@ class Password extends Console
     protected function configure()
     {
         $this->setName('password')
-            ->setAliases(array('pwd'))
+            ->setAliases(['pwd'])
             ->addArgument('username', InputArgument::REQUIRED, 'A valid username.')
             ->setDescription('Set a users new password')
         ;
@@ -25,8 +25,14 @@ class Password extends Console
 
         $user = Auth::findByUsername($username);
         if (!$user) {
-            $this->writeError('Error: No valid user found.');
-            return self::FAILURE;
+
+            $create = $this->askConfirmation('This user does not exist, create a new one? [Y/n]: ');
+            if ($create) {
+
+            } else {
+                $this->writeError('Error: No valid user found.');
+                return self::FAILURE;
+            }
         }
 
         $errors = [];
