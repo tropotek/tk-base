@@ -1,6 +1,7 @@
 <?php
 namespace Bs;
 
+use Bs\Db\UserInterface;
 use Bs\Mvc\Page;
 use Bs\Mvc\PageDomInterface;
 use Bs\Mvc\PageInterface;
@@ -403,6 +404,15 @@ class Factory extends Collection
         return $crumbs;
     }
 
+    /**
+     * Override this in the site Factory object to create a new user
+     */
+    public function createNewUser(string $username, string $email, string $password, int $perms = 0, string $type = 'staff'): ?UserInterface
+    {
+        Log::warning('Factory::createNewUser() not implemented');
+        return null;
+    }
+
     public function getConsole(): Application
     {
         if (!$this->has('console')) {
@@ -416,6 +426,7 @@ class Factory extends Collection
 
             // Setup Global Console Commands
             $app->add(new \Bs\Console\Password());
+            $app->add(new \Bs\Console\CreateAdmin());
             $app->add(new \Bs\Console\CleanData());
             $app->add(new \Bs\Console\Upgrade());
             $app->add(new \Bs\Console\Maintenance());

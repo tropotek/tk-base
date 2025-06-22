@@ -1,23 +1,26 @@
 <?php
 namespace Bs\Console;
 
+use App\Db\User;
 use Bs\Auth;
-use Symfony\Component\Console\Input\InputInterface;
+use Bs\Factory;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Question\Question;
+use Tk\Config;
 
-class Password extends Console
+class CreateAdmin extends Console
 {
 
     protected function configure()
     {
-        $this->setName('password')
-            ->setAliases(['pwd'])
-            ->addArgument('username', InputArgument::REQUIRED, 'A valid username.')
+        $this->setName('create-admin')
+            ->setAliases(['adm'])
             ->addOption('ignore-pwd-policy', 'i', InputOption::VALUE_NEGATABLE, 'Ignore password policy when setting password', false)
-            ->setDescription('Set a users new password')
+            ->addArgument('username', InputArgument::REQUIRED, 'A valid username.')
+            ->setDescription('Create a new admin user')
         ;
     }
 
@@ -26,16 +29,24 @@ class Password extends Console
         $username = $input->getArgument('username');
 
         $user = Auth::findByUsername($username);
-        if (!$user) {
-
-            $create = $this->askConfirmation('This user does not exist, create a new one? [Y/n]: ');
-            if ($create) {
-
-            } else {
-                $this->writeError('Error: No valid user found.');
-                return self::FAILURE;
-            }
+        if ($user instanceof Auth) {
+            $this->writeError('Error: User with that username already exists.');
+            return self::FAILURE;
         }
+
+        $email = $username . '@' . Config::getHostname();
+        $first = true;
+        do {
+            if (!$first) {
+                $this->writeError("Invalid Email: \n");
+            }
+            $q = new Question('Enter user email['.$email.']: ', $email);
+            $q->setTrimmable(true);
+
+            /** @phpstan-ignore-next-line */
+            $email = $this->getHelper('question')->ask($input, $output, $q);
+            $first = false;
+        } while(!filter_var($email, FILTER_VALIDATE_EMAIL));
 
         $errors = [];
         do {
@@ -67,10 +78,9 @@ class Password extends Console
             $first = false;
         } while($pass != $passConf);
 
-        $this->writeGreen('Password for user \''.$username.'\' updated');
-        $user->password = Auth::hashPassword($pass);
-        $user->save();
+        Factory::instance()->createNewUser($username, $email, $pass, Auth::PERM_ADMIN, User::TYPE_STAFF);
 
+        $this->writeGreen('New admin user created.');
         return self::SUCCESS;
     }
 
