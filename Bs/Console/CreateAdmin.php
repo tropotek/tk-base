@@ -1,7 +1,6 @@
 <?php
 namespace Bs\Console;
 
-use App\Db\User;
 use Bs\Auth;
 use Bs\Factory;
 use Symfony\Component\Console\Input\InputOption;
@@ -78,7 +77,7 @@ class CreateAdmin extends Console
             $first = false;
         } while($pass != $passConf);
 
-        Factory::instance()->createNewUser($username, $email, $pass, Auth::PERM_ADMIN, User::TYPE_STAFF);
+        Factory::instance()->createNewUser($username, $email, $pass, Auth::PERM_ADMIN);
 
         $this->writeGreen('New admin user created.');
         return self::SUCCESS;
