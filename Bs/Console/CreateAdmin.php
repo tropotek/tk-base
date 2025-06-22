@@ -52,13 +52,16 @@ class CreateAdmin extends Console
             if (count($errors)) {
                 $this->writeError("Invalid Password: \n  - " . implode("\n  - ", $errors));
             }
+            $errors = [];
             $q = new Question('Enter the new password: ', '');
             $q->setHidden(true);
             $q->setTrimmable(true);
 
             /** @phpstan-ignore-next-line */
             $pass = $this->getHelper('question')->ask($input, $output, $q);
-            if (!$input->getOption('ignore-pwd-policy')) {
+            if (empty($pass)) {
+                $errors[] = 'Password cannot be empty.';
+            } elseif (!$input->getOption('ignore-pwd-policy')) {
                 $errors = Auth::validatePassword($pass);
             }
         } while(!empty($errors));
