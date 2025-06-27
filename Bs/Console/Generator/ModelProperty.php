@@ -106,6 +106,7 @@ class ModelProperty extends \Tk\Collection
 
     public function getInitaliser(): string
     {
+        if (in_array($this->getName(), ['modified', 'created'])) return '';
         $val = $this->getDefaultValue();
         if (str_starts_with($this->getType(), '\\')) {
             $val = sprintf('new %s()', $this->getType());
