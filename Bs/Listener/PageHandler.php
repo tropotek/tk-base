@@ -12,6 +12,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Config;
 use Tk\Path;
 
+/**
+ * Handles page rendering and integrates with Symfony events to dynamically manage
+ * controller and page instances. The class listens to specific kernel events,
+ * processes the controller and view events, and generates HTML responses accordingly.
+ *
+ * Implements EventSubscriberInterface to define event handling methods.
+ */
 class PageHandler implements EventSubscriberInterface
 {
 
@@ -19,6 +26,10 @@ class PageHandler implements EventSubscriberInterface
     protected ?PageInterface $page = null;
 
     /**
+     * If a controller has a TK page template,
+     * store the controller and load the page template ready for the view() event.
+     * Only for controllers implementing `\Bs\Mvc\ControllerInterface`
+     *
      * @Event("Symfony\Component\HttpKernel\Event\ControllerEvent")
      */
     public function onController(ControllerEvent $event): void
@@ -35,7 +46,11 @@ class PageHandler implements EventSubscriberInterface
     }
 
     /**
-     * kernel.view
+     * Insert the controller content into the page
+     * template and set that as the response.
+     * Only for controllers implementing `\Bs\Mvc\ControllerInterface`
+     *
+     * @Event("Symfony\Component\HttpKernel\Event\ViewEvent")
      */
     public function onView(ViewEvent $event): void
     {

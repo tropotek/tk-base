@@ -12,6 +12,11 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+/**
+ * Handles DOM and view modifications by listening to Symfony Kernel events.
+ * This class subscribes to the CONTROLLER and VIEW events to manipulate
+ * controller data, apply DOM modifications, and generate appropriate responses.
+ */
 class DomViewHandler implements EventSubscriberInterface
 {
 
@@ -62,7 +67,6 @@ class DomViewHandler implements EventSubscriberInterface
     }
 
     /**
-     * kernel.view
      * NOTE: if you want to modify the template using its API
      * you must add the listeners before this one its priority is set to -100
      * make sure your handlers have a priority > -100 so this is run last
@@ -71,6 +75,7 @@ class DomViewHandler implements EventSubscriberInterface
      * Once this event is fired and a response is set, it will stop propagation,
      * so other events using this name must be run with a priority > -100
      *
+     * @Event("Symfony\Component\HttpKernel\Event\ViewEvent")
      */
     public function onView(ViewEvent $event): void
     {
@@ -91,8 +96,8 @@ class DomViewHandler implements EventSubscriberInterface
         return [
             KernelEvents::CONTROLLER => 'onController',
             KernelEvents::VIEW => [
-                ['onDomModify', -80],
-                ['onView', -100]
+                ['onDomModify', -80],   // first
+                ['onView', -100]        // second
             ]
         ];
     }
