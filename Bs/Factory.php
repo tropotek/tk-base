@@ -265,13 +265,16 @@ class Factory extends Collection
         return $this->getEventDispatcher();
     }
 
-    public function getAuthController(): Auth
+    public function getAuthController(?AdapterInterface $adapter = null): Auth
     {
         if (!$this->has('authController')) {
-            $auth = new Auth(new \Tk\Auth\Storage\SessionStorage());
+            $auth = new Auth(new \Tk\Auth\Storage\SessionStorage(), $this->getAuthAdapter());
             $this->set('authController', $auth);
         }
-        return $this->get('authController');
+
+        $auth = $this->get('authController');
+        $auth->setAdapter($adapter);
+        return $auth;
     }
 
     /**
