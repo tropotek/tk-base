@@ -243,51 +243,77 @@ form textarea {
 }
 
 
-/* Header OrderBy Arrows */
-th
-{
-    text-align: center;
+/* Table Header Sort Arrows */
+th {
     white-space: nowrap;
 }
-th a,
-td a {
-    position: relative;
-    display: block;
-    width: 100%;
+.tk-table thead th {
+    position: relative;          /* This is needed for the absolute positioning. */
+    padding-left: 0.5em;
 }
-th a.desc,
-th a.asc {
-    padding-right: 1.5rem;
+.tk-table thead th a {
+    padding-left: 0.5em;
 }
-th a:before,
-th a:after {
-    border: 0.3rem solid transparent;
-    content: "";
-    display: block;
-    height: 0;
-    right: 0.3rem;
-    top: 50%;
+.tk-table thead th a::before,
+.tk-table thead th a::after {
     position: absolute;
-    width: 0;
+    left: 0.3em;
+    font-family: 'Font Awesome 5 Free';  /* Use FontAwesome's font so that you can set the content */
+    opacity: 0.3;                /* Set opacity to gray out icons by default */
 }
-th a.desc:before {
-    border-bottom-color: #666;
-    margin-top: -0.5rem;
+.tk-table thead th a::before {
+    content: '\f0de';            /* Font Awesome's up arrow */
+    top: calc(50% - 0.75em);     /* Tricky to calculate the top offset */
 }
-th a.asc:after {
-    border-top-color: #666;
-    margin-top: 0.0rem;
+.tk-table thead th a::after {
+    content: '\f0dd';            /* Font Awesome's down arrow */
+    bottom: calc(50% - 0.75em);
 }
-
-.tk-table-sm th a:before,
-.tk-table-sm th a:after,
-.tk-table-sm th a.desc:before,
-.tk-table-sm th a.asc:after
-{
-    display: none;
-}
-.tk-table-sm th a {
-    padding-right: 0;
+.tk-table thead th a.asc::after,
+.tk-table thead th a.desc::before {
+    opacity: 1;                  /* When sorting, set full opacity on the direction */
 }
 
+
+
+/*th a,*/
+/*td a {*/
+/*    position: relative;*/
+/*    display: block;*/
+/*    width: 100%;*/
+/*}*/
+/*th a.desc,*/
+/*th a.asc {*/
+/*    padding-right: 1.5rem;*/
+/*}*/
+/*th a:before,*/
+/*th a:after {*/
+/*    border: 0.3rem solid transparent;*/
+/*    content: "";*/
+/*    display: block;*/
+/*    height: 0;*/
+/*    right: 0.3rem;*/
+/*    top: 50%;*/
+/*    position: absolute;*/
+/*    width: 0;*/
+/*}*/
+/*th a.desc:before {*/
+/*    border-bottom-color: #666;*/
+/*    margin-top: -0.5rem;*/
+/*}*/
+/*th a.asc:after {*/
+/*    border-top-color: #666;*/
+/*    margin-top: 0.0rem;*/
+/*}*/
+
+/*.tk-table-sm th a:before,*/
+/*.tk-table-sm th a:after,*/
+/*.tk-table-sm th a.desc:before,*/
+/*.tk-table-sm th a.asc:after*/
+/*{*/
+/*    display: none;*/
+/*}*/
+/*.tk-table-sm th a {*/
+/*    padding-right: 0;*/
+/*}*/
 
