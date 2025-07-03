@@ -28,12 +28,15 @@ use Symfony\Component\Routing\RouteCollection;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\DbTable;
 use Tk\Auth\Auth;
+use Tk\Cache\Adapter\Filesystem;
+use Tk\Cache\Adapter\Serial;
 use Tk\Cache\Cache;
 use Tk\Collection;
 use Tk\Config;
 use Tk\ConfigLoader;
 use Tk\Cookie;
 use Tk\Date;
+use Tk\FileUtil;
 use Tk\Log;
 use Tk\Logger\ErrorLog;
 use Tk\Logger\SessionLog;
@@ -151,7 +154,7 @@ class Factory extends Collection
     {
         // Setup Routes and cache results.
         // Use `<Ctrl>+<Shift>+R` to refresh the routing cache
-        $systemCache = Cache::instance();
+        $systemCache = $this->getCache();   // todo: should we use a private cache for routes ???
         $compiledRoutes = $systemCache->fetch('compiledRoutes');
         if ($refresh || !is_array($compiledRoutes) || System::isRefreshCacheRequest()) {
             ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
@@ -334,6 +337,7 @@ class Factory extends Collection
                 $scss->setCompress(true);
                 $scss->setCacheEnabled(!System::isRefreshCacheRequest());
                 $scss->setCacheTimeout(\Tk\Date::DAY*14);
+                $scss->setPerPageCache(false);
                 $dm->addFilter('scss', $scss);
             }
 
@@ -488,14 +492,26 @@ class Factory extends Collection
     }
 
     /**
-     * @deprecated use Cache::instance()
+     * get a public filesystem cache
+     * Note: caches files are accessible to the web
      */
     public function getCache(): Cache
     {
         if (!$this->has('sysCache')) {
-            $cache = Cache::instance();
+            $cache = new Cache();
             $this->set('sysCache', $cache);
         }
         return $this->get('sysCache');
+    }
+
+    public function purgeCache(): void
+    {
+        $this->getCache()->purge();
+
+        // purge public cache if exists
+        $publicCache = Path::createDataPath('/cache');
+        if ($publicCache->isDir()) {
+            FileUtil::rmdir($publicCache);
+        }
     }
 }

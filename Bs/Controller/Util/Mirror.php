@@ -53,20 +53,20 @@ class Mirror
 
     public function doDataBackup(bool $all = false): void
     {
-        $srcFile = tempnam(Path::create('/'), '_mifl');
+        $srcFile = tempnam(Path::create(), '_mifl');
         if (is_file($srcFile)) unlink($srcFile);
         if ($all) {
             $cmd = sprintf('cd %s && tar -zcf %s %s',
                 escapeshellarg(Config::getBasePath()),
                 escapeshellarg(basename($srcFile)),
-                escapeshellarg(basename(Path::createDataPath('/')))
+                escapeshellarg(basename(Path::createDataPath()))
             );
         } else {
             $cmd = sprintf('cd %s && tar --exclude=%s -zcf %s %s',
                 escapeshellarg(Config::getBasePath()),
                 escapeshellarg('private'),
                 escapeshellarg(basename($srcFile)),
-                escapeshellarg(basename(Path::createDataPath('/')))
+                escapeshellarg(basename(Path::createDataPath()))
             );
         }
 
@@ -91,7 +91,7 @@ class Mirror
         //$options['exclude'] = ['_session', '_migrate'];
         $options['exclude'] = ['_session'];
 
-        $srcBak = tempnam(Path::createTempPath('/'), 'midb');
+        $srcBak = tempnam(Path::createTempPath(), 'midb');
         Db\DbBackup::save($srcBak, $options);
 
         if (is_file($srcBak . '.gz')) {

@@ -26,9 +26,9 @@ class Bootstrap
         }
 
         // make app directories if not exists
-        FileUtil::mkdir(Path::createPrivatePath('/'));
-        FileUtil::mkdir(Path::createTempPath('/'));
-        FileUtil::mkdir(Path::createCachePath('/'));
+        FileUtil::mkdir(Path::createPrivatePath());
+        FileUtil::mkdir(Path::createTempPath());
+        FileUtil::mkdir(Path::createCachePath());
 
         if ($config->has('db.mysql')) {
             Db::connect(

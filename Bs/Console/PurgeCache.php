@@ -1,10 +1,12 @@
 <?php
 namespace Bs\Console;
 
+use Bs\Factory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tk\Cache\Cache;
+use Tk\FileUtil;
+use Tk\Path;
 
 /**
  * Clean out the site filesystem cache directory
@@ -22,7 +24,7 @@ class PurgeCache extends Console
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            Cache::instance()->purge();
+            Factory::instance()->purgeCache();
         } catch (\Exception $e) {
             $this->writeError($e->getMessage());
             return Command::FAILURE;

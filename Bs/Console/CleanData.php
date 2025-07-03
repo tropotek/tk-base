@@ -26,11 +26,11 @@ class CleanData extends Console
         try {
             $this->deleteEmptyFolders(Path::createDataPath('/data'));
             $this->deleteOldFiles(
-                Path::createTempPath('/'),
+                Path::createTempPath(),
                 \Tk\Date::create()->sub(new \DateInterval('P7D'))
             );
             $this->deleteOldFiles(
-                Path::createCachePath('/'),
+                Path::createCachePath(),
                 \Tk\Date::create()->sub(new \DateInterval('P7D'))
             );
         } catch (\Exception $e) {
