@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 8.0.114 [2025-07-04]:
+-------------------------------
+  - loads of minor updates
+  - masive cache object cleanup
+  - fix table header sort arrows
+
+
 Ver 8.0.112 [2025-07-02]:
 -------------------------------
 
