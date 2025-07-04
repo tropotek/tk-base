@@ -5,6 +5,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Tk\Log;
+use Tk\Uri;
 
 class ShutdownHandler implements EventSubscriberInterface
 {
@@ -18,6 +19,7 @@ class ShutdownHandler implements EventSubscriberInterface
 
     public function onTerminate(TerminateEvent $event): void
     {
+        //if (str_starts_with(Uri::create()->getRelativePath(), '/component/')) return;
         if (!StartupHandler::$SCRIPT_CALLED) return;
         if (StartupHandler::hasParam(StartupHandler::METRICS)) {
             $this->debug(sprintf('Time: %s sec    Peek Mem: %s',

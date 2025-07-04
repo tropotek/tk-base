@@ -6,6 +6,7 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Dom\Modifier\PageBytes;
 use Tk\Log;
+use Tk\Uri;
 
 class PageBytesHandler implements EventSubscriberInterface
 {
@@ -19,6 +20,7 @@ class PageBytesHandler implements EventSubscriberInterface
 
     public function onTerminate(TerminateEvent $event): void
     {
+        //if (str_starts_with(Uri::create()->getRelativePath(), '/component/')) return;
         if (!StartupHandler::$SCRIPT_CALLED) return;
         if (StartupHandler::hasParam(StartupHandler::METRICS)) {
             foreach (explode("\n", $this->pageBytesToString()) as $line) {

@@ -329,13 +329,8 @@ class Factory extends Collection
                     'dataUrl' => Uri::createDataUri('/')->getPath()
                 ];
                 Modifier\Scss::$IS_DEBUG = Config::isDev();
-                $scss = new Modifier\Scss(
-                    Config::getBasePath(),
-                    Config::getBaseUrl(),
-                    $vars
-                );
+                $scss = new Modifier\Scss($vars, Path::createDataPath('/cache'));
                 $scss->setCompress(true);
-                $scss->setCacheEnabled(!System::isRefreshCacheRequest());
                 $scss->setCacheTimeout(\Tk\Date::DAY*14);
                 $scss->setPerPageCache(false);
                 $dm->addFilter('scss', $scss);
