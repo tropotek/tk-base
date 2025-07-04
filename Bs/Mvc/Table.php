@@ -61,7 +61,7 @@ class Table extends \Tk\Table
     /**
      * The execute method should be called after all cells and filters have been added
      */
-    public function execute(): static
+    public function execute(?callable $onInit = null): static
     {
         // init cells, filters and actions
         $this->init();
@@ -88,6 +88,10 @@ class Table extends \Tk\Table
 
         if (is_null($this->dbFilter)) {
             $this->dbFilter = Filter::createFromTable($filterValues, $this);
+        }
+
+        if (is_callable($onInit)) {
+            $onInit($this);
         }
 
         /* @var Cell $action */

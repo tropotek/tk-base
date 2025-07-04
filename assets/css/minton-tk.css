@@ -248,17 +248,17 @@ th {
     white-space: nowrap;
 }
 .tk-table thead th {
-    position: relative;          /* This is needed for the absolute positioning. */
     padding-left: 0.5em;
 }
 .tk-table thead th a {
+    position: relative;          /* This is needed for the absolute positioning. */
     padding-left: 0.5em;
 }
 
 .tk-table thead th a::before,
 .tk-table thead th a::after {
     position: absolute;
-    left: 0.3em;
+    left: -0.3em;
     font-family: 'Font Awesome 5 Free';  /* Use FontAwesome's font so that you can set the content */
     opacity: 0.3;                /* Set opacity to gray out icons by default */
 }
