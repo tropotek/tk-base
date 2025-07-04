@@ -1,6 +1,7 @@
 <?php
 $sitePath = rtrim(dirname(__FILE__, 7), '/');
 $siteUrl = rtrim(dirname($_SERVER['PHP_SELF'], 7), '/');
+define('TKAPP', true);
 require $sitePath . '/_prepend.php';
 
 //error_reporting(0); // Set E_ALL for debugging
