@@ -1,12 +1,11 @@
 <?php
 $sitePath = rtrim(dirname(__FILE__, 7), '/');
 $siteUrl = rtrim(dirname($_SERVER['PHP_SELF'], 7), '/');
-define('TKAPP', true);
+
 require $sitePath . '/_prepend.php';
+define('TKAPP', true);
 
-//error_reporting(0); // Set E_ALL for debugging
-
-// // Optional exec path settings (Default is called with command name only)
+// Optional exec path settings (Default is called with command name only)
 $bin = '/bin';
 define('ELFINDER_TAR_PATH',      $bin.'/tar');
 define('ELFINDER_GZIP_PATH',     $bin.'/gzip');
