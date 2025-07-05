@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.118 [2025-07-06]:
+-------------------------------
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Fix SCSS object properties
+
+
 Ver 8.0.116 [2025-07-04]:
 -------------------------------
 
