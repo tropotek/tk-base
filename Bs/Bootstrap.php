@@ -76,15 +76,15 @@ class Bootstrap
          */
         chdir(Config::getBasePath());
 
+        // todo Moved to http only to prevent DB table creation in CLI
+        //      Keep an eye on it to see if we need it at all for CLI commands
+        Factory::instance()->initSession();
+
         if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;
         }
         Factory::instance()->getRequest();
         Factory::instance()->initBreadcrumbs();
-
-        // todo Moved to http only to prevent DB table creation in CLI
-        //      Keep an eye on it to see if we need it at all for CLI commands
-        Factory::instance()->initSession();
 
     }
 
