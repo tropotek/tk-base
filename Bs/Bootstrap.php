@@ -61,8 +61,6 @@ class Bootstrap
         Factory::instance()->initEventDispatcher();
         Factory::instance()->initMailGateway();
 
-        Factory::instance()->initSession();
-
         if (System::isCli()) {
             $this->cliInit();
         } else {
@@ -83,6 +81,10 @@ class Bootstrap
         }
         Factory::instance()->getRequest();
         Factory::instance()->initBreadcrumbs();
+
+        // todo Moved to http only to prevent DB table creation in CLI
+        //      Keep an eye on it to see if we need it at all for CLI commands
+        Factory::instance()->initSession();
 
     }
 
