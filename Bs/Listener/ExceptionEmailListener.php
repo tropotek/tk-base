@@ -92,7 +92,15 @@ class ExceptionEmailListener implements EventSubscriberInterface
 
         $uri = Uri::create()->toString();
         $ip = System::getClientIp();
-        $request = print_r($_REQUEST, true);
+        $post = '';
+        if (count($_POST)) {
+            $post = print_r($_POST, true);
+            $post = explode("\n", $post);
+            $post = trim(implode("\n", array_map(function ($line) {
+                return str_pad($line, 4, ' ', STR_PAD_LEFT);
+            }, $post)));
+            $post = "<b>Post:</b>\n   {$post}";
+        }
 
         return <<<HTML
 <div>
@@ -102,19 +110,23 @@ class ExceptionEmailListener implements EventSubscriberInterface
           padding: 0;margin: 0;
           overflow: auto;
         }
+        pre.request {
+            margin-top: 1em;
+            background-color: #EFEFEF;
+            padding: 10px;
+            border: 1px solid #CCC;
+        }
     </style>
+
+    <pre class="request">
+<b>Uri:</b> {$uri}
+<b>Method:</b> {$_SERVER['REQUEST_METHOD']}
+<b>Remote IP:</b> {$ip}
+<b>Agent:</b> {$_SERVER['HTTP_USER_AGENT']}
+{$post}</pre>
+
     <h2>{$this->siteTitle} Error: $class</h2>
     <p><strong>$msg $extra</strong></p>
-    <ul>
-        <li><strong>URI:</strong> <span>{$uri}</span></li>
-        <li><strong>Method:</strong> <span>{$_SERVER['REQUEST_METHOD']}</span></li>
-        <li><strong>Remote IP:</strong> <span>{$ip}</span></li>
-        <li><strong>Agent:</strong> <span>{$_SERVER['HTTP_USER_AGENT']}</span></li>
-        <li>
-            <strong>Request:</strong><br>
-            <pre>{$request}</pre>
-        </li>
-    </ul>
     <pre>$str</pre>
     $logHtml
 </div>
