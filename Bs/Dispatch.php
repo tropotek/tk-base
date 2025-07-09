@@ -83,12 +83,10 @@ class Dispatch
             Config::isDev()
         ));
 
-        if (Config::isProd()) {
-            $this->getDispatcher()->addSubscriber(new ExceptionEmailListener(
-                Config::getValue('system.email.exception', []),
-                Registry::getSiteName()
-            ));
-        }
+        $this->getDispatcher()->addSubscriber(new ExceptionEmailListener(
+            Config::getValue('system.email.exception', []),
+            Registry::getSiteName()
+        ));
 
         // render the page template with controller HTML content if enabled/exists
         $this->getDispatcher()->addSubscriber(new PageHandler());

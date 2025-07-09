@@ -11,9 +11,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Throwable;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Tk\Config;
 use Tk\Log;
 use Tk\Mail\Mailer;
 use Tk\Str;
+use Tk\System;
+use Tk\Uri;
 
 
 class ExceptionEmailListener implements EventSubscriberInterface
@@ -87,6 +90,10 @@ class ExceptionEmailListener implements EventSubscriberInterface
             $extra = sprintf('<br/> in <em>%s:%s</em>',  $e->getFile(), $e->getLine());
         }
 
+        $uri = Uri::create()->toString();
+        $ip = System::getClientIp();
+        $request = print_r($_REQUEST, true);
+
         return <<<HTML
 <div>
     <style>
@@ -98,6 +105,16 @@ class ExceptionEmailListener implements EventSubscriberInterface
     </style>
     <h2>{$this->siteTitle} Error: $class</h2>
     <p><strong>$msg $extra</strong></p>
+    <ul>
+        <li><strong>URI:</strong> <span>{$uri}</span></li>
+        <li><strong>Method:</strong> <span>{$_SERVER['REQUEST_METHOD']}</span></li>
+        <li><strong>Remote IP:</strong> <span>{$ip}</span></li>
+        <li><strong>Agent:</strong> <span>{$_SERVER['HTTP_USER_AGENT']}</span></li>
+        <li>
+            <strong>Request:</strong><br>
+            <pre>{$request}</pre>
+        </li>
+    </ul>
     <pre>$str</pre>
     $logHtml
 </div>
