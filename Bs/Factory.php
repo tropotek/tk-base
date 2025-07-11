@@ -28,8 +28,6 @@ use Symfony\Component\Routing\RouteCollection;
 use Tk\Auth\Adapter\AdapterInterface;
 use Tk\Auth\Adapter\DbTable;
 use Tk\Auth\Auth;
-use Tk\Cache\Adapter\Filesystem;
-use Tk\Cache\Adapter\Serial;
 use Tk\Cache\Cache;
 use Tk\Collection;
 use Tk\Config;
@@ -231,11 +229,10 @@ class Factory extends Collection
         Log::setEnableNoLog(Config::getValue('log.enableNoLog', true));
         $logfile = Config::getValue('php.error_log', ini_get('error_log'));
         if (is_writable($logfile)) {
-            $logger = Log::addLogger(new StreamLog($logfile, $logLevel));
+            Log::addLogger(new StreamLog($logfile, $logLevel));
         } else {
-            $logger = Log::addLogger(new ErrorLog($logLevel));
+            Log::addLogger(new ErrorLog($logLevel));
         }
-        Template::$LOGGER = $logger;
     }
 
     /**
