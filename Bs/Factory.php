@@ -320,7 +320,7 @@ class Factory extends Collection
         if (!$this->get('templateModifier')) {
             $dm = new Modifier();
 
-            // todo: add "scssphp/scssphp": "^1.11.0-@stable" to composer to enable
+            // todo: add "scssphp/scssphp": "^1.11.0-@stable" to composer to enable scss support
 //            $vars = [
 //                'baseUrl' => Config::getBaseUrl(),
 //                'dataUrl' => Uri::createDataUri('/')->getPath()
