@@ -321,15 +321,17 @@ class Factory extends Collection
             $dm = new Modifier();
 
             // todo: add "scssphp/scssphp": "^1.11.0-@stable" to composer to enable scss support
-//            $vars = [
-//                'baseUrl' => Config::getBaseUrl(),
-//                'dataUrl' => Uri::createDataUri('/')->getPath()
-//            ];
-//            $scss = new Modifier\Scss($vars, Path::createDataPath('/cache'));
-//            $scss->setCompress(true);
-//            $scss->setCacheTimeout(\Tk\Date::DAY*14);
-//            $scss->setPerPageCache(false);
-//            $dm->addFilter('scss', $scss);
+            if (class_exists('ScssPhp\ScssPhp\Compiler')) {
+                $vars = [
+                    'baseUrl' => Config::getBaseUrl(),
+                    'dataUrl' => Uri::createDataUri('/')->getPath()
+                ];
+                $scss = new Modifier\Scss($vars, Path::createDataPath('/cache'));
+                $scss->setCompress(true);
+                $scss->setCacheTimeout(\Tk\Date::DAY*14);
+                $scss->setPerPageCache(false);
+                $dm->addFilter('scss', $scss);
+            }
 
             Modifier\UrlPath::$IS_DEBUG = Config::isDev();
             $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
