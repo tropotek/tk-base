@@ -73,7 +73,7 @@ class Mirror
             );
         }
 
-        system($cmd);
+        exec($cmd);
 
         $public_name = basename($srcFile);
         $filesize = filesize($srcFile);
