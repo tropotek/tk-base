@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Tk\Config;
+use Tk\Encrypt;
 use Tk\FileUtil;
 use Tk\Log;
 use Tk\Path;
@@ -33,6 +34,7 @@ class MirrorData extends Console
             ->setAliases(['md'])
             ->setDescription('Copy remote `/data` folder to specified location')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
+            ->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
             ->addOption('all', 'a', InputOption::VALUE_NONE, 'download all data files (including /private)')
         ;
     }
@@ -66,14 +68,16 @@ class MirrorData extends Console
             }
         }
 
-        $q = new Question('Enter the new password: ', '');
-        $q->setHidden(true);
-        $q->setTrimmable(true);
-        /** @phpstan-ignore-next-line */
-        $password = $this->getHelper('question')->ask($input, $output, $q);
-        if (empty($password)) {
-            $this->writeError('Password cannot be empty.');
-            return Command::FAILURE;
+        $password = $input->getOption('password');
+        while(empty($password)) {
+            $q = new Question('Enter the new password: ', '');
+            $q->setHidden(true);
+            $q->setTrimmable(true);
+            /** @phpstan-ignore-next-line */
+            $password = $this->getHelper('question')->ask($input, $output, $q);
+            if (empty($password)) {
+                $this->writeError('Password cannot be empty.');
+            }
         }
 
         $username     = trim($input->getArgument('username'));
@@ -181,15 +185,20 @@ class MirrorData extends Console
 
     protected function postRequest(Uri|string $srcUrl, string $filename): bool
     {
-        $ok     = true;
-        $srcUrl = Uri::create($srcUrl)->withScheme('https');
-        $query  = $srcUrl->getQuery();
-        $srcUrl->reset();
         $secret = $this->getConfig()->get('db.mirror.secret', '');
         if (empty($secret)) {
             $this->error = "Invalid API secret";
             return false;
         }
+
+        $enc = Encrypt::create($secret);
+        $ok     = true;
+        $srcUrl = Uri::create($srcUrl)->withScheme('https');
+        $srcUrl->set('u', $enc->encrypt($srcUrl->get('u')));
+        $srcUrl->set('p', $enc->encrypt($srcUrl->get('p')));
+
+        $query  = $srcUrl->getQuery();
+        $srcUrl->reset();
 
         $fp = fopen($filename, "w");
         if ($fp === false) {

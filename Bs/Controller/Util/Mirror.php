@@ -3,6 +3,7 @@ namespace Bs\Controller\Util;
 
 use Bs\Auth;
 use Tk\Config;
+use Tk\Encrypt;
 use Tk\Log;
 use Tk\Db;
 use Tk\Path;
@@ -19,14 +20,16 @@ class Mirror
         if (strtolower($_SERVER['REQUEST_SCHEME']) != 'https') {
             throw new \Tk\Exception('invalid SSL connection');
         }
-        if (!Config::getValue('db.mirror.secret', false)) {
+        $secret = Config::getValue('db.mirror.secret', '');
+        if (empty($secret)) {
             throw new \Tk\Exception('access disabled');
         }
 
+        $enc = Encrypt::create($secret);
         $action   = trim($_POST['a'] ?? '');
-        $username = trim($_POST['u'] ?? '');
-        $password = trim($_POST['p'] ?? '');
-        $all = isset($_POST['all']);    // copay all, include private folder
+        $username = $enc->decrypt(trim($_POST['u'] ?? ''));
+        $password = $enc->decrypt(trim($_POST['p'] ?? ''));
+        $all = isset($_POST['all']);    // copy all, include private folder
 
         $user = Auth::findByUsername($username);
         if (is_null($user) || !$user->isAdmin()) {
@@ -37,8 +40,8 @@ class Mirror
         }
 
         $headers = getallheaders();
-        $secret  = trim($headers['authorization-key'] ?? $headers['Authorization-Key'] ?? '');
-        if (Config::getValue('db.mirror.secret') !== $secret) {
+        $secretKey  = trim($headers['authorization-key'] ?? $headers['Authorization-Key'] ?? '');
+        if ($secret !== $secretKey) {
             throw new \Tk\Exception('invalid access key');
         }
 

@@ -81,7 +81,6 @@ class ExceptionEmailListener implements EventSubscriberInterface
         $msg = $e->getMessage();
         $str = '';
         $extra = '';
-        $logHtml = '';
 
         if ($withTrace) {
             $str = trim($e->__toString());
@@ -90,6 +89,8 @@ class ExceptionEmailListener implements EventSubscriberInterface
             $extra = sprintf('<br/> in <em>%s:%s</em>',  $e->getFile(), $e->getLine());
         }
 
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'CLI';
+        $agent = $_SERVER['HTTP_USER_AGENT'] ?? 'cli';
         $uri = Uri::create()->toString();
         $ip = System::getClientIp();
         $post = '';
@@ -120,15 +121,14 @@ class ExceptionEmailListener implements EventSubscriberInterface
 
     <pre class="request">
 <b>Uri:</b> {$uri}
-<b>Method:</b> {$_SERVER['REQUEST_METHOD']}
+<b>Method:</b> {$method}
 <b>Remote IP:</b> {$ip}
-<b>Agent:</b> {$_SERVER['HTTP_USER_AGENT']}
+<b>Agent:</b> {$agent}
 {$post}</pre>
 
     <h2>{$this->siteTitle} Error: $class</h2>
     <p><strong>$msg $extra</strong></p>
     <pre>$str</pre>
-    $logHtml
 </div>
 HTML;
 

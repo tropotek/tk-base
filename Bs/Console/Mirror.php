@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\Question;
 use Tk\Config;
+use Tk\Encrypt;
 use Tk\Exception;
 use Tk\Log;
 use Tk\Path;
@@ -25,6 +26,7 @@ class Mirror extends Console
             ->setAliases(['mi'])
             ->setDescription('Mirror the data and files from the Live site. [Admins Only]')
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
+            ->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
             ->addOption('no-migrate', 'x', InputOption::VALUE_NONE, 'Do not execute/migrate the downloaded sql file into the DB')
             ->addOption('save', 's', InputOption::VALUE_OPTIONAL, 'path to save the downloaded sql file to.', getcwd())
         ;
@@ -47,14 +49,16 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            $q = new Question('Enter the new password: ', '');
-            $q->setHidden(true);
-            $q->setTrimmable(true);
-            /** @phpstan-ignore-next-line */
-            $password = $this->getHelper('question')->ask($input, $output, $q);
-            if (empty($password)) {
-                $this->writeError('Password cannot be empty.');
-                return Command::FAILURE;
+            $password = $input->getOption('password');
+            while(empty($password)) {
+                $q = new Question('Enter the new password: ', '');
+                $q->setHidden(true);
+                $q->setTrimmable(true);
+                /** @phpstan-ignore-next-line */
+                $password = $this->getHelper('question')->ask($input, $output, $q);
+                if (empty($password)) {
+                    $this->writeError('Password cannot be empty.');
+                }
             }
 
             $dstBakFile = Path::createTempPath('/dst-bak.sql');
@@ -149,18 +153,21 @@ class Mirror extends Console
 
     protected function postRequest(Uri|string $srcUrl, string $filename): bool
     {
-        $ok     = true;
-        $srcUrl = Uri::create($srcUrl)->withScheme('https');
-
-        // convert query vals to post vals
-        $query  = $srcUrl->getQuery();
-        $srcUrl->reset();
-
         $secret = $this->getConfig()->get('db.mirror.secret', '');
         if (empty($secret)) {
             $this->error = "Invalid API secret";
             return false;
         }
+
+        $enc = Encrypt::create($secret);
+        $ok = true;
+        $srcUrl = Uri::create($srcUrl)->withScheme('https');
+        $srcUrl->set('u', $enc->encrypt($srcUrl->get('u')));
+        $srcUrl->set('p', $enc->encrypt($srcUrl->get('p')));
+
+        // convert query vals to post vals
+        $query  = $srcUrl->getQuery();
+        $srcUrl->reset();
 
         $fp = fopen($filename, "w");
         if ($fp === false) {
