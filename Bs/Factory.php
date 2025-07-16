@@ -103,6 +103,7 @@ class Factory extends Collection
     public function initSession(): ?\Tk\Db\Session
     {
         if (!$this->has('session')) {
+            session_cache_limiter('nocache');
             session_name('sn_' . md5(Config::getBaseUrl()));
             // init DB session if enabled
             if (Config::getValue('session.db_enable', false)) {
