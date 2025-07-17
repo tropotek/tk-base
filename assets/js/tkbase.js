@@ -296,7 +296,6 @@ let tkbase = function () {
             tkRegisterInit(function () {
                 $('[data-confirm]', this).bsConfirm();
             });
-            //$('[data-confirm]').bsConfirm();
         }
     };
 
