@@ -361,7 +361,7 @@ class ModelProperty extends \Tk\Collection
                 $append .= "\n            ->addOnValue('\Tk\Table\Type\Boolean::onValue')";
                 break;
             case self::TYPE_DATE:
-                $append .= "\n            ->addOnValue('\Tk\Table\Type\DateFmt::onValue')";
+                $append .= "\n            ->addOnValue('\Tk\Table\Type\DateFmt::getLongDateTime')";
                 break;
         }
 

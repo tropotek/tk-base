@@ -12,9 +12,9 @@ class ShutdownHandler implements EventSubscriberInterface
     protected float $scriptStartTime = 0;
 
 
-    function __construct(float $scriptStartTime = 0)
+    function __construct()
     {
-        $this->scriptStartTime = $scriptStartTime;
+        $this->scriptStartTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true);
     }
 
     public function onTerminate(TerminateEvent $event): void

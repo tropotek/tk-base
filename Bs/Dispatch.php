@@ -56,7 +56,7 @@ class Dispatch
     {
         if (Config::isDev()) {
             $this->getDispatcher()->addSubscriber(new StartupHandler());
-            $this->getDispatcher()->addSubscriber(new ShutdownHandler(Config::getValue('script.start.time')));
+            $this->getDispatcher()->addSubscriber(new ShutdownHandler());
         }
     }
 
