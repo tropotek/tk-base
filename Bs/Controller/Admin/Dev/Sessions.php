@@ -11,6 +11,7 @@ use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
 use Tk\Db;
 use Tk\Db\Session;
+use Tk\Table\Action\ColumnSelect;
 
 class Sessions extends ControllerAdmin
 {
@@ -63,7 +64,8 @@ class Sessions extends ControllerAdmin
             ->addOnValue('\Tk\Table\Type\DateTime::onValue');
 
 
-        // TODO: add a filter for public/user sessions
+        // TODO: add a filter for public/user sessions, and csv export
+        $this->table->appendAction(ColumnSelect::create());
 
         // execute actions and set table orderBy from request
         $this->table->execute();
