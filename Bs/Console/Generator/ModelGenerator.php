@@ -374,44 +374,10 @@ class Manager extends ControllerAdmin
 
 
         // Add Table actions
-        \$this->table->appendAction(Delete::create()
-            ->addOnGetSelected([\$rowSelect, 'getSelected'])
-            ->addOnExecute(function(Delete \$action, array \$selected) use (\$rowSelect) {
-                \$selected = \$rowSelect->getSelected();
-                foreach (\$selected as \${primary-col}) {
-                    Db::delete('{table}', compact('{primary-col}'));
-                }
-            }));
-
-        \$this->table->appendAction(Select::create('Active Status', 'fa fa-fw fa-times')
-            ->setActions(['Active' => 'active', 'Disable' => 'disable'])
-            ->setConfirmStr('Toggle active/disable on the selected rows?')
-            ->addOnSelect(function(Select \$action, array \$selected, string \$value) use (\$rowSelect) {
-                if (!isset(\$_POST[\$action->getRequestKey()])) return;
-                \$active = trim(strtolower(\$_POST[\$action->getRequestKey()] ?? 'active')) == 'active';
-                \$selected = \$rowSelect->getSelected();
-                foreach (\$selected as \$id) {
-                    \$obj = {classname}::find(\$id);
-                    \$obj->active = \$active;
-                    \$obj->save();
-                }
-            }));
-
-        \$this->table->appendAction(Csv::create()
-            ->addOnCsv(function(Csv \$action) use (\$rowSelect) {
-                \$action->setExcluded(['actions']);
-                if (!\$this->table->getCell({classname}::getPrimaryProperty())) {
-                    \$this->table->prependCell({classname}::getPrimaryProperty())->setHeader('id');
-                }
-                \$selected = \$rowSelect->getSelected();
-                \$filter = \$this->table->getDbFilter()->resetLimits();
-                if (count(\$selected)) {
-                    \$filter->set({classname}::getPrimaryProperty(), \$selected);
-                    \$rows = {classname}::findFiltered(\$filter);
-                } else {
-                    \$rows = {classname}::findFiltered(\$filter);
-                }
-            }));
+        \$this->table->appendAction(ColumnSelect::create());
+        \$this->table->appendAction(Delete::createDefault({classname}::class, \$rowSelect));
+        \$this->table->appendAction(\Tk\Table\Action\Select::createActiveSelect({classname}::class, \$rowSelect));
+        \$this->table->appendAction(Csv::createDefault({classname}::class, \$rowSelect));
 
         // execute table
         \$this->table->execute();
@@ -539,45 +505,17 @@ class {classname} extends Table
         \$this->getForm()->appendField(new Input('search'))
             ->setAttr('placeholder', 'Search');
 
+
         // Add Table actions
-        \$this->appendAction(Delete::create()
-            ->addOnGetSelected([\$rowSelect, 'getSelected'])
-            ->addOnExecute(function(Delete \$action, array \$selected) use (\$rowSelect) {
-                \$selected = \$rowSelect->getSelected();
-                foreach (\$selected as \${primary-col}) {
-                    Db::delete('{table}', compact('{primary-col}'));
-                }
-            }));
+        \$this->appendAction(ColumnSelect::create());
+        \$this->appendAction(Delete::createDefault({classname}::class, \$rowSelect));
+        \$this->appendAction(\Tk\Table\Action\Select::createActiveSelect({classname}::class, \$rowSelect));
+        \$this->appendAction(Csv::createDefault({classname}::class, \$rowSelect));
 
-        \$this->appendAction(Select::create('Active Status', 'fa fa-fw fa-times')
-            ->setActions(['Active' => 'active', 'Disable' => 'disable'])
-            ->setConfirmStr('Toggle active/disable on the selected rows?')
-            ->addOnSelect(function(Select \$action, array \$selected, string \$value) use (\$rowSelect) {
-                if (!isset(\$_POST[\$action->getRequestKey()])) return;
-                \$active = trim(strtolower(\$_POST[\$action->getRequestKey()] ?? 'active')) == 'active';
-                \$selected = \$rowSelect->getSelected();
-                foreach (\$selected as \$id) {
-                    \$obj = {classname}::find(\$id);
-                    \$obj->active = \$active;
-                    \$obj->save();
-                }
-            }));
-
-        \$this->appendAction(Csv::create()
-            ->addOnCsv(function(Csv \$action) use (\$rowSelect) {
-                \$action->setExcluded(['actions']);
-                if (!\$this->getCell({classname}::getPrimaryProperty())) {
-                    \$this->prependCell({classname}::getPrimaryProperty())->setHeader('id');
-                }
-                \$selected = \$rowSelect->getSelected();
-                \$filter = \$this->getDbFilter()->resetLimits();
-                if (count(\$selected)) {
-                    \$filter->set({classname}::getPrimaryProperty(), \$selected);
-                    \$rows = {classname}::findFiltered(\$filter);
-                } else {
-                    \$rows = {classname}::findFiltered(\$filter);
-                }
-            }));
+        // todo: remove cell orderBy validation before release
+        // if (!\$this->validateCells({classname}::getDataMap())) {
+        //     \$this->getTableSession()->remove(\$this->table->makeRequestKey(Table::PARAM_ORDERBY));
+        // }
 
         return \$this;
     }
