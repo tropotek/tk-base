@@ -11,11 +11,15 @@ use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
 use Tk\Db;
 use Tk\Db\Session;
+use Tk\Form\Field\Input;
 use Tk\Table\Action\ColumnSelect;
 
 class Sessions extends ControllerAdmin
 {
     protected Table $table;
+
+    protected int $totalPublic = 0;
+    protected int $totalPrivate = 0;
 
     public function doDefault(): void
     {
@@ -53,6 +57,8 @@ class Sessions extends ControllerAdmin
             ->addCss('text-nowrap');
 
         $this->table->appendCell('activity')
+            ->setHeaderAttr('title', 'Last Activity')
+            ->setAttr('title', 'Last Activity')
             ->addCss('text-nowrap');
 
         $this->table->appendCell('lifetime')
@@ -64,13 +70,20 @@ class Sessions extends ControllerAdmin
             ->addOnValue('\Tk\Table\Type\DateTime::onValue');
 
 
+        // Add Filter Fields
+//        $this->table->getForm()->appendField(new Input('search'))
+//            ->setAttr('placeholder', 'Search');
+
+        $list = ['' => '-- All --', 'pub' => 'Public', 'prv' => 'Private'];
+        $this->table->getForm()->appendField(new \Tk\Form\Field\Select('scope', $list))->setValue('prv');
+
         // TODO: add a filter for public/user sessions, and csv export
         $this->table->appendAction(ColumnSelect::create());
 
         // execute actions and set table orderBy from request
         $this->table->execute();
 
-        $rows = $this->getSessions();
+        $rows = $this->getSessions($this->table->getDbFilter());
 
         $this->table->setRows($rows);
     }
@@ -80,6 +93,9 @@ class Sessions extends ControllerAdmin
         $template = $this->getTemplate();
         $template->appendText('title', $this->getPage()->getTitle());
         $template->addCss('icon', $this->getPage()->getIcon());
+
+        $template->setText('totalPublic', $this->totalPublic);
+        $template->setText('totalPrivate', $this->totalPrivate);
 
         $this->table->getRenderer()->setFooterEnabled(false);
         $this->table->addCss('table-hover');
@@ -100,7 +116,7 @@ CSS;
         return $template;
     }
 
-    protected function getSessions(): array
+    protected function getSessions(Db\Filter $filter): array
     {
         $sessions = Db::query("SELECT * FROM _session ORDER BY modified DESC");
         $rows = [];
@@ -154,7 +170,21 @@ CSS;
                 if ($auth->sessionId == ($_SESSION['_session.id'] ?? '')) {
                     $username = sprintf('<strong>%s</strong>', $username);
                 }
+                $this->totalPrivate++;
+            } else {
+                $this->totalPublic++;
             }
+
+            $scope = $filter->get('scope');
+            if (!empty($scope)) {
+                if ($scope == 'pub' && $auth instanceof Auth) {
+                    continue;
+                }
+                if ($scope == 'prv' && !($auth instanceof Auth)) {
+                    continue;
+                }
+            }
+
 
             $rows[] = (object)[
                 'authId'      => $authId,
@@ -184,9 +214,13 @@ CSS;
         $html = <<<HTML
 <div class="card mb-3">
     <div class="card-header"><i var="icon"></i> <span var="title"></span></div>
-  <div class="card-body" var="content">
-      <p>Current user sessions.</p>
-  </div>
+    <div class="card-body" var="content">
+        <p>Current user sessions:</p>
+        <ul>
+           <li>Private Sessions: <span var="totalPrivate"></span></li>
+           <li>Public Sessions: <span var="totalPublic"></span></li>
+        </ul>
+    </div>
 </div>
 HTML;
         return $this->loadTemplate($html);

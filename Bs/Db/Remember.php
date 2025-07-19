@@ -13,25 +13,24 @@ use Tk\Db;
 class Remember
 {
     /**
-     * The remember me cookie name
+     * cookie name
      */
     const string REMEMBER_CID = '__rmb';
 
+    const int TTL_WEEK = 10080;
 
-    public static function rememberMe(int $authId, int $days = 30): void
+
+    public static function rememberMe(int $authId, int $ttl_mins = self::TTL_WEEK): void
     {
         [$selector, $validator, $token] = self::generateToken();
 
         // remove all existing token associated with the user id
         self::deleteToken($authId);
 
-        // set TTL in minutes
-        $ttl_mins = 60 * 24 * $days;
-
         // insert a token to the database
         $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
         if (self::insertToken($authId, $selector, $hash_validator, $ttl_mins)) {
-            Factory::instance()->getCookie()->set(self::REMEMBER_CID, $token, time() + 60 * $ttl_mins);
+            Factory::instance()->getCookie()->set(self::REMEMBER_CID, $token, time() + (60 * $ttl_mins));
         }
     }
 
