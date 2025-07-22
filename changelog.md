@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.136 [2025-07-22]:
+-------------------------------
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Add private filter to session manager, add remember me config ttl setting
+
+
 Ver 8.0.134 [2025-07-19]:
 -------------------------------
   - Refactored table actions... (again...)
