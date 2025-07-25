@@ -28,7 +28,8 @@ class Mirror extends Console
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
             ->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
             ->addOption('no-migrate', 'x', InputOption::VALUE_NONE, 'Do not execute/migrate the downloaded sql file into the DB')
-            ->addOption('save', 's', InputOption::VALUE_OPTIONAL, 'path to save the downloaded sql file to.', getcwd())
+            ->addOption('save', 's', InputOption::VALUE_NEGATABLE, 'Save downloaded sql file to the current directory.')
+            ->addOption('refresh', 'C', InputOption::VALUE_NEGATABLE, 'Force fresh download of the remote DB file.')
         ;
     }
 
@@ -49,18 +50,6 @@ class Mirror extends Console
                 return Command::FAILURE;
             }
 
-            $password = $input->getOption('password');
-            while(empty($password)) {
-                $q = new Question('Enter the new password: ', '');
-                $q->setHidden(true);
-                $q->setTrimmable(true);
-                /** @phpstan-ignore-next-line */
-                $password = $this->getHelper('question')->ask($input, $output, $q);
-                if (empty($password)) {
-                    $this->writeError('Password cannot be empty.');
-                }
-            }
-
             $dstBakFile = Path::createTempPath('/dst-bak.sql');
             $newZipFile = Path::createTempPath('/' . \Tk\Date::create()->format(\Tk\Date::FORMAT_ISO_DATE) . '-tmpl.sql.gz');
             $newSqlFile = substr($newZipFile, 0, -3);
@@ -70,15 +59,26 @@ class Mirror extends Console
             $options['exclude'] = ['_session'];
             $username = trim($input->getArgument('username'));
 
-            if (!is_file($newSqlFile)) {
+            if (!is_file($newSqlFile) || $input->getOption('refresh')) {
                 $this->writeComment('Downloading fresh mirror file');
-                if (is_file($newSqlFile)) {
-                    // Delete cached mirror files
-                    $list = glob(Path::createTempPath('/*-tmpl.sql*'));
-                    if (is_array($list)) {
-                        foreach ($list as $file) {
-                            if (is_file($file)) unlink($file);
-                        }
+
+                // Delete existing cached files
+                $list = glob(Path::createTempPath('/*-tmpl.sql*'));
+                if (is_array($list)) {
+                    foreach ($list as $file) {
+                        if (is_file($file)) unlink($file);
+                    }
+                }
+
+                $password = $input->getOption('password');
+                while(empty($password)) {
+                    $q = new Question('Enter the new password: ', '');
+                    $q->setHidden(true);
+                    $q->setTrimmable(true);
+                    /** @phpstan-ignore-next-line */
+                    $password = $this->getHelper('question')->ask($input, $output, $q);
+                    if (empty($password)) {
+                        $this->writeError('Password cannot be empty.');
                     }
                 }
 
@@ -132,14 +132,13 @@ class Mirror extends Console
             }
 
             // save file if requested
-            if ($input->hasOption('save')) {
-                $path = $input->getOption('save');
-                if (empty($path)) $path = getcwd();
+            if ($input->getOption('save')) {
+                $path = getcwd();
                 if (!str_ends_with($path, '.sql')) $path = $path . '/' . basename($newSqlFile);
                 copy($newSqlFile, $path);
             }
 
-            if (is_file($newSqlFile)) unlink($newSqlFile);
+            //if (is_file($newSqlFile)) unlink($newSqlFile);
             unlink($dstBakFile);
 
         } catch(\Exception $e) {
