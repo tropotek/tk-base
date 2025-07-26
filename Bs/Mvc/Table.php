@@ -38,7 +38,8 @@ class Table extends \Tk\Table
         // create a unique table id if none supplied
         if (empty($tableId)) {
             $trace = debug_backtrace()[0] ?? ['file' => '/tbl', 'line' => 1];
-            $tableId = hash('crc32', $trace['file'].$trace['line']);
+            // note: id cannot start with a number
+            $tableId = 'tbl_'.hash('crc32', $trace['file'].$trace['line']);
         }
         parent::__construct($tableId);
 
