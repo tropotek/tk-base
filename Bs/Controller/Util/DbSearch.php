@@ -88,7 +88,7 @@ class DbSearch extends ControllerAdmin
             $form->getFieldValue('column'),
             $form->getFieldValue('value'),
             $form->getFieldValue('table'),
-            truefalse($form->getFieldValue('views'))
+            truefalse($form->getFieldValue('views') ?: false)
         );
 
     }
