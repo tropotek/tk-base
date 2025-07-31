@@ -73,7 +73,13 @@ class Mirror
             );
         }
 
-        exec($cmd);
+        $result = [];
+        $code = 0;
+        exec($cmd, $result, $code);
+        if ($code != 0) {
+            @unlink($srcFile);
+            throw new \Tk\Exception(implode("\n", $result));
+        }
 
         $public_name = basename($srcFile);
         $filesize = filesize($srcFile);
