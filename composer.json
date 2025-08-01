@@ -6,7 +6,7 @@
         "tropotek",
         "MVC"
     ],
-    "time": "2025-08-01",
+    "time": "2025-04-21",
     "license": "MIT",
     "authors":  [
          {
@@ -25,12 +25,14 @@
         "ttek/tk-form": "~8.0.0",
         "ttek/tk-table": "~8.0.0",
         "ttek/tk-installers": "~8.0.0",
+
         "symfony/http-foundation": "^6.2-@stable",
         "symfony/routing": "^6.2-@stable",
         "symfony/http-kernel": "^6.2-@stable",
         "symfony/event-dispatcher": "^6.2-@stable",
         "symfony/console": "^6.2-@stable",
         "symfony/lock": "^6.2-@stable",
+
         "studio-42/elfinder": "~2.1.0-@stable",
         "tinymce/tinymce": "~7.0-@stable"
     },
