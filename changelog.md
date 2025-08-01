@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.138 [2025-08-01]:
+-------------------------------
+  - Added contentEditable table cell
+  - update mirror cmd bug
+
+
 Ver 8.0.136 [2025-07-22]:
 -------------------------------
   - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
