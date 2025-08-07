@@ -70,7 +70,7 @@ class MirrorData extends Console
 
         $password = $input->getOption('password');
         while(empty($password)) {
-            $q = new Question('Enter the new password: ', '');
+            $q = new Question('Enter password: ', '');
             $q->setHidden(true);
             $q->setTrimmable(true);
             /** @phpstan-ignore-next-line */

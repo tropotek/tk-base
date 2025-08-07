@@ -72,7 +72,7 @@ class Mirror extends Console
 
                 $password = $input->getOption('password');
                 while(empty($password)) {
-                    $q = new Question('Enter the new password: ', '');
+                    $q = new Question('Enter password: ', '');
                     $q->setHidden(true);
                     $q->setTrimmable(true);
                     /** @phpstan-ignore-next-line */
@@ -179,21 +179,25 @@ class Mirror extends Console
             return false;
         }
 
-		curl_setopt_array($curl, [
+        $opts = [
             CURLOPT_CUSTOMREQUEST  => 'POST',
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_SSL_VERIFYPEER => false,
-			CURLOPT_POSTFIELDS     => $query,
+            CURLOPT_POSTFIELDS     => $query,
             CURLOPT_FILE           => $fp,
-			CURLOPT_HTTPHEADER     => [
-				"authorization-key: " . $secret,
-			],
-		]);
+            CURLOPT_HTTPHEADER     => [
+                "authorization-key: " . $secret,
+            ],
+        ];
+//        if (Config::isDev()) {
+//            $opts[CURLOPT_SSL_VERIFYHOST] = false;
+//            $opts[CURLOPT_SSL_VERIFYPEER] = false;
+//        }
+		curl_setopt_array($curl, $opts);
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
             $this->error = curl_error($curl);
+            Log::error("Error requesting mirror [" . curl_getinfo($curl, CURLINFO_RESPONSE_CODE) . ']: ' . $this->error);
             $ok = false;
         }
         curl_close($curl);
