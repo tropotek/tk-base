@@ -30,6 +30,7 @@ class Mirror extends Console
             ->addOption('no-migrate', 'x', InputOption::VALUE_NONE, 'Do not execute/migrate the downloaded sql file into the DB')
             ->addOption('save', 's', InputOption::VALUE_NEGATABLE, 'Save downloaded sql file to the current directory.')
             ->addOption('refresh', 'C', InputOption::VALUE_NEGATABLE, 'Force fresh download of the remote DB file.')
+            ->addOption('noverify', 'N', InputOption::VALUE_NONE, 'Disable verify SSL')
         ;
     }
 
@@ -90,7 +91,7 @@ class Mirror extends Console
                     ->withScheme('https');
                 $this->writeComment("Requesting Data");
 
-                if (!$this->postRequest($mirrorUrl, $newZipFile)) {
+                if (!$this->postRequest($mirrorUrl, $newZipFile, !$input->getOption('noverify'))) {
                     $this->writeError("Error requesting mirror: " . $this->error);
                     return Command::FAILURE;
                 }
@@ -150,7 +151,7 @@ class Mirror extends Console
         return  Command::SUCCESS;
     }
 
-    protected function postRequest(Uri|string $srcUrl, string $filename): bool
+    protected function postRequest(Uri|string $srcUrl, string $filename, bool $verifyssl = true): bool
     {
         $secret = $this->getConfig()->get('db.mirror.secret', '');
         if (empty($secret)) {
@@ -187,11 +188,12 @@ class Mirror extends Console
             CURLOPT_HTTPHEADER     => [
                 "authorization-key: " . $secret,
             ],
+            CURLOPT_USERAGENT      => Uri::USERAGENT,
         ];
-//        if (Config::isDev()) {
-//            $opts[CURLOPT_SSL_VERIFYHOST] = false;
-//            $opts[CURLOPT_SSL_VERIFYPEER] = false;
-//        }
+        if (!$verifyssl) {
+            $opts[CURLOPT_SSL_VERIFYHOST] = false;
+            $opts[CURLOPT_SSL_VERIFYPEER] = false;
+        }
 		curl_setopt_array($curl, $opts);
 
         curl_exec($curl);

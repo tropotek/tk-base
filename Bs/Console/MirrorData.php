@@ -94,7 +94,7 @@ class MirrorData extends Console
             $mirrorUrl->set('all', '1');
         }
 
-        if (!$this->postRequest($mirrorUrl, $dstDataFile)) {
+        if (!$this->postRequest($mirrorUrl, $dstDataFile, !$input->getOption('noverify'))) {
             $this->writeError('Error requesting mirror archive');
             return Command::FAILURE;
 
@@ -183,7 +183,7 @@ class MirrorData extends Console
         return $path;
     }
 
-    protected function postRequest(Uri|string $srcUrl, string $filename): bool
+    protected function postRequest(Uri|string $srcUrl, string $filename, bool $verifyssl = true): bool
     {
         $secret = $this->getConfig()->get('db.mirror.secret', '');
         if (empty($secret)) {
@@ -211,17 +211,21 @@ class MirrorData extends Console
             return false;
         }
 
-        curl_setopt_array($curl, [
+        $opts = [
             CURLOPT_CUSTOMREQUEST  => 'POST',
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_POSTFIELDS     => $query,
             CURLOPT_FILE           => $fp,
             CURLOPT_HTTPHEADER     => [
-                "Authorization-Key: " . $secret,
+                "authorization-key: " . $secret,
             ],
-        ]);
+            CURLOPT_USERAGENT      => Uri::USERAGENT,
+        ];
+        if (!$verifyssl) {
+            $opts[CURLOPT_SSL_VERIFYHOST] = false;
+            $opts[CURLOPT_SSL_VERIFYPEER] = false;
+        }
+        curl_setopt_array($curl, $opts);
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
