@@ -165,7 +165,7 @@ class Mirror extends Console
         $srcUrl->set('p', $enc->encrypt($srcUrl->get('p')));
 
         // convert query vals to post vals
-        $query  = $srcUrl->getQuery();
+        $query = $srcUrl->getQuery();
         $srcUrl->reset();
 
         $fp = fopen($filename, "w");
