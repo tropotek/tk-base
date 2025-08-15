@@ -36,6 +36,7 @@ class MirrorData extends Console
             ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
             ->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
             ->addOption('all', 'a', InputOption::VALUE_NONE, 'download all data files (including /private)')
+            ->addOption('noverify', 'N', InputOption::VALUE_NONE, 'Disable verify SSL')
         ;
     }
 
