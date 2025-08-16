@@ -5,6 +5,7 @@ use Bs\Factory;
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
 use Bs\Db\SqlMigrate;
+use Tk\Config;
 use Tk\Exception;
 use Tk\Path;
 use Tk\Db;
@@ -35,6 +36,8 @@ class Installer
 {
     protected static mixed $_instance = null;
 
+    protected bool $isInstall = false;
+
     public static function instance(): self
     {
         if (is_null(self::$_instance)) {
@@ -56,6 +59,7 @@ class Installer
     protected function init(Event $event, bool $isInstall = false): void
     {
         try {
+            $this->isInstall = $isInstall;
             $sitePath = $_SERVER['PWD'];
             $io = $event->getIO();
             $composer = $event->getComposer();
@@ -108,57 +112,14 @@ class Installer
                 $config = \Tk\Config::instance();
             }
 
-            // if dev mode run as normal, if live just apply the composer.lock file without questions
-            if ($isInstall && $hasConfig && \Tk\Config::isDev()) {
-                $isInstall = true;
-            } else {
-                // prompt for setup question on live site only when config files do not exist
-                $isInstall = $isInstall && !$hasConfig;
-            }
-
-            // Check existing config file
-            $overwrite = false; // Overwrite the existing Config if it exists
-
-            // Create new config.php
-            if (@is_file($configInFile) && $isInstall) {
-                if ($hasConfig) {
-                    $overwrite = $io->askConfirmation($this->warning('Do you want to replace the existing site configuration [N]: '), false);
-                }
-
-                if ($overwrite || !$hasConfig) {
-                    $configContents = strval(file_get_contents($configInFile));
-                    $io->write($this->green('Please answer the following questions to setup your new site configuration.'));
-                    $configVars = $this->userDbInput($io);
-                    $configVars['system.encrypt'] = md5(microtime() . '');
-
-                    // update the config contents string
-                    foreach ($configVars as $k => $v) {
-                        $configContents = str_replace("{{$k}}", $v, $configContents);
-                    }
-
-                    $io->write($this->green('Saving config.php'));
-                    file_put_contents($configFile, $configContents);
-                }
+            // Create a new config.php
+            if (is_file($configInFile)) {
+                $this->createConfigFile($event, $configInFile, $configFile);
             }
 
             // Create .htaccess
-            if (@is_file($htInFile) && $isInstall) {
-                if ($overwrite || !@is_file($htFile)) {
-                    $io->write($this->green('Creating .htaccess file'));
-                    copy($htInFile, $htFile);
-                    $path = '/';
-                    if (preg_match('/(.+)\/public_html\/(.*)/', $sitePath, $regs)) {
-                        $user = basename($regs[1]);
-                        $path = '/' . $regs[2] . '/';
-                    }
-                    $path = trim($io->ask($this->bold('What is the base URL path [' . $path . ']: '), $path));
-                    if (!$path) $path = '/';
-                    $io->write($this->green('Saving .htaccess file'));
-                    $buf = strval(file_get_contents($htFile));
-                    $buf = str_replace('RewriteBase /', 'RewriteBase ' . $path, $buf);
-                    file_put_contents($htFile, $buf);
-                    $configVars['base.url'] = $path;
-                }
+            if (is_file($htInFile)) {
+                $configVars['base.url'] = $this->createHtaccesFile($event, $htInFile, $htFile, ['sitePath' => $sitePath]);
             }
 
             // Bootstrap the system
@@ -173,37 +134,87 @@ class Installer
                 DB::setTimezone($config->get('php.date.timezone'));
             }
 
-            // Do any site install setup, with new Config object
-            if ($isInstall) {
-                // Create Data path and clear any existing Cache path
-                $dataPath = Path::createDataPath();
-                if (!is_dir($dataPath)) {
-                    $io->write($this->green('Creating data directory: ' . $dataPath));
-                    mkdir($dataPath, 0777, true);
-                }
+            // Create data path if not exists
+            $dataPath = Path::createDataPath();
+            if (!is_dir($dataPath)) {
+                $io->write($this->green('Creating data directory: ' . $dataPath));
+                mkdir($dataPath, 0777, true);
+            }
 
-                // -----------------  DM Migration START  -----------------
+            // -----------------  DM Migration START  -----------------
 
-                $drop = false;
-                $tables = Db::getTableList();
-                if (count($tables)) {
-                    $drop = $io->askConfirmation($this->warning('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: '), false);
-                }
-                if ($drop) {
-                    $exclude = [Db\Session::$DB_TABLE];
-                    Db::dropAllTables(true, $exclude);
-                }
+            $drop = false;
+            $tables = Db::getTableList();
+            if (count($tables) && !$this->isInstall) {
+                $drop = $io->askConfirmation($this->warning('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: '), false);
+            }
+            if ($drop) {
+                $exclude = [Db\Session::$DB_TABLE];
+                Db::dropAllTables(true, $exclude);
             }
 
             $this->siteDbMigration($event);
 
-            if ($isInstall) {
+            if ($this->isInstall) {
                 $io->write("Check the config file before releasing: {$config['base.path']}/config.php");
                 $io->write('Visit Site: ' . \Tk\Uri::create($configVars['base.url'] ?? '')->toString());
             }
         } catch (\Exception $e) {
             $io->write($this->red('Error: ' . $e->getMessage() . ' (see php_log)'));
         }
+    }
+
+    private function createConfigFile(Event $event, string $configInFile, string $configFile): void
+    {
+        $io = $event->getIO();
+
+        if (is_file($configFile)) {
+            if ($this->isInstall) return;
+            $overwrite = $io->askConfirmation($this->warning('Do you want to replace the existing site configuration [N]: '), false);
+            if (!$overwrite) return;
+        }
+
+        if (!is_file($configFile)) {
+            $configContents = strval(file_get_contents($configInFile));
+            $io->write($this->green('Please answer the following questions to setup your new site configuration.'));
+            $configVars = $this->userDbInput($io);
+            $configVars['system.encrypt'] = md5('Tropotek_'.microtime());
+
+            // update the config contents string
+            foreach ($configVars as $k => $v) {
+                $configContents = str_replace("{{$k}}", $v, $configContents);
+            }
+
+            $io->write($this->green('Saving config.php'));
+            file_put_contents($configFile, $configContents);
+        }
+    }
+
+    private function createHtaccesFile(Event $event, string $htInFile, string $htFile, array $params): string
+    {
+        $io = $event->getIO();
+
+        if (is_file($htFile)) {
+            if ($this->isInstall) return '/';
+            $overwrite = $io->askConfirmation($this->warning('Do you want to replace the existing .htaccess file [N]: '), false);
+            if (!$overwrite) return '/';
+        }
+
+        $io->write($this->green('Creating .htaccess file'));
+        copy($htInFile, $htFile);
+        $baseurl = '/';
+        if (preg_match('/(.+)\/public_html\/(.*)/', $params['sitePath'] ?? '', $regs)) {
+            //$user = basename($regs[1]);
+            $baseurl = '/' . $regs[2] . '/';
+        }
+        $baseurl = trim($io->ask($this->bold('What is the base URL path [' . $baseurl . ']: '), $baseurl));
+        if (!$baseurl) $baseurl = '/';
+        $io->write($this->green('Saving .htaccess file'));
+        $buf = strval(file_get_contents($htFile));
+        $buf = str_replace('RewriteBase /', 'RewriteBase ' . $baseurl, $buf);
+        file_put_contents($htFile, $buf);
+
+        return $baseurl;
     }
 
     private function siteDbMigration(Event $event): void

@@ -450,8 +450,6 @@ class Factory extends Collection
         return $this->get('console');
     }
 
-
-
     /**
      * @deprecated use Config functions directly
      */
