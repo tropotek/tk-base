@@ -1,0 +1,284 @@
+<?php
+namespace Bs\Composer;
+
+use Bs\Factory;
+use Composer\IO\IOInterface;
+use Composer\Script\Event;
+use Bs\Db\SqlMigrate;
+use Tk\Exception;
+use Tk\Path;
+use Tk\Db;
+
+/**
+ * Default initProject installer class for the Tk framework
+ *
+ * For this to work be sure not to have the composer.lock file in your gitignore
+ * The composer.lock file is generated after an update and should be published
+ * with the released source files. Otherwise, the 'composer install' command has issues.
+ *
+ * Add the following to your top-level composer.json:
+ * "scripts": {
+ *   "post-install-cmd": [
+ *     "Bs\\Composer\\Installer::postInstall"
+ *   ],
+ *   "post-update-cmd": [
+ *     "Bs\\Composer\\Installer::postUpdate"
+ *   ]
+ * }
+ *
+ * Note: we use this method for installing the system
+ * rather than having install/upgrade commands in the site because
+ * composer update/install needs to be executed first
+ *
+ */
+class Installer
+{
+    protected static mixed $_instance = null;
+
+    public static function instance(): self
+    {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    static function postInstall(Event $event): void
+    {
+        self::instance()->init($event, true);
+    }
+
+    static function postUpdate(Event $event): void
+    {
+        self::instance()->init($event);
+    }
+
+    protected function init(Event $event, bool $isInstall = false): void
+    {
+        try {
+            $sitePath = $_SERVER['PWD'];
+            $io = $event->getIO();
+            $composer = $event->getComposer();
+            $pkg = $composer->getPackage();
+            $configVars = [];
+
+            // Get the PHP user that will be executing the scripts
+            if (function_exists('posix_getpwuid')) {
+                $a = posix_getpwuid(intval(fileowner(__FILE__)));
+                if (is_array($a)) {
+                    $phpUser = $a['dir'];
+                }
+            }
+            if (empty($phpUser)) {
+                $phpUser = `whoami`;
+            }
+
+            $name = substr($pkg->getName(), strrpos($pkg->getName(), '/')+1);
+            $version = $pkg->getFullPrettyVersion();
+            $releaseDate = $pkg->getReleaseDate()->format('Y-m-d H:i:s');
+            $year = $pkg->getReleaseDate()->format('Y');
+            $desc = wordwrap($pkg->getDescription(), 45, "\n               ");
+            $authors = [];
+            foreach ($pkg->getAuthors() as $auth) {
+                $authors[] = $auth['name'] ?? '';
+            }
+            $authors = implode(', ', $authors);
+
+            $head = <<<STR
+            -----------------------------------------------------------
+                   $name Plugin - (c) tropotek.com $year
+            -----------------------------------------------------------
+              Project:     $name
+              Version:     $version
+              Released:    $releaseDate
+              Author:      $authors
+              Description: $desc
+            -----------------------------------------------------------
+            STR;
+            $io->write($this->bold($head));
+
+            $configInFile = $sitePath . '/config.php.in';
+            $configFile = $sitePath . '/config.php';
+            $htInFile = $sitePath . '/.htaccess.in';
+            $htFile = $sitePath . '/.htaccess';
+            $hasConfig = is_file($configFile);
+
+            if ($hasConfig) {
+                include_once $sitePath.'/_prepend.php';
+                $config = \Tk\Config::instance();
+            }
+
+            // if dev mode run as normal, if live just apply the composer.lock file without questions
+            if ($isInstall && $hasConfig && \Tk\Config::isDev()) {
+                $isInstall = true;
+            } else {
+                // prompt for setup question on live site only when config files do not exist
+                $isInstall = $isInstall && !$hasConfig;
+            }
+
+            // Check existing config file
+            $overwrite = false; // Overwrite the existing Config if it exists
+
+            // Create new config.php
+            if (@is_file($configInFile) && $isInstall) {
+                if ($hasConfig) {
+                    $overwrite = $io->askConfirmation($this->warning('Do you want to replace the existing site configuration [N]: '), false);
+                }
+
+                if ($overwrite || !$hasConfig) {
+                    $configContents = strval(file_get_contents($configInFile));
+                    $io->write($this->green('Please answer the following questions to setup your new site configuration.'));
+                    $configVars = $this->userDbInput($io);
+                    $configVars['system.encrypt'] = md5(microtime() . '');
+
+                    // update the config contents string
+                    foreach ($configVars as $k => $v) {
+                        $configContents = str_replace("{{$k}}", $v, $configContents);
+                    }
+
+                    $io->write($this->green('Saving config.php'));
+                    file_put_contents($configFile, $configContents);
+                }
+            }
+
+            // Create .htaccess
+            if (@is_file($htInFile) && $isInstall) {
+                if ($overwrite || !@is_file($htFile)) {
+                    $io->write($this->green('Creating .htaccess file'));
+                    copy($htInFile, $htFile);
+                    $path = '/';
+                    if (preg_match('/(.+)\/public_html\/(.*)/', $sitePath, $regs)) {
+                        $user = basename($regs[1]);
+                        $path = '/' . $regs[2] . '/';
+                    }
+                    $path = trim($io->ask($this->bold('What is the base URL path [' . $path . ']: '), $path));
+                    if (!$path) $path = '/';
+                    $io->write($this->green('Saving .htaccess file'));
+                    $buf = strval(file_get_contents($htFile));
+                    $buf = str_replace('RewriteBase /', 'RewriteBase ' . $path, $buf);
+                    file_put_contents($htFile, $buf);
+                    $configVars['base.url'] = $path;
+                }
+            }
+
+            // Bootstrap the system
+            include_once $sitePath.'/_prepend.php';
+            $config = \Tk\Config::instance();
+
+            Db::connect(
+                $config->get('db.mysql', ''),
+                $config->get('db.mysql.options', []),
+            );
+            if ($config->get('php.date.timezone')) {
+                DB::setTimezone($config->get('php.date.timezone'));
+            }
+
+            // Do any site install setup, with new Config object
+            if ($isInstall) {
+                // Create Data path and clear any existing Cache path
+                $dataPath = Path::createDataPath();
+                if (!is_dir($dataPath)) {
+                    $io->write($this->green('Creating data directory: ' . $dataPath));
+                    mkdir($dataPath, 0777, true);
+                }
+
+                // -----------------  DM Migration START  -----------------
+
+                $drop = false;
+                $tables = Db::getTableList();
+                if (count($tables)) {
+                    $drop = $io->askConfirmation($this->warning('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: '), false);
+                }
+                if ($drop) {
+                    $exclude = [Db\Session::$DB_TABLE];
+                    Db::dropAllTables(true, $exclude);
+                }
+            }
+
+            $this->siteDbMigration($event);
+
+            if ($isInstall) {
+                $io->write("Check the config file before releasing: {$config['base.path']}/config.php");
+                $io->write('Visit Site: ' . \Tk\Uri::create($configVars['base.url'] ?? '')->toString());
+            }
+        } catch (\Exception $e) {
+            $io->write($this->red('Error: ' . $e->getMessage() . ' (see php_log)'));
+        }
+    }
+
+    private function siteDbMigration(Event $event): void
+    {
+        $io = $event->getIO();
+
+        // Update Database tables
+        $tables = Db::getTableList();
+        if (count($tables)) {
+            $io->write($this->green('Database Upgrade:'));
+        } else {
+            $io->write($this->green('Database Install:'));
+        }
+
+        // migrate site sql files
+        if (!SqlMigrate::migrateAll([$io, 'write'])) {
+            throw new Exception("Failed to migrate files");
+        }
+
+        $io->write($this->green('Purging caches'));
+
+        if (class_exists(Factory::class)) {
+            Factory::instance()->purgeCache();
+            Factory::instance()->getCompiledRoutes(true);
+        }
+
+        $io->write($this->green('Database Migration Complete'));
+    }
+
+    protected function userDbInput(IOInterface $io): array
+    {
+        $config = [];
+        // Prompt for the database access
+        $i = 0;
+        $dbTypes = ['mysql'];
+        if (count($dbTypes) > 1) {
+            $io->write('<options=bold>');
+            $i = $io->select('Select the DB type [mysql]: ', $dbTypes, '0');
+        }
+        $io->write('</>');
+        $config['db.default.type'] = $dbTypes[$i];
+        $config['db.default.host'] = $io->ask($this->bold('Set the DB hostname [localhost]: '), 'localhost');
+        $config['db.default.port'] = $io->ask($this->bold('Set the DB port [3306]: '), '3306');
+        $config['db.default.name'] = $io->askAndValidate($this->bold('Set the DB name: '), function ($data) { if (!$data) throw new \Exception('Please enter the DB name to use.');  return $data; });
+        $config['db.default.user'] = $io->askAndValidate($this->bold('Set the DB user: '), function ($data) { if (!$data) throw new \Exception('Please enter the DB username.'); return $data; });
+        $config['db.default.pass'] = $io->askAndValidate($this->bold('Set the DB password: '), function ($data) { if (!$data) throw new \Exception('Please enter the DB password.'); return $data; });
+
+        $config['db.mysql'] = sprintf('%s:%s/%s/%s/%s',
+            $config['db.default.host'],
+            $config['db.default.port'],
+            $config['db.default.user'],
+            $config['db.default.pass'],
+            $config['db.default.name'],
+        );
+
+        return $config;
+    }
+
+    protected function bold(string $str): string { return '<options=bold>'.$str.'</>'; }
+
+    protected function green(string $str): string { return '<fg=green>'.$str.'</>'; }
+
+    protected function warning(string $str): string { return '<fg=yellow;options=bold>'.$str.'</>'; }
+
+    protected function red(string $str): string { return '<fg=white;bg=red>'.$str.'</>'; }
+
+    protected function quote(string $str): string { return '\''.$str.'\''; }
+
+    // IO Examples
+    //$output->writeln('<fg=green>foo</>');
+    //$output->writeln('<fg=black;bg=cyan>foo</>');
+    //$output->writeln('<bg=yellow;options=bold>foo</>');
+
+    protected function vd(mixed $obj): void
+    {
+        echo print_r($obj, true) . "\n";
+    }
+}
