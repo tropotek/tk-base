@@ -24,8 +24,10 @@ return function (CollectionConfigurator $routes) {
             ->schemes(['https']);
     }
 
-    // Example php route
-    // $routes->add('widget-test', '/widgetTest')
-    //     ->defaults(['path' => '/page/widgetManager.php'])
-    //     ->controller([\Bs\PhpController::class, 'doDefault']);
+    // Components
+    $routes->add('com-about-dialog', '/component/aboutDialog')
+        ->controller([\Bs\Component\AboutDialog::class, 'doDefault']);
+    $routes->add('com-logout-dialog', '/component/logoutDialog')
+        ->controller([\Bs\Component\LogoutDialog::class, 'doDefault']);
+
 };
