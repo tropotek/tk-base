@@ -5,17 +5,13 @@ use Bs\Factory;
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
 use Bs\Db\SqlMigrate;
-use Tk\Config;
 use Tk\Exception;
 use Tk\Path;
 use Tk\Db;
+use Tk\System;
 
 /**
- * Default initProject installer class for the Tk framework
- *
- * For this to work be sure not to have the composer.lock file in your gitignore
- * The composer.lock file is generated after an update and should be published
- * with the released source files. Otherwise, the 'composer install' command has issues.
+ * A Composer installer class for the Tk framework
  *
  * Add the following to your top-level composer.json:
  * "scripts": {
@@ -27,9 +23,11 @@ use Tk\Db;
  *   ]
  * }
  *
- * Note: we use this method for installing the system
- * rather than having install/upgrade commands in the site because
- * composer update/install needs to be executed first
+ * Notes:
+ *    - Use `composer install` to install/upgrade a production site
+ *    - Use `composer update` to install/upgrade a development site
+ *    - Use `composer update --no-scripts` to skip the post-install/update scripts
+ *    - Use `composer dump-autoload` to update the autoloader class map
  *
  */
 class Installer
@@ -37,6 +35,24 @@ class Installer
     protected static mixed $_instance = null;
 
     protected bool $isInstall = false;
+
+
+    /**
+     * Called by Composer when the post-installation event is executed
+     */
+    public static function postInstall(Event $event): void
+    {
+        self::instance()->execute($event, true);
+    }
+
+    /**
+     * Called by Composer when the post-update event is executed
+     */
+    public static function postUpdate(Event $event): void
+    {
+        self::instance()->execute($event);
+    }
+
 
     public static function instance(): self
     {
@@ -46,17 +62,11 @@ class Installer
         return self::$_instance;
     }
 
-    static function postInstall(Event $event): void
-    {
-        self::instance()->init($event, true);
-    }
-
-    static function postUpdate(Event $event): void
-    {
-        self::instance()->init($event);
-    }
-
-    protected function init(Event $event, bool $isInstall = false): void
+    /**
+     * Set-up a site's config.php, .htaccess, paths, and database tables.
+     *
+     */
+    protected function execute(Event $event, bool $isInstall = false): void
     {
         try {
             $this->isInstall = $isInstall;
@@ -65,6 +75,10 @@ class Installer
             $composer = $event->getComposer();
             $pkg = $composer->getPackage();
             $configVars = [];
+
+            $sysver = System::getVersion();
+            $cj = System::getComposerJson();
+            vd($composer, $pkg, $sysver, $cj);
 
             // Get the PHP user that will be executing the scripts
             if (function_exists('posix_getpwuid')) {
@@ -126,15 +140,9 @@ class Installer
             include_once $sitePath.'/_prepend.php';
             $config = \Tk\Config::instance();
 
-            Db::connect(
-                $config->get('db.mysql', ''),
-                $config->get('db.mysql.options', []),
-            );
-            if ($config->get('php.date.timezone')) {
-                DB::setTimezone($config->get('php.date.timezone'));
-            }
+            Db::connect($config->get('db.mysql', ''));
 
-            // Create data path if not exists
+            // Create the `/data` path if not exists
             $dataPath = Path::createDataPath();
             if (!is_dir($dataPath)) {
                 $io->write($this->green('Creating data directory: ' . $dataPath));
@@ -282,11 +290,6 @@ class Installer
     protected function red(string $str): string { return '<fg=white;bg=red>'.$str.'</>'; }
 
     protected function quote(string $str): string { return '\''.$str.'\''; }
-
-    // IO Examples
-    //$output->writeln('<fg=green>foo</>');
-    //$output->writeln('<fg=black;bg=cyan>foo</>');
-    //$output->writeln('<bg=yellow;options=bold>foo</>');
 
     protected function vd(mixed $obj): void
     {

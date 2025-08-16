@@ -31,13 +31,7 @@ class Bootstrap
         FileUtil::mkdir(Path::createCachePath());
 
         if ($config->has('db.mysql')) {
-            Db::connect(
-                $config->get('db.mysql', ''),
-                $config->get('db.mysql.options', []),
-            );
-            if ($config->get('php.date.timezone')) {
-                DB::setTimezone($config->get('php.date.timezone', 'Australia/Melbourne'));
-            }
+            Db::connect($config->get('db.mysql', ''));
         }
         TextEncrypt::$encryptKey = $config->get('system.encrypt', '');
 
@@ -50,13 +44,14 @@ class Bootstrap
 
         VarDump::instance();
 
-        if (Config::isDev()) {
-            // Allow self-signed certs in file_get_contents in dev environment
-            stream_context_set_default(["ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ]]);
-        }
+        // bad form here, this should not be used here to affect the entire site...
+//        if (Config::isDev()) {
+//            // Allow self-signed certs in file_get_contents in dev environment
+//            stream_context_set_default(["ssl" => [
+//                "verify_peer" => false,
+//                "verify_peer_name" => false,
+//            ]]);
+//        }
 
         Factory::instance()->initEventDispatcher();
         Factory::instance()->initMailGateway();
@@ -76,8 +71,7 @@ class Bootstrap
          */
         chdir(Config::getBasePath());
 
-        // todo Moved to http only to prevent DB table creation in CLI
-        //      Keep an eye on it to see if we need it at all for CLI commands
+        // Moved to http only to prevent DB table creation in CLI commands
         Factory::instance()->initSession();
 
         if (Config::isDev()) {
