@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.144 [2025-08-16]:
+-------------------------------
+  - convert about and lohout dialog to HTMX
+
+
 Ver 8.0.142 [2025-08-16]:
 -------------------------------
   - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
