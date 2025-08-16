@@ -76,10 +76,6 @@ class Installer
             $pkg = $composer->getPackage();
             $configVars = [];
 
-            $sysver = System::getVersion();
-            $cj = System::getComposerJson();
-            vd($composer, $pkg, $sysver, $cj);
-
             // Get the PHP user that will be executing the scripts
             if (function_exists('posix_getpwuid')) {
                 $a = posix_getpwuid(intval(fileowner(__FILE__)));
