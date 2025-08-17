@@ -10,7 +10,7 @@ use Dom\Template;
 use Tk\Auth\Storage\SessionStorage;
 use Tk\Date;
 use Tk\Db;
-use Tk\Db\Session;
+use Tk\Session;
 use Tk\Form\Field\Input;
 use Tk\Table\Action\ColumnSelect;
 
@@ -185,13 +185,12 @@ CSS;
                 }
             }
 
-
             $rows[] = (object)[
                 'authId'      => $authId,
                 'username'    => $username,
                 'ip'          => $_SESSION[Session::SID_IP] ?? '',
                 'agent'       => $_SESSION[Session::SID_AGENT] ?? '',
-                'sessionId'   => $_SESSION['_session.id'] ?? '',
+                'sessionId'   => $ses->session_id,
                 'sso'         => $_SESSION['_OAUTH'] ?? '',
                 'type'        => $type,
                 'name'        => $name,

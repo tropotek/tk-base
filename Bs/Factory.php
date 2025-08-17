@@ -9,7 +9,6 @@ use Bs\Mvc\PagePhp;
 use Bs\Ui\Breadcrumbs;
 use Composer\Autoload\ClassLoader;
 use Dom\Modifier;
-use Dom\Template;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -37,12 +36,12 @@ use Tk\Date;
 use Tk\FileUtil;
 use Tk\Log;
 use Tk\Logger\ErrorLog;
-use Tk\Logger\SessionLog;
 use Tk\Logger\StreamLog;
 use Tk\Mail\CurlyMessage;
 use Tk\Mail\Mailer;
 use Tk\Mail\Message;
 use Tk\Path;
+use Tk\Db\MySqlSession;
 use Tk\System;
 use Tk\Uri;
 
@@ -98,25 +97,25 @@ class Factory extends Collection
     }
 
     /**
-     * setup DB based session object
+     * setup/get DB based session object
+     * First call to this method will create a new session object
+     * Subsequent calls will return the same session object
      */
-    public function initSession(): ?\Tk\Db\Session
+    public function getSession(): ?\Tk\Session
     {
         if (!$this->has('session')) {
+
+            $handler = null;
+            if (!System::isCli() && Config::getValue('session.db_enable', false)) {
+                // note DB must be initialized before the session is started
+                $handler = new MySqlSession();
+            }
+
             session_cache_limiter('nocache');
             session_name('sn_' . md5(Config::getBaseUrl()));
-            // init DB session if enabled
-            if (Config::getValue('session.db_enable', false)) {
-                \Tk\Db\Session::instance();
-            }
-            session_start();
+            $session = \Tk\Session::instance($handler);
 
-            $_SESSION[\Tk\Db\Session::SID_IP]    = System::getClientIp();
-            $_SESSION[\Tk\Db\Session::SID_AGENT] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-            $_SESSION['_session.id']             = session_id();
-            SessionLog::clearLog();
-
-            $this->set('session', null);
+            $this->set('session', $session);
         }
         return $this->get('session');
     }
@@ -257,6 +256,11 @@ class Factory extends Collection
         return $this->get('eventDispatcher');
     }
 
+    /**
+     * Init all site specific event listeners
+     * @todo I think this object needs to be renamed to something like "SiteEventDispatcher", "SiteObservers"
+     *       as it is not a generic event dispatcher
+     */
     public function initEventDispatcher(): ?EventDispatcher
     {
         // todo: move to bootstrap

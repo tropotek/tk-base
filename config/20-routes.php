@@ -29,5 +29,7 @@ return function (CollectionConfigurator $routes) {
         ->controller([\Bs\Component\AboutDialog::class, 'doDefault']);
     $routes->add('com-logout-dialog', '/component/logoutDialog')
         ->controller([\Bs\Component\LogoutDialog::class, 'doDefault']);
+    $routes->add('com-alert-renderer', '/component/alertRenderer')
+        ->controller([\Bs\Component\AlertRenderer::class, 'doDefault']);
 
 };

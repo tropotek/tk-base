@@ -39,20 +39,11 @@ class Bootstrap
 
         Factory::instance()->initLogger();
 
-        // Init tk error handler
         ErrorHandler::instance();
 
         VarDump::instance();
 
-        // bad form here, this should not be used here to affect the entire site...
-//        if (Config::isDev()) {
-//            // Allow self-signed certs in file_get_contents in dev environment
-//            stream_context_set_default(["ssl" => [
-//                "verify_peer" => false,
-//                "verify_peer_name" => false,
-//            ]]);
-//        }
-
+        Factory::instance()->getSession();
         Factory::instance()->initEventDispatcher();
         Factory::instance()->initMailGateway();
 
@@ -70,9 +61,6 @@ class Bootstrap
          * to the application root now.
          */
         chdir(Config::getBasePath());
-
-        // Moved to http only to prevent DB table creation in CLI commands
-        Factory::instance()->initSession();
 
         if (Config::isDev()) {
             Template::$ENABLE_TRACER = true;
