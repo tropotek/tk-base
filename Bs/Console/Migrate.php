@@ -43,7 +43,7 @@ class Migrate extends Console
             }
 
             if ($drop) {
-                $exclude = [Db\Session::$DB_TABLE];
+                $exclude = [Db\MySqlSession::$DB_TABLE];
                 Db::dropAllTables(true, $exclude);
                 $this->write('Mode: Install');
             } else {

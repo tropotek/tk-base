@@ -8,7 +8,6 @@ use Bs\Db\SqlMigrate;
 use Tk\Exception;
 use Tk\Path;
 use Tk\Db;
-use Tk\System;
 
 /**
  * A Composer installer class for the Tk framework
@@ -153,7 +152,7 @@ class Installer
                 $drop = $io->askConfirmation($this->warning('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: '), false);
             }
             if ($drop) {
-                $exclude = [Db\Session::$DB_TABLE];
+                $exclude = [Db\MySqlSession::$DB_TABLE];
                 Db::dropAllTables(true, $exclude);
             }
 
@@ -182,7 +181,7 @@ class Installer
             $configContents = strval(file_get_contents($configInFile));
             $io->write($this->green('Please answer the following questions to setup your new site configuration.'));
             $configVars = $this->userDbInput($io);
-            $configVars['system.encrypt'] = md5('Tropotek_'.microtime());
+            $configVars['system.encrypt'] = hash('sha256', 'Tropotek_'.microtime());
 
             // update the config contents string
             foreach ($configVars as $k => $v) {
