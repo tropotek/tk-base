@@ -257,15 +257,12 @@ class Factory extends Collection
     }
 
     /**
-     * Init all site specific event listeners
-     * @todo I think this object needs to be renamed to something like "SiteEventDispatcher", "SiteObservers"
-     *       as it is not a generic event dispatcher
+     * Init site-specific event listeners
      */
     public function initEventDispatcher(): ?EventDispatcher
     {
-        // todo: move to bootstrap
-        if ($this->getEventDispatcher()) {
-            new Dispatch($this->getEventDispatcher());
+        if (!$this->has('eventDispatcher')) {
+            new Listeners($this->getEventDispatcher());
         }
         return $this->getEventDispatcher();
     }

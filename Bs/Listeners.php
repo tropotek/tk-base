@@ -23,13 +23,11 @@ use Tk\Uri;
 
 
 /**
- * This object sets up the EventDispatcher and
- * attaches all the listeners required for your application to run.
+ * Setup the tk-base event listeners for the application
  *
- * Subclass this object in your App (to setup a Tk framework) and then override the Factory method
- * Factory::instance()->initDispatcher()
+ * Subclass this object in your App to add your own event listeners
  */
-class Dispatch
+class Listeners
 {
     protected ?EventDispatcherInterface $dispatcher = null;
 
