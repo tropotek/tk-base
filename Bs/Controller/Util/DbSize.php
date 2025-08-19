@@ -54,13 +54,13 @@ class DbSize extends ControllerAdmin
 
         $this->table->appendCell('table_rows')
             ->setHeader('Row Count')
-            ->addHeaderCss('text-right')
-            ->addCss('text-nowrap text-right');
+            ->addHeaderCss('text-end')
+            ->addCss('text-nowrap text-end');
 
         $this->table->appendCell('size_bytes')
             ->setHeader('Size')
-            ->addHeaderCss('text-right')
-            ->addCss('text-nowrap text-right')
+            ->addHeaderCss('text-end')
+            ->addCss('text-nowrap text-end')
             ->addOnValue(function(\stdClass $obj, Cell $cell) {
                 if ($obj->table_name == 'Total') {
                     $cell->getTable()->getRowAttrs()->setAttr('class', 'text-strong bg-secondary-subtle');
