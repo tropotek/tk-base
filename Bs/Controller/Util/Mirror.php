@@ -27,8 +27,8 @@ class Mirror
 
         $enc = Encrypt::create($secret);
         $action   = trim($_POST['a'] ?? '');
-        $username = $enc->decrypt(trim($_POST['u'] ?? ''));
-        $password = $enc->decrypt(trim($_POST['p'] ?? ''));
+        $username = $enc->basicDecrypt(trim($_POST['u'] ?? ''));
+        $password = $enc->basicDecrypt(trim($_POST['p'] ?? ''));
         $all = isset($_POST['all']);    // copy all, include private folder
 
         $user = Auth::findByUsername($username);
