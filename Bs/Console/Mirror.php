@@ -140,7 +140,7 @@ class Mirror extends Console
             }
 
             //if (is_file($newSqlFile)) unlink($newSqlFile);
-            unlink($dstBakFile);
+            if (is_file($dstBakFile)) unlink($dstBakFile);
 
         } catch(\Exception $e) {
             $this->writeError($e->getMessage());
@@ -162,8 +162,8 @@ class Mirror extends Console
         $enc = Encrypt::create($secret);
         $ok = true;
         $srcUrl = Uri::create($srcUrl)->withScheme('https');
-        $srcUrl->set('u', $enc->encrypt($srcUrl->get('u')));
-        $srcUrl->set('p', $enc->encrypt($srcUrl->get('p')));
+        $srcUrl->set('u', $enc->basicEncrypt($srcUrl->get('u')));
+        $srcUrl->set('p', $enc->basicEncrypt($srcUrl->get('p')));
 
         // convert query vals to post vals
         $query = $srcUrl->getQuery();
