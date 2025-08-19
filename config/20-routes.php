@@ -16,6 +16,8 @@ return function (CollectionConfigurator $routes) {
         ->controller([\Bs\Controller\Util\Ping::class, 'doDefault']);
     $routes->add('util-db-search', '/util/dbSearch')
         ->controller([\Bs\Controller\Util\DbSearch::class, 'doDefault']);
+    $routes->add('util-db-size', '/util/dbSize')
+        ->controller([\Bs\Controller\Util\DbSize::class, 'doDefault']);
 
     // Site Mirror tool
     if (\Tk\Config::getValue('db.mirror.secret', false)) {
