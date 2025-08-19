@@ -26,6 +26,40 @@ class DbSize extends ControllerAdmin
         $this->getPage()->setTitle('Database HDD Usage', 'fas fa-database');
         $this->setUserAccess(Auth::PERM_ADMIN);
 
+        $this->table = new Table('db-size');
+        $this->table->hideReset();
+        $this->table->setLimit(0);
+
+        $this->table->appendCell('table_name')
+            ->setHeader('Table Name')
+            ->addCss('max-width');
+
+        $this->table->appendCell('table_rows')
+            ->setHeader('Row Count')
+            ->addHeaderCss('text-end')
+            ->addCss('text-nowrap text-end')
+            ->addOnValue(function(\stdClass $obj, Cell $cell) {
+                return number_format($obj->table_rows);
+            });
+
+        $this->table->appendCell('size_bytes')
+            ->setHeader('Size')
+            ->addHeaderCss('text-end')
+            ->addCss('text-nowrap text-end')
+            ->addOnValue(function(\stdClass $obj, Cell $cell) {
+                if ($obj->table_name == 'Total') {
+                    $cell->getTable()->getRowAttrs()->setAttr('class', 'text-strong bg-secondary-subtle');
+                }
+                if ($obj->size_bytes < 1024 * 1024) {
+                    $cell->setAttr('class', 'text-muted');
+                }
+                return FileUtil::bytes2String($obj->size_bytes);
+            });
+
+        // execute table
+        $this->table->execute();
+
+        // Set the table rows
         $sql = "
             SELECT
                 table_name,
@@ -42,37 +76,7 @@ class DbSize extends ControllerAdmin
         $sizes = array_column($rows, 'size_bytes', 'table_name');
         $this->total = array_sum(array_values($sizes));
         $rows[] = (object)['table_name' => 'Total', 'table_rows' => count($rows), 'size_bytes' => $this->total];
-
-
-        $this->table = new Table('db-size');
-        $this->table->hideReset();
-        $this->table->addCss('tk-table-sm');
-
-        $this->table->appendCell('table_name')
-            ->setHeader('Table Name')
-            ->addCss('max-width');
-
-        $this->table->appendCell('table_rows')
-            ->setHeader('Row Count')
-            ->addHeaderCss('text-end')
-            ->addCss('text-nowrap text-end');
-
-        $this->table->appendCell('size_bytes')
-            ->setHeader('Size')
-            ->addHeaderCss('text-end')
-            ->addCss('text-nowrap text-end')
-            ->addOnValue(function(\stdClass $obj, Cell $cell) {
-                if ($obj->table_name == 'Total') {
-                    $cell->getTable()->getRowAttrs()->setAttr('class', 'text-strong bg-secondary-subtle');
-                }
-                return FileUtil::bytes2String($obj->size_bytes);
-            });
-
-        // execute table
-        $this->table->execute();
-
-        // Set the table rows
-        $this->table->setRows($rows, count($rows));
+        $this->table->setRows($rows);
     }
 
     public function show(): ?Template
