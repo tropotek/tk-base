@@ -10,6 +10,8 @@ use Tk\Db;
 
 /**
  * Makes a compressed tgz file of the sites database
+ *
+ * @todo Update this cmd to just send the data to stdout
  */
 class DbBackup extends Console
 {
@@ -18,7 +20,7 @@ class DbBackup extends Console
     {
         $this->setName('dbbackup')
             ->setAliases(['dbb'])
-            ->setDescription('Call this to dump a copy of the Database sql to stdout or file')
+            ->setDescription('Call this to dump a copy of the Database sql to stdout')
             ->addArgument('output', InputArgument::OPTIONAL, 'A file path to dump the SQL to.', null)
             ->addArgument('date_format', InputArgument::OPTIONAL, 'Auto filename generated based on date when a directory is supplied as the output. See http://php.net/manual/en/function.date.php', 'D')
         ;
