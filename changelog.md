@@ -1,5 +1,14 @@
 #CHANGELOG#
 
+Ver 8.0.146 [2025-08-19]:
+-------------------------------
+  - implement new safe enc for all
+  - Added DB size listing page
+  - update enc class
+  - Renamed Dispatch class to Listeners
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+
+
 Ver 8.0.144 [2025-08-16]:
 -------------------------------
   - convert about and lohout dialog to HTMX
