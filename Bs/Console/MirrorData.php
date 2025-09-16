@@ -42,6 +42,8 @@ class MirrorData extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        set_time_limit(0);
+
         $config = $this->getConfig();
         if (!Config::isDev()) {
             $this->writeError('Only run this command in a dev environment.');

@@ -36,6 +36,8 @@ class Mirror extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        set_time_limit(0);
+
         try {
             $config = $this->getConfig();
             if (!Config::isDev()) {

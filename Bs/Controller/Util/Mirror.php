@@ -17,6 +17,8 @@ class Mirror
 
     public function doDefault(): string
     {
+        set_time_limit(0);
+
         if (strtolower($_SERVER['REQUEST_SCHEME']) != 'https') {
             throw new \Tk\Exception('invalid SSL connection');
         }
@@ -56,6 +58,8 @@ class Mirror
 
     public function doDataBackup(bool $all = false): void
     {
+        set_time_limit(0);
+
         $srcFile = tempnam(Path::create(), '_mifl');
         if (is_file($srcFile)) unlink($srcFile);
         if ($all) {
@@ -95,6 +99,8 @@ class Mirror
 
     public function doDbBackup(): void
     {
+        set_time_limit(0);
+        
         $options = Db::parseDsn(Config::getValue('db.mysql'));
         // must exclude _migrate table for migrate cmd to work in mirror cmd
         //$options['exclude'] = ['_session', '_migrate'];

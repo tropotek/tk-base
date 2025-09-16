@@ -28,6 +28,8 @@ class DbBackup extends Console
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        set_time_limit(0);
+
         try {
             $outfile = $input->getArgument('output');
             $options = Db::parseDsn($this->getConfig()->get('db.mysql'));
