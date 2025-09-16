@@ -33,7 +33,7 @@ class MirrorData extends Console
         $this->setName('mirror-data')
             ->setAliases(['md'])
             ->setDescription('Copy remote `/data` folder to specified location')
-            ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
+            ->addArgument('username', InputArgument::REQUIRED, 'User with mirror access the remote site')
             ->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
             ->addOption('all', 'a', InputOption::VALUE_NONE, 'download all data files (including /private)')
             ->addOption('noverify', 'N', InputOption::VALUE_NONE, 'Disable verify SSL')
@@ -220,7 +220,7 @@ class MirrorData extends Console
             CURLOPT_POSTFIELDS     => $query,
             CURLOPT_FILE           => $fp,
             // CURLOPT_CONNECTTIMEOUT => 60,
-            CURLOPT_TIMEOUT        => 60*60,
+            CURLOPT_TIMEOUT        => 0,
             CURLOPT_HTTPHEADER     => [
                 "authorization-key: " . $secret,
             ],

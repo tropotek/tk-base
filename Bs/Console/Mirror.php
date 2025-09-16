@@ -24,8 +24,8 @@ class Mirror extends Console
     {
         $this->setName('mirror')
             ->setAliases(['mi'])
-            ->setDescription('Mirror the data and files from the Live site. [Admins Only]')
-            ->addArgument('username', InputArgument::REQUIRED, 'User with admin access the remote site')
+            ->setDescription('Mirror the DB data from the Src site. [Admin Only]')
+            ->addArgument('username', InputArgument::REQUIRED, 'User with mirror access the remote site')
             ->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
             ->addOption('no-migrate', 'x', InputOption::VALUE_NONE, 'Do not execute/migrate the downloaded sql file into the DB')
             ->addOption('save', 's', InputOption::VALUE_NEGATABLE, 'Save downloaded sql file to the current directory.')
@@ -188,7 +188,7 @@ class Mirror extends Console
             CURLOPT_POSTFIELDS     => $query,
             CURLOPT_FILE           => $fp,
             // CURLOPT_CONNECTTIMEOUT => 60,
-            CURLOPT_TIMEOUT        => 60*60,
+            CURLOPT_TIMEOUT        => 0,
             CURLOPT_HTTPHEADER     => [
                 "authorization-key: " . $secret,
             ],
