@@ -77,11 +77,9 @@ class Mirror
             );
         }
 
-        [$result, $code] = $this->execTimeout($cmd, 60*60*2);
-        vd($result, $code);
-//        $result = [];
-//        $code = 0;
-//        exec($cmd, $result, $code);
+        $result = [];
+        $code = 0;
+        exec($cmd, $result, $code);
         if ($code != 0) {
             @unlink($srcFile);
             throw new \Tk\Exception(implode("\n", $result));
@@ -97,28 +95,6 @@ class Mirror
         if (is_file($srcFile)) unlink($srcFile);
 
         exit;
-    }
-
-    protected function execTimeout(string $cmd, int $timeout = 60): array
-    {
-        $start = time();
-        $result = [];
-        $code = -1;
-        $pid = trim(exec("$cmd 2>&1 & echo $!", $result, $code));
-        vd("$cmd 2>&1 & echo $!", $pid);
-        if(empty($pid)) return false;
-        while(1) {
-            if((time()-$start) > $timeout){
-                //exec("kill -9 $pid",$null);
-                exec("kill -9 $pid");
-                break;
-            }
-            $exists = trim(exec("ps -p $pid -o pid="));
-            vd($exists);
-            if(empty($exists)) break;
-            sleep(1);
-        }
-        return [$result, $code];
     }
 
     public function doDbBackup(): void

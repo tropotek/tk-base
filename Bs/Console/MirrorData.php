@@ -219,6 +219,8 @@ class MirrorData extends Console
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POSTFIELDS     => $query,
             CURLOPT_FILE           => $fp,
+            // CURLOPT_CONNECTTIMEOUT => 60,
+            CURLOPT_TIMEOUT        => 60*60,
             CURLOPT_HTTPHEADER     => [
                 "authorization-key: " . $secret,
             ],
