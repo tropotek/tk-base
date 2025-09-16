@@ -10,7 +10,7 @@
 --
 -- ------------------------------------------------------
 
--- necessary because views can't refer to @@time_zone
+-- Util function because views can't refer to constant @@time_zone
 DROP FUNCTION IF EXISTS session_timezone;
 DELIMITER //
 CREATE FUNCTION session_timezone() RETURNS VARCHAR(100) DETERMINISTIC
@@ -19,26 +19,32 @@ BEGIN
 END //
 DELIMITER ;
 
--- DB Search all tables/columns for a value (not for production use)
-DROP PROCEDURE IF EXISTS findAll; -- TODO remove this after all site have migrated procedure
-DROP PROCEDURE IF EXISTS dbSearchAll;
+-- Set all words first letter to uppercase
+DROP FUNCTION IF EXISTS ucwords;
 DELIMITER //
-CREATE PROCEDURE dbSearchAll( IN `search` TEXT )
+CREATE FUNCTION ucwords(input VARCHAR(255)) RETURNS VARCHAR(255)
 BEGIN
-  SET SESSION group_concat_max_len := @@max_allowed_packet;
+	DECLARE len INT;
+	DECLARE i INT;
 
-  SELECT GROUP_CONCAT(
-    "SELECT '", c1.TABLE_NAME, "' AS `table`, '", c1.COLUMN_NAME, "' AS `column`, ",
-    "CONCAT_WS(',', ",  (SELECT GROUP_CONCAT('`', c2.column_name, '`') FROM `information_schema`.`columns` c2 WHERE c1.TABLE_SCHEMA=c2.TABLE_SCHEMA AND c1.TABLE_NAME=c2.TABLE_NAME AND c2.COLUMN_KEY='PRI' LIMIT 1) ,") AS pri,",
-    "`", c1.COLUMN_NAME, "` AS value FROM `", c1.TABLE_NAME, "`",
-    " WHERE `",c1.COLUMN_NAME,"` LIKE '%", search, "%'" SEPARATOR "\nUNION\n") AS col
-  INTO @sql
-  FROM information_schema.columns c1
-  WHERE c1.TABLE_SCHEMA = DATABASE();
+	SET len   = CHAR_LENGTH(input);
+	SET input = LOWER(input);
+	SET i = 0;
 
-  PREPARE stmt FROM @sql;
-  EXECUTE stmt;
-  DEALLOCATE PREPARE stmt;
+	WHILE (i < len) DO
+		IF (MID(input,i,1) = ' ' OR i = 0) THEN
+			IF (i < len) THEN
+				SET input = CONCAT(
+					LEFT(input,i),
+					UPPER(MID(input,i + 1,1)),
+					RIGHT(input,len - i - 1)
+				);
+			END IF;
+		END IF;
+		SET i = i + 1;
+	END WHILE;
+
+	RETURN input;
 END //
 DELIMITER ;
 
@@ -69,30 +75,27 @@ DELIMITER ;
 #   RETURN LOWER(@ext);
 # END;
 
--- Set all words first letter to uppercase (mysql only)
-# DROP FUNCTION IF EXISTS ucwords;
-# CREATE FUNCTION ucwords(s VARCHAR(255)) RETURNS VARCHAR(255)
-# BEGIN
-#   declare c int;
-#   declare x VARCHAR(255);
-#   declare y VARCHAR(255);
-#   declare z VARCHAR(255);
-#
-#   set x = UPPER( SUBSTRING( s, 1, 1));
-#   set y = SUBSTR( s, 2);
-#   set c = instr( y, ' ');
-#
-#   while c > 0
-#     do
-#       set z = SUBSTR( y, 1, c);
-#       set x = CONCAT( x, z);
-#       set z = UPPER( SUBSTR( y, c+1, 1));
-#       set x = CONCAT( x, z);
-#       set y = SUBSTR( y, c+2);
-#       set c = INSTR( y, ' ');
-#   end while;
-#   set x = CONCAT(x, y);
-#   return x;
-#
 
 
+-- DB Search all tables/columns for a value (not for production use)
+DROP PROCEDURE IF EXISTS findAll; -- TODO remove this after all site have migrated procedure
+DROP PROCEDURE IF EXISTS dbSearchAll;
+DELIMITER //
+CREATE PROCEDURE dbSearchAll( IN `search` TEXT )
+BEGIN
+  SET SESSION group_concat_max_len := @@max_allowed_packet;
+
+  SELECT GROUP_CONCAT(
+    "SELECT '", c1.TABLE_NAME, "' AS `table`, '", c1.COLUMN_NAME, "' AS `column`, ",
+    "CONCAT_WS(',', ",  (SELECT GROUP_CONCAT('`', c2.column_name, '`') FROM `information_schema`.`columns` c2 WHERE c1.TABLE_SCHEMA=c2.TABLE_SCHEMA AND c1.TABLE_NAME=c2.TABLE_NAME AND c2.COLUMN_KEY='PRI' LIMIT 1) ,") AS pri,",
+    "`", c1.COLUMN_NAME, "` AS value FROM `", c1.TABLE_NAME, "`",
+    " WHERE `",c1.COLUMN_NAME,"` LIKE '%", search, "%'" SEPARATOR "\nUNION\n") AS col
+  INTO @sql
+  FROM information_schema.columns c1
+  WHERE c1.TABLE_SCHEMA = DATABASE();
+
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;

@@ -22,7 +22,8 @@ return function (Config $config) {
     $config['system.mail.template'] = '/html/templates/mail.default.html';
 
     /**
-     * These files are execute on site install/upgrade/migrate if they exist
+     * These files are executed on site install/upgrade/migrate if they exist
+     * executed from top to bottom in order
      */
     $config['db.migrate.static'] = [
         '/vendor/ttek/tk-base/config/sql/procedures.sql',
