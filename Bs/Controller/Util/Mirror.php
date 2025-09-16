@@ -78,7 +78,7 @@ class Mirror
         }
 
         [$result, $code] = $this->execTimeout($cmd, 60*60*2);
-
+        vd($result, $code);
 //        $result = [];
 //        $code = 0;
 //        exec($cmd, $result, $code);
@@ -102,25 +102,22 @@ class Mirror
     protected function execTimeout(string $cmd, int $timeout = 60): array
     {
         $start = time();
-        //$outfile = uniqid('/tmp/out',1);
         $result = [];
         $code = -1;
-        //$pid = trim(shell_exec("$cmd >$outfile 2>&1 & echo $!"));
         $pid = trim(exec("$cmd 2>&1 & echo $!", $result, $code));
+        vd("$cmd 2>&1 & echo $!", $pid);
         if(empty($pid)) return false;
-        while(1){
+        while(1) {
             if((time()-$start) > $timeout){
                 //exec("kill -9 $pid",$null);
                 exec("kill -9 $pid");
                 break;
             }
-            //$exists=trim(shell_exec("ps -p $pid -o pid="));
             $exists = trim(exec("ps -p $pid -o pid="));
+            vd($exists);
             if(empty($exists)) break;
             sleep(1);
         }
-//        $output=file_get_contents($outfile);
-//        unlink($outfile);
         return [$result, $code];
     }
 
