@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.152 [2025-09-17]:
+-------------------------------
+  - run mirrror data in external process
+  - Replace Object constant lists with backed enums
+
+
 Ver 8.0.150 [2025-08-19]:
 -------------------------------
   - woops
