@@ -53,6 +53,7 @@ class Mirror
         if ($action == 'db') {
             $this->doDbBackup();
         } elseif ($action == 'file') {
+            session_write_close();
             return $this->doDataBackup($all);
         }
 

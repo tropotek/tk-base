@@ -96,6 +96,7 @@ class MirrorData extends Console
         if ($input->getOption('all')) {
             $mirrorUrl->set('all', '1');
         }
+        session_write_close();
 
         if (!$this->postRequest(
             $mirrorUrl,
