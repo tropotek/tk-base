@@ -154,8 +154,8 @@ class Mirror
                 );
             }
 
-            $pid = trim(exec("$cmd > /dev/null 2>&1 & echo $!"));
-            //$pid = trim(shell_exec("$cmd > /dev/null 2>&1 & echo $!"));
+            //$pid = trim(exec("$cmd > /dev/null 2>&1 & echo $!"));
+            $pid = trim(shell_exec("$cmd > /dev/null 2>&1 & echo $!"));
             if(empty($pid)) {
                 throw new \Tk\Exception("Error creating backup file");
             }
