@@ -235,7 +235,8 @@ class MirrorData extends Console
         curl_setopt_array($curl, $opts);
         $res = json_decode(curl_exec($curl));
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
-            Log::error("Request Error: " . curl_error($curl));
+            Log::error("Request Error: " . $srcUrl);
+            Log::error("CURL Error: " . curl_error($curl));
             Log::error("Request Response: " . curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
             return false;
         }
@@ -269,7 +270,8 @@ class MirrorData extends Console
             curl_setopt_array($curl, $opts);
             curl_exec($curl);
             if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
-                Log::error("Download Request Error: " . curl_error($curl));
+                Log::error("Download Request Error: " . $procUrl);
+                Log::error("Download CURL Error: " . curl_error($curl));
                 Log::error("Download Request Response: " . curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
                 return false;
             }
