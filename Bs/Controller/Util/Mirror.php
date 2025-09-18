@@ -51,10 +51,15 @@ class Mirror
         }
 
         if ($action == 'db') {
+            if (!Config::getValue('db.mirror.enabled', true)) {
+                return 'This command is disabled for this site. Enable it in the config file: db.mirror.data.enabled = true';
+            }
             $this->doDbBackup();
         } elseif ($action == 'file') {
-            session_write_close();
-            return $this->doDataBackup($all);
+            if (!Config::getValue('db.mirror.data.enabled', true)) {
+                return 'This command is disabled for this site. Enable it in the config file: db.mirror.data.enabled = true';
+            }
+            $this->doDataBackup($all);
         }
 
         return 'Invalid access request.';

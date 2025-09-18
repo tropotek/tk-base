@@ -45,6 +45,10 @@ class MirrorData extends Console
         set_time_limit(0);
 
         $config = $this->getConfig();
+        if (!$config->get('db.mirror.data.enabled', true)) {
+            $this->writeError('This command is disabled for this site. Enable it in the config file: db.mirror.data.enabled = true');
+            return Command::FAILURE;
+        }
         if (!Config::isDev()) {
             $this->writeError('Only run this command in a dev environment.');
             return Command::FAILURE;

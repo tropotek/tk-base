@@ -40,6 +40,10 @@ class Mirror extends Console
 
         try {
             $config = $this->getConfig();
+            if (!$config->get('db.mirror.enabled', true)) {
+                $this->writeError('This command is disabled for this site. Enable it in the config file: db.mirror.enabled = true');
+                return Command::FAILURE;
+            }
             if (!Config::isDev()) {
                 $this->writeError('Only run this command in a dev environment.');
                 return Command::FAILURE;
