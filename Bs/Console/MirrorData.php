@@ -195,27 +195,35 @@ class MirrorData extends Console
     protected function postRequest(Uri|string $srcUrl, string $secret, string $filename, bool $verifyssl = true): bool
     {
         if (empty($secret)) {
-            Log::error("Invalid API secret");
+            $this->error = "Invalid API secret";
             return false;
         }
 
         $enc = Encrypt::create($secret);
-
+        $ok = true;
         $srcUrl = Uri::create($srcUrl)->withScheme('https');
         $srcUrl->set('u', $enc->basicEncrypt($srcUrl->get('u')));
         $srcUrl->set('p', $enc->basicEncrypt($srcUrl->get('p')));
-        $procUrl = Uri::create($srcUrl)->withScheme('https');
 
         $query = $srcUrl->getQuery();
         $srcUrl->reset();
 
-        // common opts
+        $fp = fopen($filename, "w");
+        if ($fp === false) {
+            Log::error("Cannot open filename: $filename");
+            return false;
+        }
+        $curl = curl_init($srcUrl->toString());
+        if ($curl === false) {
+            Log::error("Cannot open Url: $srcUrl");
+            return false;
+        }
+
         $opts = [
             CURLOPT_CUSTOMREQUEST  => 'POST',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POSTFIELDS     => $query,
-            // CURLOPT_CONNECTTIMEOUT => 60,
-            //CURLOPT_TIMEOUT        => 0,
+            CURLOPT_FILE           => $fp,
             CURLOPT_HTTPHEADER     => [
                 "authorization-key: " . $secret,
             ],
@@ -225,77 +233,124 @@ class MirrorData extends Console
             $opts[CURLOPT_SSL_VERIFYHOST] = false;
             $opts[CURLOPT_SSL_VERIFYPEER] = false;
         }
-
-        // initiate package creation
-        Log::debug("Requesting package");
-        $curl = curl_init($srcUrl->toString());
-        if ($curl === false) {
-            Log::error("Cannot open Url: $srcUrl");
-            return false;
-        }
         curl_setopt_array($curl, $opts);
-        $res = json_decode(curl_exec($curl));
+
+        curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
-            Log::error("Request Error: " . $srcUrl);
-            Log::error("CURL Error: " . curl_error($curl));
-            Log::error("Request Response: " . curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
-            return false;
+            $this->error = curl_error($curl);
+            $ok = false;
         }
         curl_close($curl);
-        if (empty($res->pid) || empty($res->filename)) {
-            Log::error("Invalid mirror response. No PID returned.");
-            return false;
-        }
+        fclose($fp);
 
-        $pid = $res->pid;
-        $destFile = $res->filename;
-
-        $procUrl->set('pid', $pid);
-        $procUrl->set('filename', $destFile);
-        $opts[CURLOPT_POSTFIELDS] = $procUrl->getQuery();
-        $procUrl->reset();
-
-        Log::debug("Downloading package");
-        while(true) {
-            $fp = fopen($filename, "w");
-            if ($fp === false) {
-                Log::error("Cannot open filename: $filename");
-                return false;
-            }
-            $curl = curl_init($procUrl->toString());
-            if ($curl === false) {
-                Log::error("Cannot open Url: $procUrl");
-                return false;
-            }
-            $opts[CURLOPT_FILE] = $fp;
-            curl_setopt_array($curl, $opts);
-            curl_exec($curl);
-            if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
-                Log::error("Download Request Error: " . $procUrl);
-                Log::error("Download CURL Error: " . curl_error($curl));
-                Log::error("Download Request Response: " . curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
-                return false;
-            }
-            curl_close($curl);
-            fclose($fp);
-
-            $fp = fopen($filename, "r");
-            $res = fread($fp, 1024);
-            fclose($fp);
-
-            // this should signal the download is complete
-            if (json_validate($res)) {
-                unlink($filename);
-                $res = json_decode($res);
-                if ($res->complete ?? false) {
-                    Log::error("Error downloading package: {$filename}");
-                    return false;
-                }
-            } else {
-                Log::debug("Download completed: {$filename}");
-                return true;
-            }
-            sleep(5);
-        }
+        return $ok;
     }
+
+    // Using a background task, does not work for cpanel...
+//    protected function postRequest(Uri|string $srcUrl, string $secret, string $filename, bool $verifyssl = true): bool
+//    {
+//        if (empty($secret)) {
+//            Log::error("Invalid API secret");
+//            return false;
+//        }
+//
+//        $enc = Encrypt::create($secret);
+//
+//        $srcUrl = Uri::create($srcUrl)->withScheme('https');
+//        $srcUrl->set('u', $enc->basicEncrypt($srcUrl->get('u')));
+//        $srcUrl->set('p', $enc->basicEncrypt($srcUrl->get('p')));
+//        $procUrl = Uri::create($srcUrl)->withScheme('https');
+//
+//        $query = $srcUrl->getQuery();
+//        $srcUrl->reset();
+//
+//        // common opts
+//        $opts = [
+//            CURLOPT_CUSTOMREQUEST  => 'POST',
+//            CURLOPT_RETURNTRANSFER => true,
+//            CURLOPT_POSTFIELDS     => $query,
+//            // CURLOPT_CONNECTTIMEOUT => 60,
+//            //CURLOPT_TIMEOUT        => 0,
+//            CURLOPT_HTTPHEADER     => [
+//                "authorization-key: " . $secret,
+//            ],
+//            CURLOPT_USERAGENT      => Uri::USERAGENT,
+//        ];
+//        if (!$verifyssl) {
+//            $opts[CURLOPT_SSL_VERIFYHOST] = false;
+//            $opts[CURLOPT_SSL_VERIFYPEER] = false;
+//        }
+//
+//        // initiate package creation
+//        Log::debug("Requesting package");
+//        $curl = curl_init($srcUrl->toString());
+//        if ($curl === false) {
+//            Log::error("Cannot open Url: $srcUrl");
+//            return false;
+//        }
+//        curl_setopt_array($curl, $opts);
+//        $res = json_decode(curl_exec($curl));
+//        if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
+//            Log::error("Request Error: " . $srcUrl);
+//            Log::error("CURL Error: " . curl_error($curl));
+//            Log::error("Request Response: " . curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
+//            return false;
+//        }
+//        curl_close($curl);
+//        if (empty($res->pid) || empty($res->filename)) {
+//            Log::error("Invalid mirror response. No PID returned.");
+//            return false;
+//        }
+//
+//        $pid = $res->pid;
+//        $destFile = $res->filename;
+//
+//        $procUrl->set('pid', $pid);
+//        $procUrl->set('filename', $destFile);
+//        $opts[CURLOPT_POSTFIELDS] = $procUrl->getQuery();
+//        $procUrl->reset();
+//
+//        Log::debug("Downloading package");
+//        while(true) {
+//            $fp = fopen($filename, "w");
+//            if ($fp === false) {
+//                Log::error("Cannot open filename: $filename");
+//                return false;
+//            }
+//            $curl = curl_init($procUrl->toString());
+//            if ($curl === false) {
+//                Log::error("Cannot open Url: $procUrl");
+//                return false;
+//            }
+//            $opts[CURLOPT_FILE] = $fp;
+//            curl_setopt_array($curl, $opts);
+//            curl_exec($curl);
+//            if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
+//                Log::error("Download Request Error: " . $procUrl);
+//                Log::error("Download CURL Error: " . curl_error($curl));
+//                Log::error("Download Request Response: " . curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
+//                return false;
+//            }
+//            curl_close($curl);
+//            fclose($fp);
+//
+//            $fp = fopen($filename, "r");
+//            $res = fread($fp, 1024);
+//            fclose($fp);
+//
+//            // this should signal the download is complete
+//            if (json_validate($res)) {
+//                unlink($filename);
+//                $res = json_decode($res);
+//                if ($res->complete ?? false) {
+//                    Log::error("Error downloading package: {$filename}");
+//                    return false;
+//                }
+//            } else {
+//                Log::debug("Download completed: {$filename}");
+//                return true;
+//            }
+//            sleep(5);
+//        }
+//    }
 }
