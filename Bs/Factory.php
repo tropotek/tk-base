@@ -332,14 +332,16 @@ class Factory extends Collection
                 $scss->setCompress(true);
                 $scss->setCacheTimeout(\Tk\Date::DAY*14);
                 $scss->setPerPageCache(false);
-                $dm->addFilter('scss', $scss);
+                $dm->addModifier($scss);
             }
 
             Modifier\UrlPath::$IS_DEBUG = Config::isDev();
-            $dm->addFilter('urlPath', new Modifier\UrlPath(Config::getBaseUrl()));
+            $dm->addModifier(new Modifier\UrlPath(Config::getBaseUrl()));
 
             if (Config::isDev()) {
-                $dm->addFilter('pageBytes', new Modifier\PageBytes(Config::getBasePath()));
+                $dm->addModifier(new Modifier\PageBytes(Config::getBasePath()));
+            } else {
+                $dm->addModifier(new Modifier\ClearComments());
             }
 
             $this->set('templateModifier', $dm);

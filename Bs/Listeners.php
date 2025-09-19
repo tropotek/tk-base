@@ -94,7 +94,7 @@ class Listeners
 
         // Show total page bytes
         /** @var PageBytes $pageBytes */
-        $pageBytes = Factory::instance()->getTemplateModifier()->getFilter('pageBytes');
+        $pageBytes = Factory::instance()->getTemplateModifier()->getModifier(PageBytes::class);
         if ($pageBytes) {
             $this->getDispatcher()->addSubscriber(new PageBytesHandler($pageBytes));
         }

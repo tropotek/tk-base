@@ -58,7 +58,7 @@ class AlertRenderer extends \Dom\Renderer\Renderer implements ComponentInterface
             }
         }
 
-        if ($this->getTemplate()->hasVar('alert')) {
+        if ($this->getTemplate()->varExists('alert')) {
             $this->getTemplate()->insertTemplate('alert', $template);
         } else {
             $this->getTemplate()->prependTemplate('content', $template);
