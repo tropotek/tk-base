@@ -112,4 +112,10 @@ return function (Config $config) {
      */
     //$config['hostname'] = '';
 
+    /**
+     * The timeout in seconds for the Auth Remember Me cookie
+     * Default: 10080 (7 days)
+     */
+    //$config['auth.rememberme.ttl'] = 10080;
+
 };
