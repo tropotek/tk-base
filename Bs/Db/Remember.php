@@ -17,6 +17,7 @@ class Remember
      */
     const string REMEMBER_CID = '__rmb';
 
+    /** TTL in minutes */
     const int TTL_WEEK = 10080;
 
 
