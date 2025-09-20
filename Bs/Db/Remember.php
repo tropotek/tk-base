@@ -23,6 +23,7 @@ class Remember
 
     public static function rememberMe(int $authId, int $ttl_mins = self::TTL_WEEK): void
     {
+        self::expireTokens();
         [$selector, $validator, $token] = self::generateToken();
 
         // remove all existing token associated with the user id
@@ -39,6 +40,7 @@ class Remember
     {
         self::deleteToken($authId);
         Factory::instance()->getCookie()->delete(self::REMEMBER_CID);
+        self::expireTokens();
     }
 
     /**
@@ -48,6 +50,7 @@ class Remember
      */
     public static function retrieveMe(): ?Auth
     {
+        self::expireTokens();
         $token = $_COOKIE[self::REMEMBER_CID] ?? '';
         if ($token) {
             [$selector, $validator] = self::parseToken($token);
@@ -129,4 +132,9 @@ class Remember
         return Db::delete('auth_remember', compact('auth_id', 'browser_id'));
     }
 
+    public static function expireTokens(): bool
+    {
+        $sql = 'DELETE FROM auth_remember WHERE expiry < NOW()';
+        return Db::execute($sql) !== false;
+    }
 }
