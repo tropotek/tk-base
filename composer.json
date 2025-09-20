@@ -20,10 +20,10 @@
         }
     },
     "require":  {
-        "ttek/tk-framework": "~8.0.0",
-        "ttek/tk-domtemplate": "~8.0.0",
-        "ttek/tk-form": "~8.0.0",
-        "ttek/tk-table": "~8.0.0",
+        "ttek/tk-framework": "~8.0",
+        "ttek/tk-domtemplate": "~8.0",
+        "ttek/tk-form": "~8.0",
+        "ttek/tk-table": "~8.0",
 
         "symfony/http-foundation": "^6.2-@stable",
         "symfony/routing": "^6.2-@stable",
