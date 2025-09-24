@@ -67,7 +67,7 @@ class Sessions extends ControllerAdmin
         $this->table->appendCell('expires')
             ->addHeaderCss('text-center')
             ->addCss('text-nowrap')
-            ->addOnValue('\Tk\Table\Type\DateTime::onValue');
+            ->addOnValue('\Tk\Table\Type\Date::getTime');
 
 
         // Add Filter Fields
