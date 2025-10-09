@@ -2,13 +2,10 @@
     "name": "ttek/tk-base",
     "type": "library",
     "description": "Tk8 Lib: Tk Lib MVC framework using low-level Symfony framework objects",
-    "keywords":  [
-        "tropotek",
-        "MVC"
-    ],
-    "time": "2025-10-09",
+    "keywords":  ["tropotek", "MVC"],
+    "time": "2025-04-21",
     "license": "MIT",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "authors":  [
          {
             "name": "Michael Mifsud",
@@ -25,16 +22,18 @@
         "ttek/tk-domtemplate": "^8.0",
         "ttek/tk-form": "^8.0",
         "ttek/tk-table": "^8.0",
+
         "symfony/http-foundation": "^6.2-@stable",
         "symfony/routing": "^6.2-@stable",
         "symfony/http-kernel": "^6.2-@stable",
         "symfony/event-dispatcher": "^6.2-@stable",
         "symfony/console": "^6.2-@stable",
         "symfony/lock": "^6.2-@stable",
+
         "studio-42/elfinder": "~2.1.0-@stable",
         "tinymce/tinymce": "~7.0-@stable"
     },
-    "require-dev":  {
+    "require-dev": {
         "composer/composer": "^2.0"
     },
     "extra":  {
