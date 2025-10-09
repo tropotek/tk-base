@@ -3,7 +3,6 @@ $sitePath = rtrim(dirname(__FILE__, 7), '/');
 $siteUrl = rtrim(dirname($_SERVER['PHP_SELF'], 7), '/');
 
 require $sitePath . '/_prepend.php';
-define('TKAPP', true);
 
 // Optional exec path settings (Default is called with command name only)
 $bin = '/bin';
