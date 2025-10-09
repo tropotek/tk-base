@@ -326,30 +326,39 @@ class ModelProperty extends \Tk\Collection
     {
         if ($this->isPrimaryKey()) return '';
 
+        $pre = '';
         $filterValid = sprintf("!empty(\$filter['%s'])", $this->getName());
-        $validate = '';
+        $append = sprintf("\$filter->appendWhere('AND a.%s = :%s');",
+            $this->get('Field'),
+            $this->getName()
+        );
+
         if ($this->getType() == self::TYPE_BOOL) {
-            $filterValid = sprintf("is_bool(truefalse(\$filter['%s'] ?? null))",
-                $this->getName()
-            );
-            $validate = sprintf("
-            \$filter['%s'] = truefalse(\$filter['%s']);",
+            $pre = sprintf("\$filter['%s'] = truefalse(\$filter['%s'] ?? null);",
                 $this->getName(),
                 $this->getName()
+            );
+            $filterValid = sprintf("is_bool(\$filter['%s'] ?? null)",
+                $this->getName()
+            );
+            $append = sprintf("\$filter->appendWhere(\$filter['%s'] ? 'AND a.%s' : 'AND NOT a.%s');",
+                $this->getName(),
+                $this->get('Field'),
+                $this->get('Field')
             );
         }
 
         $tpl = <<<TPL
-                if (%s) {%s
-                    \$filter->appendWhere('AND a.%s = :%s');
+                %s
+                if (%s) {
+                    %s
                 }
         TPL;
-        return sprintf($tpl,
+        return '        ' . trim(sprintf($tpl,
+            $pre,
             $filterValid,
-            $validate,
-            $this->get('Field'),
-            $this->getName()
-        );
+            $append
+        ))."\n";
     }
 
     public function getTableCell(string $className, string $namespace, string $primaryKey, string $tableProperty = ''): string
