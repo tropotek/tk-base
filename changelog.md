@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.156 [2025-10-09]:
+-------------------------------
+  - Fix js bugs in component selet dialogs
+
+
 Ver 8.0.154 [2025-09-30]:
 -------------------------------
   - Major refactor of DomTemplate lib
