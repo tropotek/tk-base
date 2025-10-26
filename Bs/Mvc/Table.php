@@ -71,9 +71,9 @@ class Table extends \Tk\Table
         }
 
         // add reset table session action
-        if (Config::isDev()) {
+        //if (Config::isDev()) {
             $this->addResetAction();
-        }
+        //}
 
         // init/execute filter form request
         $this->initForm();
@@ -240,8 +240,8 @@ HTML;
                 return <<<HTML
                         <button type="submit" name="{$action->getName()}" value="$val"
                             class="tk-action-reset-tbl btn btn-sm btn-light"
-                            title="Reset table session"
-                            data-confirm="Are you sure you want to reset the Table`s session?">
+                            title="Reset Table"
+                            data-confirm="Are you sure you want to reset the Table`s session settings?">
                             <i class="fa fa-fw fa-retweet"></i>
                         </button>
                     HTML;
