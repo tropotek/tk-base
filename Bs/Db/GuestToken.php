@@ -7,6 +7,7 @@ use Tk\DataMap\Db\DateTime;
 use Tk\DataMap\Db\Integer;
 use Tk\DataMap\Db\Json;
 use Tk\DataMap\Db\Text;
+use Tk\DataMap\ModelMapper;
 use Tk\Exception;
 use Tk\Db;
 use Tk\Db\Model;
@@ -57,8 +58,9 @@ class GuestToken extends Model
      */
     public static function getDataMap(): DataMap
     {
-        $map = self::$_MAPS[static::class] ?? null;
-        if (!is_null($map)) return $map;
+        if (ModelMapper::instance()->hasDataMap(static::class)) {
+            return ModelMapper::instance()->getDataMap(static::class);
+        }
 
         $map = new DataMap();
         //$map->addType(new Text('token'))->setFlag(DataMap::PRI);
@@ -69,8 +71,8 @@ class GuestToken extends Model
         $map->addType(new DateTime('created'), DataMap::READ);
         $map->addType(new DateTime('expiry'), DataMap::READ);
 
-        self::$_MAPS[static::class] = $map;
-        return $map;
+        ModelMapper::instance()->setDataMap(static::class, $map);
+        return ModelMapper::instance()->getDataMap(static::class);
     }
 
     public static function create(array $pages, array $payload, int $ttlMins): self
@@ -167,6 +169,9 @@ class GuestToken extends Model
         );
     }
 
+    /**
+     * @return array<int,GuestToken>
+     */
     public static function findAll(): array
     {
         return Db::query("

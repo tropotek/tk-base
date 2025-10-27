@@ -19,7 +19,7 @@ class DbSize extends ControllerAdmin
 {
 
     protected Table $table;
-    protected float $total = 0;
+    protected int $total = 0;
 
     public function doDefault(): void
     {
@@ -74,7 +74,7 @@ class DbSize extends ControllerAdmin
         $rows = Db::query($sql);
 
         $sizes = array_column($rows, 'size_bytes', 'table_name');
-        $this->total = array_sum(array_values($sizes));
+        $this->total = intval(array_sum(array_values($sizes)));
         $rows[] = (object)['table_name' => 'Total', 'table_rows' => count($rows), 'size_bytes' => $this->total];
         $this->table->setRows($rows);
     }

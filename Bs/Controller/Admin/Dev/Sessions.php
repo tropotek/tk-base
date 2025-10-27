@@ -94,8 +94,8 @@ class Sessions extends ControllerAdmin
         $template->appendText('title', $this->getPage()->getTitle());
         $template->addCss('icon', $this->getPage()->getIcon());
 
-        $template->setText('totalPublic', $this->totalPublic);
-        $template->setText('totalPrivate', $this->totalPrivate);
+        $template->setText('totalPublic', strval($this->totalPublic));
+        $template->setText('totalPrivate', strval($this->totalPrivate));
 
         $this->table->getRenderer()->setFooterEnabled(false);
         $this->table->addCss('table-hover');

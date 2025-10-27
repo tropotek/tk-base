@@ -67,10 +67,11 @@ class Installer
      */
     protected function execute(Event $event, bool $isInstall = false): void
     {
+        $io = $event->getIO();
+
         try {
             $this->isInstall = $isInstall;
             $sitePath = $_SERVER['PWD'];
-            $io = $event->getIO();
             $composer = $event->getComposer();
             $pkg = $composer->getPackage();
             $configVars = [];

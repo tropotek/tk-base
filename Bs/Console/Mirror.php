@@ -141,8 +141,8 @@ class Mirror extends Console
             // save file if requested
             if ($input->getOption('save')) {
                 $path = getcwd();
-                if (!str_ends_with($path, '.sql')) $path = $path . '/' . basename($newSqlFile);
-                copy($newSqlFile, $path);
+                if (!str_ends_with(strval($path), '.sql')) $path = $path . '/' . basename($newSqlFile);
+                copy($newSqlFile, strval($path));
             }
 
             //if (is_file($newSqlFile)) unlink($newSqlFile);

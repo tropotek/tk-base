@@ -162,6 +162,10 @@ HTML;
         return Template::load($html);
     }
 
+    /**
+     * @return string
+     * @todo refactor and move to table if needed
+     */
     public function getWrapId(): string
     {
         return str_replace('_', '-', $this->makeRequestKey('wrap'));
