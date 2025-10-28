@@ -23,8 +23,8 @@ use Tk\Db;
  * }
  *
  * Notes:
- *    - Use `composer install` to install/upgrade a production site
- *    - Use `composer update` to install/upgrade a development site
+ *    - Use `composer install` to install a production site
+ *    - Use `composer update` to update a development sites libs
  *    - Use `composer update --no-scripts` to skip the post-install/update scripts
  *    - Use `composer dump-autoload` to update the autoloader class map
  *
