@@ -176,7 +176,6 @@ class Installer
         copy($htInFile, $htFile);
         $baseurl = '/';
         if (preg_match('/(.+)\/public_html\/(.*)/', $params['sitePath'] ?? '', $regs)) {
-            //$user = basename($regs[1]);
             $baseurl = '/' . $regs[2] . '/';
         }
         $baseurl = trim($io->ask($this->bold('What is the base URL path [' . $baseurl . ']: '), $baseurl));
