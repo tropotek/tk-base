@@ -72,50 +72,19 @@ class Installer
         try {
             $this->isInstall = $isInstall;
             $sitePath = $_SERVER['PWD'];
-            $composer = $event->getComposer();
-            $pkg = $composer->getPackage();
             $configVars = [];
-
-            // Get the PHP user that will be executing the scripts
-            if (function_exists('posix_getpwuid')) {
-                $a = posix_getpwuid(intval(fileowner(__FILE__)));
-                if (is_array($a)) {
-                    $phpUser = $a['dir'];
-                }
-            }
-            if (empty($phpUser)) {
-                $phpUser = `whoami`;
-            }
-
-            $name = substr($pkg->getName(), strrpos($pkg->getName(), '/')+1);
-            $version = $pkg->getFullPrettyVersion();
-            $releaseDate = $pkg->getReleaseDate()->format('Y-m-d H:i:s');
-            $year = $pkg->getReleaseDate()->format('Y');
-            $desc = wordwrap($pkg->getDescription(), 45, "\n               ");
-            $authors = [];
-            foreach ($pkg->getAuthors() as $auth) {
-                $authors[] = $auth['name'] ?? '';
-            }
-            $authors = implode(', ', $authors);
-
-            $head = <<<STR
-            -----------------------------------------------------------
-                   $name Plugin - (c) tropotek.com $year
-            -----------------------------------------------------------
-              Project:     $name
-              Version:     $version
-              Released:    $releaseDate
-              Author:      $authors
-              Description: $desc
-            -----------------------------------------------------------
-            STR;
-            $io->write($this->bold($head));
 
             $configInFile = $sitePath . '/config.php.in';
             $configFile = $sitePath . '/config.php';
             $htInFile = $sitePath . '/.htaccess.in';
             $htFile = $sitePath . '/.htaccess';
+
             $hasConfig = is_file($configFile);
+
+            // Get the PHP user that will be executing the scripts
+            $phpUser = $this->getSystemUser();
+
+            $this->writePackageInfo($event);
 
             if ($hasConfig) {
                 include_once $sitePath.'/_prepend.php';
@@ -275,6 +244,49 @@ class Installer
         );
 
         return $config;
+    }
+
+    protected function getSystemUser(): string
+    {
+        if (function_exists('posix_getpwuid')) {
+            $a = posix_getpwuid(intval(fileowner(__FILE__)));
+            if (is_array($a) && isset($a['dir'])) {
+                return $a['dir'];
+            }
+        }
+        return `whoami`;
+    }
+
+    protected function writePackageInfo(Event $event): void
+    {
+        $io = $event->getIO();
+        $composer = $event->getComposer();
+        $pkg = $composer->getPackage();
+
+        $name = substr($pkg->getName(), strrpos($pkg->getName(), '/')+1);
+        $version = $pkg->getFullPrettyVersion();
+        $releaseDate = $pkg->getReleaseDate()->format('Y-m-d H:i:s');
+        $year = $pkg->getReleaseDate()->format('Y');
+        $desc = wordwrap($pkg->getDescription(), 45, "\n               ");
+        $authors = [];
+        foreach ($pkg->getAuthors() as $auth) {
+            $authors[] = $auth['name'] ?? '';
+        }
+        $authors = implode(', ', $authors);
+
+        $head = <<<STR
+        -----------------------------------------------------------
+               $name - (c) tropotek.com $year
+        -----------------------------------------------------------
+          Project:     $name
+          Version:     $version
+          Released:    $releaseDate
+          Author:      $authors
+          Description: $desc
+        -----------------------------------------------------------
+        STR;
+        $io->write($this->bold($head));
+
     }
 
     protected function bold(string $str): string { return '<options=bold>'.$str.'</>'; }
