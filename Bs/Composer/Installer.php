@@ -78,9 +78,9 @@ class Installer
             $configFile = $sitePath . '/config.php';
             $htInFile = $sitePath . '/.htaccess.in';
             $htFile = $sitePath . '/.htaccess';
-
+            
             $hasConfig = is_file($configFile);
-
+            
             // Get the PHP user that will be executing the scripts
             $phpUser = $this->getSystemUser();
 
