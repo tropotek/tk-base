@@ -63,7 +63,6 @@ class Installer
 
     /**
      * Set-up a site's config.php, .htaccess, paths, and database tables.
-     *
      */
     protected function execute(Event $event, bool $isInstall = false): void
     {
@@ -78,7 +77,7 @@ class Installer
             $configFile = $sitePath . '/config.php';
             $htInFile = $sitePath . '/.htaccess.in';
             $htFile = $sitePath . '/.htaccess';
-            
+
             $hasConfig = is_file($configFile);
             
             // Get the PHP user that will be executing the scripts
