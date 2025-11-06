@@ -149,8 +149,8 @@ window.tinymceElfinder = function(opts) {
 
   // TODO: This does not work, handle args are wrong
   //       See: https://www.tiny.cloud/docs/tinymce/6/upload-images/#images_upload_handler
-  //this.uploadHandler = function (blobInfo, success, failure) {
-  this.uploadHandler = function (blobInfo, progress) {
+  this.uploadHandler = function (blobInfo, success, failure) {
+  //this.uploadHandler = function (blobInfo, progress) {
 
     new Promise(function(resolve, reject) {
       getfm(uploadTargetHash).then((fm) => {
@@ -169,7 +169,6 @@ window.tinymceElfinder = function(opts) {
               fmNode.dialogelfinder('close');
             }
           };
-
         // check file object
         if (file.name) {
           // file blob of client side file object
@@ -211,7 +210,7 @@ window.tinymceElfinder = function(opts) {
       console.log(url);
       //success(url);
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
       //failure(err);
     });
   };

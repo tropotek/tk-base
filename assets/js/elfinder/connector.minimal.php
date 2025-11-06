@@ -4,6 +4,9 @@ $siteUrl = rtrim(dirname($_SERVER['PHP_SELF'], 7), '/');
 
 require $sitePath . '/_prepend.php';
 
+\Tk\Config::instance()->set('base.path', $sitePath);
+\Tk\Config::instance()->set('base.url', $siteUrl);
+
 // Optional exec path settings (Default is called with command name only)
 $bin = '/bin';
 define('ELFINDER_TAR_PATH',      $bin.'/tar');
@@ -21,7 +24,7 @@ define('ELFINDER_UNZIP_PATH',    $bin.'/unzip');
 // define('ELFINDER_JPEGTRAN_PATH', $bin.'/jpegtran');
 // define('ELFINDER_FFMPEG_PATH',   $bin.'/ffmpeg');
 
-define('ELFINDER_CONNECTOR_URL', $siteUrl . '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php');  // see elFinder::getConnectorUrl()
+define('ELFINDER_CONNECTOR_URL', $_SERVER['PHP_SELF']);  // see elFinder::getConnectorUrl()
 
 if (\Tk\Config::isDev()) {
     define('ELFINDER_DEBUG_ERRORLEVEL', -1); // Error reporting level of debug mode
@@ -172,7 +175,6 @@ if (isset($_REQUEST['path'])) {
 [$dataPath, $dataUrl] = getElfinderPath($customDataPath);
 // ===============================================
 
-
 // Documentation for connector options:
 // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
 $opts = array(
@@ -184,7 +186,7 @@ $opts = array(
             'path'          => $dataPath . '/',             // path to files (REQUIRED)
             'URL'           => $dataUrl  . '/',             // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
-			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
+			//'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application', 'text/vcard',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),
@@ -207,7 +209,7 @@ $opts = array(
 			'driver'        => 'Trash',
             'path'          => $dataPath . '/.trash/',
             'tmbURL'        => $dataUrl . '/.trash/.tmb/',
-			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
+			//'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // Recommend the same settings as the original volume that uses the trash
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application', 'text/vcard',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload

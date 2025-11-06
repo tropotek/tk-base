@@ -155,20 +155,6 @@ let tkbase = function () {
             return;
         }
 
-        // get the elfinder for mce
-        function getMceElf(data) {
-            // NOTE: The custom path sent to the GET request should be relative to the `/data` path
-            let path = data.elfinderPath ?? '/media';
-            return new tinymceElfinder({
-                // connector URL
-                url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
-                // upload target folder hash for this tinyMCE
-                uploadTargetHash: 'l1_lw',
-                // elFinder dialog node id
-                nodeId: 'elfinder'
-            });
-        }
-
         // full mce default config
         let mceFull = {
             license_key: 'gpl',
@@ -193,22 +179,13 @@ let tkbase = function () {
             //content_security_policy: "default-src 'self'",
             skin: 'tinymce-5',
 
+            //convert_urls: false,
             urlconverter_callback: function (url, node, on_save) {
                 if (!(url.startsWith('http://') || url.startsWith('https://'))) return url;
                 if (url.startsWith(tkConfig.hostUrl)) {
                     url = url.replace(tkConfig.hostUrl, '')
                 }
                 return url;
-            },
-            // file_picker_callback: elf.browser,
-            // images_upload_handler: elf.uploadHandler,
-            file_picker_callback: function (callback, value, meta) {
-                let data = $(tinymce.activeEditor.targetElm).data();
-                return getMceElf(data).browser(callback, value, meta);
-            },
-            images_upload_handler: function (blobInfo, progress) {
-                let data = $(tinymce.activeEditor.targetElm).data();
-                return getMceElf(data).uploadHandler(blobInfo, progress);
             },
         };
         $.extend(mceFull, cfg);
@@ -229,6 +206,8 @@ let tkbase = function () {
             $('textarea.mce, textarea.mce-min, textarea.mce-xs', this).each(function () {
                 let el = $(this);
                 let cfg = mceFull;
+
+
                 if (el.is('.mce-min, .mce-xs')) {
                     cfg = mceMin;
                     if (el.is('.mce-min, .mce-xs')) {
@@ -236,9 +215,27 @@ let tkbase = function () {
                         cfg.toolbar = true;
                     }
                 }
-                if (el.is('.mce-no-fm')) {   // disable the elFinder file manager
-                    delete cfg.file_picker_callback;
-                    delete cfg.images_upload_handler;
+
+                if (!el.is('.mce-no-fm, .mce-min, .mce-xs')) {   // disable the elFinder file manager
+                    // delete cfg.file_picker_callback;
+                    // delete cfg.images_upload_handler;
+
+                    // Setup elfinder file manager
+                    let data = el.data();
+                    let path = data.elfinderPath ?? '/media';
+
+                    const mceElf = new tinymceElfinder({
+                        // connector URL
+                        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
+                        // upload target folder hash for this tinyMCE
+                        uploadTargetHash: 'l1_lw',
+                        // elFinder dialog node id
+                        nodeId: 'elfinder',
+                        //requestType: 'post',
+                        //debug : ['error', 'warning', 'event-destroy'],
+                    });
+                    cfg.file_picker_callback = mceElf.browser;
+                    cfg.images_upload_handler = mceElf.uploadHandler;
                 }
 
                 // remove any existing tinymce instance
@@ -256,11 +253,7 @@ let tkbase = function () {
                 }
 
                 // init mce
-                if (el.is('.mce-min')) {
-                    el.tinymce(cfg);  // Minimum timymce
-                } else {
-                    el.tinymce(cfg); // Full tinymce
-                }
+                el.tinymce(cfg);
             });
         });
 
