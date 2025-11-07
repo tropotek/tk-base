@@ -110,14 +110,18 @@ window.tinymceElfinder = function(opts) {
       const regist = () => {
         fm.options.getFileCallback = cgf.callback = (file, fm) => {
           var url, reg, info;
+          url = file.url;
 
           // todo: This is a hack to remove the phantom path that is injected into the file.url on upload.
           //       Still yet to discover its cause?
+          // TODO: test in a live sire with no basepath
           let remPath = file.baseUrl + file.baseUrl.substring(file.baseUrl.length-2);
-          url = file.url.replace(remPath, file.baseUrl);
-          url = fm.convAbsUrl(url);
+          if (url.startsWith(remPath)) {
+            url = url.replace(remPath, file.baseUrl);
+          }
 
           // URL normalization
+          url = fm.convAbsUrl(url);
           //url = fm.convAbsUrl(file.url);    // use this when/if the above ever gets fixed
 
           // Make file info
