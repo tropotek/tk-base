@@ -24,111 +24,12 @@ define('ELFINDER_UNZIP_PATH',    $bin.'/unzip');
 // define('ELFINDER_JPEGTRAN_PATH', $bin.'/jpegtran');
 // define('ELFINDER_FFMPEG_PATH',   $bin.'/ffmpeg');
 
-define('ELFINDER_CONNECTOR_URL', $_SERVER['PHP_SELF']);  // see elFinder::getConnectorUrl()
-
 if (\Tk\Config::isDev()) {
     define('ELFINDER_DEBUG_ERRORLEVEL', -1); // Error reporting level of debug mode
 }
 
-// // To Enable(true) handling of PostScript files by ImageMagick
-// // It is disabled by default as a countermeasure
-// // of Ghostscript multiple -dSAFER sandbox bypass vulnerabilities
-// // see https://www.kb.cert.org/vuls/id/332928
-// define('ELFINDER_IMAGEMAGICK_PS', true);
-// ===============================================
-
-// // load composer autoload before load elFinder autoload If you need composer
-// // You need to run the composer command in the php directory.
-//is_readable('./vendor/autoload.php') && require './vendor/autoload.php';
-is_readable(dirname(__FILE__,6) . '/autoload.php') && require dirname(__FILE__, 6)  . '/autoload.php';
-
-
 // elFinder autoload
 require dirname(__FILE__,6) . '/studio-42/elfinder/php/autoload.php';
-// ===============================================
-
-// // Enable FTP connector netmount
-//elFinder::$netDrivers['ftp'] = 'FTP';
-// ===============================================
-
-// // Required for Dropbox network mount
-// // Installation by composer
-// // `composer require kunalvarma05/dropbox-php-sdk` on php directory
-// // Enable network mount
-// elFinder::$netDrivers['dropbox2'] = 'Dropbox2';
-// // Dropbox2 Netmount driver need next two settings. You can get at https://www.dropbox.com/developers/apps
-// // AND require register redirect url to "YOUR_CONNECTOR_URL?cmd=netmount&protocol=dropbox2&host=1"
-// // If the elFinder HTML element ID is not "elfinder", you need to change "host=1" to "host=ElementID"
-// define('ELFINDER_DROPBOX_APPKEY',    '');
-// define('ELFINDER_DROPBOX_APPSECRET', '');
-// ===============================================
-
-// // Required for Google Drive network mount
-// // Installation by composer
-// // `composer require google/apiclient:^2.0` on php directory
-// // Enable network mount
-// elFinder::$netDrivers['googledrive'] = 'GoogleDrive';
-// // GoogleDrive Netmount driver need next two settings. You can get at https://console.developers.google.com
-// // AND require register redirect url to "YOUR_CONNECTOR_URL?cmd=netmount&protocol=googledrive&host=1"
-// // If the elFinder HTML element ID is not "elfinder", you need to change "host=1" to "host=ElementID"
-// define('ELFINDER_GOOGLEDRIVE_CLIENTID',     '');
-// define('ELFINDER_GOOGLEDRIVE_CLIENTSECRET', '');
-// // Required case when Google API is NOT added via composer
-// define('ELFINDER_GOOGLEDRIVE_GOOGLEAPICLIENT', '/path/to/google-api-php-client/vendor/autoload.php');
-// ===============================================
-
-// // Required for Google Drive network mount with Flysystem
-// // Installation by composer
-// // `composer require nao-pon/flysystem-google-drive:~1.1 nao-pon/elfinder-flysystem-driver-ext` on php directory
-// // Enable network mount
-// elFinder::$netDrivers['googledrive'] = 'FlysystemGoogleDriveNetmount';
-// // GoogleDrive Netmount driver need next two settings. You can get at https://console.developers.google.com
-// // AND require register redirect url to "YOUR_CONNECTOR_URL?cmd=netmount&protocol=googledrive&host=1"
-// // If the elFinder HTML element ID is not "elfinder", you need to change "host=1" to "host=ElementID"
-// define('ELFINDER_GOOGLEDRIVE_CLIENTID',     '');
-// define('ELFINDER_GOOGLEDRIVE_CLIENTSECRET', '');
-// // And "php/.tmp" directory must exist and be writable by PHP.
-// ===============================================
-
-// // Required for One Drive network mount
-// //  * cURL PHP extension required
-// //  * HTTP server PATH_INFO supports required
-// // Enable network mount
-// elFinder::$netDrivers['onedrive'] = 'OneDrive';
-// // OneDrive Netmount driver need next two settings. You can get at
-// // https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps
-// // AND require register redirect url to "YOUR_CONNECTOR_URL/netmount/onedrive/1"
-// // If the elFinder HTML element ID is not "elfinder", you need to change "/1" to "/ElementID"
-// define('ELFINDER_ONEDRIVE_CLIENTID',     '');
-// define('ELFINDER_ONEDRIVE_CLIENTSECRET', '');
-// ===============================================
-
-// // Required for Box network mount
-// //  * cURL PHP extension required
-// // Enable network mount
-// elFinder::$netDrivers['box'] = 'Box';
-// // Box Netmount driver need next two settings. You can get at https://developer.box.com
-// // AND require register redirect url to "YOUR_CONNECTOR_URL?cmd=netmount&protocol=box&host=1"
-// // If the elFinder HTML element ID is not "elfinder", you need to change "host=1" to "host=ElementID"
-// define('ELFINDER_BOX_CLIENTID',     '');
-// define('ELFINDER_BOX_CLIENTSECRET', '');
-// ===============================================
-
-
-// // Zoho Office Editor APIKey
-// // https://www.zoho.com/docs/help/office-apis.html
-// define('ELFINDER_ZOHO_OFFICE_APIKEY', '');
-// ===============================================
-
-// // Online converter (online-convert.com) APIKey
-// // https://apiv2.online-convert.com/docs/getting_started/api_key.html
-// define('ELFINDER_ONLINE_CONVERT_APIKEY', '');
-// ===============================================
-
-// // Zip Archive editor
-// // Installation by composer
-// // `composer require nao-pon/elfinder-flysystem-ziparchive-netmount` on php directory
-// define('ELFINDER_DISABLE_ZIPEDITOR', false); // set `true` to disable zip editor
 // ===============================================
 
 /**
@@ -152,9 +53,11 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 }
 
 // ========== Setup data-elfinder-path =============
+// NOTE: The custom path sent to the GET request should be relative to the `/data` path
 function getElfinderPath(string $customDataPath = '/media'): array
 {
     global $sitePath, $siteUrl;
+    $customDataPath = trim(str_replace(array('..', './', '.\\', "\n", "\r"), '', $customDataPath));
     $customDataPath = rtrim($customDataPath, '/');
     $dataPath = $sitePath . \Tk\Config::getDataPath() . $customDataPath;
     $dataUrl = $siteUrl . \Tk\Config::getDataPath() . $customDataPath;
@@ -167,18 +70,13 @@ function getElfinderPath(string $customDataPath = '/media'): array
     return [rtrim($dataPath, '/'), rtrim($dataUrl, '/')];
 }
 
-// NOTE: The custom path sent to the GET request should be relative to the `/data` path
-$customDataPath = '/media';
-if (isset($_REQUEST['path'])) {
-    $customDataPath = trim(strip_tags(str_replace(array('..', './', '.\\', "\n", "\r"), '', $_REQUEST['path'])));
-}
-[$dataPath, $dataUrl] = getElfinderPath($customDataPath);
-// ===============================================
+[$dataPath, $dataUrl] = getElfinderPath($_REQUEST['cpth'] ?? '/media');
+
 
 // Documentation for connector options:
 // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
 $opts = array(
-	// 'debug' => true,
+	'debug' => true,
 	'roots' => array(
 		// Items volume
 		'Media' => array(
@@ -186,44 +84,27 @@ $opts = array(
             'path'          => $dataPath . '/',             // path to files (REQUIRED)
             'URL'           => $dataUrl  . '/',             // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
-			//'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
+			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application', 'text/vcard',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),
 			'uploadOrder'   => array('deny', 'allow'),      //
 			'accessControl' => 'access'                     //
 		),
-//        'Data' => array(
-//            'driver'      => 'MySQL',
-//            'host'        => 'localhost',
-//            'user'        => 'dev',
-//            'pass'        => 'dev007',
-//            'db'          => 'dev_tkapd_elfinder',
-//            'files_table' => 'elfinder_file',
-//            'path'        => 1,
-//            'tmpPath'     => $sitePath . '/data/private/tmp',
-//        ),
 		// Trash volume
 		'Trash' => array(
 			'id'            => '1',
 			'driver'        => 'Trash',
             'path'          => $dataPath . '/.trash/',
             'tmbURL'        => $dataUrl . '/.trash/.tmb/',
-			//'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
+			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // Recommend the same settings as the original volume that uses the trash
             'uploadAllow'   => array('image', 'video', 'audio', 'text/plain', 'model', 'font', 'application', 'text/vcard',
                 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-word'),    // Mimetype `image` and `text/plain` allowed to upload
 			'uploadOrder'   => array('deny', 'allow'),      //
 			'accessControl' => 'access',                    //
 		),
-//        array(
-//            'driver' => 'FTP',
-//            'host'   => '192.168.1.1',
-//            'user'   => 'eluser',
-//            'pass'   => 'elpass',
-//            'path'   => '/'
-//        ),
-	)
+    ),
 );
 
 // run elFinder

@@ -207,7 +207,6 @@ let tkbase = function () {
                 let el = $(this);
                 let cfg = mceFull;
 
-
                 if (el.is('.mce-min, .mce-xs')) {
                     cfg = mceMin;
                     if (el.is('.mce-min, .mce-xs')) {
@@ -217,16 +216,13 @@ let tkbase = function () {
                 }
 
                 if (!el.is('.mce-no-fm, .mce-min, .mce-xs')) {   // disable the elFinder file manager
-                    // delete cfg.file_picker_callback;
-                    // delete cfg.images_upload_handler;
-
                     // Setup elfinder file manager
                     let data = el.data();
                     let path = data.elfinderPath ?? '/media';
 
                     const mceElf = new tinymceElfinder({
                         // connector URL
-                        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?path=' + path,
+                        url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?cpth=' + path,
                         // upload target folder hash for this tinyMCE
                         uploadTargetHash: 'l1_lw',
                         // elFinder dialog node id

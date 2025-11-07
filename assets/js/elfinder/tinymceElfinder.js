@@ -95,7 +95,8 @@ window.tinymceElfinder = function(opts) {
             // set z-index
             fm.getUI().css('z-index', parseInt($('body>.'+cls+':last').css('z-index')) + 100);
           },
-          getFileCallback : (files, fm) => {}
+          getFileCallback : (files, fm) => {
+          }
         }, opts)).elfinder('instance');
         done();
       }
@@ -105,6 +106,7 @@ window.tinymceElfinder = function(opts) {
   this.browser = function(callback, value, meta) {
     getfm().then(fm => {
       let cgf = fm.getCommand('getfile');
+
       const regist = () => {
         fm.options.getFileCallback = cgf.callback = (file, fm) => {
           var url, reg, info;
@@ -147,10 +149,9 @@ window.tinymceElfinder = function(opts) {
     return false;
   };
 
-  // TODO: This does not work, handle args are wrong
-  //       See: https://www.tiny.cloud/docs/tinymce/6/upload-images/#images_upload_handler
-  this.uploadHandler = function (blobInfo, success, failure) {
-  //this.uploadHandler = function (blobInfo, progress) {
+  // See: https://www.tiny.cloud/docs/tinymce/6/upload-images/#images_upload_handler
+  //this.uploadHandler = function (blobInfo, success, failure) {
+  this.uploadHandler = function (blobInfo, progress) {
 
     new Promise(function(resolve, reject) {
       getfm(uploadTargetHash).then((fm) => {
