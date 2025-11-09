@@ -113,8 +113,8 @@ window.tinymceElfinder = function(opts) {
           url = file.url;
 
           // todo: This is a hack to remove the phantom path that is injected into the file.url on upload.
-          //       Still yet to discover its cause?
-          // TODO: test in a live sire with no basepath
+          //       Still yet to discover its cause, could be from tinymce?
+          // TODO: test in a live site with no basepath
           let remPath = file.baseUrl + file.baseUrl.substring(file.baseUrl.length-2);
           if (url.startsWith(remPath)) {
             url = url.replace(remPath, file.baseUrl);
