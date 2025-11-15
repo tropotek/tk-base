@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.0.158 [2025-11-15]:
+-------------------------------
+  - hack fix elfinder path issue on upload
+  - phpstan fixes
+
+
 Ver 8.0.156 [2025-10-09]:
 -------------------------------
   - Fix js bugs in component selet dialogs
