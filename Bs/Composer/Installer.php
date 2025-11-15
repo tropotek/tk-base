@@ -248,7 +248,7 @@ class Installer
     {
         if (function_exists('posix_getpwuid')) {
             $a = posix_getpwuid(intval(fileowner(__FILE__)));
-            if (is_array($a) && isset($a['dir'])) {
+            if (is_array($a)) {
                 return $a['dir'];
             }
         }

@@ -202,6 +202,7 @@ class Mirror extends Console
             $opts[CURLOPT_SSL_VERIFYHOST] = false;
             $opts[CURLOPT_SSL_VERIFYPEER] = false;
         }
+        // @phpstan-ignore-next-line
 		curl_setopt_array($curl, $opts);
 
         curl_exec($curl);
