@@ -2,6 +2,15 @@
 
 Ver 8.0.158 [2025-11-15]:
 -------------------------------
+  - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
+  - Tagging and releasing branch `8.0` with version `8.0.158`.
+  - phpstan cleanup
+  - hack fix elfinder path issue on upload
+  - phpstan fixes
+
+
+Ver 8.0.158 [2025-11-15]:
+-------------------------------
   - hack fix elfinder path issue on upload
   - phpstan fixes
 
