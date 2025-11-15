@@ -163,7 +163,7 @@ HTML;
     }
 
     /**
-     * @return string
+     * returns the template table div wrapper id
      * @todo refactor and move to table if needed
      */
     public function getWrapId(): string
@@ -172,7 +172,7 @@ HTML;
     }
 
     /**
-     * get the filter form, create instance if null
+     * get the filter form, create an instance if null
      */
     public function getForm(): Form
     {
@@ -298,7 +298,9 @@ HTML;
             $links = $xpath->query("//th/a[contains(@href, '_orderBy=')]");
             if ($links instanceof \DOMNodeList) {
                 for ($i = $links->length - 1; $i > -1; $i--) {
-                    $node = $links->item($i)->firstChild->parentElement;
+                    $link = $links->item($i);
+                    if (is_null($link)) continue;
+                    $node = $link->firstChild->parentElement;
                     if (!($node instanceof \DOMElement)) continue;
                     $url = $node->getAttribute('href');
                     $node->setAttribute('hx-get', $url);
@@ -313,7 +315,9 @@ HTML;
             $links = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' page-link ')]");
             if ($links instanceof \DOMNodeList) {
                 for ($i = $links->length - 1; $i > -1; $i--) {
-                    $node = $links->item($i)->firstChild->parentElement;
+                    $link = $links->item($i);
+                    if (is_null($link)) continue;
+                    $node = $link->firstChild->parentElement;
                     if (!($node instanceof \DOMElement)) continue;
                     $url = $node->getAttribute('href');
                     $node->setAttribute('hx-get', $url);
@@ -328,7 +332,9 @@ HTML;
             $links = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' limit-link ')]");
             if ($links instanceof \DOMNodeList) {
                 for ($i = $links->length - 1; $i > -1; $i--) {
-                    $node = $links->item($i)->firstChild->parentElement;
+                    $link = $links->item($i);
+                    if (is_null($link)) continue;
+                    $node = $link->firstChild->parentElement;
                     if (!($node instanceof \DOMElement)) continue;
                     $url = $node->getAttribute('href');
                     $node->setAttribute('hx-get', $url);
