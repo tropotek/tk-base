@@ -17,7 +17,6 @@ let tkConfig = {
     baseUrl: '',
     isProd: false,
     isAuth: false,
-    // todo: refactor, all dates should be returned in yyy-mm-dd format
     dateFormat: {
         jqDatepicker: 'dd/mm/yy',
         bsDatepicker: 'dd/mm/yyyy',
@@ -74,43 +73,24 @@ function clearForm(form) {
 /**
  * tkRegisterInit() and tkInit()
  *
- * These functions are used to allow us to re-init elements
- * after an AJAX call and HTML elements have been replaced removing
- * any initalised plugins.
+ * These functions are used to allow us to re-initalize elements
+ * after an AJAX call and HTML elements have been replaced.
  */
 let tkInits = [];
 
 /**
  * Register and execute an init function to the tkInit queue.
- *
- * To register and execute an init function:
  * ```
  *  tkRegisterInit(function() {
  *    $('forms', this).each(function() {
- *      // init form elements, etc..
+ *      // init js elements, etc..
  *    });
  *  });
  * ```
- * After you have replaced an element you can then call `tkInit(element)` to
- * call the init functions that have been registered.
- *
- * @param func
- * @param elm (optional) document is used by default
- * @param execute (optional) If false the function will not be executed only added
- * @returns {*}
  */
-function tkRegisterInit(func, elm, execute = true) {
+function tkRegisterInit(func) {
     tkInits.push(func);
-    if (execute) {
-        elm = $(elm).get(0) ?? null;
-        if (elm) {
-            // get the parent element so we can use $('.tkTable', this) in init methods
-            elm = $(elm).parent().get(0);
-        } else {
-            elm = document;
-        }
-        return func.apply(elm);
-    }
+    return func.apply($(document));
 }
 
 /**
@@ -125,13 +105,15 @@ function tkRegisterInit(func, elm, execute = true) {
  * @param elm (optional) document is used by default
  */
 function tkInit(elm) {
-    elm = $(elm).get(0) ?? null;
-    if (elm) {
-        // get the parent element so we can use $('.tkTable', this) in init methods
-        elm = $(elm).parent().get(0);
+    if (typeof(elm) !== 'undefined') {
+        elm = $(elm);
+        if (elm.is('.tk-form, .tk-table')) {
+            elm = elm.parent();
+        }
     } else {
-        elm = document;
+        elm = $(document);
     }
+
     for (var i in tkInits) {
         tkInits[i].apply(elm);
     }
@@ -143,6 +125,21 @@ function tkInit(elm) {
  */
 let tkbase = function () {
     "use strict";
+
+    let initHxComponents = function () {
+
+        // Fucus the first element in a form dialog
+        $('.modal').on('shown.bs.modal', function() {
+            const dialog = this;
+            setTimeout(function() { $('input:not(:hidden), textarea, select', dialog).first().focus(); }, 0);
+        });
+
+        // Handle form dialog close event
+        $(document).on('tkForm:dialogclose', function(e) {
+            $(e.detail.value).modal('hide');
+        });
+
+    }
 
     /**
      * Tiny MCE setup
@@ -477,6 +474,7 @@ let tkbase = function () {
 
 
     return {
+        initHxComponents: initHxComponents,
         initTinymce: initTinymce,
         initTkFormTabs: initTkFormTabs,
         initDialogConfirm: initDialogConfirm,
