@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 8.0.160 [2025-11-27]:
+-------------------------------
+
+
 Ver 8.0.158 [2025-11-15]:
 -------------------------------
   - Merge branch '8.0' of https://github.com/tropotek/tk-base into 8.0
