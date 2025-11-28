@@ -152,7 +152,7 @@ class Factory extends Collection
     {
         // Setup Routes and cache results.
         // Use `<Ctrl>+<Shift>+R` to refresh the routing cache
-        $systemCache = $this->getCache();   // todo: should we use a private cache for routes ???
+        $systemCache = $this->getCache();
         $compiledRoutes = $systemCache->fetch('compiledRoutes');
         if ($refresh || !is_array($compiledRoutes) || System::isRefreshCacheRequest()) {
             ConfigLoader::create()->loadConfigs(new CollectionConfigurator($this->getRouteCollection(), 'routes'), 'routes.php');
@@ -203,7 +203,6 @@ class Factory extends Collection
 
     public function getControllerResolver(): ControllerResolver
     {
-        // todo: move to FrontController
         if (!$this->has('controllerResolver')) {
             $controllerResolver = new ControllerResolver();
             $this->set('controllerResolver', $controllerResolver);
@@ -213,7 +212,6 @@ class Factory extends Collection
 
     public function getArgumentResolver(): ArgumentResolver
     {
-        // todo: move to FrontController
         if (!$this->has('argumentResolver')) {
             $argumentResolver = new ArgumentResolver();
             $this->set('argumentResolver', $argumentResolver);
@@ -248,7 +246,6 @@ class Factory extends Collection
      */
     public function getEventDispatcher(): ?EventDispatcher
     {
-        // todo: move to FrontController, keep method save in factory
         if (!$this->has('eventDispatcher')) {
             $dispatcher = new EventDispatcher();
             $this->set('eventDispatcher', $dispatcher);
