@@ -148,12 +148,18 @@ class Auth extends Model
         return $user->getHomeUrl();
     }
 
-    public function hasPermission(int $permission): bool
+    /**
+     * Check if a user has requested permission
+     * if $value is true only check the permission value, ignore admin/active values
+     */
+    public function hasPermission(int $permission, bool $value = false): bool
     {
-        // non-logged in users have no permissions
-        if (!$this->active) return false;
-        // admin users have all permissions
-        if ((self::PERM_ADMIN & $this->permissions) != 0) return true;
+        if (!$value) {
+            // non-logged in users have no permissions
+            if (!$this->active) return false;
+            // admin users have all permissions
+            if ((self::PERM_ADMIN & $this->permissions) != 0) return true;
+        }
         return ($this->permissions & $permission) != 0;
     }
 
