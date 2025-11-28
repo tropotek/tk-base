@@ -322,7 +322,6 @@ class Factory extends Collection
         if (!$this->get('templateModifier')) {
             $dm = new Modifier();
 
-            // todo: add "scssphp/scssphp": "^1.11.0-@stable" to composer to enable scss support
             if (class_exists('ScssPhp\ScssPhp\Compiler')) {
                 $vars = [
                     'baseUrl' => Config::getBaseUrl(),
@@ -397,7 +396,6 @@ class Factory extends Collection
 
     public function initBreadcrumbs(): Breadcrumbs
     {
-        //Breadcrumbs::destroy();
         $crumbs = Breadcrumbs::init();
         if (\Bs\Auth::getAuthUser()) {
             Breadcrumbs::setHome('/dashboard', '<i class="fa fa-home"></i>');

@@ -3,6 +3,7 @@ namespace Bs\Listener;
 
 use Bs\Auth;
 use Bs\Controller\Maintenance;
+use Bs\Mvc\ComponentInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -13,62 +14,40 @@ class MaintenanceHandler implements EventSubscriberInterface
 
     public function onController(ControllerEvent $event): void
     {
-        $controller = $event->getController();
-
-        if (!is_array($controller)) return;
-        $class = get_class($controller[0]);
+        if (!Registry::isMaintenanceMode()) return;
 
         // Allow admin users access
         if (Auth::getAuthUser()?->hasPermission(Auth::PERM_ADMIN)) {
             return;
         }
 
-        // Exit if not in maintenance mode
+        $controller = $event->getController();
+        if (!is_array($controller)) return;
+
+        // exit for component of maintenance controllers
         if (
-            !Registry::isMaintenanceMode() ||
+            $controller[0] instanceof ComponentInterface ||
             $controller[0] instanceof Maintenance
         ) {
             return;
         }
+
         $method = 'doDefault';
 
         // check if the controller is an API controller (return JSON response)
-        if (str_contains(strval($class), '\\Api\\')) {
+        $class = get_class($controller[0]);
+        if (str_contains($class, '\\Api\\')) {
             $method = 'doApi';
         }
-
-        // TODO See if we need this implemented
-//        if ($this->getConfig()->get('path.template.'.Page::TEMPLATE_MAINTENANCE)) {
-//            $event->getRequest()->attributes->set('template', Page::TEMPLATE_MAINTENANCE);
-//            $params = $event->getRequest()->attributes->get('_route_params');
-//            $params['template'] = Page::TEMPLATE_MAINTENANCE;
-//            $event->getRequest()->attributes->set('_route_params', $params);
-//        }
 
         $c = new Maintenance();
         $event->setController([$c, $method]);
     }
 
-    /**
-     * Use this to pragmatically enable/disable maintenance
-     */
-    public static function enableMaintenanceMode(bool $b = true, string $message = ''): void
-    {
-        $data = Registry::instance();
-        if ($b) {
-            $data->set('system.maintenance.enabled', 'system.maintenance.enabled');
-            if ($message)
-                $data->set('system.maintenance.message', $message);
-        } else {
-            $data->set('system.maintenance.enabled', '');
-        }
-        $data->save();
-    }
-
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::CONTROLLER =>  ['onController', 0],
+            KernelEvents::CONTROLLER =>  ['onController', 1],
         ];
     }
 }
