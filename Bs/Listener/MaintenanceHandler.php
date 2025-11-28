@@ -47,7 +47,7 @@ class MaintenanceHandler implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::CONTROLLER =>  ['onController', 1],
+            KernelEvents::CONTROLLER =>  ['onController', 99],
         ];
     }
 }
