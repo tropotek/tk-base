@@ -10,21 +10,23 @@ use Tk\Path;
 /**
  * DB migration tool
  *
- * It is a good idea to start with a number to ensure that the files are
- * executed in the required order. Files found will be sorted alphabetically.
+ * All migration files should be numbered sequentially. The lower number will be executed first.
+ * EG: `000010.sql`, `000020.sql`, `000030.sql`, ...
  *
+ * Files found will be sorted alphabetically.
  * <code>
  *   SqlMigrate::instance()->migrateList([]);
  * </code>
  *
  * Migration files can be of type .sql or .php.
- * The php files are called with the include() command
- * and the php file should return a closure like the following:
+ * The php files are called with the include() command.
+ * php file can execute the required code or return a closure like the following:
  * <code>
  *  return function (Tk\Db\Pdo $db) {
  *      ...
  *  };
  * </code>
+ *
  */
 class SqlMigrate
 {
@@ -37,7 +39,7 @@ class SqlMigrate
 
 
     /**
-     * Gets an instance of this object, if none exists one is created
+     * Gets an instance of this object
      */
     public static function instance(): self
     {
@@ -54,7 +56,6 @@ class SqlMigrate
 
     public static function migrateAll(?callable $log = null, array $options = []): bool
     {
-
         // migrate site sql files
         if (!SqlMigrate::migrateSite($log)) {
             if (is_callable($log)) call_user_func_array($log, ["Failed to migrate site DB files"]);
@@ -103,7 +104,9 @@ class SqlMigrate
     }
 
     /**
-     * execute static sql file listed in the config setting 'db.migrate.static'
+     * execute a SQL file listed in the config setting 'db.migrate.static'
+     * used to migrate files and not store them in the migration DB list
+     * static migration files will always be called
      */
     public static function migrateStatic(?callable $log = null) :bool
     {

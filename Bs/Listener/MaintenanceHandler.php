@@ -36,7 +36,7 @@ class MaintenanceHandler implements EventSubscriberInterface
 
         // check if the controller is an API controller (return JSON response)
         $class = get_class($controller[0]);
-        if (str_contains($class, '\\Api\\')) {
+        if (str_contains(strval($class), '\\Api\\')) {
             $method = 'doApi';
         }
 
