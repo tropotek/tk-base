@@ -56,13 +56,8 @@ class GuestToken extends Model
     /**
      * create a custom data map
      */
-    public static function getDataMap(): DataMap
+    public static function _dataMap(DataMap $map): void
     {
-        if (ModelMapper::instance()->hasDataMap(static::class)) {
-            return ModelMapper::instance()->getDataMap(static::class);
-        }
-
-        $map = new DataMap();
         //$map->addType(new Text('token'))->setFlag(DataMap::PRI);
         $map->addType(new Text('token'));
         $map->addType((new Json('pages'))->setAssociative(true));
@@ -70,9 +65,6 @@ class GuestToken extends Model
         $map->addType(new Integer('ttlMins', 'ttl_mins'));
         $map->addType(new DateTime('created'), DataMap::READ);
         $map->addType(new DateTime('expiry'), DataMap::READ);
-
-        ModelMapper::instance()->setDataMap(static::class, $map);
-        return ModelMapper::instance()->getDataMap(static::class);
     }
 
     public static function create(array $pages, array $payload, int $ttlMins): self

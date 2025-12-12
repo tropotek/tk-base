@@ -128,6 +128,12 @@ let tkbase = function () {
 
     let initHxComponents = function () {
 
+
+        $(document).on('htmx:afterSettle', function(e) {
+            if ($(e.target).is('body')) return;
+            tkInit(e.target);
+        });
+
         // Fucus the first element in a form dialog
         $('.modal').on('shown.bs.modal', function() {
             const dialog = this;
