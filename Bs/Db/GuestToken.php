@@ -82,8 +82,6 @@ class GuestToken extends Model
         $map = self::getDataMap();
         $gt = $map->getArray($obj);
 
-        vd($pages, $payload, $ttlMins, $gt);
-
 		$ok = 0;
 		while (!$ok) {
 			$gt['token'] = hash('sha256', microtime() . random_bytes(256));
