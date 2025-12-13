@@ -56,8 +56,9 @@ class GuestToken extends Model
     /**
      * create a custom data map
      */
-    public static function _dataMap(DataMap $map): void
+    public static function __dataMap(DataMap $map): void
     {
+        vd('updating data map');
         //$map->addType(new Text('token'))->setFlag(DataMap::PRI);
         $map->addType(new Text('token'));
         $map->addType((new Json('pages'))->setAssociative(true));
@@ -79,11 +80,13 @@ class GuestToken extends Model
         $obj->ttlMins = $ttlMins;
 
         $map = self::getDataMap();
-        $gt = (object)$map->getArray($obj);
+        $gt = $map->getArray($obj);
+
+        vd($pages, $payload, $ttlMins, $gt);
 
 		$ok = 0;
 		while (!$ok) {
-			$gt->token = hash('sha256', microtime() . random_bytes(256));
+			$gt['token'] = hash('sha256', microtime() . random_bytes(256));
 			$ok = DB::execute("
 				INSERT INTO guest_token (token, pages, payload, ttl_mins)
 				VALUES (:token, :pages, :payload, :ttl_mins)",
@@ -91,7 +94,7 @@ class GuestToken extends Model
 			);
 		}
 
-		$token = $gt->token;
+		$token = $gt['token'];
 		$gt = self::findToken($token);
 		assert(is_object($gt), "failed to get token {$token}");
         return $gt;
