@@ -51,7 +51,7 @@ class Install extends Console
 
             if (!$hasConfig) {
                 // Prompt to create new config.php file
-                $configVars += $this->createConfigFile($configInFile, $configFile);
+                $this->createConfigFile($configInFile, $configFile);
 
                 // init new config file
                 Config::destroy();
@@ -134,7 +134,7 @@ class Install extends Console
         return $baseurl;
     }
 
-    private function createConfigFile(string $configInFile, string $configFile): array
+    private function createConfigFile(string $configInFile, string $configFile): void
     {
         $configVars = [];
         $configVars['system.encrypt'] = hash('sha256', 'Tropotek_'.microtime());
@@ -186,8 +186,6 @@ class Install extends Console
 
         $this->writeGreen('Saving config.php');
         file_put_contents($configFile, $configContents);
-
-        return $configVars;
     }
 
     protected function writePackageInfo(): void
