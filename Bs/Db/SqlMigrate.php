@@ -58,7 +58,6 @@ class SqlMigrate
     {
         $mgt = self::instance();
         $options = Db::parseDsn(Config::getValue('db.mysql', []));
-        vd($options);
 
         if (!$mgt->backupFile) {   // only run once per session.
             $mgt->backupFile = $options['dbName'] . "_" . date("Y-m-d-H-i-s").".sql";

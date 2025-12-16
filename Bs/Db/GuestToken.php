@@ -58,7 +58,6 @@ class GuestToken extends Model
      */
     public static function __dataMap(DataMap $map): void
     {
-        vd('updating data map');
         //$map->addType(new Text('token'))->setFlag(DataMap::PRI);
         $map->addType(new Text('token'));
         $map->addType((new Json('pages'))->setAssociative(true));
