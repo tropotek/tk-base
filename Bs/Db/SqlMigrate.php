@@ -56,26 +56,42 @@ class SqlMigrate
 
     public static function migrateAll(?callable $log = null, array $options = []): bool
     {
-        // migrate site sql files
-        if (!SqlMigrate::migrateSite($log)) {
-            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate site DB files"]);
-            return false;
+        $mgt = self::instance();
+        $options = Db::parseDsn(Config::getValue('db.mysql', []));
+        vd($options);
+
+        if (!$mgt->backupFile) {   // only run once per session.
+            $mgt->backupFile = $options['dbName'] . "_" . date("Y-m-d-H-i-s").".sql";
+            Db\DbBackup::save($mgt->backupFile, $options);
         }
 
-        // Execute static files
-        if (!SqlMigrate::migrateStatic($log)) {
-            if (is_callable($log)) call_user_func_array($log, ["Failed to migrate static files"]);
+        try {
+            // migrate site sql files
+            if (!SqlMigrate::migrateSite($log)) {
+                if (is_callable($log)) call_user_func_array($log, ["Failed to migrate site DB files"]);
+                return false;
+            }
+
+            // Execute static files
+            if (!SqlMigrate::migrateStatic($log)) {
+                if (is_callable($log)) call_user_func_array($log, ["Failed to migrate static files"]);
+                return false;
+            }
+
+            // migrate any site specific files, do not log them in the migration table
+            $privatePath = Path::createPrivatePath('/migrate');
+            if (is_dir($privatePath)) {
+                if (is_callable($log)) call_user_func_array($log, ["Migrating private site files"]);
+                $mgt->tracking = false;
+                $mgt->migrateList([$privatePath], $log);
+                $mgt->tracking = true;
+            }
+        } catch (\Exception $e){
+            Log::error($e->getMessage());
+            $mgt->restoreBackup();
             return false;
         }
-
-        // migrate any site specific files, do not log them in the migration table
-        $privatePath = Path::createPrivatePath('/migrate');
-        if (is_dir($privatePath)) {
-            if (is_callable($log)) call_user_func_array($log, ["Migrating private site files"]);
-            self::instance()->tracking = false;
-            self::instance()->migrateList([$privatePath], $log);
-            self::instance()->tracking = true;
-        }
+        $mgt->deleteBackup();
 
         return true;
     }
@@ -156,41 +172,30 @@ class SqlMigrate
     public function migrateFile(string $file, ?callable $log = null): bool
     {
         $options = Db::parseDsn(Config::getValue('db.mysql', []));
-        try {
-            $this->install();
+        $this->install();
 
-            $file = Path::create($this->toRelative($file));
+        $file = Path::create($this->toRelative($file));
 
-            if (str_starts_with(basename($file), '_')) return false;
-            if (!is_readable($file)) return false;
+        if (str_starts_with(basename($file), '_')) return false;
+        if (!is_readable($file)) return false;
 
-            // return true if file already migrated
-            if ($this->hasPath($this->toRelative($file))) return true;
+        // return true if file already migrated
+        if ($this->hasPath($this->toRelative($file))) return true;
 
-            if (!$this->backupFile) {   // only run once per session.
-                $this->backupFile = $options['dbName'] . "_" . date("Y-m-d-H-i-s").".sql";
-                Db\DbBackup::save($this->backupFile, $options);
+        if (is_callable($log)) call_user_func_array($log, ['Migrating ' . $file]);
+
+        if (str_ends_with(basename($file), '.php')) {  // Include .php files
+            $callback = include $file;
+            if (is_callable($callback)) {
+                $callback();
             }
-
-            if (is_callable($log)) call_user_func_array($log, ['Migrating ' . $file]);
-
-            if (str_ends_with(basename($file), '.php')) {  // Include .php files
-                $callback = include $file;
-                if (is_callable($callback)) {
-                    $callback();
-                }
-                $this->insertPath($file);
-            } else {  // is sql
-                if (is_file($file)) {
-                    // using CLI `mysql` to import SQL so bulk actions can be performed. (ei: using `DELIMITER //`)
-                    Db\DbBackup::restore($file, $options);
-                }
-                $this->insertPath($file);
+            $this->insertPath($file);
+        } else {  // is sql
+            if (is_file($file)) {
+                // using CLI `mysql` to import SQL so bulk actions can be performed. (ei: using `DELIMITER //`)
+                Db\DbBackup::restore($file, $options);
             }
-        } catch (\Exception $e){
-            Log::error($e->getMessage());
-            $this->restoreBackup();
-            return false;
+            $this->insertPath($file);
         }
         return true;
     }

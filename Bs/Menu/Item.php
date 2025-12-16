@@ -48,7 +48,7 @@ class Item
         string $name = '',
         ?Uri $url = null,
         string $icon = '',
-        callable|bool $visible = null,
+        null|callable|bool $visible = null,
         array $context = [],
     ): Item
     {
@@ -84,7 +84,7 @@ class Item
         );
     }
 
-    public function addSubmenu(string $name, string $icon, callable|bool $visible = null, array $context = []): Item
+    public function addSubmenu(string $name, string $icon, null|callable|bool $visible = null, array $context = []): Item
     {
         return $this->add(
             self::TYPE_SUB_MENU,
@@ -96,7 +96,7 @@ class Item
         );
     }
 
-    public function addLink(string $name, ?Uri $url, string $icon, callable|bool $visible = null, array $context = []): Item
+    public function addLink(string $name, ?Uri $url, string $icon, null|callable|bool $visible = null, array $context = []): Item
     {
         return $this->add(
             self::TYPE_LINK,
@@ -108,7 +108,7 @@ class Item
         );
     }
 
-    public function addHeader(string $name, string $icon = '', callable|bool $visible = null, array $context = []): Item
+    public function addHeader(string $name, string $icon = '', null|callable|bool $visible = null, array $context = []): Item
     {
         return $this->add(
             self::TYPE_HEADER,
@@ -120,7 +120,7 @@ class Item
         );
     }
 
-    public function addSeparator(callable|bool $visible = null, array $context = []): Item
+    public function addSeparator(null|callable|bool $visible = null, array $context = []): Item
     {
         static $idx = 0;
         $idx++;

@@ -5,6 +5,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Tk\Config;
 
 abstract class Console extends Command
@@ -47,6 +48,14 @@ abstract class Console extends Command
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion($msg, $default);
         /** @phpstan-ignore-next-line */
+        return $helper->ask($this->getInput(), $this->getOutput(), $question);
+    }
+
+    protected function ask(string $msg, ?callable $validate = null): string
+    {
+        $helper = $this->getHelper('question');
+        $question = new Question($msg);
+        if ($validate) $question->setValidator($validate);
         return $helper->ask($this->getInput(), $this->getOutput(), $question);
     }
 

@@ -423,10 +423,12 @@ class Factory extends Collection
             $app->setDispatcher($this->getEventDispatcher());
 
             // Setup Global Console Commands
+            $app->add(new \Bs\Console\Install());
+            $app->add(new \Bs\Console\Upgrade());
+
             $app->add(new \Bs\Console\Password());
             $app->add(new \Bs\Console\CreateAdmin());
             $app->add(new \Bs\Console\CleanData());
-            $app->add(new \Bs\Console\Upgrade());
             $app->add(new \Bs\Console\Maintenance());
             $app->add(new \Bs\Console\DbBackup());
             $app->add(new \Bs\Console\Migrate());

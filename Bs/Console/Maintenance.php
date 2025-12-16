@@ -14,16 +14,17 @@ class Maintenance extends Console
 
     protected function configure(): void
     {
-        $enabled = Registry::isMaintenanceMode();
 
         $this->setName('maintenance')
             ->setAliases(['maint'])
-            ->setDescription('Enable/Disable the sites maintenance mode. Current: ' . ($enabled ? 'Enabled' : 'Disabled'));
+            ->setDescription('Enable/Disable the sites maintenance mode.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $mode = $this->askConfirmation('Do you wish to enable Maintenance Mode [y/n]?', false);
+        $enabled = Registry::isMaintenanceMode();
+
+        $mode = $this->askConfirmation('Do you wish to enable Maintenance Mode (Current: ' . ($enabled ? 'Enabled' : 'Disabled') . ') [y/n]?', false);
 
         if ($mode) {
             $this->writeInfo('Maintenance mode enabled.');

@@ -30,18 +30,20 @@ class Bootstrap
         FileUtil::mkdir(Path::createTempPath());
         FileUtil::mkdir(Path::createCachePath());
 
-        if ($config->has('db.mysql')) {
-            Db::connect($config->get('db.mysql', ''));
-        }
         TextEncrypt::$encryptKey = $config->get('system.encrypt', '');
-
         StartupHandler::$PARAMS = $config->get('site.log.params', StartupHandler::LOG_ALL);
 
         Factory::instance()->initLogger();
-
         ErrorHandler::instance();
-
         VarDump::instance();
+
+        try {
+            if ($config->has('db.mysql')) {
+                Db::connect($config->get('db.mysql', ''));
+            }
+        } catch (\Exception $e) {
+            error_log('Database Initialization Error: ' . $e->getMessage());
+        }
 
         Factory::instance()->getSession();
         Factory::instance()->initEventDispatcher();
