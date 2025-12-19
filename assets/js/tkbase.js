@@ -127,8 +127,6 @@ let tkbase = function () {
     "use strict";
 
     let initHxComponents = function () {
-
-
         $(document).on('htmx:afterSettle', function(e) {
             if ($(e.target).is('body')) return;
             tkInit(e.target);
