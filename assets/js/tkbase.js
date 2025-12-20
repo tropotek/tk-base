@@ -127,29 +127,6 @@ let tkbase = function () {
     "use strict";
 
     /**
-     * @deprecated Does not work as expected (To be Deleted)
-     */
-    let initHxComponents = function () {
-        $(document).on('htmx:afterSettle', function(e) {
-            vd(e.target, e.detail);
-            if ($(e.target).is('body')) return;
-            tkInit(e.target);
-        });
-
-        // Fucus the first element in a form dialog
-        $('.modal').on('shown.bs.modal', function() {
-            const dialog = this;
-            setTimeout(function() { $('input:not(:hidden), textarea, select', dialog).first().focus(); }, 0);
-        });
-
-        // Handle form dialog close event
-        $(document).on('tkForm:dialogclose', function(e) {
-            $(e.detail.value).modal('hide');
-        });
-
-    }
-
-    /**
      * Tiny MCE setup
      *   See this article for how to create plugins in custom paths and see if it works
      *   Custom plugins: https://stackoverflow.com/questions/21779730/custom-plugin-in-custom-directory-for-tinymce-jquery-plugin
@@ -482,7 +459,6 @@ let tkbase = function () {
 
 
     return {
-        initHxComponents: initHxComponents,
         initTinymce: initTinymce,
         initTkFormTabs: initTkFormTabs,
         initDialogConfirm: initDialogConfirm,
