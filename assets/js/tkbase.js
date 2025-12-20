@@ -126,8 +126,12 @@ function tkInit(elm) {
 let tkbase = function () {
     "use strict";
 
+    /**
+     * @deprecated Does not work as expected (To be Deleted)
+     */
     let initHxComponents = function () {
         $(document).on('htmx:afterSettle', function(e) {
+            vd(e.target, e.detail);
             if ($(e.target).is('body')) return;
             tkInit(e.target);
         });
