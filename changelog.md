@@ -1,5 +1,12 @@
 #CHANGELOG#
 
+Ver 8.0.172 [2025-12-22]:
+-------------------------------
+  - Added all requests from client, ready for UA testing
+  - revert hx events to working state
+  - Added docker container and install scripts
+
+
 Ver 8.0.170 [2025-12-13]:
 -------------------------------
 
