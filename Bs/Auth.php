@@ -150,11 +150,11 @@ class Auth extends Model
 
     /**
      * Check if a user has requested permission
-     * if $value is true only check the permission value, ignore admin/active values
+     * if $permOnly is true only check permission value, ignore admin/active values
      */
-    public function hasPermission(int $permission, bool $value = false): bool
+    public function hasPermission(int $permission, bool $permOnly = false): bool
     {
-        if (!$value) {
+        if (!$permOnly) {
             // non-logged in users have no permissions
             if (!$this->active) return false;
             // admin users have all permissions
