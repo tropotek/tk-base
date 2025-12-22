@@ -231,7 +231,13 @@ let tkbase = function () {
                 }
 
                 // init mce
-                el.tinymce(cfg);
+                let ed = el.tinymce(cfg);
+                if (el.closest('form').is('form.tk-protect-changes')) {
+                    el.tinymce().on('change keyup', function () {
+                        $(document).data('changed', true);
+                        $(document).trigger('form:changed');
+                    });
+                }
             });
         });
 
@@ -430,7 +436,7 @@ let tkbase = function () {
 
     /**
      * Add beforeunload event message for forms that have changed
-     * To enable on a form add the class `tk-protect`
+     * To enable on a form add the class `tk-protect-changes`
      */
     let initTkProtectInput = function () {
         tkRegisterInit(function () {
@@ -438,11 +444,12 @@ let tkbase = function () {
             // use timeout to avoid plugins from triggering
             // the `change` event before any changes are actually made
             setTimeout(function () {
-                $('form.tk-protect', el).each(function () {
+                $('form.tk-protect-changes', el).each(function () {
                     $('input,select,textarea', this).on('change', function () {
                         $(document).data('changed', true);
+                        $(document).trigger('form:changed');
                     });
-                    $('.tk-actions button, .tk-actions a', this).on('click', function () {
+                    $('.tk-actions button, .tk-actions a', this).on('mousedown', function () {
                         $(document).data('changed', false);
                     });
                 });

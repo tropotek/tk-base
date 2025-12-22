@@ -77,7 +77,7 @@ class Breadcrumbs
         if (!is_null(self::$_instance)) return self::$_instance;
         $crumbs = self::instance();
 
-        if (isset($_GET[self::CRUMB_IGNORE])) return $crumbs;
+        if (isset($_REQUST[self::CRUMB_IGNORE])) return $crumbs;
 
         if (!self::count()) {
             $crumbs->crumbStack[] = $crumbs->homeUrl;
@@ -136,6 +136,9 @@ class Breadcrumbs
         if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') return $crumbs;
 
         $url = Uri::create($url);
+
+        if ($url->has(self::CRUMB_IGNORE)) return $crumbs;
+
         $rel = $url->toRelativeString();
 
         if ($rel == $crumbs->current()->toRelativeString()) return $crumbs;
