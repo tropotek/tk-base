@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.176 [2025-12-24]:
+-------------------------------
+  - Added content snippet templates to reporting fields
+
+
 Ver 8.0.174 [2025-12-22]:
 -------------------------------
 
