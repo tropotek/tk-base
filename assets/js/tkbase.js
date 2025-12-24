@@ -137,6 +137,13 @@ let tkbase = function () {
             return;
         }
 
+        let toolbar = 'bold italic strikethrough | blocks | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen';
+        if (cfg.toolbarPrepend) {
+            toolbar = cfg.toolbarPrepend + ' ' + toolbar;
+        }
+
+
         // full mce default config
         let mceFull = {
             license_key: 'gpl',
@@ -146,9 +153,7 @@ let tkbase = function () {
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
                 'insertdatetime', 'media', 'table', 'help', 'wordcount', 'save'
             ],
-            toolbar1:
-                'bold italic strikethrough | blocks | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | link image media | removeformat code fullscreen',
+            toolbar1: toolbar,
             content_css: [
                 '//cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
             ],
