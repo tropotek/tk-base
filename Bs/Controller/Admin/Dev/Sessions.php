@@ -32,7 +32,8 @@ class Sessions extends ControllerAdmin
         $this->table->appendCell('authId')
             ->addCss('text-center');
 
-        $this->table->appendCell('username');
+        $this->table->appendCell('username')
+            ->addCss('text-nowrap');
 
         $this->table->appendCell('name')
             ->addCss('text-nowrap');
@@ -43,12 +44,6 @@ class Sessions extends ControllerAdmin
         $this->table->appendCell('ip')
             ->addCss('text-nowrap');
 
-        // $this->table->appendCell('sessionId')
-        //     ->addCss('text-nowrap');
-
-        // $this->table->appendCell('agent')
-        //     ->addCss('text-nowrap');
-
         $this->table->appendCell('type')
             ->addCss('text-nowrap');
 
@@ -57,17 +52,15 @@ class Sessions extends ControllerAdmin
             ->addCss('text-nowrap');
 
         $this->table->appendCell('activity')
-            ->setHeaderAttr('title', 'Last Activity')
-            ->setAttr('title', 'Last Activity')
             ->addCss('text-nowrap');
 
-        $this->table->appendCell('lifetime')
+        $this->table->appendCell('duration')
             ->addCss('text-nowrap');
 
         $this->table->appendCell('expires')
+            ->setHeader('Expires In')
             ->addHeaderCss('text-center')
-            ->addCss('text-nowrap')
-            ->addOnValue('\Tk\Table\Type\Date::getTime');
+            ->addCss('text-nowrap');
 
 
         // Add Filter Fields
@@ -145,8 +138,10 @@ CSS;
             $now = Date::create();
             $created = Date::create($ses->created);
             $modified = Date::create($ses->modified);
+            $expiry = Date::create($ses->expiry);
             $difCreated = $now->diff($created);
             $difLast = $now->diff($modified);
+            $expiresIn = $now->diff($expiry);
 
             $authId = 0;
             $type = 'public';
@@ -155,16 +150,14 @@ CSS;
 
             if ($auth) {
                 $authId = $auth->authId;
-                if (isset($auth->getDbModel()->type)) {
-                    $type = $auth->getDbModel()->type;
-                }
+                $type = 'private';
                 $username = $auth->username;
                 if (isset($auth->getDbModel()->nameShort)) {
                     $name = $auth->getDbModel()->nameShort;
                 }
                 if (Masquerade::isMasquerading()) {
                     $msq = Masquerade::getMasqueradingUser();
-                    $username = sprintf('%s<br><small class="text-info" title="Masquerading User">[%s]</small>', $msq->username, $auth->username);
+                    $username = sprintf('%s <span class="text-muted">[%s]</span>', $auth->username, $msq->username);
                 }
 
                 if ($auth->sessionId == ($_SESSION['_session.id'] ?? '')) {
@@ -195,9 +188,9 @@ CSS;
                 'type'        => $type,
                 'name'        => $name,
                 'breadcrumbs' => $breadcrumbs,
-                'lifetime'    => $difCreated->format('%H:%i:%S'),
+                'duration'    => $difCreated->format('%H:%i:%S'),
                 'activity'    => $difLast->format('%H:%i:%S'),
-                'expires'     => Date::create($ses->expiry),
+                'expires'     => $expiresIn->format('%H:%i:%S'),
                 'isPublic'    => is_object($auth),
             ];
         }
