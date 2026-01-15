@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.182 [2026-01-15]:
+-------------------------------
+  - reduce emails send for requests, change site primary color
+
+
 Ver 8.0.180 [2026-01-13]:
 -------------------------------
   - Update session view
