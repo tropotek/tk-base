@@ -454,7 +454,7 @@ let tkbase = function () {
                         $(document).data('changed', true);
                         $(document).trigger('form:changed');
                     });
-                    $('.tk-actions button, .tk-actions a', this).on('mousedown', function () {
+                    $('.tk-actions button, .tk-actions a', this).on('click', function () {
                         $(document).data('changed', false);
                     });
                 });

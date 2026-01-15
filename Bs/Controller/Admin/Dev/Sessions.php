@@ -52,12 +52,15 @@ class Sessions extends ControllerAdmin
             ->addCss('text-nowrap');
 
         $this->table->appendCell('activity')
+            ->setHeaderAttr('title', 'Activity: HH::MM:SS')
             ->addCss('text-nowrap');
 
         $this->table->appendCell('duration')
+            ->setHeaderAttr('title', 'Duration: HH::MM:SS')
             ->addCss('text-nowrap');
 
         $this->table->appendCell('expires')
+            ->setHeaderAttr('title', 'Expires: HH::MM:SS')
             ->setHeader('Expires In')
             ->addHeaderCss('text-center')
             ->addCss('text-nowrap');
@@ -188,9 +191,9 @@ CSS;
                 'type'        => $type,
                 'name'        => $name,
                 'breadcrumbs' => $breadcrumbs,
-                'duration'    => $difCreated->format('%H:%i:%S'),
-                'activity'    => $difLast->format('%H:%i:%S'),
-                'expires'     => $expiresIn->format('%H:%i:%S'),
+                'duration'    => $difCreated->format('%H:%I:%S'),
+                'activity'    => $difLast->format('%H:%I:%S'),
+                'expires'     => $expiresIn->format('%H:%I:%S'),
                 'isPublic'    => is_object($auth),
             ];
         }
