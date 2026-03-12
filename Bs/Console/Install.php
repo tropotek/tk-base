@@ -21,8 +21,6 @@ class Install extends Console
         $this->setName('install')
             ->setAliases(['ins'])
             ->setDescription('Install the site')
-            //->addArgument('username', InputArgument::REQUIRED, 'User with mirror access the remote site')
-            //->addOption('password', 'p', InputArgument::OPTIONAL, 'password for the remote site', '')
         ;
     }
 
@@ -51,7 +49,7 @@ class Install extends Console
 
             if (!$hasConfig) {
                 // Prompt to create new config.php file
-                $this->createConfigFile($configInFile, $configFile);
+                $this->createConfigFile($configInFile, $configFile, $configVars);
 
                 // init new config file
                 Config::destroy();
@@ -134,14 +132,12 @@ class Install extends Console
         return $baseurl;
     }
 
-    private function createConfigFile(string $configInFile, string $configFile): void
+    private function createConfigFile(string $configInFile, string $configFile, array $configVars = []): void
     {
-        $configVars = [];
         $configVars['system.encrypt'] = hash('sha256', 'Tropotek_'.microtime());
-        $config['db.default.type'] = 'mysql';
+        $configVars['db.default.type'] = 'mysql';
 
         $configContents = strval(file_get_contents($configInFile));
-        $helper = $this->getHelper('question');
 
         // prompt for DB creds
         $this->writeGreen('Please answer the following questions to setup your new site configuration.');
