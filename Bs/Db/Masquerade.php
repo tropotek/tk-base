@@ -113,6 +113,18 @@ class Masquerade
     }
 
     /**
+     * Get the user who is masquerading
+     */
+    public static function getMasqueradingIdentity(): string
+    {
+        if (is_array($_SESSION[static::SID] ?? false)) {
+            $msqArr = $_SESSION[static::SID][0];
+            return $msqArr['identity'];
+        }
+        return '';
+    }
+
+    /**
      * Is this user currently masquerading
      */
     public static function isMasquerading(): bool

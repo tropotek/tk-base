@@ -1,5 +1,23 @@
 #CHANGELOG#
 
+Ver 8.0.184 [2026-01-16]:
+-------------------------------
+
+
+Ver 8.0.182 [2026-01-15]:
+-------------------------------
+  - reduce emails send for requests, change site primary color
+
+
+Ver 8.0.180 [2026-01-13]:
+-------------------------------
+  - Update session view
+
+
+Ver 8.0.178 [2026-01-12]:
+-------------------------------
+
+
 Ver 8.0.176 [2025-12-24]:
 -------------------------------
   - Added content snippet templates to reporting fields

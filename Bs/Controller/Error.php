@@ -1,7 +1,10 @@
 <?php
 namespace Bs\Controller;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Tk\Alert;
 use Tk\Config;
+use Tk\Uri;
 
 class Error
 {
@@ -19,6 +22,12 @@ class Error
         $str = '';
         $extra = '';
         $logHtml = '';
+
+        // redirect back to home page
+        if ($e instanceof NotFoundHttpException) {
+            Alert::addError($e->getMessage());
+            Uri::create('/')->redirect(307);
+        }
 
         if ($withTrace) {
             $str = trim($e->__toString());
