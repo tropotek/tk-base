@@ -35,14 +35,7 @@ class Deploy extends Console
             copy($configInFile, $configFile);
         }
 
-        // make env with an app key
-        if (!AppKey::makeEnvFile($output)) {
-            $this->writeError("Error writing the .env file");
-        }
-
         try {
-            passthru('git config --global --add safe.directory /app');
-
             // composer install
             passthru('composer install --no-interaction --prefer-dist');
 
