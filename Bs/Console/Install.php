@@ -41,8 +41,6 @@ class Install extends Console
         }
 
         try {
-            passthru('git config --global --add safe.directory /app');
-
             // composer install
             passthru('composer install --no-interaction --prefer-dist');
 
