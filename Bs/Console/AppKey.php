@@ -21,7 +21,7 @@ class AppKey extends Console
         $this->setName('app-key')
             ->setAliases(['apk'])
             ->addOption("force", "f", null, "Force the creation of a new encryption key")
-            ->setDescription('Create an encryption key for the site.')
+            ->setDescription('Generate an encryption key for the site add it to .env file, create one if missing.')
         ;
     }
 
