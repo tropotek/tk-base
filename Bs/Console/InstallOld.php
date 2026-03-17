@@ -19,7 +19,7 @@ class InstallOld extends Console
     protected function configure(): void
     {
         $this->setName('install-old')
-            ->setAliases(['oins'])
+            ->setAliases(['inso'])
             ->setDescription('Install the site (deprecated)')
         ;
     }

@@ -424,9 +424,10 @@ class Factory extends Collection
 
             // Setup Global Console Commands
             $app->add(new \Bs\Console\Install());
+            $app->add(new \Bs\Console\InstallOld());
             $app->add(new \Bs\Console\Deploy());
             $app->add(new \Bs\Console\AppKey());
-            //$app->add(new \Bs\Console\Upgrade());
+            $app->add(new \Bs\Console\Upgrade());
 
             $app->add(new \Bs\Console\Password());
             $app->add(new \Bs\Console\CreateAdmin());
@@ -435,6 +436,7 @@ class Factory extends Collection
             $app->add(new \Bs\Console\DbBackup());
             $app->add(new \Bs\Console\Migrate());
             $app->add(new \Bs\Console\PurgeCache());
+
             if (Config::isDev()) {
                 $app->add(new \Bs\Console\Mirror());
                 $app->add(new \Bs\Console\MirrorData());
