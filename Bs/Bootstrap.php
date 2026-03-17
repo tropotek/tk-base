@@ -19,11 +19,14 @@ class Bootstrap
 
     public function init(): void
     {
-        // TODO: this should be cached
-        $dotenv = Dotenv::createImmutable(System::discoverBasePath());
-        $dotenv->load(); // Load the variables
-        foreach ($_ENV as $k => $v) {
-            putenv("$k=$v");
+        $basePath = System::discoverBasePath();
+        if (is_file($basePath . '/.env')) {
+            // TODO: this should be cached
+            $dotenv = Dotenv::createImmutable($basePath);
+            $dotenv->load(); // Load the variables
+            foreach ($_ENV as $k => $v) {
+                putenv("$k=$v");
+            }
         }
 
         $config = Config::instance();
