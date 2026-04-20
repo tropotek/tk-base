@@ -366,6 +366,7 @@ class Factory extends Collection
 
         $siteEmail = Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName());
 
+
         $message = new \Tk\Mail\CurlyMessage($template);
         $message->setFrom(Config::getValue('email.from', $siteEmail));
         $message->setReplyTo($siteEmail);
