@@ -365,10 +365,10 @@ class Factory extends Collection
         $template = str_replace('{content}', $content, $template);
 
         $siteEmail = Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName());
-
+        $siteFrom = Message::joinEmail(Config::getValue('email.from', Registry::getSiteEmail()), Registry::getSiteName());
 
         $message = new \Tk\Mail\CurlyMessage($template);
-        $message->setFrom(Config::getValue('email.from', $siteEmail));
+        $message->setFrom($siteFrom);
         $message->setReplyTo($siteEmail);
         $message->addBcc($siteEmail);
         $message->set('sig', Registry::getValue('site.email.sig', ''));
