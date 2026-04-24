@@ -40,7 +40,7 @@ return function (Config $config) {
     /**
      * Script to execute after install/upgrade/migrate
      */
-    $config['dev.setup.script'] = $config->get('path.config') . '/dev.php';
+    //$config['dev.setup.script'] = $config->get('path.config') . '/dev.php';
 
     /**
      * // customise request log info

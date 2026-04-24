@@ -365,9 +365,10 @@ class Factory extends Collection
         $template = str_replace('{content}', $content, $template);
 
         $siteEmail = Message::joinEmail(Registry::getSiteEmail(), Registry::getSiteName());
+        $siteFrom = Message::joinEmail(Config::getValue('email.from', Registry::getSiteEmail()), Registry::getSiteName());
 
         $message = new \Tk\Mail\CurlyMessage($template);
-        $message->setFrom($siteEmail);
+        $message->setFrom($siteFrom);
         $message->setReplyTo($siteEmail);
         $message->addBcc($siteEmail);
         $message->set('sig', Registry::getValue('site.email.sig', ''));
@@ -424,6 +425,9 @@ class Factory extends Collection
 
             // Setup Global Console Commands
             $app->add(new \Bs\Console\Install());
+            $app->add(new \Bs\Console\InstallOld());
+            $app->add(new \Bs\Console\Deploy());
+            $app->add(new \Bs\Console\AppKey());
             $app->add(new \Bs\Console\Upgrade());
 
             $app->add(new \Bs\Console\Password());
@@ -433,6 +437,7 @@ class Factory extends Collection
             $app->add(new \Bs\Console\DbBackup());
             $app->add(new \Bs\Console\Migrate());
             $app->add(new \Bs\Console\PurgeCache());
+
             if (Config::isDev()) {
                 $app->add(new \Bs\Console\Mirror());
                 $app->add(new \Bs\Console\MirrorData());

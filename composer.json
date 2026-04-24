@@ -32,7 +32,8 @@
         "symfony/console": "^6.2-@stable",
         "symfony/lock": "^6.2-@stable",
         "studio-42/elfinder": "~2.1.0-@stable",
-        "tinymce/tinymce": "~7.0-@stable"
+        "tinymce/tinymce": "~7.0-@stable",
+        "vlucas/phpdotenv": "^5.6-@stable"
     },
     "require-dev":  {
         "composer/composer": "^2.0"

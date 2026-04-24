@@ -1,5 +1,18 @@
 #CHANGELOG#
 
+Ver 8.0.188 [2026-04-20]:
+-------------------------------
+
+
+Ver 8.0.186 [2026-03-17]:
+-------------------------------
+  - Merge remote-tracking branch 'origin/8.0' into 8.0
+  - updaes
+  - update docker
+  - Add docker containers and update environment
+  - Fix page title and icons
+
+
 Ver 8.0.184 [2026-01-16]:
 -------------------------------
 

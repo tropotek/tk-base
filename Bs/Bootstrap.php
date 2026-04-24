@@ -3,6 +3,7 @@ namespace Bs;
 
 use Bs\Listener\StartupHandler;
 use Dom\Template;
+use Dotenv\Dotenv;
 use Tk\Config;
 use Tk\DataMap\Db\TextEncrypt;
 use Tk\Debug\VarDump;
@@ -18,6 +19,16 @@ class Bootstrap
 
     public function init(): void
     {
+        $basePath = System::discoverBasePath();
+        if (is_file($basePath . '/.env')) {
+            // TODO: this should be cached
+            $dotenv = Dotenv::createImmutable($basePath);
+            $dotenv->load(); // Load the variables
+            foreach ($_ENV as $k => $v) {
+                putenv("$k=$v");
+            }
+        }
+
         $config = Config::instance();
 
         // Apply all php config settings to php

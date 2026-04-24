@@ -12,15 +12,15 @@ use Tk\Exception;
 use Tk\Path;
 use Tk\System;
 
-class Install extends Console
+class Deploy extends Console
 {
     protected string $error = '';
 
     protected function configure(): void
     {
-        $this->setName('install')
-            ->setAliases(['ins'])
-            ->setDescription('Install the site')
+        $this->setName('deploy')
+            ->setAliases(['dpy'])
+            ->setDescription('Docker deploy script')
         ;
     }
 
@@ -44,19 +44,12 @@ class Install extends Console
             $config = Config::instance();
             Db::connect($config->get('db.mysql', ''));
 
-            // If no tables exist, install the new DB with any required prompts
-            $drop = false;
+            // migrate DB
             $tables = Db::getTableList();
-            if ($input->isInteractive() && count($tables)) {
-                $drop = $this->askConfirmation('Replace the existing database. WARNING: Existing data tables will be deleted! [N]: ', false);
-            }
-            if ($drop) {
-                $exclude = [Db\MySqlSession::$DB_TABLE];
-                Db::dropAllTables(true, $exclude);
-            }
-
-            if (!SqlMigrate::migrateAll([$this, 'writeGrey'])) {
-                throw new Exception("Failed to migrate files");
+            if (count($tables)) {
+                if (!SqlMigrate::migrateAll([$this, 'writeGrey'])) {
+                    throw new Exception("Failed to migrate files");
+                }
             }
 
             // Purge caches
@@ -70,7 +63,6 @@ class Install extends Console
             return Command::FAILURE;
         }
 
-        $this->write('Installation Complete!!!');
         return  Command::SUCCESS;
     }
 
