@@ -77,14 +77,21 @@ class SqlMigrate
                 return false;
             }
 
-            // migrate any site specific files, do not log them in the migration table
-            $privatePath = Path::createPrivatePath('/migrate');
-            if (is_dir($privatePath)) {
-                if (is_callable($log)) call_user_func_array($log, ["Migrating private site files"]);
+            $devSql = Path::create('/src/config/sql/dev.sql');
+            if (Config::isDev() && $devSql->exists()) {
                 $mgt->tracking = false;
-                $mgt->migrateList([$privatePath], $log);
+                $mgt->migrateFile($devSql, $log);
                 $mgt->tracking = true;
             }
+
+            // migrate any site specific files, do not log them in the migration table
+//            $privatePath = Path::createPrivatePath('/migrate');
+//            if (is_dir($privatePath)) {
+//                if (is_callable($log)) call_user_func_array($log, ["Migrating private site files"]);
+//                $mgt->tracking = false;
+//                $mgt->migrateList([$privatePath], $log);
+//                $mgt->tracking = true;
+//            }
         } catch (\Exception $e){
             Log::error($e->getMessage());
             $mgt->restoreBackup();
