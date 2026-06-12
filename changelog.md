@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.194 [2026-06-12]:
+-------------------------------
+  - fixed invoice search added students and total row to invoice export
+
+
 Ver 8.0.192 [2026-06-12]:
 -------------------------------
   - fix recover pass when logged in
