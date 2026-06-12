@@ -81,19 +81,19 @@ class GuestToken extends Model
         $map = self::getDataMap();
         $gt = $map->getArray($obj);
 
-		$ok = 0;
-		while (!$ok) {
-			$gt['token'] = hash('sha256', microtime() . random_bytes(256));
-			$ok = DB::execute("
-				INSERT INTO guest_token (token, pages, payload, ttl_mins)
-				VALUES (:token, :pages, :payload, :ttl_mins)",
-				$gt
-			);
-		}
+        $ok = 0;
+        while (!$ok) {
+            $gt['token'] = hash('sha256', microtime() . random_bytes(256));
+            $ok = DB::execute("
+                INSERT INTO guest_token (token, pages, payload, ttl_mins)
+                VALUES (:token, :pages, :payload, :ttl_mins)",
+                $gt
+            );
+        }
 
-		$token = $gt['token'];
-		$gt = self::findToken($token);
-		assert(is_object($gt), "failed to get token {$token}");
+        $token = $gt['token'];
+        $gt = self::findToken($token);
+        assert(is_object($gt), "failed to get token {$token}");
         return $gt;
     }
 
@@ -114,17 +114,17 @@ class GuestToken extends Model
         return false;
     }
 
-	public function delete(): bool
-	{
+    public function delete(): bool
+    {
         Auth::logout();
         unset($_SESSION[GuestToken::TOKEN_SID]);
 
-		return false !== DB::execute("
-			DELETE from guest_token
-			WHERE token = :token",
-			$this
-		);
-	}
+        return false !== DB::execute("
+            DELETE from guest_token
+            WHERE token = :token",
+            $this
+        );
+    }
 
     public static function getSessionToken(): ?self
     {
@@ -134,17 +134,17 @@ class GuestToken extends Model
     /**
      * @todo: test this, and see if we need it
      */
-	public static function deleteByPage(string $page): bool
-	{
-		$page = trim($page);
+    public static function deleteByPage(string $page): bool
+    {
+        $page = trim($page);
         if (empty($page)) return false;
 
-		return false !== DB::execute("
-			DELETE FROM guest_token
-			WHERE :page MEMBER OF(pages)",
-			compact('page')
-		);
-	}
+        return false !== DB::execute("
+            DELETE FROM guest_token
+            WHERE :page MEMBER OF(pages)",
+            compact('page')
+        );
+    }
 
     public static function findToken(string $token): ?self
     {

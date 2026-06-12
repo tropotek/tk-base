@@ -25,6 +25,11 @@ class GuestHandler implements EventSubscriberInterface
 
         // Init new guest access and save token to session
         if (isset($_GET[GuestToken::TOKEN_RID])) {
+            if (Auth::getAuthUser()) {
+                Auth::logout();
+                Uri::create()->redirect();
+            }
+
             $token = trim($_GET[GuestToken::TOKEN_RID]);
             $this->gt = GuestToken::findToken($token);
 
@@ -36,14 +41,13 @@ class GuestHandler implements EventSubscriberInterface
                 Alert::addError("The link you followed is invalid or expired. Check the link and try again.");
                 return;
             }
-            Auth::logout();
 
             $_SESSION[GuestToken::TOKEN_SID] = $token;
 
             return;
         }
 
-        // validate the page if token exists is session
+        // validate the page if token exists in session
         $gt = GuestToken::getSessionToken();
         if ($gt instanceof GuestToken) {
             // check the requested page is a valid token page
@@ -88,7 +92,7 @@ class GuestHandler implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => 'onRequest',
+            KernelEvents::REQUEST => ['onRequest', -255],
             KernelEvents::VIEW => ['onView', 100],
         ];
     }
