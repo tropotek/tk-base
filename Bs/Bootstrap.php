@@ -50,7 +50,10 @@ class Bootstrap
 
         try {
             if ($config->has('db.mysql')) {
-                Db::connect($config->get('db.mysql', ''));
+                Db::connect(
+                    $config->get('db.mysql', ''),
+                    $config->get('db.mysql.options', [])
+                );
             }
         } catch (\Exception $e) {
             error_log('Database Initialization Error: ' . $e->getMessage());
