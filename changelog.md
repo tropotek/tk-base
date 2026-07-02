@@ -1,5 +1,10 @@
 #CHANGELOG#
 
+Ver 8.0.196 [2026-07-02]:
+-------------------------------
+  - fix elFinder upload system
+
+
 Ver 8.0.194 [2026-06-12]:
 -------------------------------
   - fixed invoice search added students and total row to invoice export
