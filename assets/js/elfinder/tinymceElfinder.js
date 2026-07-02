@@ -160,10 +160,11 @@ window.tinymceElfinder = function(opts) {
   };
 
   // See: https://www.tiny.cloud/docs/tinymce/6/upload-images/#images_upload_handler
-  //this.uploadHandler = function (blobInfo, success, failure) {
+  // TinyMCE 6+ requires this handler to return a Promise that resolves with
+  // the uploaded file URL (or rejects with an error string). The old
+  // (blobInfo, success, failure) callback signature was removed in TINY-8325.
   this.uploadHandler = function (blobInfo, progress) {
-
-    new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       getfm(uploadTargetHash).then((fm) => {
         let fmNode = fm.getUI(),
           file = blobInfo.blob(),
@@ -217,12 +218,6 @@ window.tinymceElfinder = function(opts) {
         const error = fm.parseError(err);
         reject(fm.i18n(error? (error === 'userabort'? 'errAbort' : error) : 'errUploadNoFiles'));
       });
-    }).then((url) => {
-      console.log(url);
-      //success(url);
-    }).catch((err) => {
-      console.error(err);
-      //failure(err);
     });
   };
 };

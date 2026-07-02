@@ -17,7 +17,7 @@ class Page extends PageDomInterface
 
         $url = Uri::create();
         $jsConfig = [
-            'hostUrl' => $url->getScheme() . '://' . $url->getHost(),
+            'hostUrl' => $url->getScheme() . '://' . $url->getAuthority(),
             'baseUrl' => Config::getBaseUrl(),
             'isProd'  => Config::isProd(),
             'isAuth'  => !is_null(Auth::getAuthUser()),
