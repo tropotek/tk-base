@@ -93,7 +93,10 @@ class Remember
      */
     public static function insertToken(int $auth_id, string $selector, string $hashed_validator, int $ttl_mins): int|bool
     {
-        $browser_id = Factory::instance()->getCookie()->getBrowserId();
+        // Keep the browser_id fingerprint cookie alive at least as long as this token,
+        // otherwise it can expire (rolling 30 days) before the token does and the token
+        // becomes unfindable, causing a premature "remember me" logout.
+        $browser_id = Factory::instance()->getCookie()->getBrowserId(time() + (60 * $ttl_mins));
         return Db::insert('auth_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'ttl_mins'));
     }
 
@@ -111,7 +114,13 @@ class Remember
             AND browser_id = :browser_id
             AND expiry >= NOW()
             LIMIT 1';
-        return (array)Db::queryOne($sql, compact('selector', 'browser_id'));
+        $token = (array)Db::queryOne($sql, compact('selector', 'browser_id'));
+        if (!empty($token)) {
+            // Re-sync the browser_id cookie's expiry to the token's own remaining life
+            // so it can never lag behind and orphan an otherwise-valid token.
+            Factory::instance()->getCookie()->getBrowserId(strtotime($token['expiry']));
+        }
+        return $token;
     }
 
     public static function findTokenByAuthId(string $auth_id): array
@@ -123,7 +132,11 @@ class Remember
             AND browser_id = :browser_id
             AND expiry >= NOW()
             LIMIT 1';
-        return (array)Db::queryOne($sql, compact('auth_id', 'browser_id'));
+        $token = (array)Db::queryOne($sql, compact('auth_id', 'browser_id'));
+        if (!empty($token)) {
+            Factory::instance()->getCookie()->getBrowserId(strtotime($token['expiry']));
+        }
+        return $token;
     }
 
     public static function deleteToken(int $auth_id): bool|int
