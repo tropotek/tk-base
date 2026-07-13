@@ -40,6 +40,9 @@ class Form extends \Tk\Form implements DisplayInterface
 
         parent::__construct($formId);
 
+        // Enable CSRF protection by default for all POST forms (2h window)
+        $this->setCsrfTtl(60 * 60 * 2);
+
         $this->form = $this;
         $this->renderer = new Renderer($this);
 
