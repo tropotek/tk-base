@@ -19,6 +19,8 @@ class LoginAttempt
 
     public static function countRecent(string $username, string $ip, int $windowMins): int
     {
+        self::prune($windowMins);
+
         $row = Db::queryOne(
             "SELECT COUNT(*) AS c FROM auth_login_attempt
              WHERE username = :username AND ip = :ip
@@ -33,6 +35,21 @@ class LoginAttempt
         Db::execute(
             "DELETE FROM auth_login_attempt WHERE username = :username AND ip = :ip",
             compact('username', 'ip')
+        );
+    }
+
+    /**
+     * Delete rows older than the caller's own lookback window, since rows past
+     * that point can never affect a countRecent() result again. Runs on every
+     * countRecent() call so the table never grows unbounded without needing a
+     * separate cron/GC job or a retention value independent of what callers
+     * already configure.
+     */
+    protected static function prune(int $windowMins): void
+    {
+        Db::execute(
+            "DELETE FROM auth_login_attempt WHERE created < (NOW() - INTERVAL :mins MINUTE)",
+            ['mins' => $windowMins]
         );
     }
 }
