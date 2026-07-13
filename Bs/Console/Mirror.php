@@ -93,8 +93,8 @@ class Mirror extends Console
                 $mirrorUrl = Uri::create(rtrim($this->getConfig()->get('db.mirror.url'), '/') . '/util/mirror')
                     ->set('a', 'db')
                     ->set('u', $username)
-                    ->set('p', $password)
-                    ->withScheme('https');
+                    ->set('p', $password);
+                    //->withScheme('https');
                 $this->writeComment("Requesting Data");
 
                 if (!$this->postRequest($mirrorUrl, $newZipFile, !$input->getOption('noverify'))) {
@@ -167,7 +167,8 @@ class Mirror extends Console
 
         $enc = Encrypt::create($secret);
         $ok = true;
-        $srcUrl = Uri::create($srcUrl)->withScheme('https');
+        //$srcUrl = Uri::create($srcUrl)->withScheme('https');
+        $srcUrl = Uri::create($srcUrl);
         $srcUrl->set('u', $enc->basicEncrypt($srcUrl->get('u')));
         $srcUrl->set('p', $enc->basicEncrypt($srcUrl->get('p')));
 
@@ -203,7 +204,7 @@ class Mirror extends Console
             $opts[CURLOPT_SSL_VERIFYPEER] = false;
         }
         // @phpstan-ignore-next-line
-		curl_setopt_array($curl, $opts);
+        curl_setopt_array($curl, $opts);
 
         curl_exec($curl);
         if(curl_error($curl) || curl_getinfo($curl, CURLINFO_RESPONSE_CODE) != 200) {
