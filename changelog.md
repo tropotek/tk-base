@@ -1,5 +1,14 @@
 #CHANGELOG#
 
+Ver 8.0.198 [2026-07-13]:
+-------------------------------
+  - security: prune stale auth_login_attempt rows on every countRecent() read
+  - update composer
+  - security: add auth_login_attempt store for brute-force throttling
+  - security: rotate remember-me validator on use + regenerate session
+  - security: enable CSRF protection by default on Bs\Mvc\Form
+
+
 Ver 8.0.196 [2026-07-02]:
 -------------------------------
   - fix elFinder upload system
