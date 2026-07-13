@@ -58,6 +58,19 @@ class Remember
             if ($tokens && password_verify($validator, $tokens['hashed_validator'])) {
                 $auth = Auth::findBySelector($selector);
                 if ($auth) {
+                    // Rotate the validator (and cookie) so a captured/replayed cookie
+                    // value is single-use. The token's expiry is a DB-generated column
+                    // (created + ttl_mins) that rotation does not move, so the new
+                    // cookie is set to expire at that same, unchanged instant.
+                    $newValidator = bin2hex(random_bytes(32));
+                    self::updateValidator($selector, password_hash($newValidator, PASSWORD_DEFAULT));
+                    $expires = strtotime($tokens['expiry'] ?? '') ?: (time() + (60 * self::TTL_WEEK));
+                    Factory::instance()->getCookie()->set(self::REMEMBER_CID, $selector . ':' . $newValidator, $expires);
+
+                    // Prevent session fixation: a new session id is issued on every
+                    // successful auto-login, just as on a normal credentialed login.
+                    \Tk\Session::instance()->regenerateId();
+
                     Factory::instance()->getAuthController()->getStorage()->write($auth->username);
                     return $auth;
                 }
@@ -98,6 +111,17 @@ class Remember
         // becomes unfindable, causing a premature "remember me" logout.
         $browser_id = Factory::instance()->getCookie()->getBrowserId(time() + (60 * $ttl_mins));
         return Db::insert('auth_remember', compact('auth_id', 'browser_id', 'selector', 'hashed_validator', 'ttl_mins'));
+    }
+
+    /**
+     * Replace the stored hashed validator for a selector (token rotation).
+     */
+    public static function updateValidator(string $selector, string $hashed_validator): void
+    {
+        Db::execute(
+            'UPDATE auth_remember SET hashed_validator = :hashed_validator WHERE selector = :selector',
+            compact('selector', 'hashed_validator')
+        );
     }
 
     /**
