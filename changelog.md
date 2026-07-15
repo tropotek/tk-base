@@ -1,5 +1,9 @@
 #CHANGELOG#
 
+Ver 8.0.200 [2026-07-15]:
+-------------------------------
+
+
 Ver 8.0.198 [2026-07-13]:
 -------------------------------
   - security: prune stale auth_login_attempt rows on every countRecent() read
