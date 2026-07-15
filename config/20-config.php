@@ -118,4 +118,16 @@ return function (Config $config) {
      */
     //$config['auth.rememberme.ttl'] = 10080;
 
+    /**
+     * The SameSite policy for the session cookie: 'Lax', 'Strict' or 'None'
+     *
+     * 'Strict' stops the browser sending the session cookie on cross-site
+     * top-level navigations, which breaks external auth (oAuth/SSI) callbacks
+     * redirecting back into the site: the user lands on a new empty session
+     * and is bounced to /login. Only use 'Strict' if the site has no external
+     * login providers enabled.
+     * Default: 'Lax'
+     */
+    //$config['session.cookie.samesite'] = 'Lax';
+
 };
