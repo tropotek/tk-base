@@ -30,7 +30,10 @@ window.tinymceElfinder = function(opts) {
           if (!Object.keys(elf.files()).length) {
             // when initial request
             elf.one('open', () => {
-              elf.file(open)? resolve(elf) : reject(elf, 'errFolderNotFound');
+              // Promise.reject() only keeps its first argument - passing
+              // (elf, err) here silently drops err, so bundle both into one
+              // rejection value instead.
+              elf.file(open)? resolve(elf) : reject({elf, err: 'errFolderNotFound'});
             });
           } else {
             // elFinder has already been initialized
@@ -53,11 +56,11 @@ window.tinymceElfinder = function(opts) {
                 elf.exec('open', open).done(() => {
                   resolve(elf);
                 }).fail(err => {
-                  reject(elf, err? err : 'errFolderNotFound');
+                  reject({elf, err: err || 'errFolderNotFound'});
                 });
               }
             }).catch((err) => {
-              reject(elf, err? err : 'errFolderNotFound');
+              reject({elf, err: err || 'errFolderNotFound'});
             });
           }
         } else {
@@ -154,6 +157,9 @@ window.tinymceElfinder = function(opts) {
           regist();
         });
       }
+    }).catch(({elf, err} = {}) => {
+      const msg = elf ? elf.i18n(elf.parseError(err) || 'errOpen') : (err || 'errOpen');
+      console.error('elFinder: failed to open file browser:', msg);
     });
 
     return false;
@@ -187,8 +193,16 @@ window.tinymceElfinder = function(opts) {
           clipdata = void(0);
         }
         // Bind err function and exec upload
+        // type: 'files' is required so elFinder's own upload.checkFile()
+        // treats `files` as real Blob/File objects - without it, elFinder
+        // assumes `files[0]` is a pasted HTML/URL string (its own native
+        // clipboard-paste path) and calls .replace() on the Blob, which
+        // yields zero files and rejects with errUploadNoFiles ("No files
+        // found for upload") even though TinyMCE has already shown its own
+        // local blob: preview of the image regardless of upload success.
         fm.bind('dialogopened', err).exec('upload', {
           files: [file],
+          type: 'files',
           target: uploadTargetHash,
           clipdata: clipdata, // to get unique name on connector
           dropEvt: {altKey: true, ctrlKey: true} // disable watermark on demo site
@@ -214,7 +228,14 @@ window.tinymceElfinder = function(opts) {
             fm.unbind('dialogopened', err);
             closeDlg();
           });
-      }).catch((fm, err) => {
+      }).catch(({elf: fm, err} = {}) => {
+        // getfm() may reject before an elFinder instance exists, so fm can
+        // be undefined here - fall back to the raw error rather than
+        // throwing on fm.parseError()/fm.i18n() of undefined.
+        if (!fm) {
+          reject(err || 'errUploadNoFiles');
+          return;
+        }
         const error = fm.parseError(err);
         reject(fm.i18n(error? (error === 'userabort'? 'errAbort' : error) : 'errUploadNoFiles'));
       });

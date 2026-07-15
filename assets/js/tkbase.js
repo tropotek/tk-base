@@ -163,6 +163,12 @@ let tkbase = function () {
             extended_valid_elements: 'i[*],em[*],b[*],a[*],div[*],span[*],img[*]',
             image_advtab: true,
             statusbar: false,
+            // Paste/drag-drop images must be explicitly routed through
+            // images_upload_handler (mceElf.uploadHandler below) - without
+            // automatic_uploads, TinyMCE just embeds them as base64 data URIs
+            // and never calls the handler at all.
+            automatic_uploads: true,
+            paste_data_images: true,
             //content_security_policy: "default-src 'self'",
             skin: 'tinymce-5',
 
@@ -178,9 +184,13 @@ let tkbase = function () {
         $.extend(mceFull, cfg);
 
         // min mce default config
+        // NOTE: no 'image' plugin here - the elFinder file manager is
+        // deliberately not wired up for .mce-min/.mce-xs below, so offering
+        // an Insert Image button with no upload handler configured would
+        // just be a dead button.
         let mceMin = {
             license_key: 'gpl',
-            plugins: ['link', 'image', 'code', 'fullscreen'],
+            plugins: ['link', 'code', 'fullscreen'],
             contextmenu: false,
             statusbar: false,
             height: 300,
@@ -192,14 +202,17 @@ let tkbase = function () {
         tkRegisterInit(function () {
             $('textarea.mce, textarea.mce-min, textarea.mce-xs', this).each(function () {
                 let el = $(this);
-                let cfg = mceFull;
+                // Clone the shared default config per textarea - mceFull/mceMin
+                // are built once for the whole page, so mutating them directly
+                // (file_picker_callback, images_upload_handler, menubar, ...)
+                // would leak one field's elFinder instance/settings onto every
+                // other field initialised afterwards (including across HTMX
+                // re-inits of separate components).
+                let cfg = $.extend({}, el.is('.mce-min, .mce-xs') ? mceMin : mceFull);
 
                 if (el.is('.mce-min, .mce-xs')) {
-                    cfg = mceMin;
-                    if (el.is('.mce-min, .mce-xs')) {
-                        cfg.menubar = false;
-                        cfg.toolbar = true;
-                    }
+                    cfg.menubar = false;
+                    cfg.toolbar = true;
                 }
 
                 if (!el.is('.mce-no-fm, .mce-min, .mce-xs')) {   // disable the elFinder file manager
@@ -210,8 +223,14 @@ let tkbase = function () {
                     const mceElf = new tinymceElfinder({
                         // connector URL
                         url: tkConfig.baseUrl + '/vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php?cpth=' + path,
-                        // upload target folder hash for this tinyMCE
-                        uploadTargetHash: 'l1_lw',
+                        // upload target folder hash for this tinyMCE - elFinder
+                        // hashes are case-sensitive (volume id 'l1_' + base64
+                        // 'Lw' for the root path '/'), matching the connector's
+                        // own trashHash: 't1_Lw' pattern. The previous all-lowercase
+                        // 'l1_lw' never matched a real folder, so getfm() always
+                        // failed with errOpen and every paste/drag-drop upload was
+                        // broken from the start.
+                        uploadTargetHash: 'l1_Lw',
                         // elFinder dialog node id
                         nodeId: 'elfinder',
                         //requestType: 'post',

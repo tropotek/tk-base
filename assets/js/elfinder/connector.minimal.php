@@ -7,6 +7,17 @@ require $sitePath . '/_prepend.php';
 \Tk\Config::instance()->set('base.path', $sitePath);
 \Tk\Config::instance()->set('base.url', $siteUrl);
 
+// This is a standalone entry point (bootstraps _prepend.php directly, never
+// routed through the app's HttpKernel/controllers), so it must gate access
+// itself - without this, any request carrying a valid session cookie could
+// read/write/upload arbitrary files under the data path.
+if (!\Bs\Auth::getAuthUser()) {
+    http_response_code(403);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Access denied']);
+    exit;
+}
+
 // Optional exec path settings (Default is called with command name only)
 $bin = '/bin';
 define('ELFINDER_TAR_PATH',      $bin.'/tar');

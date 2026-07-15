@@ -112,7 +112,19 @@ class Factory extends Collection
             }
 
             session_cache_limiter('nocache');
-            session_name('sn_' . md5(Config::getBaseUrl()));
+            // Use base.path, not base.url, to derive the session name.
+            // Config::getBaseUrl() is auto-discovered from the *currently
+            // executing script's own path* (System::discoverBaseUrl() reads
+            // SCRIPT_FILENAME/SCRIPT_NAME/PHP_SELF), so a standalone entry
+            // point outside the normal index.php-routed request (e.g.
+            // vendor/ttek/tk-base/assets/js/elfinder/connector.minimal.php)
+            // gets a different base.url and therefore a different session
+            // cookie name to the rest of the app - meaning it can never see
+            // a user's authenticated session. base.path is discovered from
+            // this vendor package's own fixed location instead
+            // (System::discoverBasePath()), so it's identical no matter
+            // which script is executing.
+            session_name('sn_' . md5(Config::instance()->get('base.path', '')));
             $session = \Tk\Session::instance($handler);
 
             $this->set('session', $session);
