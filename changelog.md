@@ -1,5 +1,11 @@
 #CHANGELOG#
 
+Ver 8.1.0 [2026-07-17]:
+-------------------------------
+  - updates
+  - Merge remote-tracking branch 'origin/8.0' into 8.0
+
+
 Ver 8.0.202 [2026-07-15]:
 -------------------------------
   - fox SameSite issue, default to Lax
