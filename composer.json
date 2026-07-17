@@ -24,7 +24,7 @@
         "ttek/tk-framework": "^8.1",
         "ttek/tk-domtemplate": "^8.0",
         "ttek/tk-form": "^8.0",
-        "ttek/tk-table": "^8.0",
+        "ttek/tk-table": "^8.1",
         "symfony/http-foundation": "^6.2-@stable",
         "symfony/routing": "^6.2-@stable",
         "symfony/http-kernel": "^6.2-@stable",
