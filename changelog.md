@@ -1,5 +1,13 @@
 #CHANGELOG#
 
+Ver 8.1.2 [2026-07-20]:
+-------------------------------
+  - updates
+  - Merge pull request #1 from
+   tropotek/dependabot/npm_and_yarn/assets/js/components/jquery-ui-1.14.1/browserstack-local-1.5.9
+  - Bump browserstack-local in /assets/js/components/jquery-ui-1.14.1
+
+
 Ver 8.1.0 [2026-07-17]:
 -------------------------------
   - updates
